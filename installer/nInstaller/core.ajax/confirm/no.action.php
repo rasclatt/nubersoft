@@ -1,1 +1,0 @@
-<h3 style="text-align: center;">Nothing to remove</h3>
