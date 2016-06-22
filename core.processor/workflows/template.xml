@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object>
+			<class>
+				<name>\Nubersoft\nObserverTemplate</name>
+				<method>toBrowser</method>
+			</class>
+		</object>
+		<object>
+			<class>
+				<name>\Nubersoft\nCache</name>
+				<method>endCache</method>
+			</class>
+		</object>
+	</workflow>
+</config>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<nbr_cache_delete>
+		<ui>
+			<admintools>
+				<plugin_bar>
+					
+				</plugin_bar>
+				<toolpallet>
+					
+				</toolpallet>
+			</admintools>
+		</ui>
+		<action>
+			<name>nbr_cache_delete</name>
+			<include>~NBR_ROOT_DIR~/core.plugins/plugin.DeleteCache/process/delete.php</include>
+		</action>
+	</nbr_cache_delete>
+</config>

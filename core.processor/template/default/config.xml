@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config><!--
+	<ui>
+		<admintools>
+			<body>
+				<ontable>
+					<name>components</name>
+					<include>~NBR_TEMPLATE_DIR~~_DS_~default~_DS_~inclusions~_DS_~tablematch.php</include>
+				</ontable>
+			</body>
+		</admintools>
+	</ui>-->
+	<stylesheet>
+		<include>~NBR_TEMPLATE_DIR~/default/css/admintools.css</include>
+		<is_admin>1</is_admin>
+	</stylesheet>
+</config>

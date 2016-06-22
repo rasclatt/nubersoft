@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<rebuild_htaccess>
+		<action>
+			<name>rebuild_htaccess</name>
+			<function>
+				<name>rebuild_htaccess</name>
+				<foundin>~NBR_ROOT_DIR~/core.plugins/plugin.SaveHtaccess/functions/function.rebuild_htaccess.php</foundin>
+			</function>
+		</action>
+	</rebuild_htaccess>
+</config>
