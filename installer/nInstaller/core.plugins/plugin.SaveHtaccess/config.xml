@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<onprocessheader>
+		<requester>post</requester>
+		<action>rebuild_htaccess</action>
+		<use>/core.plugins/plugin.SaveHtaccess/functions/function.rebuild_htaccess.php</use>
+	</onprocessheader>
+</config>

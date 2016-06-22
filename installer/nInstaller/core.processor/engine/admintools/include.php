@@ -1,0 +1,1 @@
+<?php include(RENDER_LIB.'/admintools/include.php'); ?>

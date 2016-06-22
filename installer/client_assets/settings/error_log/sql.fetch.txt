@@ -1,0 +1,37 @@
+//----------------------- 2016-01-14 12:51:30 (America/Los_Angeles)
+sql: By rasclatt@me.com / SELECT `full_path`, `menu_name` FROM `main_menus`
+
+FILE/LINE: /data/19/2/133/150/2948313/user/3268049/htdocs/iwantcreative/installer/core.processor/classes/class.ConstructMySQL.php->734
+			
+				
+					 | 
+					
+					Array
+(
+    [0] => Array
+        (
+            [file] => /data/19/2/133/150/2948313/user/3268049/htdocs/iwantcreative/installer/core.processor/classes/class.ConstructMySQL.php
+            [line] => 734
+            [function] => backtrace_file
+        )
+
+    [1] => Array
+        (
+            [file] => /data/19/2/133/150/2948313/user/3268049/htdocs/iwantcreative/installer/steps/go4.php
+            [line] => 110
+            [function] => fetch
+            [class] => ConstructMySQL
+        )
+
+    [2] => Array
+        (
+            [file] => /data/19/2/133/150/2948313/user/3268049/htdocs/iwantcreative/installer/core.ajax/ajax.dispatcher.php
+            [line] => 28
+            [function] => include
+        )
+
+)
+					
+				
+			
+

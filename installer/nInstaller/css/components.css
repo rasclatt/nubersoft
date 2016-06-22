@@ -1,0 +1,429 @@
+.templateWrap,
+.CBmainMenuWrap {
+	cursor: default;
+	position: relative;
+	color: inherit;
+	padding: 0;
+	text-decoration: none;
+	font-size: 16px;
+	display: inherit;
+	margin: 0;
+	background-color: none;
+	height: auto;
+	width: auto;
+}
+
+.templatePopup,
+.CBmainMenuPopup {
+	display: none;
+	padding: 9px 9px 9px 0;
+	background-color: none;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 1000;
+	width: auto;
+}
+.templatePopup {
+	top: 0;
+	left: 0;
+	padding: 0;
+	height: auto;
+	text-align: center;
+}
+.templateWrap:hover {
+	background-color: none;
+}
+.templateWrap:hover .templatePopup {
+	display: none;
+	list-style: none;
+	text-decoration: none;
+}
+div.compWrapper {
+	border: 1px solid #666666;
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+	border-radius: 6px;
+	margin: 10px 15px 0 0;
+	padding: 0;
+	float: left;
+	-webkit-box-shadow: inset 0px 0px 6px #000000;
+	-moz-box-shadow: inset 0px 0px 6px #000000;
+	box-shadow: inset 0px 0px 6px #000000;
+	background-color: #333333;
+	background-image: url(/core_images/core/comp_back.png);
+}
+.component_block,
+.componentModule {
+	background-color: #333333;
+	border-radius: 6px;
+	float: left;
+	padding: 10px;
+	height: 100px;
+	color: #CCCCCC;
+	text-shadow: 1px 1px 3px #000000;
+	cursor: pointer;
+}
+div.component_block {
+	height: auto;
+	overflow: hidden !important;
+	color: #333333 !important;
+	margin: 0 !important;
+	text-shadow: none !important;
+	background-color: transparent !important;
+	padding: 3px !important;
+}
+div.compblockmod {
+	overflow: hidden;
+	color: #333333;
+	margin: 0;
+	text-shadow: none;
+	background-color: transparent;
+	padding: 3px;
+}
+.component_desc {
+	font-size: 12px;
+	font-weight: bold;
+	color: #CCCCCC;
+	text-align: center;
+	padding: 5px;
+	text-shadow: 1px 1px 3px #000000;
+	overflow: hidden;
+	max-width: 180px;
+}
+.opacitygrab, .templatePopup, .dragonit {
+	z-index: 100000000000;
+}
+.form_window_bar, .form_window_bar30px {
+	display: inline-block;
+	background-repeat: repeat-x;
+	background-color: #888888;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	float: left;
+	cursor: move;
+}
+.form_window_bar {
+	background-image: url(../core.processor/renderlib/admintools/images/table_bar_bkg.png);
+	height: 16px;
+	width: 200px;
+	text-align: center;
+	font-size: 12px;
+	padding-top: 4px;
+	color: #FFFFFF;
+	text-shadow: 1px 1px 2px #000000;
+	font-weight: bold;
+}
+.form_window_bar30px {
+	background-image: url(../core.processor/renderlib/admintools/images/table_bar_bkg30px.png);
+	height: 30px;
+	text-align: center;
+	font-size: 12px;
+	color: #FFFFFF;
+	text-shadow: 1px 1px 2px #000000;
+	font-weight: bold;
+	width: 100% !important;
+	text-align: center !important;
+	position: relative !important;
+}
+
+#closer_button {
+	display: inline-block;
+	width: auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	position: relative;
+	top: -17px;
+	left: -20px;
+	cursor: pointer;
+	background-image: url(/core_images/core/closer.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+#closer_button:hover {
+	color: #888888;
+	background-image: url(/core_images/core/closer_on.png);
+	cursor: pointer;
+}
+div.closer_button {
+	background-image: url(/core_images/core/closer.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	float: right;
+	display: block;
+	padding: 5px;
+	height: 20px;
+	width: 20px;
+	float: left;
+	background-size: 15px;
+	cursor: pointer;
+}
+div.closer_button:hover {
+	background-image: url(/core_images/core/closer_on.png);
+	background-repeat: no-repeat;
+}
+div.component_header {
+	padding: 3px 5px 0;
+	font-size: 12px;
+	width: auto;
+	float: left;
+	display: inline-block;
+	color: #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	margin-top: 5px !important;
+	text-transform: uppercase !important;
+}
+.SubMenuPopUp {
+	color: #6D6E71;
+	padding: 10px 10px 10px 10px;
+	border-radius: 4px;
+	width: auto;
+	background-repeat: repeat;
+	position: relative;
+	top: 100px;
+	left: 100px;
+	background-color: rgba(0,0,0,0.8);
+	top: 0;
+	left: 0;
+	min-height: 200px;
+	overflow: auto;
+	width: auto;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	position: relative;
+	display: inline-block;
+	max-height: 450px;
+	min-width: 250px;
+	padding-top: 0;
+}
+
+/************** MENU STICK COMPONENT ************/
+.click_stick	{
+	font-size: 12px;
+	padding: 10px;
+	background-color: #666;
+	color: #FFF;
+	text-shadow: 1px 1px 2px #000;
+	cursor: pointer;
+}
+.click_stick:hover	{
+	background-color: #CCC;
+	text-shadow: none;
+	color: #888;
+}
+/********* STANDARD COMPONENT ***************/
+.componentSetWrap {
+	box-shadow: inset 0px 0px 6px #000000;
+	background-color: inherit;
+	background-image: url(/core.processor/renderlib/admintools/images/comp_back.png);
+	background-size: 100%;
+	background-position: center;
+	-webkit-box-shadow: inset 0px 0px 6px #000000;
+	-moz-box-shadow: inset 0px 0px 6px #000000;
+	border: 1px solid #666666;
+	border-radius: 6px;
+	cursor: default;
+	color: inherit;
+	display: block;
+	font-size: 16px;
+	
+	padding: 0;
+	position: relative;
+	text-decoration: none;
+	height: 115px !important;
+	width: 115px !important;
+	height: auto;
+	float: left;
+	margin: 10px;
+}
+table.preview_tble {
+	display: inline-block;
+}
+div.previewer {
+	display: inline-block;
+}
+div.previewer p {
+	font-size: 13px;
+	color: #FFF;
+}
+td.preview_td {
+	display: none;
+}
+table.preview_tble:hover {
+	background-color: rgba(0,0,0,.8);
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+table.preview_tble:hover td.preview_td {
+	display: block;
+	position: absolute;
+	background-color: rgba(0,0,0,.8);
+	vertical-align: middle;
+	text-align: center;
+	cursor: default;
+	padding: 0;
+}
+.nbr_preview_toggle	{
+	width: 137px !important;
+	padding: 7px 0;
+	margin: 0;
+}
+.nbr_preview_toggle:hover	{
+	color: red;
+	cursor: pointer;
+}
+div.render_preview {
+	display: none;
+	z-index: 2000000;
+	position: absolute;
+}
+div.point_editors:hover td.preview_td, div.point_editors:hover {
+	display: block;
+	position: relative;
+}
+
+div.preview_window {
+	display: inline-block;
+	padding: 10px;
+	background-color: #EBEBEB;
+	box-shadow: 1px 1px 8px #000;
+	border-radius: 8px;/*
+	max-width: 300px;
+	max-height: 500px;
+	min-width: 200px;*/
+	overflow: auto;
+	left: -28px;
+	position: relative;
+}
+/************************************************************* NOTES WRAPPER ************************************************/
+
+div.notes_row, div.notes_comp {
+	margin: -45px;
+	width: 45px;
+	height: 45px;
+	float: right;
+	position: relative;
+	top: 45px;
+	background-image: url(/core.processor/renderlib/admintools/images/offline.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	cursor: pointer;
+}
+div.notes_row {
+	left: -5px;
+}
+div.notes_comp {
+	left: -35px;
+	text-align: center;
+}
+p.notes_txt {
+	font-size: 24px;
+	padding: 10px 0 0 0;
+	margin: 0;
+	float: none;
+	clear: none;
+	text-align: center;
+	width: auto;
+}
+div.notes_popup {
+	font-size: 12px;
+	color: #333333;
+	background-color: #FC0;
+	padding: 10px;
+	box-shadow: 1px 1px 8px #000000;
+	display: none;
+	position: relative;
+	top: 10px;
+	left: 10px;
+	cursor: pointer;
+	font-family: "Comic Sans MS", cursive;
+	max-width: 200px;
+	min-width: 100px;
+	width: auto;
+	z-index: 500;
+	text-align: left;
+}
+/**************** *****************/
+.nbr_component_wrap	{
+	text-align: left;
+}
+.nbr_tool_component_contain	{
+	display: inline-block;
+	width: 100%;
+	text-align: left;
+}
+.nbr_tool_component_contain label	{
+	float: left;
+}
+.nbr_tool_component_contain input[type='text'] {
+	margin: 5px 0;
+	display: inline-block;
+	width: 100%;
+}
+
+.component_buttons_wrap	{
+	display: inline-block;
+}
+.delete_button,
+.duplicate_button,
+.nbr_component_add label,
+.dup_span	{
+	height: 50px;
+	width: 50px;
+	background-position: center;
+	background-size: contain;
+	display: inline-block;
+	background-repeat: no-repeat;
+}
+.duplicate_button	{
+	height: 40px;
+	width: 40px;
+	margin: 5px;
+}
+.delete_button:active,
+.duplicate_button:active,
+.nbr_component_add label:active	{
+	opacity: 0.6;
+	background-size: 80%;
+}
+
+.delete_button	{
+	background-image: url('/core_images/core/erase_off.png');
+}
+.delete_button:active	{
+	background-image: url('/core_images/core/erase_on.png');
+}
+.duplicate_button	{
+	background-image: url('/core_images/core/icn_dup_on.png');
+}
+.duplicate_button:active	{
+	background-image: url('/core_images/core/icn_dup_off.png');
+}
+.nbr_component_add label	{
+	background-image: url('/core_images/core/add_on.png');
+}
+.dup_span	{
+	background-image: url('/core_images/core/add_dup.png');
+}
+.dup_span:hover	{
+	background-image: url('/core_images/core/add_dup_off.png');
+}
+.dup_span:active	{
+	background-image: url('/core_images/core/add_dup.png');
+}
+.dup_wrap	{
+	display: absolute;
+}
+.nbr_comp_elems	{
+	position: relative;
+	right: -16px;
+	float: right;
+	display: inline-block;
+	border-radius: 4px;
+	padding: 3px;
+}
