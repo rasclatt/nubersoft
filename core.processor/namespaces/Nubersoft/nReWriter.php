@@ -33,10 +33,11 @@ class nReWriter
 			{
 				// Set default location for htaccess file (root)
 				$dFile	=	__DIR__._DS_.'nReWriter'._DS_.__FUNCTION__._DS_.'htaccess.txt';
+				$getDf	=	(is_file($dFile))? file_get_contents($dFile) : false;
 				// If there is a script already set use it or else use default
-				$data	=	(!empty($settings['htaccess']))? $settings['htaccess'] : file_get_contents($dFile);
+				$data	=	(!empty($settings['htaccess']))? $settings['htaccess'] : $getDf;
 				// If the write is set, try and use the script and write file to disk
-				if(!empty($settings['write'])) {
+				if(!empty($settings['write']) && !empty($data)) {
 					// Save into the root drive (or where ever indicated by 'dir')
 					$dir		=	(!empty($settings['dir']))? $settings['dir'] : NBR_ROOT_DIR;
 					$wSettings	=	array(

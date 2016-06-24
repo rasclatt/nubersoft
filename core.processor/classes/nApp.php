@@ -900,6 +900,11 @@ class	nApp
 				return new Nubersoft\nSessioner();
 			}
 			
+		public	static	function nHtml()
+			{
+				return new Nubersoft\nHtml();
+			}
+			
 		public	static	function con()
 			{
 				// Use either the persistant connection of the injected connection
