@@ -52,7 +52,7 @@ div.compWrapper {
 	-moz-box-shadow: inset 0px 0px 6px #000000;
 	box-shadow: inset 0px 0px 6px #000000;
 	background-color: #333333;
-	background-image: url(/core_images/core/comp_back.png);
+	background-image: url(/images/core/comp_back.png);
 }
 .component_block,
 .componentModule {
@@ -105,7 +105,7 @@ div.compblockmod {
 	cursor: move;
 }
 .form_window_bar {
-	background-image: url(../core.processor/renderlib/admintools/images/table_bar_bkg.png);
+	background-image: url(../core/renderlib/admintools/images/table_bar_bkg.png);
 	height: 16px;
 	width: 200px;
 	text-align: center;
@@ -116,7 +116,7 @@ div.compblockmod {
 	font-weight: bold;
 }
 .form_window_bar30px {
-	background-image: url(../core.processor/renderlib/admintools/images/table_bar_bkg30px.png);
+	background-image: url(../core/renderlib/admintools/images/table_bar_bkg30px.png);
 	height: 30px;
 	text-align: center;
 	font-size: 12px;
@@ -141,17 +141,17 @@ div.compblockmod {
 	top: -17px;
 	left: -20px;
 	cursor: pointer;
-	background-image: url(/core_images/core/closer.png);
+	background-image: url(/images/core/closer.png);
 	background-repeat: no-repeat;
 	background-size: contain;
 }
 #closer_button:hover {
 	color: #888888;
-	background-image: url(/core_images/core/closer_on.png);
+	background-image: url(/images/core/closer_on.png);
 	cursor: pointer;
 }
 div.closer_button {
-	background-image: url(/core_images/core/closer.png);
+	background-image: url(/images/core/closer.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	float: right;
@@ -164,7 +164,7 @@ div.closer_button {
 	cursor: pointer;
 }
 div.closer_button:hover {
-	background-image: url(/core_images/core/closer_on.png);
+	background-image: url(/images/core/closer_on.png);
 	background-repeat: no-repeat;
 }
 div.component_header {
@@ -220,7 +220,7 @@ div.component_header {
 .componentSetWrap {
 	box-shadow: inset 0px 0px 6px #000000;
 	background-color: inherit;
-	background-image: url(/core.processor/renderlib/admintools/images/comp_back.png);
+	background-image: url(/core/renderlib/admintools/images/comp_back.png);
 	background-size: 100%;
 	background-position: center;
 	-webkit-box-shadow: inset 0px 0px 6px #000000;
@@ -309,7 +309,7 @@ div.notes_row, div.notes_comp {
 	float: right;
 	position: relative;
 	top: 45px;
-	background-image: url(/core.processor/renderlib/admintools/images/offline.png);
+	background-image: url(/core/renderlib/admintools/images/offline.png);
 	background-repeat: no-repeat;
 	background-size: contain;
 	cursor: pointer;
@@ -393,28 +393,28 @@ div.notes_popup {
 }
 
 .delete_button	{
-	background-image: url('/core_images/core/erase_off.png');
+	background-image: url('/images/core/erase_off.png');
 }
 .delete_button:active	{
-	background-image: url('/core_images/core/erase_on.png');
+	background-image: url('/images/core/erase_on.png');
 }
 .duplicate_button	{
-	background-image: url('/core_images/core/icn_dup_on.png');
+	background-image: url('/images/core/icn_dup_on.png');
 }
 .duplicate_button:active	{
-	background-image: url('/core_images/core/icn_dup_off.png');
+	background-image: url('/images/core/icn_dup_off.png');
 }
 .nbr_component_add label	{
-	background-image: url('/core_images/core/add_on.png');
+	background-image: url('/images/core/add_on.png');
 }
 .dup_span	{
-	background-image: url('/core_images/core/add_dup.png');
+	background-image: url('/images/core/add_dup.png');
 }
 .dup_span:hover	{
-	background-image: url('/core_images/core/add_dup_off.png');
+	background-image: url('/images/core/add_dup_off.png');
 }
 .dup_span:active	{
-	background-image: url('/core_images/core/add_dup.png');
+	background-image: url('/images/core/add_dup.png');
 }
 .dup_wrap	{
 	display: absolute;

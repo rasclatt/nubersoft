@@ -210,7 +210,7 @@ class	JsLibrary
 		public	function nScroller($settings = false)
 			{
 				$wrap	=	(!empty($settings['wrap']))? $settings['wrap']: 'div';
-				$img	=	(!empty($settings['img']))? $settings['img']: site_url()."/core_images/ui/arrowup.png";
+				$img	=	(!empty($settings['img']))? $settings['img']: site_url()."/images/ui/arrowup.png";
 				$class	=	(!empty($settings['class']))? $settings['class'].' ':'';
 				$id		=	(!empty($settings['id']))? $settings['id']:"nScroller";
 				ob_start();

@@ -48,7 +48,7 @@
 				<div style="display: inline-block; background-color: inherit; width: 100%;"><?php
 				if($_col_type == 'textarea' && isset($data['ID'])) { ?>
 	
-					<div onClick="ScreenPop(); AjaxFlex('#servResponse','/core.processor/renderlib/component.window.php?ID=<?php if(isset($data['ID'])) echo $data['ID']; ?>&unique_id=<?php if(isset($data['unique_id'])) echo $data['unique_id']; ?>&table=components&isolate=true')">
+					<div onClick="ScreenPop(); AjaxFlex('#servResponse','/core/renderlib/component.window.php?ID=<?php if(isset($data['ID'])) echo $data['ID']; ?>&unique_id=<?php if(isset($data['unique_id'])) echo $data['unique_id']; ?>&table=components&isolate=true')">
 						<table class="base_rollover">
 							<tr>
 								<td><div class="WYSIWYG_button"></div></td>

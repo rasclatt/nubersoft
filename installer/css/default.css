@@ -133,7 +133,7 @@ a.nbr_button:hover {
 .nbr_loader	{
 	display: inline-block;
 	margin: 20px auto;
-	background-image: url('/core_images/ui/loader.gif');
+	background-image: url('/images/ui/loader.gif');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 90%;

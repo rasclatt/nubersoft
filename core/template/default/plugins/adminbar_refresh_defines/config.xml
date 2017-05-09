@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<plugin type="admintool" page_live="on" name="adminbar_refresh_defines">
+		<actions_preferences>
+			<action event="nbr_delete_define_file" after="nbr_set_pageuri" request="post" is_admin="true">
+				<object event="nbr_delete_define_file">
+					<class>
+						<name>\Nubersoft\HeadProcessor</name>
+						<method>resetClientDefine</method>
+					</class>
+				</object>
+			</action>
+		</actions_preferences>
+	</plugin>
+</config>

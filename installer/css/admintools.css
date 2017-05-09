@@ -240,7 +240,7 @@ td.nbr_tool_fullpath_link p a	{
 	overflow: hidden;
 	height: 42px;
 	background-color: #C00;
-	background-image: url('/core_images/core/gear.png');
+	background-image: url('/images/core/gear.png');
 	background-size: 30px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -295,15 +295,15 @@ div.nbr_input_hidden	{
 	width: 17px;
 	margin: -5px 5px 0 -17px;
 	cursor: default;
-	background-image: url('/core_images/core/x_btn_idle.png');
+	background-image: url('/images/core/x_btn_idle.png');
 }
 .nbr_closer_small:active,
 .nbr_closer_passive:active	{
-	background-image: url('/core_images/core/x_btn_red.png');
+	background-image: url('/images/core/x_btn_red.png');
 }
 .nbr_closer_small:hover
 .nbr_closer_passive:hover	{
-	background-image: url('/core_images/core/x_btn_red.png');
+	background-image: url('/images/core/x_btn_red.png');
 }
 
 /**** FULL WRAP ****/
@@ -412,7 +412,7 @@ div.nbr_input_hidden	{
 	margin: 0;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-image: url(/core_images/core/toggle_off.png);
+	background-image: url(/images/core/toggle_off.png);
 	border: 1px solid;
 	display: inline-block;
 }
@@ -489,17 +489,17 @@ ul.nbr_prefpane_btn li div:hover	{
 	 background-color: transparent;
 }
 #nbr_toggler_edit_on input	{
-	background-image: url('/core_images/core/toggle_on.png');
+	background-image: url('/images/core/toggle_on.png');
 }
 #nbr_toggler_edit input	{
-	background-image: url('/core_images/core/toggle_off.png');
+	background-image: url('/images/core/toggle_off.png');
 }
 
 #nbr_toggler_edit_on:active input	{
-	background-image: url('/core_images/core/toggle_off.png');
+	background-image: url('/images/core/toggle_off.png');
 }
 #nbr_toggler_edit:active input	{
-	background-image: url('/core_images/core/toggle_on.png');
+	background-image: url('/images/core/toggle_on.png');
 }
 
 a.table_bottons:link, a.table_bottons:visited, a.table_bottons:hover, a.table_bottons_on:link, a.table_bottons_on:visited, a.table_bottons_on:hover {
@@ -676,7 +676,7 @@ ul.nbr_pagination	{
 	box-shadow: inset 2px 2px 5px #000000;
 	border-radius: 8px;
 	border: 1px solid #CCCCCC;
-	background-image: url(/core.processor/renderlib/admintools/images/track_bkgd.png);
+	background-image: url(/core/renderlib/admintools/images/track_bkgd.png);
 	background-repeat: repeat-x;
 	background-position: top;
 }
@@ -689,7 +689,7 @@ ul.nbr_pagination	{
 	-moz-box-shadow: 0 0 6px #000000;
 	-webkit-box-shadow: 0 0 6px #000000;
 	box-shadow: 0 0 6px #000000;
-	background-image: url(/core.processor/renderlib/admintools/images/carbonfiber.jpg);
+	background-image: url(/core/renderlib/admintools/images/carbonfiber.jpg);
 	background-repeat: repeat-x;
 }
 /********* SETTINGS FORM **********/

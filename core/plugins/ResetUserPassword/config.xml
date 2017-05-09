@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<forgot_password>
+		<init>
+			<name>forgot_password</name>
+			<include>~NBR_CORE~/plugins/resetUserPassword/processor/forgot_password.php</include>
+		</init>
+	</forgot_password>
+	<action event="email_user_password">
+		<name>email_user_password</name>
+		<include>~NBR_CORE~/plugins/resetUserPassword/processor/send_email_notification.php</include>
+	</action>
+	<reset_password>
+		<init>
+			<name>reset_password</name>
+			<include>~NBR_CORE~/plugins/resetUserPassword/processor/forgot_password.php</include>
+		</init>
+	</reset_password>
+	<email_user_password>
+		<init>
+			<name>login-temp</name>
+			<include>~NBR_CORE~/plugins/resetUserPassword/process/matchEmail.php</include>
+		</init>
+	</email_user_password>
+	<action event="update_user_password">
+		<name>update_user_password</name>
+		<include>~NBR_CORE~/plugins/resetUserPassword/process/index.php</include>
+	</action>
+</config>

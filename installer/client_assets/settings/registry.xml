@@ -6,25 +6,25 @@
 	CONFIG FILES MAY BE EXPOSED!
 	-->
 	<protectdirectory>
-		<var>/core.processor/renderlib/</var>
-		<var>/core.processor/engine/</var>
-		<var>/core.processor/classes/</var>
-		<var>/core.processor/functions/</var>
-		<var>/core.plugins/plugin.SaveHtaccess/</var>
-		<var>/core.plugins/plugin.RefreshDefines/</var>
-		<var>/core.ajax/functions/</var>
-		<var>/core.ajax/confirm/</var>
+		<var>/core/renderlib/</var>
+		<var>/core/engine/</var>
+		<var>/core/classes/</var>
+		<var>/core/functions/</var>
+		<var>/plugins/plugin.SaveHtaccess/</var>
+		<var>/plugins/plugin.RefreshDefines/</var>
+		<var>/ajax/functions/</var>
+		<var>/ajax/confirm/</var>
 		<var>/client_assets/settings/</var>
 	</protectdirectory>
 	<!--REMOVES .htaccess files to allow direct access via browser -->
 	<unprotectdirectory>
-		<var>/core.processor/</var>
+		<var>/core/</var>
 	</unprotectdirectory>
 	<!--ADDS .htaccess files to allow direct access via browser. Made to override parent folder no-access permissions -->
 	<unprotectset>
-		<var>/core.plugins/plugin.SaveHtaccess/images/</var>
-		<var>/core.plugins/plugin.RefreshDefines/images/</var>
-		<var>/core.processor/renderlib/admintools/images/</var>
+		<var>/plugins/plugin.SaveHtaccess/images/</var>
+		<var>/plugins/plugin.RefreshDefines/images/</var>
+		<var>/core/renderlib/admintools/images/</var>
 	</unprotectset>
 	<onload>
 		<classes>

@@ -1,111 +1,72 @@
 <?php
-// Define important directories
-require_once(__DIR__.DIRECTORY_SEPARATOR.'defines.php');
-//	Include Function Autoloader
-require_once(NBR_FUNCTIONS._DS_.'function.AutoloadFunction.php');
-// Use autoloader to load core functions and class autoloader
-autoloadFunction('autoload_core_functions,nLoader');
-// Autoload classes
-spl_autoload_register('nLoader');
-// Allow session to start
-if((!defined('SESSION_ON')) || (defined('SESSION_ON') && SESSION_ON)) {
-	if(!isset($_SESSION))
-		\nApp::nSession()->start();
-}
-//	Default functions folder
-//	Auto Load Functions
-\Nubersoft\nObserverProcessor::loadCoreFunctions();
-//	Load client config file if available
-\Nubersoft\nObserverProcessor::loadClientConfig();
-// Make sure there are default defines for usergroups
-// Top level usergroup
-if(!defined("NBR_SUPERUSER"))
-	define("NBR_SUPERUSER",(int) 1);
-// 2nd Tier usergroup
-if(!defined("NBR_ADMIN"))
-	define("NBR_ADMIN", (int) 2);
-// Average webuser
-if(!defined("NBR_WEB"))
-	define("NBR_WEB", (int) 3);
-
-// ERROR SUPPRESSION: Set to false unless in test
-$display_errors	=	error_check(); //ini_set("display_errors",1); error_reporting(E_ALL);
-// File salting. !****OVERRIDE THESE IN YOUR REGISTRY FILE-> /client_assets/settings/registry.xml
-\Nubersoft\nObserverProcessor::setPresets();
-// Fetch config and add list if there is one cached
-\Nubersoft\nObserverProcessor::getCachedPrefs(\nApp::getSite('cache_folder'));
-// Add in more defines
-\nApp::autoAddDefines();
-//	Fetch client_assets functions
-load_clientfunctions();
-// Header options
-// Defense against ClickJacking hack: Allows only iframes from this site
-header('X-Frame-Options: SAMEORIGIN');
-// Allow html submission
-if(is_admin())
-	header("X-XSS-Protection: 0");
-// Assign filter values to request arrays
-format_input();
-//*******************************************//
-//******** PASSWORD ENCRYPTION **************//
-//*******************************************//
-// Accepts PasswordGenerator::BCRYPT
-// Default: PasswordGenerator::PASS_HASH
-// The function will switch to bcrypt/blowfish if password_hash is not available
-PasswordGenerator::Engine(PasswordGenerator::USE_DEFAULT);
-// If user settings are present
-// Change database configuration in the db/creds.php file
-if(is_file($database_credentials = NBR_CLIENT_DIR._DS_.'settings'._DS_.'dbcreds.php')) {
-	// Create OverLoaded Settings
-	nuber_faux($settings);
-	// Initiate database connection: Credientals for MySQL, Server Status, Error Handling Toggle
-	DatabaseConfig::connect();
-	// Create static settings for site prefs
-	nApp::setSystemSettings();
-	// Store Database Name
-	nApp::saveSetting('engine',array('dbname'=>nApp::getDbName()));
-	// Send verification that server is working
-	nApp::saveSetting('engine',array('sql'=>nApp::siteValid()));
-	// If live status has not yet been determined by now, set it to offline
-	nApp::saveSetting('engine',array('site_live'=>nApp::siteLive()));
-	// Save table data as name and numeric
-	if(nApp::siteValid()) {
-		$adminTable = nApp::getDefaultTable();
-		nApp::saveSetting('table_name',fetch_table_name($adminTable));
-		nApp::saveSetting('table_id',fetch_table_id($adminTable));
-		nApp::saveSetting('page_prefs',nApp::getPage());
-		nApp::saveSetting('bypass',nApp::getBypass());
-		// See if table exists
-		// Assign default if false
-		if(nApp::tableValid($adminTable)) {
-			nApp::saveSetting('engine',array("table"=>$adminTable));
-		}
-		else {
-			// Set default tables
-			nApp::saveSetting('engine',array(
-				'table_name'=>'users',
-				'table_id'=>fetch_table_id(nApp::getTableName()),
-				'tables'=>fetch_table_id(nApp::getTableName())
-				)
-			);
-		}
+/*
+**	@Copyright	nUberSoft.com All Rights Reserved.
+**	@License	License available for review in license text document in root
+*/
+# Add important constants
+$defines	=	__DIR__.DIRECTORY_SEPARATOR.'defines.php';
+if(!is_file($defines))
+	throw new Exception('This application requires certain constants to function. Re-install or replace the defines file.');
+# Include defines
+require_once($defines);
+# Add the function autoloader
+require_once(NBR_FUNCTIONS.DS.'nloader.php');
+# Add the base class
+require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'Singleton.php');
+# Add the base function class
+require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'nFunctions.php');
+# Create class autoloader
+spl_autoload_register('nloader');
+# Use nApp as the main loader
+use Nubersoft\nApp as nApp;
+# Create instance for sharing
+$nApp	=	new nApp();
+# Load our backtracer and load printpre
+$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
+	->getHelper('nFunctions')->autoload(array('printpre'));
+# Create a general error message
+$msg	=	'Whoops! Our fault, an error occurred displaying the page.';
+# Try loading some initilizers
+try {
+	$order	=	array(
+		'blockflow/session',
+		'blockflow/database',
+		'blockflow/preferences',
+		'blockflow/timezone'
+	);
+	# Get the automator
+	$nAutomator	=	$nApp->getHelper('nAutomator', $nApp);
+	$i = 0;
+	# Run through all the flows
+	foreach($order as $flow) {
+		# Add session observer
+		$nAutomator
+			->setListenerName('action')
+			->getInstructions($flow);
+		$i++;
 	}
-	else
-		nApp::saveSetting('engine',array(
-			'table_name'=>false,
-			'table_id'=>false,
-			'tables'=>false
-			)
-		);
 }
-else {
-	$con = $nubsql = $nubquery = false;
-	nApp::saveSetting("engine",false);
+catch (Nubersoft\nException $e) {
+	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
+		echo $e->getMessage().printpre($e->getTrace());
+		die(printpre(__FILE__.' ('.__LINE__.')'));
+	}
+	else {
+		$nApp->autoload('nLog');
+		nLog($e);
+		die($msg);
+	}
 }
-// Set timezone
-date_default_timezone_set(get_timezone());
-// Check session expiration
-$session_expire	=	nApp::getSessExpTime();
-ValidateSession::Check($session_expire);
-// Save the session expire to NubeData
-nApp::saveSetting('session_expire',$session_expire);
+catch (Exception $e) {
+	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
+		echo $e->getMessage().printpre($e->getTrace());
+		die(printpre(__FILE__.' ('.__LINE__.')'));
+	}
+	else {
+		$nApp->autoload('nLog');
+		if(function_exists('nLog')) {
+			nLog($e);
+		}
+		die($msg);
+	}
+}

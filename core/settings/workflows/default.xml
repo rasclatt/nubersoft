@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object event="nbr_nrewriter_validate">
+			<class>
+				<name>\Nubersoft\nReWriter</name>
+				<method>validate</method>
+			</class>
+		</object>
+		<object event="nbr_check_user_session">
+			<class>
+				<name>\nPlugins\Nubersoft\CoreSession</name>
+				<method>checkUserStatus</method>
+			</class>
+		</object>
+		<!---->
+		<object event="nbr_ncache_render_now_page">
+			<class>
+				<name>\nPlugins\Nubersoft\Cache</name>
+				<method>runStaticSite</method>
+			</class>
+		</object>
+		<object event="nbr_ncache_startcache">
+			<class>
+				<name>\nPlugins\Nubersoft\Cache</name>
+				<method>startCache</method>
+			</class>
+		</object>
+		
+		<object event="nbr_nobservermenus_listen">
+			<class>
+				<name>\Nubersoft\nObserverMenus</name>
+				<method>listen</method>
+			</class>
+		</object>
+		<object event="nbr_nobserverfirstrun_listen">
+			<class>
+				<name>\Nubersoft\nObserverFirstRun</name>
+				<method>listen</method>
+			</class>
+		</object>
+		<object event="nbr_nobservertemplate_listen">
+			<class>
+				<name>\Nubersoft\nObserverTemplate</name>
+				<method>listen</method>
+			</class>
+		</object>
+		<object event="nbr_nautomator_savecacheconfigs">
+			<class dependency="\Nubersoft\nApp">
+				<name>\Nubersoft\nAutomator</name>
+				<method>saveCachedConfigs</method>
+			</class>
+		</object>
+	</workflow>
+</config>

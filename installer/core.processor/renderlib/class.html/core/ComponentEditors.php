@@ -31,7 +31,7 @@ $settings	=	self::getCompSettings(self::$curr,$unique_id);
 <?php			}
 				// Show plus [+] icon for adding new component
 				else {
-?>									<img src="<?php echo site_url(); ?>/core_images/core/icn_add.png" style="max-height: 30px; margin: 0 auto;" />
+?>									<img src="<?php echo site_url(); ?>/images/core/icn_add.png" style="max-height: 30px; margin: 0 auto;" />
 <?php 			}
 ?>								</td>
 							</tr>

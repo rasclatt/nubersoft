@@ -450,7 +450,7 @@ class	nApp
 				// Load the file writer
 				self::autoload('write_file');
 				// Save the file
-				write_file(array("save_to"=>NBR_CLIENT_DIR._DS_.'settings'._DS_.'registry.xml',"content"=>$getRemote,'overwrite'=>true));
+				write_file(array("save_to"=>NBR_CLIENT_DIR.DS.'settings'.DS.'registry.xml',"content"=>$getRemote,'overwrite'=>true));
 				// Alert user
 				die(nApp::getErrorLayout('noreg'));
 			}

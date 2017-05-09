@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<action event="nbr_cart_clear" after="nbr_session_to_node" request="get">
+		<object event="nbr_cart_clear">
+			<class>
+				<name>\nPlugins\Nubersoft\ShoppingCart\Model</name>
+				<method>clear</method>
+			</class>
+		</object>
+	</action>
+</config>

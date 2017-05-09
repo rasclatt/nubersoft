@@ -14,8 +14,8 @@ if($cache->allowRender()) {
 	echo default_jQuery();
 	echo render_element_css(NBR_ROOT_DIR.'/css/');
 	echo render_element_js(NBR_ROOT_DIR.'/js/',false);
-	echo render_element_css(NBR_ROOT_DIR.'/core.plugins/');
-	echo render_element_js(NBR_ROOT_DIR.'/core.plugins/');
+	echo render_element_css(NBR_ROOT_DIR.'/plugins/');
+	echo render_element_js(NBR_ROOT_DIR.'/plugins/');
 	echo render_element_js(NBR_CLIENT_DIR.'/js/',false);
 }
 $cache->endCaching()->addContent($cache->getCached())->renderBlock();
@@ -194,7 +194,7 @@ $table	=	nApp::getDefaultTable();
 			$settings['spread'] 	=	2;
 			$settings['admin'] 		=	true;
 			$settings['max_range']	=	"2,5,10,20,50,100";
-			$settings['layout']		=	"/core.processor/renderlib/admintools.pagination.results.php";
+			$settings['layout']		=	"/core/renderlib/admintools.pagination.results.php";
 			$settings['submit']		=	"SEARCH";
 			
 			//********************************************************//

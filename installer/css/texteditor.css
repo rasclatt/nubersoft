@@ -52,7 +52,7 @@
 	text-shadow: 1px 1px 2px #FFF;
 }
 .transpattern {
-	background-image: url('/core_images/ui/transbkg.png');
+	background-image: url('/images/ui/transbkg.png');
 }
 .text-edit-folderspread {
 	max-height: 300px;

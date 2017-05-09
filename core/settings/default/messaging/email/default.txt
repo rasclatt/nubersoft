@@ -1,0 +1,9 @@
+<html>
+<head>
+<title>Automated Email</title>
+</head>
+<body>
+<h2>This is an automated email message.</h2>
+<p>~message~</p>
+</body>
+</html>

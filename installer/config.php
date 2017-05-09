@@ -6,17 +6,17 @@ if((!defined('SESSION_ON')) || (defined('SESSION_ON') && SESSION_ON)) {
 }
 // Define important directories
 define("NBR_ROOT_DIR", __DIR__);
-define('NBR_CORE', NBR_ROOT_DIR.'/core.processor');
-define("NBR_CLASS_CORE", NBR_ROOT_DIR."/core.processor/classes");
-define("NBR_PLUGINS", NBR_ROOT_DIR."/core.plugins");
+define('NBR_CORE', NBR_ROOT_DIR.'/core');
+define("NBR_CLASS_CORE", NBR_ROOT_DIR."/core/classes");
+define("NBR_PLUGINS", NBR_ROOT_DIR."/plugins");
 define("NBR_CLIENT_DIR", NBR_ROOT_DIR."/client_assets");
-define("NBR_RENDER_LIB", NBR_ROOT_DIR."/core.processor/renderlib");
-define("NBR_TEMPLATE_DIR",NBR_ROOT_DIR."/core.processor/template");
-define("NBR_FUNCTIONS",NBR_ROOT_DIR."/core.processor/functions");
-define("NBR_ENGINE_CORE",NBR_ROOT_DIR."/core.processor/engine");
+define("NBR_RENDER_LIB", NBR_ROOT_DIR."/core/renderlib");
+define("NBR_TEMPLATE_DIR",NBR_ROOT_DIR."/core/template");
+define("NBR_FUNCTIONS",NBR_ROOT_DIR."/core/functions");
+define("NBR_ENGINE_CORE",NBR_ROOT_DIR."/core/engine");
 define("NBR_ENGINE_CLIENT",NBR_CLIENT_DIR."/settings/engine");
 define("NBR_THUMB_DIR",NBR_CLIENT_DIR."/thumbs");
-define("NBR_AJAX_DIR",NBR_ROOT_DIR."/core.ajax");
+define("NBR_AJAX_DIR",NBR_ROOT_DIR."/ajax");
 //	Include Function Autoloader
 include(NBR_FUNCTIONS.'/function.AutoloadFunction.php');
 // Use autoloader to load core functions and class autoloader
@@ -61,7 +61,7 @@ $settings['site']['template_folder']	=	NBR_TEMPLATE_DIR."/default/";
 // Default header
 $settings['site']['template_head']		=	NBR_TEMPLATE_DIR."/default/";
 // Layout for the prefs page template
-$settings['site']['system_prefs']		=	(!defined("SYS_PREFS_TEMP") || (defined("SYS_PREFS_TEMP") && !is_file(SYS_PREFS_TEMP)))? "/core.ajax/form.site.prefs.php":SYS_PREFS_TEMP;
+$settings['site']['system_prefs']		=	(!defined("SYS_PREFS_TEMP") || (defined("SYS_PREFS_TEMP") && !is_file(SYS_PREFS_TEMP)))? "/ajax/form.site.prefs.php":SYS_PREFS_TEMP;
 // Save folder for tempfiles
 $settings['site']['temp_folder']		=	(!defined("TEMP_DIR"))? NBR_ROOT_DIR.'/../temp/':NBR_ROOT_DIR.TEMP_DIR;
 // Save cache folder

@@ -1,14 +1,14 @@
 <div class="templateWrap compWrapper">
-	<div class="component_block compblockmod" id="<?php echo $this->_id; ?>" onclick="ShowHide('#<?php echo $this->_id; ?>_panel','','fade'); AjaxSimpleCall('comp_<?php echo $this->_id; ?>','/core.ajax/component.menu.php?parent_id=<?php echo $parent_id; ?>')" >
+	<div class="component_block compblockmod" id="<?php echo $this->_id; ?>" onclick="ShowHide('#<?php echo $this->_id; ?>_panel','','fade'); AjaxSimpleCall('comp_<?php echo $this->_id; ?>','/ajax/component.menu.php?parent_id=<?php echo $parent_id; ?>')" >
 		<table style="margin-left: 5px;">
 			<tr>
 				<td>
 					<?php if($_unique) { ?>
-					<img src="/core_images/core/led_<?php echo ($_live == true)? 'green': 'red'; ?>.png" style="float: left; width: 20px;" />
+					<img src="/images/core/led_<?php echo ($_live == true)? 'green': 'red'; ?>.png" style="float: left; width: 20px;" />
 					<?php } ?>
 				</td>
 				<td>
-					<?php if($_locked == true) { ?><img src="/core_images/core/lock.png" style="width: 25px;" /><?php } ?>
+					<?php if($_locked == true) { ?><img src="/images/core/lock.png" style="width: 25px;" /><?php } ?>
 				</td>
 			</tr>
 		</table>
@@ -19,7 +19,7 @@
 					<?php
 						if($_unique)
 							echo (!empty($stripText))? substr($stripText, 0, 50): $addComponent;
-						else { ?><img src="/core_images/core/icn_add.png" /><?php } ?>
+						else { ?><img src="/images/core/icn_add.png" /><?php } ?>
 				</div>
 			</center>
 		</div>

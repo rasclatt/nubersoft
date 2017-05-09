@@ -88,7 +88,7 @@
 			public	function ErrorPage($dlpage = false)
 				{
 					// Assign default downloader page
-					$dlpage	=	($dlpage != false)? $dlpage : '/core.processor/template/default/site.download.php';
+					$dlpage	=	($dlpage != false)? $dlpage : '/core/template/default/site.download.php';
 					// Assign error page layout
 					$errpg	=	str_replace("//","/",NBR_ROOT_DIR."/{$dlpage}");
 					// Assign default allow

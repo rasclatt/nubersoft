@@ -128,7 +128,7 @@
 		// Quick check function
 		function KeyCheckJax(IdVal,DestId) {
 				$.ajax({
-					url: '/core.ajax/check.user.php',
+					url: '/ajax/check.user.php',
 					type: 'post',
 					data: $('#'+IdVal).serialize(),
 					success: function(result) {
@@ -546,7 +546,7 @@ var	FilesFoldersEditor	=	function()
 $(document).ready(function(){
 		// Enable form
 		$('.disabled-submit').removeAttr('disabled');
-		var dispUrl	=	'/core.ajax/ajax.dispatcher.php';
+		var dispUrl	=	'/ajax/ajax.dispatcher.php';
 		var tAreaCont;
 		var	tHeight;
 		
@@ -619,7 +619,7 @@ $(document).ready(function(){
 		FadeIn($(".nbr_error_msg"),ErrorSettings);
 		
 		$("#sendtotype").keyup(function() {
-			CallAdaptiveAjax('/core.ajax/display.live.type.php','post','text-editor','show-code');
+			CallAdaptiveAjax('/ajax/display.live.type.php','post','text-editor','show-code');
 		});
 	
 		$(".btntrigger").click(function() {

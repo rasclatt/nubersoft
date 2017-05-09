@@ -74,7 +74,7 @@ div.compWrapper {
 	-moz-box-shadow: inset 0px 0px 6px #000000;
 	box-shadow: inset 0px 0px 6px #000000;
 	background-color: #333333;
-	background-image: url(/core.processor/renderlib/admintools/images/comp_back.png);
+	background-image: url(/core/renderlib/admintools/images/comp_back.png);
 }
 div.compblockmod {
 	overflow: hidden;

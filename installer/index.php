@@ -166,7 +166,7 @@ var nInstaller	=	{
 
 		getStep: function(sVal)
 			{
-				this.ajax('core.ajax/ajax.dispatcher.php',{ step: sVal, setup: this.formInfo.serialize() },'get_step',sVal);
+				this.ajax('ajax/ajax.dispatcher.php',{ step: sVal, setup: this.formInfo.serialize() },'get_step',sVal);
 			},
 
 		processStep: function(sVal)
@@ -182,7 +182,7 @@ var nInstaller	=	{
 
 		clearForm: function(sVal)
 			{
-				this.ajax('core.ajax/ajax.dispatcher.php',{ step: sVal },'clear_form',sVal);
+				this.ajax('ajax/ajax.dispatcher.php',{ step: sVal },'clear_form',sVal);
 			}
 	}
 	

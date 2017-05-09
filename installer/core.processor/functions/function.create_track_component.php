@@ -1,6 +1,6 @@
 <?php
 /*Title: create_track_component()*/
-/*Description: This function is used on the `/core.processor/renderlib/component.track/component.window.php` file to create components for the `Track Editor`. It is a wrapper for the `ComponentEditor()` class which actually does the work for creating a component. Outside of this scope it has little value.*/
+/*Description: This function is used on the `/core/renderlib/component.track/component.window.php` file to create components for the `Track Editor`. It is a wrapper for the `ComponentEditor()` class which actually does the work for creating a component. Outside of this scope it has little value.*/
 
 	function create_track_component($settings = array())
 		{

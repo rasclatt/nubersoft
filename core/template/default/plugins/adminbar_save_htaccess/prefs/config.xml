@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<onprocessheader>
+		<requester>post</requester>
+		<action>rebuild_htaccess</action>
+		<use>/plugins/SaveHtaccess/functions/rebuild_htaccess.php</use>
+	</onprocessheader>
+	<onprocessheader>
+		<requester>post</requester>
+		<action>rebuild_htaccessdd</action>
+		<use>/plugins/SaveHtaccess/functions/rebuild_htaccess.php</use>
+	</onprocessheader>
+</config>

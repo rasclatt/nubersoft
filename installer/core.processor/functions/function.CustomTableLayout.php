@@ -17,7 +17,7 @@
 			// $nuber		=	main engine object	
 			
 			$client	=	CheckCustomTbl($table,NBR_CLIENT_DIR.'/settings/engine/admintools');
-			$tbl	=	CheckCustomTbl($table,NBR_ROOT_DIR.'/core.processor/engine/admintools');
+			$tbl	=	CheckCustomTbl($table,NBR_ROOT_DIR.'/core/engine/admintools');
 			
 			
 			

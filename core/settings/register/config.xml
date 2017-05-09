@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<loadzones>
+		<settings>~NBR_CLIENT_DIR~/settings/registry.xml</settings>
+		<actions>~NBR_SETTINGS~/actions/</actions>
+		<actions>~NBR_CLIENT_SETTINGS~/actions/</actions>
+		<actions>~NBR_CORE~/template/default/settings/actions/</actions>
+		<workflows>~NBR_CORE~/workflows/</workflows>
+		<template>~NBR_CORE~/template/default/config.xml</template>
+	</loadzones>
+</config>

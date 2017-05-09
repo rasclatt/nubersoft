@@ -1,0 +1,112 @@
+/* CSS Document */
+.nbr_click_opacity:active img {
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	-webkit-opacity: 0.5;
+}
+.nbr_fancy_box	{
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	background-color: #FFF;
+	border-radius: 3px;
+	box-shadow: inset 0 0 4px #CCC, 1px 1px 4px #000;
+}
+.nbr_fancy_box.checked	{
+	background-color: #333;
+	border-color: #FFF !important;
+	box-shadow: inset 0 0 4px #000;
+	font-size: 20px;
+	color: red;
+	font-family: Wingdings;
+	margin: 2px;
+	font-weight: bolder;
+	text-align: center;
+}
+input.nbr_ok,
+a.nbr_ok:link,
+a.nbr_ok:visited {
+	background-color: #06C !important;
+	color: #FFF;
+}
+input.nbr_ok:hover,
+a.nbr_ok:hover {
+	background-color: #036 !important;
+}
+.nbr_login_window {
+	padding: 20px;
+	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+	display: inline-block;
+	margin: 0 auto;
+	background-color: #EBEBEB;
+	text-align: center;
+	border: 8px solid #FFF;
+	max-width: 800px;
+	max-height: 800px;
+}
+.nbr_login_window #nbr_login_logo {
+	max-width: 300px;
+	display: block;
+	margin: 0 auto 20px auto;
+}
+.nbr_large_alert {
+	color: red;
+	font-size: 18px;
+	padding: 10px;
+	text-align: center;
+}
+.nbr_invalid_msg {
+	display: none;
+	color: orange;
+	font-size: 10px;
+	max-width: 300px;
+}
+.nbr_error_msg {
+	padding: 10px 20px;
+	color: #FFF;
+	text-shadow: 1px 1px 3px #000;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.nbr_error_footer {
+	background-color: transparent;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+	color: #FFF;
+}
+.nbr_modal_container {
+	background-color: rgba(0,0,0,0.5);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	display: table-cell;
+	vertical-align: middle;
+	overflow: hidden;
+}
+.nbr_click_button {
+	cursor: pointer;
+	display: inline-block;
+	padding: 5px;
+}
+.nbr_click_button:active {
+	background-color: #888;
+	border-radius: 3px;
+	box-shadow: inset 1px 1px 3px #000;
+	color: #FFF;
+	text-shadow: 1px 1px 3px #000;
+}
+.nbr_footer {
+	padding: 30px;
+	text-align: center;
+	font-size: 14px;
+	color: #FFF;
+	margin: 0 auto;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 0;
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<action event="plugin_nbr_rebuild_htaccess">
+		<name>rebuild_htaccesss</name>
+		<foundin>~NBR_PLUGINS~/SaveHtaccess/functions/rebuild_htaccess.php</foundin>
+	</action>
+</config>

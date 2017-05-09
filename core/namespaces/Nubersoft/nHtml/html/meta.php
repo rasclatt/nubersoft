@@ -1,0 +1,1 @@
+<meta name="<?php echo $content['name'] ?>" content="<?php echo $content['content'] ?>">

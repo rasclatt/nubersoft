@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object event="nbr_api_init">
+			<class>
+				<name>\Nubersoft\API</name>
+				<method>listen</method>
+			</class>
+		</object>
+	</workflow>
+</config>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<loadzones>
+		<config>~NBR_TEMPLATE_DIR~/plugins/adminbar_dbdl/config.xml</config>
+		<config>~NBR_TEMPLATE_DIR~/plugins/adminbar_refresh_defines/config.xml</config>
+	</loadzones>
+	<interface>
+		<stylesheet>
+			<!-- GENERAL STYLES -->
+			<include is_local="false" version="false">
+				<path>https://fonts.googleapis.com/css?family=Abel</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/css/form.css</path>
+			</include>
+			<include>
+				<path>~NBR_TEMPLATE_DIR~/default/css/styles.css</path>
+			</include>
+			<include state="offline" is_admin="false">
+				<path>~NBR_TEMPLATE_DIR~/default/css/sitelive.css</path>
+			</include>
+			
+			<!-- FRONTEND STYLES -->
+			<include frontend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/frontend/styles.css</path>
+			</include>
+			<include frontend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/menu.css</path>
+			</include>
+			
+			<!-- PAGE-SPECIFIC STYLES -->
+			<include loadpage="/login/" is_admin="false">
+				<path>~NBR_TEMPLATE_DIR~/default/css/frontend/login.css</path>
+			</include>
+			
+			<!-- ADMIN STYLES ***BACKEND*** -->
+			<include backend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/backend/admintools.css</path>
+			</include>
+			<include backend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/backend/imagebucket.css</path>
+			</include>
+			<include backend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/backend/texteditor.css</path>
+			</include>
+			<include backend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/backend/users.css</path>
+			</include>
+			<include backend="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/admintools.css</path>
+			</include>
+			
+			<!-- ADMIN STYLES ***FRONTEND*** -->
+			<include is_admin="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/frontend/admintools.css</path>
+			</include>
+			<!-- ADMIN STYLES ***ACTION-BASED*** -->
+			<include is_admin="true" action="nbr_load_single_editor" type="get">
+				<path>~NBR_TEMPLATE_DIR~/default/css/component.css</path>
+			</include>
+			
+			<!-- ADMIN STYLES ***GENERAL*** -->
+			<include is_admin="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/trackeditor.css</path>
+			</include>
+			<include is_admin="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/inspector.css</path>
+			</include>
+			<include is_admin="true">
+				<path>~NBR_TEMPLATE_DIR~/default/css/components.css</path>
+			</include>
+			<include is_admin="true">
+				<path>~NBR_NAMESPACE_CORE~/nPlugins/Nubersoft/ComponentTab/css/tooltab.css</path>
+			</include>
+			
+			<include>
+				<path>~NBR_MEDIA~/css/styles.css</path>
+			</include>
+			
+		</stylesheet>
+		<javascript>
+			<include is_local="false" version="false">
+				<path>https://code.jquery.com/jquery-1.9.1.js</path>
+			</include>
+			<include is_local="false" version="false">
+				<path>https://code.jquery.com/ui/1.9.2/jquery-ui.js</path>
+			</include>
+			<include is_local="false" version="false">
+				<path>http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/js/nFunctions.js</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/js/nScripts.js</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/js/nSortable.js</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/js/helpers.js</path>
+			</include>
+			<include>
+				<path>~NBR_NAMESPACE_CORE~/nPlugins/Nubersoft/ComponentTab/js/codetool.js</path>
+			</include>
+		</javascript>
+	</interface>
+</config>

@@ -13,7 +13,7 @@ var	n	=
 var nAjax		=	function()
 	{
 		var	$j				=	njQuery;
-		var	useUrl			=	'/core.ajax/ajax.dispatcher.php';
+		var	useUrl			=	'/ajax/ajax.dispatcher.php';
 		var	type			=	'post';
 		var	error_reporting	=	false;
 		var doBefore	;
@@ -190,7 +190,7 @@ njQuery(document).ready(function($j) {
 	
 	var doc	=	njQuery(this);
 	var	activeObj	=	{};
-	var nDispatch	=	'/core.ajax/ajax.dispatcher.php';
+	var nDispatch	=	'/ajax/ajax.dispatcher.php';
 	var	activeBtn	=	false;
 	var setInstr		=	false;
 	

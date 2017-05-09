@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object event="nbr_client_record_user">
+			<class>
+				<name>\nPlugins\Nubersoft\TimeStamp</name>
+				<method>initialize</method>
+			</class>
+		</object>
+	</workflow>
+</config>

@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?php echo $url; if($version) { ?>?v=<?php echo $version; } ?>"></script>

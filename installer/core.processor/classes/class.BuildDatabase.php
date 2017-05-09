@@ -9,7 +9,7 @@
 			private		$classes_path;
 			private		$db_path;
 			
-			public	function __construct($_creds = array(), $classes_path = '/core.processor/',$classes_path = '/core.processor/includes/classes/', $db_path = '/dbconnect.php', $curr_path='/')
+			public	function __construct($_creds = array(), $classes_path = '/core/',$classes_path = '/core/includes/classes/', $db_path = '/dbconnect.php', $curr_path='/')
 				{
 					register_use(__METHOD__);
 					

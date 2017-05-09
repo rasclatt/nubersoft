@@ -23,7 +23,7 @@ if(!empty($dir)) {
 		$afolder['contents']	=	download_encode(array("table_id"=>"edit","file_id" => urlencode($folder)),nApp::getFileSalt());
 ?>	<tr>
 		<td>
-			<div class="topfolder text-editor-files btntrigger" data-button="<?php echo $afolder['id']; ?>"><img src="<?php echo site_url(); ?>/core_images/ui/folder.png" style="max-height: 20px; float: left; display: inline-block;" /><?php echo $afolder['local']; ?></div>
+			<div class="topfolder text-editor-files btntrigger" data-button="<?php echo $afolder['id']; ?>"><img src="<?php echo site_url(); ?>/images/ui/folder.png" style="max-height: 20px; float: left; display: inline-block;" /><?php echo $afolder['local']; ?></div>
 			<div id="<?php echo $afolder['id']; ?>" class="text-editor-folders panelhide">
 				<div class="text-hovershow">
 					<span class="ajaxtrigger" data-gopage="edit.folderfiles" data-gopagekind="g" data-gopagesend="contents=<?php echo $afolder['contents']; ?>" data-freeze="html">EDIT FOLDER CONTENTS</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span onClick="window.location='<?php echo site_url(); ?>/download.php?file=<?php echo $afolder['zippit']; ?>'">DOWNLOAD CONTENTS</span>
@@ -45,7 +45,7 @@ if(!empty($dir)) {
 <?php		if(!empty($thumbnail->layout))
 				echo $thumbnail->layout;
 			else {								
-				$base_core		=	'/core_images/ui/';
+				$base_core		=	'/images/ui/';
 				$def_core		=	$base_core.'doc.png';
 				$def_core_dir	=	$base_core.'dir.png';
 				$icn			=	$base_core.str_replace(".","",$ext).".png";

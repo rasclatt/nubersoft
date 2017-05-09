@@ -6,7 +6,7 @@
 	function jQuery_scroll_top($settings = false)
 		{
 			AutoloadFunction('site_url');
-			$img	=	(!empty($settings['img']))? $settings['img']: site_url()."/core_images/ui/arrowup.png";
+			$img	=	(!empty($settings['img']))? $settings['img']: site_url()."/images/ui/arrowup.png";
 			$class	=	(!empty($settings['class']))? $settings['class']:"scroll-top";
 			$id		=	(!empty($settings['id']))? ' id="'.$settings['id'].'"':"";
 				 ?>

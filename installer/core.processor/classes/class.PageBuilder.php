@@ -471,7 +471,7 @@
 					
 					if(is_dir($this->recurseDir))
 						// Now that the folder is made in each instance, drop the correct template into it (or set it to the default template)
-						@copy(NBR_ROOT_DIR.'/core.processor/template/index/index.php', $this->recurseDir . 'index.php');
+						@copy(NBR_ROOT_DIR.'/core/template/index/index.php', $this->recurseDir . 'index.php');
 					
 					// Update the full_path
 					$_full_path		=	str_replace(array(NBR_ROOT_DIR, "index.php"), "", $this->recurseDir);

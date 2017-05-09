@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object event="nbr_client_prefs">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setDefines</method>
+			</class>
+		</object>
+		<object event="nbr_system_defines">
+			<include_once>~NBR_SETTINGS~/usergroups.php</include_once>
+			<render>false</render>
+		</object>
+		<object event="nbr_databaseconfig_check_user_table">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setInstallStatus</method>
+			</class>
+		</object>
+		<object event="nbr_set_database_prefs">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setDatabase</method>
+			</class>
+		</object>
+		<object event="nbr_sanitize_request">
+			<class>
+				<name>\Nubersoft\Submits</name>
+				<method>sanitize</method>
+				<chain>sanitizeServer</chain>
+			</class>
+		</object>
+		<!--
+		<object event="nbr_sanitize_remove_superglobals">
+			<class>
+				<name>\Nubersoft\Submits</name>
+				<method>unsetSuperGlobals</method>
+				<inject>
+					<arg>$_POST</arg>
+					<arg>$_GET</arg>
+					<arg>$_REQUEST</arg>
+				</inject>
+			</class>
+		</object>
+		-->
+		<object event="nbr_set_registry">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setRegistry</method>
+			</class>
+		</object>
+		<object event="nbr_set_pageuri">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setSiteUri</method>
+				<chain>setPageRequestSettings</chain>
+				<chain>setCallMethod</chain>
+				<chain>setCallTables</chain>
+				<chain>autoFunctions</chain>
+				<chain>setCurrentAction</chain>
+				<chain>setPasswordEngine</chain>
+				<chain>setBypass</chain>
+			</class>
+		</object>
+		<!--
+		<object event="nbr_delete_cache_folder">
+			<class>
+				<name>\Nubersoft\HeadProcessor</name>
+				<method>deleteCacheFolder</method>
+			</class>
+		</object>
+		-->
+		<object event="nbr_set_preferences">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>set</method>
+			</class>
+		</object>
+		<!--
+		-->
+		<object event="nbr_htaccess_listener">
+			<class>
+				<name>\Nubersoft\HeadProcessor</name>
+				<method>corePermissions</method>
+			</class>
+		</object>
+		<object event="nbr_get_client_plugins">
+			<class>
+				<name>\Nubersoft\nObserverTemplate</name>
+				<method>getPagePlugins</method>
+			</class>
+		</object>
+		<object event="nbr_change_country">
+			<class>
+				<name>\Nubersoft\nObserverTemplate</name>
+				<method>getMultiSite</method>
+			</class>
+		</object>
+		<object event="nbr_security_headers">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>setHeaders</method>
+				<inject>
+					<!-- Click-Jack protection -->
+					<arg>X-Frame-Options: SAMEORIGIN</arg>
+					<arg>X-Sample-Test: foo</arg>
+					<arg>X-Powered-By: PHP/5.1.1</arg>
+					<arg>X-Content-Type-Options: nosniff</arg>
+				</inject>
+			</class>
+		</object>
+		<object event="nbr_routing_headers">
+			<class>
+				<name>\Nubersoft\nObserverTemplate</name>
+				<method>setRoutingHeaders</method>
+			</class>
+		</object>
+		<object event="nbr_immediate_offline_check">
+			<class>
+				<name>\Nubersoft\GetSitePrefs</name>
+				<method>getOfflineStatus</method>
+				<dependency>\Nubersoft\nRender</dependency>
+			</class>
+		</object>
+		<object event="nbr_session_expiration_redirect">
+			<class>
+				<name>\Nubersoft\HeadProcessor</name>
+				<method>checkSessionExpire</method>
+			</class>
+		</object>
+		<object event="nbr_general_redirect">
+			<class>
+				<name>\Nubersoft\HeadProcessor</name>
+				<method>redirectOnForward</method>
+			</class>
+		</object>
+		<object event="nbr_ssl_redirect">
+			<class>
+				<name>\Nubersoft\HeadProcessor</name>
+				<method>redirectOnSsl</method>
+			</class>
+		</object>
+	</workflow>
+</config>

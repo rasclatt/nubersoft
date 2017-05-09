@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<workflow>
+		<object>
+			<function>
+				<name>silent_error</name>
+				<include>/core/functions/function.silent_error.php</include>
+			</function>
+		</object>
+		<object>
+			<class>
+				<name>\Nubersoft\nObserverProcessor</name>
+				<method>offline</method>
+			</class>
+		</object>
+	</workflow>
+</config>

@@ -12,7 +12,7 @@
 					register_use(__METHOD__);
 				}
 				
-			public	function MenuBar($db_dir = '/core.processor/includes/')
+			public	function MenuBar($db_dir = '/core/includes/')
 				{
 					register_use(__METHOD__);
 					if(is_admin()) {

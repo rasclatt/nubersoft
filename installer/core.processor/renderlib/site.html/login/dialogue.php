@@ -12,7 +12,7 @@ if(isset($layout) && $layout)
 				<img src="<?php AutoloadFunction("render_site_logo,site_url"); echo site_url().render_site_logo(); ?>" id="nbr_login_logo" />
 				<?php echo FormLogin::BuildForm(array('link'=>'/','name'=>'home page')); ?>
 				<div class="nbr_contain">
-					<div id="forgot-pass-btn" class="nbr_fine_print" onClick="ScreenPop();AjaxSimpleCall('forgot-pass','/core.ajax/send.password.php')">Forgot password?</div>
+					<div id="forgot-pass-btn" class="nbr_fine_print" onClick="ScreenPop();AjaxSimpleCall('forgot-pass','/ajax/send.password.php')">Forgot password?</div>
 				</div>
 		</div>
 	</div>

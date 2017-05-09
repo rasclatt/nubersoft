@@ -82,7 +82,7 @@ if(!is_admin())
 					</td>
 					<td style="vertical-align: top;">
 						<?php 
-						$file_icn	=	"/core_images/ui/".$kind.".png";
+						$file_icn	=	"/images/ui/".$kind.".png";
 						$icn 		=	(is_file(NBR_ROOT_DIR.$file_icn))? true:false;	
 						if($icn) { ?><img src="<?php echo $bgicn = $file_icn; ?>" style="max-height: 40px;" /><?php } ?>
 					</td>

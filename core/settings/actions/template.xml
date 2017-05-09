@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<action event="nbr_get_welcome_msg" request="post" is_ajax="true">
+		<object event="nbr_get_welcome_msg" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\View\User</name>
+				<method>getUserFirst</method>
+			</class>
+		</object>
+	</action>
+	<action event="nbr_mini_check_out" request="post" is_ajax="true">
+		<object event="nbr_mini_check_out" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\ShoppingCart\View</name>
+				<method>minifiedCheckOut</method>
+			</class>
+		</object>
+	</action>
+	<action event="nbr_cart_address_form" request="post" is_ajax="true">
+		<object event="nbr_cart_address_form" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\ShoppingCart\View</name>
+				<method>loadAddressForm</method>
+			</class>
+		</object>
+	</action>
+	<!-- // Replaces the signup ajax -->
+	<action event="nbr_get_sign_up_form" request="post" is_ajax="true">
+		<object event="nbr_get_sign_up_form" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\Render</name>
+				<method>renderPlugin</method>
+				<inject>
+					<arg>nbr_get_sign_up_form</arg>
+					<arg>#login_wrapper</arg>
+				</inject>
+			</class>
+		</object>
+	</action>
+	<action event="nbr_open_site_prefs" request="post" is_ajax="true">
+		<object event="nbr_open_site_prefs" before="nbr_nobservertemplate_tobrowser_template">
+			<include>~NBR_AJAX_DIR~/helpers/form.site.prefs.php</include>
+		</object>
+	</action>
+	<action event="admintools_load_tools">
+		<object event="admintools_load_tools" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true" is_admin="true">
+			<class>
+				<name>\nPlugins\Nubersoft\InspectorPallet</name>
+				<method>getAjaxPallet</method>
+			</class>
+		</object>
+	</action>
+	<action event="nbr_open_modal" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true">
+		<object event="nbr_open_modal">
+			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+		</object>
+	</action>
+	<action event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true">
+		<object event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template">
+			<function>
+				<name>ajax_admintools_component</name>
+				<echo>true</echo>
+				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_admintools_component.php</include>
+				<dependency>\Nubersoft\nApp</dependency>
+			</function>
+		</object>
+	</action>
+	<action event="ajax_load_favicons">
+		<object event="ajax_load_favicons" is_admin="true" request="post" is_ajax="true" before="nbr_nobservertemplate_tobrowser_template">
+			<function>
+				<name>ajax_load_favicons</name>
+				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_load_favicons.php</include>
+			</function>
+		</object>
+	</action>
+	<action event="ajax_load_logo">
+		<object event="ajax_load_logo" is_admin="true" request="post" is_ajax="true" before="nbr_nobservertemplate_tobrowser_template">
+			<function>
+				<name>ajax_load_favicons</name>
+				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_load_logo.php</include>
+			</function>
+		</object>
+	</action>
+	<action event="nbr_delete_components_confirm" before="nbr_nobservertemplate_tobrowser_template" is_admin="true" request="post" is_ajax="true">
+		<object event="nbr_delete_components_confirm">
+			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+		</object>
+	</action>
+	<action event="nbr_delete_main_menus_confirm" before="nbr_nobservertemplate_tobrowser_template" is_admin="true" request="post" is_ajax="true">
+		<object event="nbr_delete_main_menus_confirm">
+			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+		</object>
+	</action>
+	<action event="nbr_menu_button_edit" after="nbr_nobservertemplate_tobrowser_template" request="post" is_admin="true">
+		<object event="nbr_menu_button_edit">
+			<function>
+				<name>graphic_menu_component</name>
+				<echo>true</echo>
+				<include>~NBR_AJAX_DIR~/helpers/functions/graphic_menu_component.php</include>
+				<dependency>\Nubersoft\nApp</dependency>
+			</function>
+		</object>
+	</action>
+	<action event="nbr_update_component_sortable" is_admin="true" request="post" before="nbr_nobservertemplate_tobrowser_template">
+		<object event="nbr_update_component_sortable">
+			<class>
+				<name>\nPlugins\Nubersoft\CoreTables</name>
+				<method>saveComponentById</method>
+				<include>~NBR_AJAX_DIR~/helpers/functions/graphic_menu_component.php</include>
+				<dependency>\Nubersoft\nApp</dependency>
+			</class>
+		</object>
+	</action>
+</config>
+
+			

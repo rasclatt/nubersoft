@@ -98,7 +98,7 @@
 					$select_root	=	scandir($all_dirs);
 				}
 			
-			public	function execute($first_run = false,$db_dir = '/core.processor/includes/')
+			public	function execute($first_run = false,$db_dir = '/core/includes/')
 				{
 					register_use(__METHOD__);
 					
@@ -177,7 +177,7 @@
                             <a class="base_button" href="DBQuickBuilder/" style="font-size: 16px; padding: 8px 16px;">DB Quick Builder Tool</a><br />
                         </td>
                         <td>
-                                <a class="base_button" href="/core.processor/renderlib/admintools/" style="font-size: 16px; padding: 8px 16px;">Admin Tools</a>
+                                <a class="base_button" href="/core/renderlib/admintools/" style="font-size: 16px; padding: 8px 16px;">Admin Tools</a>
                         </td>
                         <td>
                             <div onmousedown="MM_changeProp('thinker','','display','block','DIV')">

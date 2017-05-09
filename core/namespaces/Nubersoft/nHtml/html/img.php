@@ -1,0 +1,1 @@
+<img src="<?php echo $url; if($version) { ?>?v=<?php echo $version; } ?>" <?php echo implode(' ',$settings) ?> />

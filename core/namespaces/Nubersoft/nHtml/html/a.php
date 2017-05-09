@@ -1,0 +1,1 @@
+<a href="<?php echo $url ?>" <?php echo $settings ?>><?php echo $wrap ?></a>

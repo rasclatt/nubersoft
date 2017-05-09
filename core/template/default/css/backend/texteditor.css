@@ -1,0 +1,137 @@
+.text-editor-folders {
+	display: none;
+}
+.text-editor-folders a:link, .text-editor-folders a:visited {
+	color: #06F;
+	text-decoration: none;
+}
+.text-editor-folders a:hover {
+	color: #666;
+	text-decoration: underline;
+}
+.text-editor-files {
+	background-color: #CCC;
+	background: linear-gradient(#CCC, #888);
+	border-top: 1px solid #EBEBEB;
+	border-bottom: 1px solid #666;
+	padding: 10px 20px;
+	color:#FFF;
+	text-shadow: 1px 1px 3px #000;
+	cursor: pointer;
+}
+.text-editor-files:hover {
+	background-color: #EBEBEB;
+	background: linear-gradient(#EBEBEB, #CCC);
+	color:#222;
+	text-shadow: 1px 1px 2px #FFF;
+}
+.text-editor-folders td.text-edit-subdir {
+	border-bottom: 1px solid #CCC;
+	padding-bottom: 5px;
+	vertical-align: middle;
+}
+.text-editor-folders td.text-edit-subdir-base {
+	padding-top: 5px;
+	vertical-align: middle;
+}
+.text-editor-folders table {
+	width: 100%;
+}
+.text-hovershow {
+	padding: 10px;
+	background-color: #CCC;
+	box-shadow: 1px 1px 3px #666;
+	display: none;
+}
+.text-hovershow span {
+	cursor: pointer;
+	font-size: 12px;
+}
+.text-hovershow span:hover {
+	color: #666;
+	text-shadow: 1px 1px 2px #FFF;
+}
+.transpattern {
+	background-image: url('/media/images/ui/transbkg.png');
+}
+.text-edit-folderspread {
+	max-height: 300px;
+	overflow: auto;
+	display: block;
+	float: left;
+	clear: both;
+	border-top: 1px solid #666;
+	border-bottom: 1px solid #666;
+	background-color: #EBEBEB;
+	border: 1px solid;
+	width: 100%;
+	margin-bottom: 20px;
+	margin-top: 10px;
+}
+.text-edit-fs-client {
+	max-height: 600px;
+}
+textarea.text-editor	{
+	font-size: 16px;
+	line-height: 26px;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	padding: 20px;
+	background-color: #111;
+	color: #CCC;
+	text-shadow: 1px 1px 2px #000;
+	display: block;
+	margin: 20px auto;
+	width: 80%;
+	min-height: 600px;
+	-webkit-box-shadow: 0 12px 9px -9px red;
+	-moz-box-shadow: 0 12px 9px -9px red;
+	box-shadow: 0 12px 9px -9px red;
+}
+.fullscreen-wrap	{
+	background-color: rgba(0,0,0,0.85);
+	padding: 30px 0;
+	display: inline-block;
+	width: 100%;
+	box-shadow: inset 0 0 20px #000;
+}
+div.text-editor-toggle	{
+	cursor: pointer;
+	font-size: 12px;
+	text-transform: uppercase;
+	display: inline-block;
+	margin: 0 10px;
+	float: right;
+}
+#text-editor-wrapper	{
+	width: 100%;
+}
+td.text-editor-files a:link,
+td.text-editor-files a:visited	{
+	padding: 10px 20px;
+	background-color: #CCC;
+	display: block;
+	text-decoration: none;
+	color: #111;
+	text-shadow: 1px 1px 2px #FFF;
+}
+.editor-desc-wrap	{
+	padding: 30px 0 0 0;
+}
+a.editor-go-link:link,
+a.editor-go-link:visited	{
+	font-size: 12px;
+	color: #FFF;
+	text-shadow: 1px 1px 2px #000;
+	text-decoration: none;
+	padding: 3px 5px;
+	margin: 0 5px;
+	background-color: #888;
+	border-radius: 4px;
+	border-top: 1px solid #333;
+	border-bottom: 1px solid #CCC;
+	border-left: 1px solid #666;
+	border-right: 1px solid #888;
+}
+a.editor-go-link:hover	{
+	background-color: #0C3;
+}

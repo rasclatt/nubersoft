@@ -221,7 +221,7 @@ $(document).ready(function(e) {
 		if(DataGoPage == undefined)
 			DataGoPage	=	'core.engine';
 		// Assemble call url
-		var URL		=	'/core.ajax/'+DataGoPage+'.php?'+DataSend;
+		var URL		=	'/ajax/'+DataGoPage+'.php?'+DataSend;
 		// Send ajax request
 		_AJAX(URL,$(DataKind));
 		
@@ -294,7 +294,7 @@ $(document).ready(function(e) {
 					$("#first-start").fadeIn();
 					// Ajax call to errors
 					if(typeof AjaxFlex == 'function')		
-						AjaxFlex("#first-start",'/core.processor/install/install.database.php?run=true');
+						AjaxFlex("#first-start",'/core/install/install.database.php?run=true');
 					else {
 							SetFunc		=	'AjaxFlex';
 							LoadError	=	true;

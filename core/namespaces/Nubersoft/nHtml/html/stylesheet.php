@@ -1,0 +1,1 @@
+<link type="text/css" rel="stylesheet" href="<?php echo $url; if($version) { ?>?v=<?php echo $version; } ?>" />

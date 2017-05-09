@@ -55,7 +55,7 @@
 				{
 					register_use(__METHOD__);
 					if(isset($this->data['ID']) && !empty($this->data['ID'])) {
-							include(NBR_ROOT_DIR.'/core.ajax/component/button.TinyMCE.php');
+							include(NBR_ROOT_DIR.'/ajax/component/button.TinyMCE.php');
 					 	}
 				}
 				
@@ -63,7 +63,7 @@
 				{
 					register_use(__METHOD__);
 					if(isset($this->data['ID']) && !empty($this->data['ID'])) {
-							include(NBR_ROOT_DIR.'/core.ajax/component/button.helpdesk.php');
+							include(NBR_ROOT_DIR.'/ajax/component/button.helpdesk.php');
 					 	}
 				}
 			
@@ -167,7 +167,7 @@
 															->fetch();
 							if($check_helper !==  0) {
 								$results	=	$check_helper[0];
-								include(NBR_ROOT_DIR.'/core.ajax/component/component.helpdesk.php');
+								include(NBR_ROOT_DIR.'/ajax/component/component.helpdesk.php');
 							}
 						}
 					}

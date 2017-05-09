@@ -225,7 +225,7 @@
 						$is_div	=	(isset($info['component_type']) && $info['component_type'] == 'div')? true: false;
 						if($is_div) {
 ?>						<div <?php $styles = self::CreateStyles($info,self::GetCSSList()); if(!empty($styles)) echo 'style="'.$styles.'"'; ?>>
-							<div class="track_editor_nested" <?php if(isset($info['admin_tag']) && !empty($info['admin_tag'])) { ?>style="background-color: <?php echo $info['admin_tag']; ?>; background-image: url(/core_images/core/window_grad.png); background-repeat: repeat-x;"<?php } ?>><?php 
+							<div class="track_editor_nested" <?php if(isset($info['admin_tag']) && !empty($info['admin_tag'])) { ?>style="background-color: <?php echo $info['admin_tag']; ?>; background-image: url(/images/core/window_grad.png); background-repeat: repeat-x;"<?php } ?>><?php 
 						}
 						AutoloadFunction('get_edit_status');
 						if(get_edit_status()) 
@@ -277,10 +277,10 @@
 					$sVars		=	array(	"unique_id"=>((isset($curr['unique_id']))? $curr['unique_id'] : false),
 										"ref_page"=>((isset($unique_id))? $unique_id:$curr['ref_page']),
 										"autorun"=>true);
-					$icon		=	site_url().'/core_images/core/icn_alert.png';
+					$icon		=	site_url().'/images/core/icn_alert.png';
 					if(!empty($curr['component_type'])) {
-						if(is_file(NBR_ROOT_DIR.'/core_images/core/icn_'.$curr['component_type'].'.png'))
-							$icon	=	site_url().'/core_images/core/icn_'.$curr['component_type'].'.png';
+						if(is_file(NBR_ROOT_DIR.'/images/core/icn_'.$curr['component_type'].'.png'))
+							$icon	=	site_url().'/images/core/icn_'.$curr['component_type'].'.png';
 						// Convert icon to base 64
 						elseif(is_file($icFile = NBR_CLIENT_DIR.'/components/'.$curr['component_type'].'/icon.png')) {
 								AutoloadFunction('base64image');
@@ -288,8 +288,8 @@
 							}
 					}
 					
-					$sIcon	=	'/core_images/core/led_'.((check_empty($curr,'page_live','on'))? 'green': 'red').'.png';
-					$bImg	=	'background-image: url('.site_url().'/core_images/core/mesh.png); background-repeat: no-repeat; background-size: cover; background-position: center;';
+					$sIcon	=	'/images/core/led_'.((check_empty($curr,'page_live','on'))? 'green': 'red').'.png';
+					$bImg	=	'background-image: url('.site_url().'/images/core/mesh.png); background-repeat: no-repeat; background-size: cover; background-position: center;';
 					if(!empty($curr['file_path'])) {
 						if(is_file(NBR_ROOT_DIR.$curr['file_path'].$curr['file_name'])) {
 							$use	=	(is_file(str_replace("//","/",NBR_THUMB_DIR."/components/".$curr['file_name'])))? str_replace(NBR_ROOT_DIR,"",NBR_THUMB_DIR."/components/") : $curr['file_path'];	
@@ -306,11 +306,11 @@
 					}
 					
 					$loginReq	=	(check_empty($curr,'login_view','on'))? '':'opacity: 0.5; ';
-					$attr[]		=	(!empty($curr['admin_notes']))? '<img src="'.site_url().'/core_images/core/icn_edit.png" style="max-height: 22px;" class="nbr_notes" />':"";
-					$attr[]		=	(!empty($curr['file_path']))? '<img src="'.site_url().'/core_images/core/icn_image.png" style="max-height: 22px;" />':"";
-					$attr[]		=	(!empty($curr['content']))? '<img src="'.site_url().'/core_images/core/icn_cont.png" style="max-height: 22px;" />':"";
-					$attr[]		=	(!empty($curr['admin_lock']))? '<img src="'.site_url().'/core_images/core/lock.png" style="max-height: 25px;" />':"";
-					$attr[]		=	($userInc)? '<img src="'.site_url().'/core_images/core/login_'.$userInc.'.png" style="'.$loginReq.'max-height: 20px;" />':"";
+					$attr[]		=	(!empty($curr['admin_notes']))? '<img src="'.site_url().'/images/core/icn_edit.png" style="max-height: 22px;" class="nbr_notes" />':"";
+					$attr[]		=	(!empty($curr['file_path']))? '<img src="'.site_url().'/images/core/icn_image.png" style="max-height: 22px;" />':"";
+					$attr[]		=	(!empty($curr['content']))? '<img src="'.site_url().'/images/core/icn_cont.png" style="max-height: 22px;" />':"";
+					$attr[]		=	(!empty($curr['admin_lock']))? '<img src="'.site_url().'/images/core/lock.png" style="max-height: 25px;" />':"";
+					$attr[]		=	($userInc)? '<img src="'.site_url().'/images/core/login_'.$userInc.'.png" style="'.$loginReq.'max-height: 20px;" />':"";
 					$attr		=	array_filter($attr);
 					
 					

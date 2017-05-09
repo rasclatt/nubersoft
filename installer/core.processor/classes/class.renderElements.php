@@ -268,7 +268,7 @@
                                   else {
                                         $defEmail	=	$nubsql->fetch("select * from emailer where email_id = '$email_id' and page_live ='on'");
                                         if($defEmail !== 0) {
-                                                include_once($_SERVER['DOCUMENT_ROOT'] . "/core.processor/includes/classes/browser.commands/string.include.php");
+                                                include_once($_SERVER['DOCUMENT_ROOT'] . "/core/includes/classes/browser.commands/string.include.php");
                                                 $result		=	$defEmail[0];
                                                 $messageObj	=	strFilter::decode($result['content'], "~", "::");
                                                 

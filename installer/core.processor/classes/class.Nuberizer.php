@@ -289,7 +289,7 @@
 			protected	function getAllConfigs($additional = false)
 				{
 					// Common places to find config.xml files
-					$locations[]	=	NBR_ROOT_DIR.'/core.plugins/';
+					$locations[]	=	NBR_ROOT_DIR.'/plugins/';
 					$locations[]	=	NBR_CLIENT_DIR.'/plugins/';
 					$locations[]	=	NBR_CLIENT_DIR.'/apps/';
 					

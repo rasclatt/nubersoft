@@ -147,7 +147,7 @@
 		// Quick check function
 		function KeyCheckJax(IdVal,DestId) {
 				$.ajax({
-					url: '/core.ajax/check.user.php',
+					url: '/ajax/check.user.php',
 					type: 'post',
 					data: $('#'+IdVal).serialize(),
 					success: function(result) {
@@ -255,7 +255,7 @@
 $(document).ready(function(){
 	
 		$(".ajaxDispatcher").click(function() {
-			Dispatcher.ajax('/core.ajax/ajax.dispatcher.php',$(this),{ error_reporting: true });
+			Dispatcher.ajax('/ajax/ajax.dispatcher.php',$(this),{ error_reporting: true });
 		});
 	
 	
@@ -264,7 +264,7 @@ $(document).ready(function(){
 		FadeIn($(".nbr_error_msg"),ErrorSettings);
 		
 		$("#sendtotype").keyup(function() {
-			CallAdaptiveAjax('/core.ajax/display.live.type.php','post','text-editor','show-code');
+			CallAdaptiveAjax('/ajax/display.live.type.php','post','text-editor','show-code');
 		});
 	
 		$(".btntrigger").click(function() {

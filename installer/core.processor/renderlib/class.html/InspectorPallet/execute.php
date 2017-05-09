@@ -55,17 +55,17 @@ $admin_link	=	Safe::to_array(nApp::getAdminPage());
 				<tr>
 					<td>
 						<div class="site_builder ajaxtrigger" data-gopage="form.site.prefs" data-gopagekind="g" data-gopagesend="edit=true" >
-							<img src="/core_images/buttons/pagePrefs.png" />
+							<img src="/images/buttons/pagePrefs.png" />
 						</div>
 					</td>
 					<td>
 						<div class="site_builder ajaxtrigger" data-gopage="cache.delete" data-gopagekind="g" data-gopagesend="dir=<?php echo $cachedel; ?>">
-							<img src="/core_images/buttons/deleteCache.png" />
+							<img src="/images/buttons/deleteCache.png" />
 						</div>
 					</td>
 					<td>
 						<div class="site_builder">
-							<a href="<?php echo $admin_link['full_path']; ?>?page_editor=true"><img src="/core_images/buttons/icn_page_edit.png" /></a>
+							<a href="<?php echo $admin_link['full_path']; ?>?page_editor=true"><img src="/images/buttons/icn_page_edit.png" /></a>
 						</div>
 					</td>
 <?php

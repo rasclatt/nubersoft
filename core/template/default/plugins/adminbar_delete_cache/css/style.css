@@ -1,0 +1,16 @@
+/* CSS Document */
+
+#plugin_DeleteCache_wrap {
+	background-color: transparent;
+}
+#plugin_DeleteCache_wrap div {
+	width:auto;
+	float: left;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 60px;
+	width: 60px;
+	border: none;
+	background-size: contain;
+	background-color: transparent;
+}

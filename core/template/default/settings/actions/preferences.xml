@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<action event="nbr_get_current_htaccess" after="nbr_set_registry" request="post" is_admin="true">
+		<object event="nbr_get_current_htaccess">
+			<class>
+				<name>\nPlugins\Nubersoft\CoreFileHandler</name>
+				<method>getBaseHtaccess</method>
+				<dependency>\Nubersoft\nApp</dependency>
+			</class>
+		</object>
+	</action>
+	<action event="nbr_edit_system_settings" after="nbr_set_registry" request="post" is_admin="true" is_ajax="true">
+		<object event="nbr_edit_system_settings">
+			<class>
+				<name>\nPlugins\Nubersoft\CorePreferences</name>
+				<method>saveSitePrefs</method>
+			</class>
+		</object>
+	</action>
+</config>
