@@ -1,13 +1,19 @@
-The MIT License (MIT)
+Copyright (c) 2017 Nubersoft.com
 
-Copyright (c) 2016 
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+Permission is hereby granted, free of charge *(see acception below in reference to
+base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+and associated documentation files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use, copy, modify, merge, publish,
+or distribute copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
+
+The base CMS software\* is not used for commercial sales except with expressed permission.
+A licensing fee or waiver is required to run software in a commercial setting using
+the base CMS software.
+
+*Base CMS software is defined as running the default software package as found in this
+repository in the index.php page. This includes use of any of the nAutomator with the
+default/modified/exended xml versions workflow/blockflows/actions.
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
@@ -20,14 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-NOTES: ALL OTHER APPLICATIONS CONTAINED ARE PROVIDED FOR CONVENIENCE, SPECIFICALLY
-TINY_MCE. REFER TO THE TINY_MCE COPYRIGHT FOR IT'S RESPECTIVE AGREEMENT:
-
-https://www.tinymce.com
-
-ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. IF NOT, PLEASE FEEL
-FREE TO INDICATE. THERE MAY OR MAY NOT BE UN-SITED SNIPPETS DUE TO BASIC OVERSITE
-BUT ALMOST ALL SCRIPT CONTAINED WITHIN IS ORGINAL.
-
-THERE MAY BE SOME OLD JUNK DREAMWEAVER JAVASCRIPT STILL PRESENT, HOWEVER IT
-IS EITHER NOT IN USE OR BEING REPLACED WITH ORIGINAL SCRIPT.
+**SNIPPETS:**
+ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+NOT BEEN LOCATED AND DELETED.
