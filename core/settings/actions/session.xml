@@ -5,6 +5,8 @@
 			<class>
 				<name>\nPlugins\Nubersoft\ShoppingCart\Model</name>
 				<method>clear</method>
+				<chain>reRouteCurrent</chain>
+				<inject>Cart has been cleared.</inject>
 			</class>
 		</object>
 	</action>

@@ -73,6 +73,7 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			{
 				# Reset the cart
 				$this->setSession('cart',array(),true);
+				return $this;
 			}
 			
 		public	function getTotalQty()
@@ -486,5 +487,14 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 				}
 				
 				return 'USD';
+			}
+		/*
+		**	@description	Basic rerouting method, used in tandem with an action like clear()
+		*/
+		public	function reRouteCurrent($msg=false)
+			{
+				$msg	=	(empty($msg))? $this->getRequest('action') : $msg;
+				$this->setSession('cart_messages',$msg);
+				$this->getHelper('nRouter')->addRedirect($this->localeUrl($this->getPageURI('full_path')));
 			}
 	}

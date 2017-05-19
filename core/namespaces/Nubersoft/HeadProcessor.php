@@ -117,9 +117,10 @@ class HeadProcessor extends \Nubersoft\nApp
 						else
 							$_setting	=	array();
 				}
-				
+				$redPath		=	(!empty($this->getDataNode('_SERVER')->PHP_SELF))? $this->getDataNode('_SERVER')->PHP_SELF : $this->localeUrl();
 				$reload_page	=	false;
-				$redirect		=	$this->nRouter->stripIndex($this->getDataNode('_SERVER')->PHP_SELF);
+				$redirect		=	$this->nRouter->stripIndex($redPath);
+				
 				# Destroy session and redirect
 				if(isset($_setting['logout']) && $allow) {
 					# Destroy the session

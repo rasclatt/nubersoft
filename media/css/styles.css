@@ -30,6 +30,9 @@ body.nbr {
 	padding: 20;
 	text-align: left;
 }
+img,p,a,h1,h2,h3,h4 {
+	cursor: inherit;
+}
 #loadspot_modal	{
 	z-index: 1000000000000000;
 	position: relative;
@@ -565,12 +568,9 @@ ul.nbr_no_list.columns li {
 	border-bottom-left-radius: 10px;
 	margin-top: 1px;
 }
-.nbr_popwrap:hover .nbr_popup {
-	display: block;
-	text-align: left;
-}
 .nbr_popup {
 	display: none;
+	text-align: left;
 }
 @media all and (max-width: 600px) {
 	.hide_mobile,

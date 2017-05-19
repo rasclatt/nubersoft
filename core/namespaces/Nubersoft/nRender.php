@@ -62,10 +62,22 @@ class nRender extends \Nubersoft\nApp
 			{
 				return is_file($this->toSingleDs($this->getTemplatePlugin($dir,$append)));
 			}
-		
+		/*
+		**	@description	Fetches the plugin from the current template folder
+		**					/client/template/{$current}/plugins/{$dir}/{$append}
+		*/
 		public	function useTemplatePlugin($dir,$append = 'index.php')
 			{
 				$path	=	$this->toSingleDs($this->getTemplatePlugin($dir,$append));
+				return $this->render($path);
+			}
+		/*
+		**	@description	Same function as useTemplatePlugin() only the path is found in
+		**					/client/template/plugins/{$dir}/{$append}
+		*/
+		public	function useGlobalPlugin($dir,$append = 'index.php')
+			{
+				$path	=	$this->toSingleDs(NBR_CLIENT_DIR.DS.'template'.DS.'plugins'.DS.$dir.$append);
 				return $this->render($path);
 			}
 		

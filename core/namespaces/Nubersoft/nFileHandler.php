@@ -188,7 +188,7 @@ class nFileHandler extends \Nubersoft\nFunctions
 						}
 					}
 					
-					$this->success[$files['file_name']]['success']	=	(move_uploaded_file($files['tmp_name'],$filename))? 'ok': 'fail';
+					$this->success[$files['file_name']]['success']	=	(is_uploaded_file($files['tmp_name']) && move_uploaded_file($files['tmp_name'],$filename))? 'ok': 'fail';
 					
 					unset($files['name'],$files['tmp_name'],$files['error'],$files['type'],$files['size']);
 					ksort($files);

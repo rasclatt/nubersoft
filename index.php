@@ -1,4 +1,6 @@
 <?php
+//error_reporting(E_ALL);
+//ini_set('display_errors',1);
 try {
 	# Configuration
 	require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
@@ -14,7 +16,7 @@ catch (Exception $e) {
 	$code	=	$e->getCode();
 	# Create some defines
 	if(!defined('NBR_CLIENT_DIR'))
-		define('NBR_CLIENT_DIR',__DIR__.DS.'client_assets');
+		define('NBR_CLIENT_DIR',__DIR__.DS.'client');
 	# Set different options for dealing with install/start-up issues
 	switch($code) {
 		# Missing registry file

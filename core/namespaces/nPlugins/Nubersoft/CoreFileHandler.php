@@ -47,8 +47,8 @@ class CoreFileHandler extends \Nubersoft\nFileHandler
 					return	$nApp->checkEmptyResponse(false,'Could not create directory');
 				}
 				
-				if(!move_uploaded_file($FILES['tmp_name'],$dir.DS.$FILES['name'])) {
-					return $nApp->checkEmptyResponse(false,'Could not move file');
+				if(!($is_up = is_uploaded_file($FILES['tmp_name'])) || !move_uploaded_file($FILES['tmp_name'],$dir.DS.$FILES['name'])) {
+					return $nApp->checkEmptyResponse(false,'Could not move file: '.(!$is_up)? "Not an uploaded file.": "Failed to move to folder.");
 				}
 				else {
 					$fileData	=	$this->updateSitePrefs($nApp->stripRoot($dir.DS.$FILES['name']),$nApp);

@@ -442,8 +442,8 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 					$i = 0;
 					foreach($rows as $payload) {
 						$full	=	$this->toSingleDs($upPath.DS.$payload['name']);
-						if(!move_uploaded_file($payload['tmp_name'],$full))
-							die();
+						if(!($is_up = is_uploaded_file($payload['tmp_name'])) || !move_uploaded_file($payload['tmp_name'],$full))
+							die('Could not move file: '.(!$is_up)? "Not an uploaded file.": "Failed to move to folder.");
 							
 						$columns[$i]['file_path']	=	'/'.trim(str_replace(array(DS,NBR_ROOT_DIR),array('/',''),$upPath),'/').'/';
 						$columns[$i]['file_name']	=	$payload['name'];

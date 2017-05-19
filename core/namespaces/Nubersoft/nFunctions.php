@@ -1284,4 +1284,18 @@ key1=No+thank+you`*/
 				$number	=	number_format($string,$dec,$dectype,$sep);
 				return ($front)? $curr.$number : $number.$curr;
 			}
+		/*
+		**	@description	Toggle error reporting
+		*/
+		public	function setErrorMode($status = true)
+			{
+				if($status) {
+					ini_set("display_errors",1);
+					error_reporting(E_ALL);
+				}
+				else {
+					ini_set('display_errors','off');
+					error_reporting(0);
+				}
+			}
 	}

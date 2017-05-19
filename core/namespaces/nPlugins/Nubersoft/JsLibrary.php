@@ -52,21 +52,19 @@ class	JsLibrary extends \Nubersoft\nRender
 		*/
 		public	function defaultJQuery($settings = false)
 			{
-				$force		=	(isset($settings['force_ssl']))? $settings['force_ssl'] : false;
-				$jqLib		=	(isset($settings['jq_version']))? $settings['jq_version'] : 'jquery-1.9.1';
+				$jqLib		=	(isset($settings['jq_version']))? $settings['jq_version'] : '3.0.1';
 				$uLib		=	(isset($settings['ui_version']))? $settings['ui_version'] : '1.9.2';
 				$vLib		=	(isset($settings['jv_version']))? $settings['jv_version'] : '1.11.1';
 				$incVLib	=	(isset($settings['jv']))? $settings['jv'] : true;
 				$incULib	=	(isset($settings['ui']))? $settings['ui'] : true;
-				$ssl		=	($force)? "s" : $this->isSsl();
 				ob_start();
 ?>
-<script type="text/javascript" src="http<?php echo $ssl; ?>://code.jquery.com/<?php echo $jqLib; ?>.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/<?php echo $jqLib; ?>/jquery.min.js"></script>
 <?php			if($incULib) {
-?><script type="text/javascript" src="http<?php echo $ssl; ?>://code.jquery.com/ui/<?php echo $uLib; ?>/jquery-ui.js"></script>
+?><script type="text/javascript" src="//code.jquery.com/ui/<?php echo $uLib; ?>/jquery-ui.js"></script>
 <?php			}
 				if($incVLib) {
-?><script type="text/javascript" src="http<?php echo $ssl; ?>://ajax.aspnetcdn.com/ajax/jquery.validate/<?php echo $vLib; ?>/jquery.validate.js"></script>
+?><script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.validate/<?php echo $vLib; ?>/jquery.validate.js"></script>
 <?php			}
 
 				$this->data[]	=	ob_get_contents();

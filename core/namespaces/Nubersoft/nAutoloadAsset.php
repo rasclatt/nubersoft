@@ -88,7 +88,7 @@ class	nAutoloadAsset extends \Nubersoft\nApp
 			{
 				$nAutoloadAssets	=	$this;
 				# Save namespaces to file, it's expensive to search for them all the time
-				$namepaces	=	$this->getPrefFile('namespace_list',array('save'=>true),false,function($path,$nApp) use ($nAutoloadAssets) {
+				$namepaces	=	$this->getPrefFile('namespace_list', array('save'=>true), false, function($path,$nApp) use ($nAutoloadAssets) {
 					# Create Config Engine
 					$nConfig	=	$nAutoloadAssets->getHelper('configFunctions',$nApp->getHelper('nAutomator',$nApp));
 					# Fetch the config array
@@ -102,16 +102,13 @@ class	nAutoloadAsset extends \Nubersoft\nApp
 					# Process the paths
 					if(empty($array))
 						return false;
-					
+					# Create nAutomator instance
 					$nAutomator	=	$nApp->getHelper('nAutomator',$nApp);
-				
-					foreach($array as $rawPath) {
+					foreach($array as $rawPath)
 						$classPath[]	=	$nAutomator->matchFunction($rawPath);
-					}
-					
+					# Send class path
 					return (!empty($classPath))? $classPath : false;
 				});
-				
 				# Run through the array and see if it matches
 				if(!empty($namepaces))
 					$this->findAndLoad($namepaces);

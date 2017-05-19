@@ -16,8 +16,10 @@ class	Observer extends \nPlugins\Nubersoft\ShoppingCart\Model
 				
 				$this->add($item,$POST['qty'],true);
 				
+				$redirect	=	(!empty($POST['redirect']))? $POST['redirect'] : '/cart/';
+				
 				$this->ajaxResponse(array(
-					'html'=>array('<script>window.location="'.$this->localeUrl('/cart/').'";</script>'),
+					'html'=>array('<script>window.location="'.$this->localeUrl($redirect).'";</script>'),
 					'sendto'=>array('body')
 				));
 			}

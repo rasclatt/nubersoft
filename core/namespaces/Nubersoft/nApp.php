@@ -488,6 +488,16 @@ class	nApp extends \Nubersoft\nFunctions
 				$this->getHelper('nLogger')->saveToLog($filename,$message,$opts);
 			}
 		
+		public	function getPageById($id,$key=false)
+			{
+				$find	=	'*';
+				if(!empty($key))
+					$find	=	'`'.implode('`,`',$key).'`';
+					
+				$sql	=	"SELECT {$find} FROM `main_menus` WHERE ID = :0";
+				return $this->nQuery()->query($sql,array($id))->getResults(true);
+			}
+		
 		public	function getPage($var = false)
 			{
 				$pageURI	=	$this->getDataNode('pageURI');
