@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<config>
-	<onprocessheader>
-		<requester>post</requester>
-		<action>rebuild_reg</action>
-		<use>/plugins/plugin.RefreshDefines/functions/function.rebuild_reg.php</use>
-	</onprocessheader>
-</config>
