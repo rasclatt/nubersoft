@@ -2,21 +2,21 @@
 
 class EmailEngine
 	{
-		public		$sender;
-		public		$recipient;
-		public		$field;
-		public		$headermsg;
-		public		$success;
+		public		$sender,
+				$recipient,
+				$field,
+				$headermsg,
+				$success;
 		
 		protected	$message;
 		
-		private		$subject;
-		private		$to;
-		private		$from;
-		private		$ret_to_sender;
-		private		$email_list;
-		private		$return_address;
-		private		$message_array;
+		private		$subject,
+				$to,
+				$from,
+				$ret_to_sender,
+				$email_list,
+				$return_address,
+				$message_array;
 		
 		public	function __construct()
 			{
