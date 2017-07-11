@@ -1,6 +1,6 @@
 <?php
 if(!$this->isAjaxRequest()) {
-	echo self::call('nTemplate')->getDoc('page.head.php');
+	echo self::call('nTemplate')->getTemplateDoc('page.head.php');
 ?>
 <!-- START BODY -->
 <body class="nbr">
@@ -17,7 +17,7 @@ $opts	=	array(
 // Render link
 echo $this->render($opts);
 if(!$this->isAjaxRequest()) {
-	echo $this->getDoc('page.foot.php').PHP_EOL;
+	echo $this->getTemplateDoc('page.foot.php').PHP_EOL;
 ?>
 </body>
 </html>

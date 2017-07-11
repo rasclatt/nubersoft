@@ -3,8 +3,8 @@
 	<workflow>
 		<object event="nbr_client_record_user">
 			<class>
-				<name>\nPlugins\Nubersoft\TimeStamp</name>
-				<method>initialize</method>
+				<name>\Nubersoft\Flags\Observer</name>
+				<method>listen</method>
 			</class>
 		</object>
 	</workflow>

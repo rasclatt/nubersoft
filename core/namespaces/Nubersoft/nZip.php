@@ -34,8 +34,11 @@ class nZip extends \ZipArchive
 				return $this;
 			}
 			
-		public	function createZipFile($path)
+		public	function createZipFile($path,$filter = false)
 			{
+				if(empty($filter) || !is_array($filter))
+					$filter	=	['php','xml','json','pref','log','txt','js','css','htaccess'];
+					
 				$opened	=	$this->open($path, \ZipArchive::CREATE);
 				$base	=	pathinfo($path,PATHINFO_BASENAME);
 				if($opened !== true) {
@@ -50,8 +53,19 @@ class nZip extends \ZipArchive
 				
 				if(!empty($this->fileList)) {
 					foreach($this->fileList as $file) {
-						if(pathinfo($file,PATHINFO_BASENAME) != $base)
-							$this->addFile($file,$this->nApp->stripRoot($file));
+						$pathinfo	=	pathinfo($file);
+						if($pathinfo['basename'] != $base) {
+							if(empty($pathinfo['extension']))
+								continue;
+							
+							$ext	=	strtolower($pathinfo['extension']);
+							if(in_array($ext,$filter) && is_file($file))
+								$this->addFile($file,$this->nApp->stripRoot($file));
+							else {
+								if(!is_file($file))
+									die($file);
+							}
+						}
 					}
 				}
 				
@@ -62,19 +76,39 @@ class nZip extends \ZipArchive
 			{
 				if(!$this->nApp->isAdmin())
 					return;
-				
+				# Allow the process to take a very long time
 				ini_set('max_execution_time',2000000000);
-				
-				$zip	=	NBR_ROOT_DIR.DS.date('YmdHis').'_nsoft.zip';
+				# Create a save path
+				$zip	=	NBR_CLIENT_DIR.DS.'settings'.DS.'backups'.DS.str_replace('.','_',$this->nApp->siteHost()).'_'.date('YmdHis').'_nsoft.zip';
+				# Create the base directory
+				if(!$this->nApp->isDir(pathinfo($zip,PATHINFO_DIRNAME))) {
+					$msg	=	'Couldn\'t make save folder';
+					$this->toAlert($msg);
+					throw new \Exception($msg);
+				}
+				# Get the contents of the root and create a zip file
 				$this->getFolderContents(NBR_ROOT_DIR)->createZipfile($zip);
-				
+				# If the file is created, download it
 				if(is_file($zip)) {
-					$this->nApp->getPlugin('\nPlugins\Nubersoft\CoreDownloader')->getFile($zip);
-					unlink($zip);
+					# Download the file
+					(new \nPlugins\Nubersoft\CoreDownloader())->getFile($zip,array(
+						"Cache-Control"=>"must-revalidate, post-check=0, pre-check=0",
+						'Content-type:'=>'application/zip',
+						'Content-Transfer-Encoding'=>'binary',
+						'Connection'=>'Keep-Alive',
+						'Expires'=>'0',
+						'Pragma'=>'public',
+						'Content-length: '.filesize($zip),
+						'Content-disposition'=>'attachment; filename="'.basename($zip).'"'
+					));
 					exit;
 				}
+				# 
 				else {
-					throw new \Exception('Couldn\'t work');
+					$msg	=	'Couldn\'t create the required backup.';
+					$this->toAlert($msg);
+					throw new \Exception($msg);
 				}
 			}
+		
 	}

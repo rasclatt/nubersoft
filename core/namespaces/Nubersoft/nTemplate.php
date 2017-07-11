@@ -3,7 +3,8 @@ namespace Nubersoft;
 
 class nTemplate extends \Nubersoft\nApp
 	{
-		protected $siteValue;
+		protected	$siteValue,
+					$Methodizer;
 		
 		public	function getFrontEnd($file = false)
 			{
@@ -14,31 +15,48 @@ class nTemplate extends \Nubersoft\nApp
 			{
 				return $this->determinePlace('admintools',$file);
 			}
-			
+		/*
+		**	@description	Alias of determinePlace()
+		*/
 		public	function getTemplateFrom($type,$file = false)
 			{
 				return $this->determinePlace($type,$file);
 			}
-			
-		public	function determinePlace($type,$file=false)
+		/*
+		**	@description	Searches available template areas and tries to find the first match
+		**	@param	$type	[string]	This is the core directory folder (example "plugins")
+		**	@param	$file	[string | bool(empty)]	This is any appended file
+		*/
+		public	function determinePlace($type,$file = false)
 			{
+				# Get the methodizer engine
+				$this->Methodizer	=	$this->getStored();
+				# Trim off the file
+				$file		=	trim(trim($file),DS);
 				# Fetches all the template areas
 				$templates	=	$this->toArray($this->getSite('templates'));
-				$is_dir		=	(empty(trim($file)));
-				$file		=	(!empty($file))? trim($file,DS) : false;
-				
+				# Save the template array to the methodize
+				$this->Methodizer->saveAttr('determine_place_templates',$templates);
+				# Loop through all the available templates
 				foreach($templates as $spot) {
-					$template	=	(!$is_dir)? $spot['dir'].DS.$type.DS.$file : $spot['dir'].DS.$type;
-					$fileDir	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$template);
-					if($is_dir) {
-						if(is_dir($fileDir))
-							return str_replace(NBR_ROOT_DIR,'',$fileDir);
-					}
-					else {
-						if(is_file($fileDir))
-							return str_replace(NBR_ROOT_DIR,'',$fileDir);
-					}
+					# Create final complied path
+					$template		=	$this->toSingleDs($spot['dir'].DS.$type.DS.$file);
+					# Create final absolute path
+					$fileDir		=	$this->toSingleDs(NBR_ROOT_DIR.DS.$template);
+					# Check if final is a directory
+					$is_dir			=	is_dir($fileDir);
+					# Store 
+					$tempDirStr[]	=	$fileDir;
+					$this->Methodizer->saveAttr('determine_place',$tempDirStr);
+					# If any of the template sources match either a file or folder, return that
+					if($is_dir || is_file($fileDir))
+						return str_replace(NBR_ROOT_DIR,'',$fileDir);
 				}
+			}
+		
+		public	function getStored()
+			{
+				return (!($this->Methodizer instanceof \Nubersoft\Methodize))? $this->getHelper('Methodize') : $this->Methodizer;
 			}
 		
 		public	function setDeterminer($key,$value)

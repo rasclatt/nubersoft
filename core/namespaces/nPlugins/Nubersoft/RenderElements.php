@@ -17,7 +17,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 		private	$style;
 			
 		// Array required
-		public function generateStyles($pref_table_array, $_filter	=	array('ID','unique_id','parent_id','ref_anchor','ref_page','component_type','content','_id','a_href','login_view','login_permission','page_order','page_live','admin_tag','admin_notes','email_id','class','file_path','file_name','file_size','file','admin_lock'))
+		public function generateStyles($pref_table_array, $_filter	=	array('ID','unique_id','parent_id','ref_anchor','ref_page','component_type','content','_id','a_href','login_view','usergroup','page_order','page_live','admin_tag','admin_notes','email_id','class','file_path','file_name','file_size','file','admin_lock'))
 			{
 				$this->pref_table_array	=	(is_array($pref_table_array))? $pref_table_array:array();
 				$this->styles			=	array(0=>'');
@@ -132,15 +132,14 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					$setStage		=	'1';
 				}
 				else {
-					$perms	=	(isset($this->payload['login_permission']))? $this->payload['login_permission']:'';
+					$perms	=	(isset($this->payload['usergroup']))? $this->getUsergroup($this->payload['usergroup']):'';
 					
 					if(empty($perms)) {
 						$renderSet		=	true;
 						$setStage		=	'2';
 					}
 					else {
-						$renderSet		=	$this->getHelper('UserEngine')->allowIf($this->payload['login_permission']);
-						//((isset($_SESSION['usergroup']) && ($this->payload['login_permission'] >= $_SESSION['usergroup'])));
+						$renderSet		=	$this->getHelper('UserEngine')->allowIf($this->getUsergroup($this->payload['usergroup']));
 						$setStage		=	'3';
 					}
 				}
@@ -211,14 +210,14 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					$setStage		=	'1';
 				}
 				else {
-					$perms	=	(isset($this->payload['login_permission']))? $this->payload['login_permission']:'';
+					$perms	=	(isset($this->payload['usergroup']))? $this->getUsergroup($this->payload['usergroup']) : '';
 					
 					if(empty($perms)) {
 						$renderSet		=	true;
 						$setStage		=	'2';
 					}
 					else {
-						$renderSet		=	$this->getHelper('UserEngine')->allowIf($this->payload['login_permission']);
+						$renderSet		=	$this->getHelper('UserEngine')->allowIf($this->getUsergroup($this->payload['usergroup']));
 						$setStage		=	'3';
 					}
 				}

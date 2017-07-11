@@ -8,6 +8,7 @@
 					<div class="login_fields"><input type="text"  id="username" name="username" autocomplete="off" required placeholder="Username" value="<?php echo $this->getPost('username') ?>" /></div>
 					<div class="login_fields"><input type="password" id="password" name="password" autocomplete="off" required placeholder="Password" /></div>
 					<input type="hidden" id="action" name="action" value="login" />
+					<input type="hidden" name="jumppage" value="<?php echo $this->setJumpPage('/AdminTools/') ?>" />
 					<input type="hidden" name="token[login]" />
 					<div class="nbr_contain">
 							<div class="nbr_button"><input disabled="disabled" type="submit" name="login" value="Login" id="loginsubmit" class="disabled-submit" /></div>

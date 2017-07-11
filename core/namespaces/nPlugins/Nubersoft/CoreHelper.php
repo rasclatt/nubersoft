@@ -49,6 +49,7 @@ class CoreHelper extends \Nubersoft\nRender
 				$custom		=	NBR_CLIENT_DIR.DS.'Components'.DS.'template'.DS.'page'.DS.'index.php';
 				$default	=	__DIR__.DS.'core'.DS.'componentEditors.php';
 				$render		=	(!is_file($custom))? $default : $custom;
+				
 				return $this->render($render,'include');
 			}
 		/*
@@ -66,11 +67,11 @@ class CoreHelper extends \Nubersoft\nRender
 									"unique_id"=>((isset($curr['unique_id']))? $curr['unique_id'] : false),
 									"ref_page"=>((isset($unique_id))? $unique_id:$curr['ref_page']),
 									"autorun"=>true);
-				$icon		=	$this->siteUrl().'/media/images/core/icn_alert.png';
+				$icon		=	$this->imagesUrl('/core/icn_alert.png');
 				
 				if(!empty($curr['component_type'])) {
 					if(is_file(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_'.$curr['component_type'].'.png'))
-						$icon	=	$this->siteUrl().'/media/images/core/icn_'.$curr['component_type'].'.png';
+						$icon	=	$this->imagesUrl('/core/icn_'.$curr['component_type'].'.png');
 					// Convert icon to base 64
 					elseif(is_file($icFile = NBR_CLIENT_DIR.DS.'Components'.DS.$curr['component_type'].DS.'icon.png')) {
 						$icon	=	$nImage->toBase64($icFile);
@@ -87,19 +88,21 @@ class CoreHelper extends \Nubersoft\nRender
 				}
 				
 				$userInc	=	false;
-				if(!empty($curr['login_permission']) && is_numeric($curr['login_permission'])) {
-					$userInc	=	$curr['login_permission'];
+				if(!empty($curr['usergroup']) && is_numeric($this->getUsergroup($curr['usergroup']))) {
+					$userInc	=	$this->getUsergroup($curr['usergroup']);
 				}
-				elseif($this->checkEmpty($curr,'login_view','on') && !is_numeric($curr['login_permission'])) {
-					$userInc	=	(define("NBR_WEB"))? NBR_WEB : 3;
+				elseif($this->checkEmpty($curr,'login_view','on') && $curr['usergroup'] === '') {
+					$userInc	=	(defined("NBR_WEB"))? NBR_WEB : 3;
 				}
 				
-				$loginReq	=	($this->checkEmpty($curr,'login_view','on'))? '':'opacity: 0.5; ';
+				$loginReq	=	($this->checkEmpty($curr,'login_view','on'))? '':'opacity: 0; ';
 				$attr[]		=	(!empty($curr['admin_notes']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_edit.png',array('style'=>'max-height: 22px;', 'class'=>"nbr_notes")) :"";
 				$attr[]		=	(!empty($curr['file_path']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_image.png',array('style'=>"max-height: 22px;")) :"";
 				$attr[]		=	(!empty($curr['content']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_cont.png', array('style'=>'max-height: 22px;')) :"";
 				$attr[]		=	(!empty($curr['admin_lock']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'lock.png', array('style'=>'max-height: 25px;')) : "";
 				$attr[]		=	($userInc)? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'login_'.$userInc.'.png', array('style'=>$loginReq.'max-height: 20px;')) : "";
+				$attr[]		=	($this->getPlugin('nPlugins\Nubersoft\Locales')->hasLocale($curr['ID']) > 0)? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'locales.png',array('style'=>'max-height: 20px;')) : "";
+				
 				$attr		=	array_filter($attr);
 				
 				

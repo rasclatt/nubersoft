@@ -58,12 +58,7 @@ class User extends \Nubersoft\UserEngine
 		*/
 		public	function userExists($username)
 			{
-				$nApp		=	nApp::call();
-				$nQuery		=	$nApp->nQuery();
-				$username	=	trim($username);
-				$getUser	=	$nQuery->query("select COUNT(*) as count from `users` WHERE `username` = :0",array($username))->getResults(true);
-				
-				return ($getUser['count'] > 0);
+				return $this->isActive($username);
 			}
 		
 		public	function create($username,$password,$data = false)
@@ -106,5 +101,28 @@ class User extends \Nubersoft\UserEngine
 				
 				$nQuery->query("INSERT INTO `users` (".implode(', ',$columns).") VALUES(".implode(", ",$values).")",$data);
 				return $this->userExists($username);
+			}
+			
+		public	function logInUserArray($result, $vaidate = true)
+			{
+				$this->nApp->saveIncidental('login',$vaidate,true);
+				
+				if(!$vaidate)
+					return false;
+				
+				$result['usergroup']	=	$this->nApp->convertUserGroup($result['usergroup']);
+				$SESSION				=	$this->toArray($this->nApp->getSession());
+				$SESSION				=	(is_array($SESSION))? array_merge($result,$SESSION) : $result;
+				$this->nApp->getHelper('nSessioner')->toEmpty()->makeSession($SESSION);
+		
+				# Update the nubersoft user credentials
+				$this->nApp->saveSetting('user',array(
+					'loggedin'=>$this->nApp->isLoggedIn(),
+					'usergroup'=>$this->nApp->getSession('usergroup'),
+					'admin'=>$this->nApp->isAdmin(),
+					'admission'=>($this->nApp->isLoggedIn() && !$this->nApp->isAdmin())
+				));
+				
+				return $this->nApp->isLoggedIn();
 			}
 	}

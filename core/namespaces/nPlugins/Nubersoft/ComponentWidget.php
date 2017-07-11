@@ -144,4 +144,64 @@ class ComponentWidget extends \Nubersoft\nRender
 					
 				return array_keys($newCols);
 			}
+		/*
+		**	@description	Renders the default component in the page editor called by ajax
+		*/
+		public	function renderComponent()
+			{
+				$this->setErrorMode();
+				
+				if(!$this->isAdmin())
+					$this->ajaxAlert('You must be logged in and an Administrator to view this content.');
+				
+				ob_start();
+				$POST		=	$this->getPost();
+				$deliver	=	$POST->deliver;
+				$qData		=	$deliver->query_data;
+				$page_id	=	(isset($qData->ref_page))? $qData->ref_page : false;
+				$comp_id	=	(isset($qData->unique_id))? $qData->unique_id : false;
+				$sendTo		=	(isset($deliver->send_back))? $deliver->send_back : false;
+				$ID			=	(isset($qData->ID) && is_numeric($qData->ID))? $qData->ID : false;
+		
+				$validPg	=	function($arr,$key) {
+					
+					if(!empty($arr) && !empty($arr->{$key})) {
+						return (is_numeric($arr->{$key}))? $arr->{$key} : false;
+					}
+				};
+				
+				$component	=	new AdminToolsComponentEditor($comp_id,$page_id);
+				$data		=	array();
+				
+				# Secure bind statement
+				if($comp_id) {
+					$data	=	$this->nQuery()
+									->query("SELECT * FROM `components` WHERE `ID` = :0",array($ID))
+									->getResults(true);
+		
+					if($data != 0) {
+						if(!empty($data['css'])) {
+							$cssArr	=	json_decode($data['css'],true);
+							$css	=	(is_array($cssArr))? array_filter($cssArr):array();
+							foreach($css as $cssKey => $cssVal)
+								$data["css[".$cssKey."]"]	=	$cssVal;
+						}
+					}
+				}
+				
+				echo $component
+					->useTable('components')
+					->useComponentMap('component')
+					->display($data);
+				
+				$data	=	ob_get_contents();
+				ob_end_clean();
+				
+				$this->ajaxResponse(array(
+					'html'=>array($data),
+					'sendto'=>array($this->getPost('deliver')->send_back),
+					'fx'=>array('fadeIn'),
+					'acton'=>array($this->getPost('deliver')->send_back)
+				));
+			}
 	}

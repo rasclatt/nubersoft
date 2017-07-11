@@ -26,11 +26,11 @@ eEngine.addEvent({
 	'use':'load_tools'
 	},function() {
 		var response	=	eEngine.getData('ajax_response_before');
-		console.log(eEngine.getAll());
+		//console.log(eEngine.getAll());
 		if(!is_object(response) && !preg_match('\^{|\}$',response))
 			$('#tool_inspector_container').html(response);
-		else
-			console.log(response);
+		//else
+		//	console.log(response);
 });
 </script>
 <div id="tool_inspector_container" class="nListener" data-instructions='<?php echo json_encode($object); ?>'>

@@ -61,15 +61,18 @@ class	BuildCache extends \Nubersoft\nApp
 				if(is_array($directoryExp)) {
 					foreach($directoryExp as $keys => $values){
 						$buildDirRoots	.=	$values.DS;
-						if(!is_dir($resetCachRoot))
-							@mkdir($resetCachRoot, 0755,true);
+						if(!$this->isDir($resetCachRoot))
+							$this->toAlert('Could not make dir: '.$resetCachRoot);
 							
-						if(!is_dir($resetCachRoot . $buildDirRoots))
-							@mkdir($resetCachRoot . $buildDirRoots, 0755,true);
+						if(!$this->isDir($resetCachRoot . $buildDirRoots))
+							$this->toAlert('Could not make dir: '.$resetCachRoot . $buildDirRoots);
 					}
 				}
-				else
-					@mkdir(str_replace(DS.DS,DS,$resetCachRoot.DS.$directoryExp), 0755,true);
+				else {
+					$path	=	str_replace(DS.DS,DS,$resetCachRoot.DS.$directoryExp);
+					if(!$this->isDir($path))
+						$this->toAlert('Could not make dir: '.$path);
+				}
 				
 				if($htaccess != false) {
 					if(!is_file(str_replace(DS.DS,DS,$resetCachRoot.DS.".htaccess"))) {
@@ -114,7 +117,7 @@ class	BuildCache extends \Nubersoft\nApp
 						else {
 							$msg	=	"Cache failed".PHP_EOL."Likely Permissions".PHP_EOL;
 							$fName	=	array(
-											'path'=>NBR_CLIENT_DIR.DS."settings".DS."errorlogs".DS,
+											'path'=>NBR_CLIENT_DIR.DS."settings".DS.'reporting'.DS."errorlogs".DS,
 											'filename'=>"cache.log.txt"
 										);
 							$opts	=	array(

@@ -56,7 +56,7 @@ class RenderPageElements extends \nPlugins\Nubersoft\RenderElements
 				// If the element requires a usergroup
 				$_settings['perm']		=	true;
 				if($_settings['login']) {
-					$user	=	(!empty($this->payload['login_permission']))? 3 : $this->payload['login_permission'];
+					$user	=	(empty($this->payload['usergroup']))? $this->getUsergroup('NBR_WEB') : $this->getUsergroup($this->payload['usergroup']);
 					// Check if the user is logged in and has good enough permissions
 					$_settings['perm']	=	($this->isLoggedIn() && $this->getHelper('UserEngine')->allowIf($user));
 				}

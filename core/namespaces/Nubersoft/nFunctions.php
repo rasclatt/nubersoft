@@ -1,11 +1,47 @@
 <?php
+/*
+**	Copyright (c) 2017 Nubersoft.com
+**	Permission is hereby granted, free of charge *(see acception below in reference to
+**	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+**	and associated documentation files (the "Software"), to deal in the Software without
+**	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+**	or distribute copies of the Software, and to permit persons to whom the Software is
+**	furnished to do so, subject to the following conditions:
+**	
+**	The base CMS software* is not used for commercial sales except with expressed permission.
+**	A licensing fee or waiver is required to run software in a commercial setting using
+**	the base CMS software.
+**	
+**	*Base CMS software is defined as running the default software package as found in this
+**	repository in the index.php page. This includes use of any of the nAutomator with the
+**	default/modified/exended xml versions workflow/blockflows/actions.
+**	
+**	The above copyright notice and this permission notice shall be included in all
+**	copies or substantial portions of the Software.
+**
+**	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+**	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+**	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+**	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+**	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+**	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+**	SOFTWARE.
+
+**SNIPPETS:**
+**	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+**	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+**	NOT BEEN LOCATED AND DELETED.
+*/
 namespace Nubersoft;
 
 class	nFunctions extends \Nubersoft\Singleton
 	{
 		private	static	$nHelpers,
 						$filedata;
-
+		
+		protected	static	$objectObj;
+		protected	$obj;
+		
 		private	$rootDir,
 				$keyList,
 				$actionArr,
@@ -22,7 +58,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return parent::__construct();
 			}
-			
+		/*
+		**	@description	Fetches data from $data
+		*/
 		public	function fetchData()
 			{
 				$args	=	func_get_args();
@@ -48,7 +86,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				# Send back obj for chaining
 				return $this;
 			}
-		
+		/*
+		**	@description	Gets/sets a non-Nubersoft class from the stored array
+		*/
 		public	function get3rdPartyHelper($type,$dependency = false)
 			{
 				if(is_object($type))
@@ -62,13 +102,17 @@ class	nFunctions extends \Nubersoft\Singleton
 					return (isset(self::$nHelpers[$type]))? self::$nHelpers[$type] : false;
 				}
 			}
-		
+		/*
+		**	@description	Wrapper for $this->get3rdPartyHelper()
+		*/
 		public	function getPlugin($type,$dependency = false)
 			{
 				return $this->get3rdPartyHelper($type,$dependency);
 			}
-		
-		public	function getHelper()
+		/*
+		**	@description	Gets/sets a class from the stored array
+		*/
+		public	function getSingleton()
 			{
 				$args	=	func_get_args();
 				$type	=	$args[0];
@@ -83,12 +127,38 @@ class	nFunctions extends \Nubersoft\Singleton
 				}
 			}
 		/*
+		**	@description	Fetches a Nubersoft-based class
+		*/
+		public	function getHelper()
+			{
+				$args	=	func_get_args();
+				$type	=	$args[0];
+				if($this->helperIsSet($type)) {
+					return self::$nHelpers[$type];
+				}
+				else {
+					unset($args[0]);
+					$args	=	(count($args) >= 1)? $args : false;
+					$this->setHelper($type,$args);
+					$obj	=	 (isset(self::$nHelpers[$type]))? self::$nHelpers[$type] : false;
+					# Unset the value (stops caching them)
+					//unset(self::$nHelpers[$type]);
+					# Return the object
+					return $obj;
+				}
+			}
+		/*
 		**	@description	Checks if a class has been set into the helper class
 		*/
 		protected	function helperIsSet($type,$namespace = '\Nubersoft\\')
 			{
 				if(is_object($type))
 					$type	=	get_class($type);
+				
+				if(!is_string($type) || !is_string($namespace)) {
+					trigger_error('Namespace or Class name must be string.');
+					die(printpre(array($namespace,$type)));
+				}
 				
 				$class	=	"{$namespace}{$type}";
 				return (isset(self::$nHelpers[$type]) && is_a(self::$nHelpers[$type], $class));
@@ -117,7 +187,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $this;
 			}
-		
+		/*
+		**	@description	Store a class instance into a static array
+		*/
 		public	function saveEngine()
 			{
 				$args	=	func_get_args();
@@ -128,7 +200,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				self::$nHelpers[$type]	=	($inject)? new $class(...$inject) : new $class();
 				return $this;
 			}
-		
+		/*
+		**	@description	Try to create and return a class instance
+		*/
 		public	function returnHelper($type,$inject = false,$namespace = '\Nubersoft\\')
 			{
 				$class	=	"{$namespace}{$type}";
@@ -144,25 +218,29 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $this;
 			}
-			
-		public	function isAjaxRequest()
+		/*
+		**	@description	Checks if the request is ajax-based
+		*/
+		public	function isAjaxRequest($type = 'HTTP_X_REQUESTED_WITH')
 			{
-				return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']));
+				if(!empty(nApp::call()->getDataNode('_SERVER')->{$type}))
+					return true;
+				
+				return (!empty($_SERVER[$type]));
 			}
-		
+		/*
+		**	@description	Returns if a array key is set or not
+		*/
 		private	function validateVar($array = false,$key = false)
 			{
-				
-				if($array != false) {
-					if(is_array($array)) {
-						if(isset($array[$key]))
-							return true;
-					}
-				}
+				if(is_array($array))
+					return (isset($array[$key]));
 				
 				return false;
 			}
-		
+		/*
+		**	@description	Checks if an array key/value is empty and can check that it equals a certain value
+		*/
 		public	function checkEmpty($array = false,$key = false,$value = false)
 			{
 				if($this->validateVar($array,$key)) {
@@ -177,7 +255,10 @@ class	nFunctions extends \Nubersoft\Singleton
 				# If gets to here, empty
 				return false;
 			}
-		
+		/*
+		**	@description	Returns a value of an array or object and can set it's
+		**					default value if original is empty
+		*/
 		protected	function setKeyValue($array,$key,$false,$true = false)
 			{
 				if(is_object($array))
@@ -190,7 +271,9 @@ class	nFunctions extends \Nubersoft\Singleton
 			{
 				return (isset($array[$key]));
 			}
-		
+		/*
+		**	@description	Scans a directory and returns array similar to the recursive method
+		*/
 		public	function getNonRecDir($dir = false,$search = false)
 			{
 				if(is_dir($dir)) {
@@ -214,13 +297,17 @@ class	nFunctions extends \Nubersoft\Singleton
 					
 				return (!empty($files))? $files : false;
 			}
-		
+		/*
+		**	@description	Sets a root dir to variable
+		*/
 		public	function setRootDir($value = false)
 			{
 				$this->rootDir	=	$value;
 				return $this;
 			}
-		
+		/*
+		**	@description	Fetches all directories/files from a directory recursively into an array
+		*/
 		public	function getDirList($settings = false,$return = false)
 			{
 				if(is_string($settings))
@@ -246,7 +333,10 @@ class	nFunctions extends \Nubersoft\Singleton
 				if(!$recursive)
 					return $this->getNonRecDir($directory,$addpreg);
 				
-				$dir	=	new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory),\RecursiveIteratorIterator::CHILD_FIRST);
+				$dir	=	new \RecursiveIteratorIterator(
+								new \RecursiveDirectoryIterator($directory),
+								\RecursiveIteratorIterator::CHILD_FIRST
+							);
 						
 				# Loop through directories
 				while($dir->valid()) {
@@ -295,41 +385,73 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return (isset($array))? $array:false;
 			}
-		
-		public	function toArray($var = false)
+		/*
+		**	@description	Turns an object to array
+		*/
+		public	function toArray()
 			{
+				$args	=	func_get_args();
+				$var	=	(!empty($args[0]))? $args[0] : false;
+				
 				if(empty($var))
 					return $var;
 					
 				return (is_object($var) || is_array($var))? json_decode(json_encode($var),true) : $var;
 			}
-			
-		public	function toObject($var = false)
+		/*
+		**	@description	Turns an array to object
+		*/
+		public	function toObject()
 			{
+				$args	=	func_get_args();
+				$var	=	(!empty($args[0]))? $args[0] : false;
+				
 				if(empty($var))
 					return $var;
 					
 				return (is_object($var) || is_array($var))? json_decode(json_encode($var,JSON_FORCE_OBJECT)) : $var;
 			}
-		
-		public	function autoloadContents($dir)
+		/*
+		**	@description	Includes all files inside a destination folder
+		*/
+		public	function autoloadContents($dir,$type='include_once')
 			{
 				$files	=	$this->getNonRecDir($dir,'.php');
 				
 				if($files) {
 					foreach($files['root'] as $file) {
-						include_once($file);
+						switch($type) {
+							case('include'):
+								include($file);
+								break;
+							case('require'):
+								require($file);
+								break;
+							case('require_once'):
+								require_once($file);
+								break;
+							default:
+								include_once($file);
+						}
 					}
 				}
+				
+				return $this;
 			}
-		
+		/*
+		**	@description	Basic santize function to create html friendly values from all GLOBAL arrays
+		*/
 		public	function sanitizeRequests()
 			{
-				$sanitize	=	new \Submits();
+				$sanitize	=	new Submits();
 				# Loop through and htmlentities sanitize post,get,request
 				$sanitize->sanitize();
+				
+				return $this;
 			}
-		
+		/*
+		**	@description	Autoloads a function
+		*/
 		public	function autoload($func, $dir = false, $prefix = '',$ext = 'php')
 			{
 				# If there is a string but has commas, explode it
@@ -358,7 +480,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $this;
 			}
-		
+		/*
+		**	@description	Recursively fines values associated with a key
+		*/
 		public	function findKey($array,$key)
 			{
 				foreach($array as $akey => $aval) {
@@ -372,7 +496,7 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $this;
 			}
-			
+		
 		public	function findByKeyOrder($array,$keyArray)
 			{
 				foreach($array as $akey => $aval) {
@@ -391,7 +515,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $this;
 			}
-			
+		/*
+		**	@description	Returns values created by $this->findByKeyOrder() or by $this->findKey()
+		*/
 		public	function getKeyList($val = false)
 			{
 				if(!empty($val))
@@ -471,6 +597,15 @@ class	nFunctions extends \Nubersoft\Singleton
 		*/
 		public	function isDir($dir,$make = true,$chmod = 0755)
 			{
+				# Add printpre
+				if(!function_exists('printpre'))
+					$this->autoload('printpre');
+				# TEST
+				$strip	=	trim(strip_tags(printpre($dir)));
+				# 
+				if(!is_dir($strip) && (basename($strip) == '1'))
+					file_put_contents(NBR_CLIENT_DIR.DS.'settings'.DS.'create_dir_'.date('YmdHis').rand().'.txt',$strip);
+				
 				try {
 					if(empty($dir))
 						trigger_error('Directory can not be empty',E_USER_WARNING);
@@ -478,8 +613,21 @@ class	nFunctions extends \Nubersoft\Singleton
 						if(!is_dir($dir) && $make) {
 							if(!@mkdir($dir,$chmod,true))
 								throw new nException('Directory failed to be created');
-							else
+							else {
+								# Store the creation report
+								$repFile	=	NBR_CLIENT_DIR.DS.'settings'.DS.'reporting'.DS.'mkdir'.DS.'log.txt';
+								$repDir		=	pathinfo($repFile,PATHINFO_DIRNAME);
+								if(!is_dir($repDir)) {
+									@mkdir($repDir,0755,true);
+								}
+								
+								if(is_dir($repDir)) {
+									$msg	=	"[time] ".date('Y-m-d H:i:s').PHP_EOL."[debug] ".str_replace(array("\t",")/"),array('',')'.PHP_EOL.'/'),trim(strip_tags(printpre(\Nubersoft\nApp::call()->stripRoot($dir))))).PHP_EOL."-------------------------------".PHP_EOL;
+									file_put_contents($repFile,$msg,FILE_APPEND);
+								}
+								
 								chmod($dir,$chmod);
+							}
 						}
 						
 						return is_dir($dir);
@@ -575,13 +723,20 @@ class	nFunctions extends \Nubersoft\Singleton
 				# Check one more time to see if it created properly
 				return (is_file($htaccess));
 			}
-		
+		/*
+		**	@description	Takes a nondeliniated string value and turns it to formatted date
+		**	@example		$date = $this->dateFromStr('/files/20170528123354.jpg','Y-m-d H:i:s');
+		**					# Returns
+		**					2017-05-28 12:33:54
+		*/
 		public	function dateFromStr($num,$format='M j, Y (g:i A)')
 			{
 				$time	=	preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/','$1-$2-$3 $4:$5:$6',$num);
 				return date($format,strtotime($time));
 			}
-
+		/*
+		**	@description	Basic download of a CSV file
+		*/
 		public	function saveToCSV($array,$title)
 			{
 				header('Content-Type: text/csv');
@@ -598,12 +753,16 @@ class	nFunctions extends \Nubersoft\Singleton
 				fclose($f);
 				exit;
 			}
-		
+		/*
+		**	@description	Sets the timezone at point of use
+		*/
 		public	function setTimeZone($string = 'America/Los_Angeles')
 			{
 				date_timezone_set($string);
 			}
-		
+		/*
+		**	@description	Returns an array with keys (or not) without creating an error
+		*/
 		public	function arrayKeys($array)
 			{
 				if(!is_array($array))
@@ -612,7 +771,7 @@ class	nFunctions extends \Nubersoft\Singleton
 				return (!empty($array))? array_keys($array) : array();
 			}
 		/*
-		**	@description will get set data for the action
+		**	@description	Sets data for the current action
 		*/
 		public	function useData()
 			{
@@ -620,7 +779,24 @@ class	nFunctions extends \Nubersoft\Singleton
 				$this->data	=	(isset($arg[0]))? $arg[0] : false;
 				return $this;
 			}
-		
+		/*
+		**	@description	Fetches a saved object
+		*/
+		public	function getCurrentSavedObj()
+			{
+				return self::$objectObj;
+			}
+		/*
+		**	@description	Sets a saved object (or clears it)
+		*/
+		public	function setCurrentSavedObj($value = false)
+			{
+				self::$objectObj	=	$value;
+				return $this;
+			}
+		/*
+		**	@description	Uses the buffer to turn output to string
+		*/
 		public	function render()
 			{
 				$args		=	func_get_args();
@@ -629,7 +805,13 @@ class	nFunctions extends \Nubersoft\Singleton
 				$incType	=	'include';
 				$useData	=	false;
 				unset($args[0]);
-				
+				# Store and get the object
+				$this->obj	=	$this->setCurrentSavedObj(((!empty($args[1]) && is_object($args[1]))? $args[1] : false))
+					->getCurrentSavedObj();
+				# Clear it from storage
+				if($this->obj)
+					$this->setCurrentSavedObj();	
+				 
 				if(is_array($inc))
 					$inc	=	implode(DS,$inc);
 				
@@ -666,9 +848,35 @@ class	nFunctions extends \Nubersoft\Singleton
 				$data	=	ob_get_contents();
 				ob_end_clean();
 				
+				# Clear the object after use
+				$this->obj	=	false;
+				# Send back the render
 				return $data;
 			}
-		
+		/*
+		**	@description	Extracts a mirrored array from the config(s) or from another array
+		**	@example		
+		**					$input = array('best','test','messed');
+		**					$match = array(
+		**						'guess'=>true,
+		**						'best'=>array(
+		**							'red'=>'blue',
+		**							'test'=>array(
+		**								'fun'=>array(true),
+		**								'messed'=>'something'
+		**							)
+		**						)
+		**					);
+		**					
+		**					# Returns
+		**					Array (
+		**						best => Array (
+		**							test => Array (
+		**								'messed' => 'something'
+		**							)
+		**						)
+		**					);
+		*/
 		public	function getMatchedArray($array,$split='_',$extArr = false)
 			{
 				$nApp			=	nApp::call();
@@ -677,7 +885,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				return $configFuncs	->useArray($extArr)
 									->getSettings($array);
 			}
-
+		/*
+		**	@description	Splice value into another array at a certain point 
+		*/
 		public function insertIntoArray(array $array, $insert = '', $placement = 0)
 			{
 				$calc		=	($placement-1);
@@ -693,7 +903,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				elseif(!is_array($front) && is_array($end))
 					return $end;
 			}
-		
+		/*
+		**	@description	Extracts specific characteristics from XML array attributes
+		*/
 		public	function fetchScripts($array,&$new)
 			{
 				foreach($array as $key => $value) {
@@ -718,7 +930,9 @@ class	nFunctions extends \Nubersoft\Singleton
 					}
 				}
 			}
-		
+		/*
+		**	@description	Checks if a table exists in the database
+		*/
 		public	function tableExists($table)
 			{
 				$tables	=	$this->toArray(nApp::call()->getTables());
@@ -727,7 +941,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return false;
 			}
-		
+		/*
+		**	@description	Returns an associate array by column names in a table
+		*/
 		public	function filterArrayByTable($table,$array)
 			{
 				if(empty(self::$filedata[$table])) {
@@ -750,7 +966,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $files;
 			}
-		
+		/*
+		**	@description	Extracts all values based on the name of a key
+		*/
 		public	function flattenArrayByKey($array,&$new,$keyName)
 			{
 				foreach($array as $key => $value) {
@@ -772,7 +990,9 @@ class	nFunctions extends \Nubersoft\Singleton
 					}
 				}
 			}
-			
+		/*
+		**	@description	Extracts all values from an array recursively
+		*/
 		public	function extractAll($array,&$new)
 			{
 				foreach($array as $key => $value) {
@@ -782,7 +1002,9 @@ class	nFunctions extends \Nubersoft\Singleton
 						$new[]	=	$value;
 				}
 			}
-		
+		/*
+		**	@description	Takes a value (string, int, bool) and determines it's BOOL value
+		*/
 		public	function getBoolVal($val)
 			{
 				if(is_array($val) || is_object($val))
@@ -809,8 +1031,10 @@ class	nFunctions extends \Nubersoft\Singleton
 				}
 				
 				return $val;
-			}
-		
+			}		
+		/*
+		**	@description	Basic human-readable file size builder
+		*/
 		public	function getByteSize($val,$settings = false)
 			{
 				$to			=	(!empty($settings['to']))? strtoupper($settings['to']) : 'KB';
@@ -852,7 +1076,9 @@ class	nFunctions extends \Nubersoft\Singleton
 
 				return ($ext)? $returnVal.$to : $returnVal;
 			}
-		
+		/*
+		**	@description	Removes double directory separators with just one
+		*/
 		public	function toSingleDs($val)
 			{
 				return str_replace(DS.DS,DS,$val);
@@ -882,7 +1108,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				if(!empty($new))
 					return $new;
 			}
-		
+		/*
+		**	@description	Extracts all vallues from a multi-dimensional array and puts them in one
+		*/
 		public	function flattenArray($array,&$new,$currKey = false)
 			{
 				if(empty($array))
@@ -911,7 +1139,9 @@ class	nFunctions extends \Nubersoft\Singleton
 					}
 				}
 			}
-		
+		/*
+		**	@description	
+		*/
 		public	function useKeyFromVal($array,$keyname,$unset = false)
 			{
 				if(is_array($keyname)) {
@@ -934,7 +1164,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return $new;
 			}
-		
+		/*
+		**	@description	Basic comparing
+		*/
 		public	function compare($arg1 = 0,$arg2 = 0,$comp = '=')
 			{
 				
@@ -953,16 +1185,24 @@ class	nFunctions extends \Nubersoft\Singleton
 						return ($arg1 <= $arg2);
 					case ('>=') :
 						return ($arg1 >= $arg2);
+					case ('!=') :
+						return ($arg1 != $arg2);
+					case ('!==') :
+						return ($arg1 !== $arg2);
 				}
 					
 				return false;
 			}
-		
+		/*
+		**	@description	Retrieve the html encoder/decoder
+		*/
 		public	function safe()
 			{
 				return $this->getHelper('Safe');
 			}
-		
+		/*
+		**	@description	Creates a json response and dies for ajax-based requests
+		*/
 		public	function getJson($file)
 			{
 				if(!is_file($file))
@@ -970,7 +1210,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				return json_decode(file_get_contents($file));
 			}
-			
+		/*
+		**	@description	Creates a json response and dies for ajax-based requests
+		*/
 		public	function ajaxResponse($array)
 			{
 				return die(json_encode($array));
@@ -997,7 +1239,9 @@ class	nFunctions extends \Nubersoft\Singleton
 				
 				$this->ajaxResponse($arr);
 			}
-		
+		/*
+		**	@description	Creates a javascript-based "redirect"
+		*/
 		public	function ajaxRouter($link)
 			{
 				$this->ajaxResponse(array(
@@ -1009,18 +1253,23 @@ class	nFunctions extends \Nubersoft\Singleton
 					)
 				));
 			}
-		 /*Description: This function takes an array such as `$_GET` and creates a query string. The query string can be filtered using an `array` or `string` value. By default it removes `admintools`. By adding `true` to the last setting, you can make the variable only include, or only remove key/value pairs. */
-/*Example: 
-`$_GET['key1'] = 'No thank you';
-$_GET['key2'] = 'Yes please';
-# Option 1
-echo create_query_string('key1',$_GET);
-# Option 2
-echo create_query_string('key1',$_GET,true);
-# Option 1 Gives you
-key2=Yes+please
-# Option 2 Gives you
-key1=No+thank+you`*/
+		/*
+		**	@description	Takes an array such as `$_GET` and creates a query string. The query
+		**					string can be filtered using an `array` or `string` value. By default
+		**					it removes `admintools`. By adding `true` to the last setting, you can
+		**					make the variable only include, or only remove key/value pairs.
+		**	@example: 
+		**					$_GET['key1'] = 'No thank you';
+		**					$_GET['key2'] = 'Yes please';
+		**					# Option 1
+		**					echo $this->createQueryString('key1',$_GET);
+		**					# Option 2
+		**					echo $this->createQueryString('key1',$_GET,true);
+		**					# Option 1 Gives you
+		**					key2=Yes+please
+		**					# Option 2 Gives you
+		**					key1=No+thank+you
+		*/
 		public	function createQueryString($notvar = false,$request = array(),$keep = false)
 			{
 				$type		=	$request;
@@ -1049,7 +1298,9 @@ key1=No+thank+you`*/
 					return $useAnd.http_build_query($type);
 				}
 			}
-		
+		/*
+		**	@description	Creates a date-based value
+		*/
 		public	function fetchUniqueId($salt = false,$shuffle = false)
 			{
 				$number		=	substr(date("YmdHis").preg_replace("/[^0-9]/","",uniqid($salt)),0,49);
@@ -1062,12 +1313,16 @@ key1=No+thank+you`*/
 				# Save a quick unique_id
 				return	$number;
 			}
-			
+		/*
+		**	@description	Initializes the Form creation object
+		*/
 		public	function getForm()
 			{
 				return $this->getHelper('nForm');
 			}
-			
+		/*
+		**	@description	Basic parent / child extraction
+		*/
 		public	function getTreeStructure($info, $parent = 0)
 			{
 				foreach ($info as $row) {
@@ -1231,7 +1486,9 @@ key1=No+thank+you`*/
 				# Return the array
 				return $arr;
 			}
-			
+		/*
+		**	@description	Basic extraction of all values from the array recursively
+		*/
 		public	function getRecursiveValues($array)
 			{
 				if(!is_array($array))
@@ -1243,7 +1500,9 @@ key1=No+thank+you`*/
 				$this->extractAll($array,$new);
 				return $new;
 			}
-		
+		/*
+		**	@description	Basic extraction of all keys from the array recursively
+		*/
 		public	function getRecursiveKeys($array,&$allKeys)
 			{
 				foreach($array as $key => $value) {
@@ -1251,33 +1510,36 @@ key1=No+thank+you`*/
 					if(is_array($value)) {
 						$this->getRecursiveKeys($value,$allKeys);
 					}
-					
 				}
 			}
-		
-		public	function getClientIp()
+		/*
+		**	@description	Basic ip return from SERVER global
+		*/
+		public	function getClientIp($key = 'REMOTE_ADDR')
 			{
-				if(!empty(NubeData::$settings->_SERVER->REMOTE_ADDR))
-					return NubeData::$settings->_SERVER->REMOTE_ADDR;
-				elseif(isset($_SERVER['REMOTE_ADDR']))
-					return $_SERVER['REMOTE_ADDR'];
+				if(!empty(NubeData::$settings->_SERVER->{$key}))
+					return NubeData::$settings->_SERVER->{$key};
+				elseif(isset($_SERVER[$key]))
+					return $_SERVER[$key];
 			}
-		
-		public	function trimAll($array)
+		/*
+		**	@description	Recursive trim
+		*/
+		public	function trimAll($array,$type=false)
 			{
-				if(empty($array)) {
+				if(empty($array))
 					return $array;
-				}
 				elseif(is_string($array))
-					return trim($array);
-			
-				foreach($array as $key => $value) {
-					$array[$key]	=	$this->trimAll($value);
-				}
+					return (!empty($type))? trim($array,$type) : trim($array);
+				
+				foreach($array as $key => $value)
+					$array[$key]	=	$this->trimAll($value,$type);
 				
 				return $array;
 			}
-			
+		/*
+		**	@description	Basic dollar rendering
+		*/
 		public	function toDollar($string,$curr = '$',$dec=2,$sep=',',$dectype='.',$front=true)
 			{
 				$string	=	preg_replace('/[^0-9\.]/','',$string);
@@ -1290,12 +1552,39 @@ key1=No+thank+you`*/
 		public	function setErrorMode($status = true)
 			{
 				if($status) {
+					# Save status of error method
+					\Nubersoft\NubeData::$settings->error_mode	=	new \ArrayObject(array("status"=>E_ALL));
 					ini_set("display_errors",1);
 					error_reporting(E_ALL);
 				}
 				else {
+					# Save status of error method
+					\Nubersoft\NubeData::$settings->error_mode	=	false;
 					ini_set('display_errors','off');
 					error_reporting(0);
 				}
+				
+				return $this;
 			}
+		/*
+		**	@description	Recursively change the keys in an array to upper case or lowercase
+		*/
+		public	function recurseArrayKeysChanged($array,$type = false,$sort=true)
+			{
+				if(!is_array($array))
+					return $array;
+				
+				if($sort)
+					ksort($array);
+				
+				foreach($array as $key => $value) {
+					$useKey				=	($type)? strtoupper($key) : strtolower($key);
+					$return[$useKey]	=	$this->recurseArrayKeysChanged($value,$type);
+					
+					if($sort && is_array($return[$useKey]))
+						ksort($return[$useKey]);
+				}
+				
+				return (isset($return))? $return : $array;
+			}		
 	}

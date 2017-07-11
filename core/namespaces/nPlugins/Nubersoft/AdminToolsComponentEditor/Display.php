@@ -1,4 +1,5 @@
 <?php
+
 $nProccessor	=	$this->getHelper('nToken')->setMultiToken('nProcessor','component');
 $nForm			=	$this->getHelper('nForm');
 $action			=	((isset($this->getDataNode('_SERVER')->HTTP_REFERER))? $this->getDataNode('_SERVER')->HTTP_REFERER : '#');

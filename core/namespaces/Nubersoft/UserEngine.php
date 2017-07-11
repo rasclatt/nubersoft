@@ -3,11 +3,20 @@ namespace Nubersoft;
 
 class	UserEngine extends \Nubersoft\nFunctions
 	{
+		protected	$user	=	array();
+		protected	$nApp;
+		
+		public	function __construct()
+			{
+				$this->nApp	=	nApp::call();
+				
+				return parent::__construct();
+			}
+		
 		public	function loginUser($array = array())
 			{
-				$nApp		=	nApp::call();
 				$username	=	(!empty($array['username']))? $array['username'] : 'guest'.mt_rand().date('YmdHis');
-				$usergroup	=	(!empty($array['usergroup']))? $nApp->convertUserGroup($array['usergroup']) : NBR_WEB;
+				$usergroup	=	(!empty($array['usergroup']))? $this->nApp->convertUserGroup($array['usergroup']) : NBR_WEB;
 				$fName		=	(!empty($array['first_name']))? $array['first_name'] : 'Guest';
 				$lName		=	(!empty($array['last_name']))? $array['last_name'] : 'User';
 					
@@ -20,7 +29,7 @@ class	UserEngine extends \Nubersoft\nFunctions
 				$settings['first_name']	=	$fName;
 				$settings['last_name']	=	$lName;
 				// Get the session engine
-				$nSession				=	nApp::call('nSessioner');
+				$nSession				=	$this->nApp->getHelper('nSessioner');
 				// Make the array a session
 				$nSession->makeSession($settings);
 			}
@@ -54,7 +63,7 @@ class	UserEngine extends \Nubersoft\nFunctions
 				if(empty($username))
 					return 0;
 					
-				return nApp::call()->nQuery()
+				return $this->nApp->nQuery()
 						->query("select * from `users` where `username` = :0".((!$all)? " AND `user_status` = 'on'":''),array($username))
 						->getResults(true);
 			}
@@ -62,7 +71,7 @@ class	UserEngine extends \Nubersoft\nFunctions
 		public	function allowIf($usergroup = 3)
 			{
 				if(is_string($usergroup))
-					$usergroup	=	nApp::call()->convertUserGroup($usergroup);
+					$usergroup	=	$this->nApp->convertUserGroup($usergroup);
 					
 				if(!is_numeric($usergroup))
 					return false;
@@ -72,21 +81,19 @@ class	UserEngine extends \Nubersoft\nFunctions
 		
 		public	function isAdmin($username = false)
 			{
-				$nApp		=	nApp::call();
-				
 				if(!empty($username)) {
 					$user	=	$this->getUser($username);
 					if($user == 0)
 						return false;
 					
-					$usergroup	=	$nApp->convertUserGroup($user['usergroup']);
+					$usergroup	=	$this->nApp->convertUserGroup($user['usergroup']);
 				}
 				else
-					$usergroup	=	(!empty($nApp->getDataNode('_SESSION')->usergroup))? $nApp->getDataNode('_SESSION')->usergroup : false;
+					$usergroup	=	(!empty($this->nApp->getDataNode('_SESSION')->usergroup))? $this->nApp->getDataNode('_SESSION')->usergroup : false;
 				
 				if(!is_numeric($usergroup)) {
 					if(is_string($usergroup))
-						$usergroup	=	$nApp->convertUserGroup($usergroup);
+						$usergroup	=	$this->nApp->convertUserGroup($usergroup);
 					
 					if(!is_numeric($usergroup))
 						return false;
@@ -109,12 +116,10 @@ class	UserEngine extends \Nubersoft\nFunctions
 		
 		public	function isLoggedin($username = false)
 			{
-				$nApp	=	nApp::call();
-				
 				if(!empty($username))
-					return ($nApp->getSession('username') == $username);
+					return ($this->nApp->getSession('username') == $username);
 				
-				return (!empty($nApp->getSession('username')));
+				return (!empty($this->nApp->getSession('username')));
 			}
 		
 		public	function isLoggedInNotAdmin($username = false)
@@ -131,12 +136,38 @@ class	UserEngine extends \Nubersoft\nFunctions
 									OR
 								`usergroup` = 'NBR_ADMIN'";
 				
-				$nApp	=	nApp::call();
-				$nQuery	=	$nApp->nQuery();
+				$nQuery	=	$this->nApp->nQuery();
 				$count	=	$nQuery
 					->query($sql)
 					->getResults(true);
 				
 				return ($count['count'] >= 1);
+			}
+		
+		public	function getUserData()
+			{
+				return $this->user;
+			}
+		
+		public	function isActive($username = false)
+			{
+				if(empty($username)) {
+					if(!isset($this->user['active']))
+						trigger_error('You have not set a username to check against or it has been reset.',E_USER_NOTICE);
+					return (!empty($this->user['active']));
+				}
+				else {
+					if(isset($this->user['username']) && $this->user['username'] == $username)
+						return $this->user['active'];
+				}
+				
+				$sql		=	"SELECT COUNT(*) as count FROM users WHERE username = :0 and user_status = 'on'";
+				$query		=	$this->nApp->nQuery()->query($sql,array($username))->getResults(true);
+				$this->user	=	[
+					'username' => $username,
+					'active' => ($query['count'] > 0)
+				];
+				
+				return $this->user['active'];
 			}
 	}

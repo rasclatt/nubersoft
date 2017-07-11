@@ -3,7 +3,14 @@ namespace Nubersoft;
 
 class	nImage extends \Nubersoft\Singleton
 	{
-		protected	$nApp;
+		protected	$nHtml;
+		
+		public	function __construct()
+			{
+				$this->nHtml	=	new nHtml();
+				
+				return parent::__construct();
+			}
 		
 		public	function toBase64($file,$encodeing = false)
 			{
@@ -23,20 +30,20 @@ class	nImage extends \Nubersoft\Singleton
 		public	function image($path,$options = false,$version = false,$local = true)
 			{
 				$settings	=	$this->parseAttr($options);
-				return nApp::call()->getHelper('nHtml')->renderSource('img',$path,$local,$version,$settings);
+				return $this->nHtml->renderSource('img',$path,$local,$version,$settings);
 			}
 		
 		public	function imageBase64($path,$options = false)
 			{
 				
 				$settings	=	$this->parseAttr($options);
-				return nApp::call()->getHelper('nHtml')->renderSource('img',$this->toBase64($path),false,false,$settings);
+				return $this->nHtml->renderSource('img',$this->toBase64($path),false,false,$settings);
 			}
 			
 		public	function src($path,$options = false,$version = false,$local = true)
 			{
 				$settings	=	$this->parseAttr($options);
-				return nApp::call()->getHelper('nHtml')->renderSource('src',$path,$local,$version,$settings);
+				return $this->nHtml->renderSource('src',$path,$local,$version,$settings);
 			}
 		
 		protected	function parseAttr($options)

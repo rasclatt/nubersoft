@@ -17,6 +17,7 @@ $defSelect	=	($hasSelect)? $this->settings['select'] : false;
 			foreach($this->settings['options'] as $key => $row) {
 				$OptValue	=	(!isset($row['value']))? $key : ((isset($row['value']))? $row['value'] : '');
 				$OptName	=	(!isset($row['name']))? $row : ((isset($row['name']))? $row['name'] : '');
+				$isDisabled	=	(!empty($row['disabled']))? ' disabled' : '';
 				$selected	=	'';
 				if(!empty($row['selected']))
 					$selected	=	' selected';
@@ -26,7 +27,7 @@ $defSelect	=	($hasSelect)? $this->settings['select'] : false;
 					}
 				}
 				
-?>					<option value="<?php echo $OptValue ?>"<?php echo $selected ?>><?php echo $OptName ?></option>
+?>					<option value="<?php echo $OptValue ?>"<?php echo $selected.$isDisabled ?>><?php echo $OptName ?></option>
 <?php		}
 		}
 ?>				</select>

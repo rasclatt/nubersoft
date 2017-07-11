@@ -1,4 +1,37 @@
 <?php
+/*
+**	Copyright (c) 2017 Nubersoft.com
+**	Permission is hereby granted, free of charge *(see acception below in reference to
+**	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+**	and associated documentation files (the "Software"), to deal in the Software without
+**	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+**	or distribute copies of the Software, and to permit persons to whom the Software is
+**	furnished to do so, subject to the following conditions:
+**	
+**	The base CMS software* is not used for commercial sales except with expressed permission.
+**	A licensing fee or waiver is required to run software in a commercial setting using
+**	the base CMS software.
+**	
+**	*Base CMS software is defined as running the default software package as found in this
+**	repository in the index.php page. This includes use of any of the nAutomator with the
+**	default/modified/exended xml versions workflow/blockflows/actions.
+**	
+**	The above copyright notice and this permission notice shall be included in all
+**	copies or substantial portions of the Software.
+**
+**	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+**	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+**	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+**	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+**	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+**	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+**	SOFTWARE.
+
+**SNIPPETS:**
+**	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+**	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+**	NOT BEEN LOCATED AND DELETED.
+*/
 namespace Nubersoft;
 /*
 **	This will enable the nGet class to retrieve elements from the NubeData object as well as return any number
@@ -128,6 +161,25 @@ class	nApp extends \Nubersoft\nFunctions
 					return ($this->isSsl())? $sslUrl.$url : $baseUrl.$url;
 			}
 		/*
+		**	@description	Returns the parsed url but can retreive any parse_url() type found at:
+		**					http://php.net/manual/en/function.parse-url.php
+		*/
+		public	function siteHost($settings = false)
+			{
+				$settings	=	(!empty($settings))? $settings : PHP_URL_HOST;
+				return parse_url($this->localeUrl(),$settings);
+			}
+		/*
+		**	@description	Multi-domain comparison
+		*/
+		public	function isSiteHost($site,$parse=true)
+			{
+				if($parse)
+					$site	=	parse_url($site,PHP_URL_HOST);
+				
+				return ($this->siteHost() == $site);
+			}
+		/*
 		**	@description	This will retrieve any stored data in the NubeData data object
 		**	@param	$key	[string]	This will return a first-layer node from the data object
 		*/
@@ -145,6 +197,30 @@ class	nApp extends \Nubersoft\nFunctions
 					return (!empty($useData->{$key}))? $useData->{$key} : false;
 				
 				return $useData;
+			}
+		/*
+		**	@description	Sets a public data node to dyanamic node (Methodize)
+		**	@param	$key	[string]	Value from the data node to set to methodize
+		*/
+		public	function toNode()
+			{
+				# Check if node available
+				$args	=	func_get_args();
+				# No value indicates full data node
+				$value	=	(!empty($args[0]))? $args[0] : false;
+				# Get the data node
+				$node		=	$this->getDataNode($value);
+				# If the element is an object data set, then array it
+				if(is_object($node))
+					$node	=	$this->toArray($node);
+				# Create instance and save the node
+				$Methodize	=	new Methodize();
+				if(empty($value))
+					$value	=	'data_node';
+				# Save the data to an attribute
+				$Methodize->saveAttr($value,$node);
+				# Return it back for use
+				return $Methodize->{$value}();
 			}
 		/*
 		**	@description	This will check in the NubeData data object to see if it's available
@@ -316,16 +392,41 @@ class	nApp extends \Nubersoft\nFunctions
 				return $this->getGlobalArr('raw_get',$key);
 			}
 		
-		public	function getPost($key = false)
+		public	function getPost($key = false,$toObj = false)
 			{
-				return $this->getGlobalArr('post',$key);
+				$arr	=	$this->getGlobalArr('post',$key);
+				
+				if($toObj) {
+					$Methodize	=	new Methodize();
+					foreach($this->toArray($arr) as $skey => $value)
+						$Methodize->saveAttr($skey,$value);
+					
+					unset($arr);
+					
+					return $Methodize;
+				}
+				else {
+					return $arr;
+				}
 			}
 
 		public	function getGet($key = false)
 			{
 				return $this->getGlobalArr('get',$key);
 			}
-		
+		/*
+		**	@description	Node version of getSession()
+		*/
+		public	function getSessionNode()
+			{
+				$SESSION	=	$this->toArray($this->getDataNode('_SESSION'));
+				$Methodize	=	new Methodize();
+				$Methodize->saveAttr('session',$SESSION);
+				return $Methodize->session();
+			}
+		/*
+		**	@description	Fetches the session array (or value)
+		*/
 		public	function getSession($key = false,$remove = false)
 			{
 				$array	=	$this->toArray($this->getDataNode('_SESSION'));
@@ -396,6 +497,9 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function toAlert($msg, $action = 'general', $opts = false, $type = true, $toSess = true)
 			{
+				if($this->isAjaxRequest())
+					$this->ajaxAlert($msg);
+					
 				$msgArr	=	array('msg'=>$msg);
 				$array	=	(is_array($opts) && !empty($opts))? array_merge($msgArr,$opts) : $msgArr;
 				if($type)
@@ -405,6 +509,13 @@ class	nApp extends \Nubersoft\nFunctions
 				
 				if($toSess)
 					$this->setSession('alerts',array($action=>$array),true);
+			}
+		/*
+		**	@description	Saves errors to session and errors or incidentals data node
+		*/
+		public	function toError($msg, $action = 'general', $opts = false, $toSess = true)
+			{
+				$this->toAlert($msg, $action, $opts, false, $toSess);
 			}
 		/*
 		**	@description	Retrieves errors from session and errors or incidentals data node
@@ -531,6 +642,11 @@ class	nApp extends \Nubersoft\nFunctions
 					return (!empty($user->{$var}))? $user->{$var} : false;
 				else
 					return $user;
+			}
+		
+		public	function Users()
+			{
+				return $this->getHelper('User');
 			}
 		
 		public	function getEngine($key = false)
@@ -877,12 +993,16 @@ class	nApp extends \Nubersoft\nFunctions
 				return $final;
 			}
 		
-		public	function getConfigs($location = false)
+		public	function getConfigs()
 			{
+				# Get args
+				$args		=	func_get_args();
+				# Set the location for the file
+				$location	=	(!empty($args[0]))? $args[0] : false;
 				# Fetch the paths of where configs can load from
-				$zones	=	$this->getLoadZones();
+				$zones		=	$this->getLoadZones();
 				# Get the configs parser
-				$parser	=	new configFunctions(new nAutomator($this));
+				$parser		=	new configFunctions(new nAutomator($this));
 				# If there are pages to loop through
 				if(!empty($zones)) {
 					foreach($zones as $title => $zoneArr) {
@@ -926,12 +1046,16 @@ class	nApp extends \Nubersoft\nFunctions
 		public	function nQuery($con = false)
 			{
 				$con	=	(!($con instanceof \Nubersoft\QueryEngine))? $this->getHelper('ConstructMySQL') : $con;
-				
+				# Check if the connect is a valid database connection
 				if(!($con instanceof \Nubersoft\ConstructMySQL)) {
+					# Check if there are database credentials
 					if(!$this->getDbCredsFile())
+						# Run a first run page
 						$view	=	$this->render(NBR_CORE.DS.'settings'.DS.'firstrun'.DS.'database.php');
 					else {
-						$view	=	$this->render(NBR_TEMPLATE_DIR.DS.'default'.DS.'frontend'.DS.'static.offline.php');
+						# If there is a problem with the connection, show under construction
+						$view	=	$this->getHelper('nRender')->getTemplateDoc('static.offline.php');
+						# Save the log to file
 						$this->saveToLogFile('nquery_error','Database connection is invalid. No instance of \Nubersoft\QueryEngine or \Nubersoft\ConstructMySQL');
 					}
 					
@@ -980,6 +1104,28 @@ class	nApp extends \Nubersoft\nFunctions
 					return false;
 				# Get the admin status
 				return $this->getHelper('UserEngine')->groupIsAdmin($usergroup);
+			}
+		/*
+		**	@description	Matches current usergroup
+		*/
+		public	function isGroupMember($usergroup = 'webuser',$prepend = 'nbr_')
+			{
+				# Fetch the constant
+				$usergroup	=	constant(strtoupper($prepend.$usergroup));
+				# If the usergroup constant not set, stop
+				if($usergroup === false)
+					return false;
+					
+				return ($this->getNode('_SESSION')->getUsergroup() == $usergroup);
+				
+			}
+		/*
+		**	@description	Fetches my usergroup
+		*/
+		public	function getMyGroup($def = false)
+			{
+				$group	=	$this->getNode('_SESSION')->getUsergroup();
+				return (empty($group))? $def : $group;
 			}
 		
 		public	function getDefaultTable()
@@ -1724,7 +1870,7 @@ class	nApp extends \Nubersoft\nFunctions
 				# Check if there is a cache pause on
 				$allow	=	$this->nCache()->allowCacheRead();
 				# Save htaccess file
-				if($this->isDir($allow) && !is_file($htaccess = $path.DS.'.htaccess'))
+				if($this->isDir($allow,false) && !is_file($htaccess = $path.DS.'.htaccess'))
 					file_put_contents($htaccess,$this->getHelper('nReWriter')->getScript('serverReadWrite'));
 				
 				if(is_file($file) && $allow) {
@@ -1754,11 +1900,19 @@ class	nApp extends \Nubersoft\nFunctions
 				$matched		=	(!empty($settings['match']))? $settings['match'] : false;
 				$limit			=	(!empty($settings['limit']))? $settings['limit'] : false;
 				$pre_proc		=	(isset($settings['preprocess']))? $settings['preprocess'] : true;
+				$reset			=	(isset($settings['reset']))? $settings['reset'] : true;
 				$prefFile		=	($raw)? $name : $this->toSingleDs($this->getCacheFolder().DS.'prefs'.DS.$pref_name.'.'.$type);
 				$Cache			=	$this->nCache();
 				
-				if(is_file($prefFile) && $Cache->allowCacheRead())
-					return json_decode(file_get_contents($prefFile),true);
+				if(is_file($prefFile) && $Cache->allowCacheRead()) {
+					$cont	=	json_decode(file_get_contents($prefFile),true);
+					if($reset) {
+						if(!empty($cont))
+							return $cont;
+					}
+					else
+						return $cont;
+				}
 				# If there is no directory set
 				if(empty($parseLocation)) {
 					if(is_callable($callback))
@@ -1815,11 +1969,11 @@ class	nApp extends \Nubersoft\nFunctions
 					});
 				}
 				
-				if($save && !$this->isAjaxRequest() && $Cache->allowCacheRead()) {
+				if($save && !$this->isAjaxRequest() && $Cache->allowCacheRead() && !empty($config)) {
 					$this->savePrefFile($pref_name,$config);
 				}
 				
-				if($named && !$this->isAjaxRequest() && $Cache->allowCacheRead()) {
+				if($named) { // && !$this->isAjaxRequest() && $Cache->allowCacheRead()
 					$this->saveSetting($named,$config);
 				}
 				
@@ -1862,11 +2016,6 @@ class	nApp extends \Nubersoft\nFunctions
 				return $template;
 			}
 		
-		public	function getData()
-			{
-				return new NubeData();
-			}
-		
 		public	function cacheHtml($type,$content)
 			{
 				$path	=	$this->getCacheFolder().DS.'html'.DS."{$type}.html";
@@ -1881,13 +2030,6 @@ class	nApp extends \Nubersoft\nFunctions
 					return;
 				
 				return	$this->render($path);
-			}
-		/*
-		**	@description	Quick way to retrieve the cache engine
-		*/
-		public	function nCache()
-			{
-				return $this->getPlugin('\nPlugins\Nubersoft\Cache');
 			}
 		/*
 		**	@description	This overloading method will call a class based on the method name.
@@ -1978,7 +2120,24 @@ class	nApp extends \Nubersoft\nFunctions
 						return $dir;
 				}
 			}
-			
+		/*
+		**	@description	Fetches current usergroup from the session
+		*/
+		public	function getCurrentGroup($type = true)
+			{
+				$getUser	=	$this->getSession('usergroup_data');
+				
+				if(empty($getUser))
+					return false;
+				
+				return ($type)? $getUser->name : (int) $getUser->numeric;
+			}
+		
+		public	function getUsergroup($usergroup=false)
+			{
+				return $this->convertUserGroup($usergroup);
+			}
+		
 		public	function convertUserGroup($usergroup = false)
 			{
 				if(is_numeric($usergroup))
@@ -2055,7 +2214,6 @@ class	nApp extends \Nubersoft\nFunctions
 				$err				=	$this->toArray($this->getError());
 				$inc				=	$this->toArray($this->getIncidental());
 				
-				
 				if(!empty($err) && isset($err[$key]))
 					$this->flattenArrayByKey($err,$errors,'msg');
 				
@@ -2070,47 +2228,54 @@ class	nApp extends \Nubersoft\nFunctions
 					
 				return $array;
 			}
-		
+		/*
+		**	@description	Creates a autoloader for classes
+		**	@param	$path	[string | anon func]	This can be a path where classes can be found OR<br>
+		**					a callable function that the spl uses to create a loader
+		*/
 		public	function addNamespace($path)
 			{
 				$nApp	=	$this;
 				
-				spl_autoload_register(function($class) use ($path,$nApp) {
-					
-					if(is_array($path)) {
-						foreach($path as $namespace) {
-							$classPath	=	$nApp->toSingleDs($namespace.DS.str_replace('\\',DS,$class)).'.php';
-					
+				if(is_callable($path))
+					spl_autoload_register($path);
+				else {
+					spl_autoload_register(function($class) use ($path,$nApp) {
+						
+						if(is_array($path)) {
+							foreach($path as $namespace) {
+								$classPath	=	$nApp->toSingleDs($namespace.DS.str_replace('\\',DS,$class)).'.php';
+						
+								if(is_file($classPath))
+									require_once($classPath);
+								}
+						}
+						else {
+							$classPath	=	$nApp->toSingleDs($path.DS.str_replace('\\',DS,$class)).'.php';
+						
 							if(is_file($classPath))
 								require_once($classPath);
-							}
-					}
-					else {
-						$classPath	=	$nApp->toSingleDs($path.DS.str_replace('\\',DS,$class)).'.php';
-					
-						if(is_file($classPath))
-							require_once($classPath);
-					}
-				});
-				
+						}
+					});
+				}
 				return $this;
 			}
-			
-		public	function getMessenger()
-			{
-				return $this->getHelper('Messenger');
-			}
-			
-		public	function getStandardPath($appendPath = false)
+		/*
+		**	@description	Creates a standard cache path for saving cached elements into the cache folder
+		**	@param	$appendPath	[string|empty]	Self-explanitory
+		**	@param	$cou	[string]	This is the default locale
+		**	@param	$func	[anon func|empty]	This can be a callable function to process a new cache path
+		*/
+		public	function getStandardPath($appendPath = false,$cou = 'USA',$func = false)
 			{
 				$cacheDir	=	$this->getCacheFolder().DS.'pages'.DS;
-				$state	=	(empty($this->getPageURI('is_admin')) || $this->getPageURI('is_admin') > 1)? 'base_view' : 'admin_view';
+				$state		=	(empty($this->getPageURI('is_admin')) || $this->getPageURI('is_admin') > 1)? 'base_view' : 'admin_view';
 				$toggled	=	(!empty($this->getDataNode('_SESSION')->toggle->edit))? 'is_toggled' : 'not_toggle';
 				$post		=	$this->getPost('action');
 				$get		=	$this->getGet('action');
-				$usePost	=	(is_string($post))? DS.$post : '';
-				$useGet		=	(is_string($get))? DS.$get : '';
-				$country	=	(!empty($this->getSession('LOCALE')))? trim($this->getSession('LOCALE'),'/') : 'en';
+				$usePost	=	(is_string($post))? DS.md5($post) : '';
+				$useGet		=	(is_string($get))? DS.md5($get) : '';
+				$country	=	(!empty($this->getSession('LOCALE')))? trim($this->getSession('LOCALE'),'/') : $cou;
 				$tempBase	=	$this->getDataNode('site')->templates->template_site->dir;
 				$defPath	=	(!empty($this->getPageURI('full_path')))? trim(str_replace('/',DS,$this->getPageURI('full_path')),DS) : 'static';
 				$ID			=	(!empty($this->getPageURI('ID')))? $this->getPageURI('ID') : (($defPath == 'static')? 'error' : md5($defPath));
@@ -2118,16 +2283,29 @@ class	nApp extends \Nubersoft\nFunctions
 				$usergroup	=	(!empty($this->getSession('usergroup')))? $this->getSession('usergroup') : 'static';
 				$isSsl		=	($this->isSsl())? 'https' : 'http';
 				$group_id	=	(!empty($this->getSession('group_id')))? 'gid_'.$this->getSession('group_id') : 'gid_base';
+				$finalPath	=	$this->toSingleDs($cacheDir.DS.$country.DS.$isSsl.DS.$tempBase.DS.$defPath.DS.$loggedIn.$useGet.$usePost.DS.$toggled.DS.$state.DS.$usergroup.DS.$group_id.DS.$ID.$appendPath);
 				
-				return $this->toSingleDs($cacheDir.DS.$country.DS.$isSsl.DS.$tempBase.DS.$defPath.DS.$loggedIn.$useGet.$usePost.DS.$toggled.DS.$state.DS.$usergroup.DS.$group_id.DS.$ID.$appendPath);
+				if(is_callable($func))
+					return $func($this,$finalPath);
+				else
+					return $finalPath;
 				
 			}
-			
-		public	function setJumpPage($url)
+		/*
+		**	@description	Alias to the nRouter method to create an OpenSSL encoded string containing path
+		*/
+		public	function setJumpPage($url,$urlencode = true)
 			{
-				return $this->safe()->encOpenSSL($url);
+				return $this->getHelper('nRouter')->createJumpPage($url,$urlencode);
 			}
-			
+		/*
+		**	@description	Alias to the nRouter method to decode the OpenSSL-encoded string containing path
+		*/
+		public	function getJumpPage($url)
+			{
+				return $this->getHelper('nRouter')->decodeJumpPage($url);
+			}
+		
 		public	function mask($string)
 			{
 				if(is_array($string) || is_object($string))
@@ -2135,7 +2313,7 @@ class	nApp extends \Nubersoft\nFunctions
 					
 				return $this->safe()->encOpenSSL($string);
 			}
-			
+		
 		public	function unmask($string,$urlencode = false,$base64=false)
 			{
 				return $this->safe()->decOpenSSL($string,array('urlencode'=>$urlencode,'base64'=>$base64));
@@ -2146,9 +2324,35 @@ class	nApp extends \Nubersoft\nFunctions
 				$locale	=	$this->getSession('LOCALE');
 				return (!empty($locale))? strtoupper(trim($locale,'/')) : $default;
 			}
-		
+		/*
+		**	@description	Alias to fetch the Cart Object
+		*/
 		public	function getCart($type = '\Model')
 			{
+				if(is_array($type))
+					$type	=	'\\'.implode('\\',$type);
+					
 				return $this->getPlugin('\nPlugins\Nubersoft\ShoppingCart'.$type);
+			}
+		/*
+		**	@description	Alias to fetch the Messenger Object
+		*/
+		public	function getMessenger()
+			{
+				return $this->getHelper('Messenger');
+			}
+		/*
+		**	@description	Alias to fetch the cache engine
+		*/
+		public	function nCache()
+			{
+				return $this->getPlugin('\nPlugins\Nubersoft\Cache');
+			}
+		/*
+		**	@description	Alias to fetch the Data storage engine
+		*/
+		public	function getData()
+			{
+				return new NubeData();
 			}
 	}

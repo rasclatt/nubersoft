@@ -1,12 +1,37 @@
 <?php
 function admin_row_render(\Nubersoft\nRender $nRender, \Nubersoft\nForm $nForm,$table,$hType,$dispCols,$select,$dropdowns,$values = false)
 	{
+		$nodelete	=	false;
+		$myUGroup	=	$nRender->getCurrentGroup(false);
+		
+		if(!empty($values['usergroup'])) {
+			$uGroup		=	$nRender->convertUserGroup($values['usergroup']);
+			if($uGroup < $myUGroup)
+				return;
+			elseif($uGroup == $myUGroup) {
+				if(isset($values['username'])) {
+					if(strtolower($values['username']) != strtolower($nRender->getSession('username'))) {
+						if(isset($dropdowns['usergroup']))
+							unset($dropdowns['usergroup']);
+							
+						$select['usergroup']['column_type']	=	'fullhide';
+						
+						if(isset($select['user_status']))
+							$nodelete	=	true;
+						
+						if(isset($select['page_live']))
+							$select['page_live']['column_type']		=	'fullhide';
+					}
+				}
+			}
+		}
+		
+		
 		ob_start();
 ?>
 		<?php echo $nForm->open(array('action'=>$nRender->siteUrl().$nRender->getDataNode('_SERVER')->REQUEST_URI,'enctype'=>'multipart/form-data')) ?>
 		<?php
 		$dispCols	=	$nRender->toArray($dispCols);
-		
 		if(is_array($dispCols)) {
 			foreach($dispCols as $column) {
 				$isSel	=	(isset($dropdowns[$column]));
@@ -23,26 +48,30 @@ function admin_row_render(\Nubersoft\nRender $nRender, \Nubersoft\nForm $nForm,$
 				$arr	=	($isSel)? array_merge($arr,array('options'=>$nForm->setIsSelected($sOpts,$arr['value'],'value'))) : $arr;
 				$arr	=	array_merge($arr,array('class'=>'nbr_admin_forms_'.$column));
 				$arr['name']	=	$column;
-			
-		?>
-			<<?php echo $hType; ?> class="hide_column_<?php echo $column ?> nbr_reset_all_cols">
+			?>
+			<<?php echo $hType ?> class="hide_column_<?php echo $column ?> nbr_reset_all_cols">
 				<?php if($hType == 'th') { ?>
+
 				<div class="nbr_click_hide_col nbr_small_close_arrow">&#139;</div>
 				<?php }
 				else {
-					if($type == 'file') {
+					if($type == 'file')
 						include(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'nForm'.DS.'imagepreview'.DS.'index.php');
-					}
-				}?>
+				} ?>
 				<?php echo $nForm->labelPos(false)->{$type}(array_merge(array('label'=>ucwords(str_replace('_','&nbsp;',$column))),$arr)) ?>
 			</<?php echo $hType; ?>>
 		<?php
 			}
 		?>
 			<<?php echo $hType; ?>>
-				<?php if($hType == 'td') { ?>
+				<?php
+				if($hType == 'td') {
+					if(!$nodelete) { ?>
 				Check&nbsp;to&nbsp;delete&nbsp;<?php echo $nForm->labelPos(false)->checkbox(array('name'=>'delete','value'=>'on')) ?>
-				<?php } ?>
+				<?php 
+					}
+					else echo 'Delete disabled.';
+				} ?>
 			</<?php echo $hType; ?>>
 			<<?php echo $hType; ?>>
 				<?php if(!in_array('action',$dispCols)) { ?>

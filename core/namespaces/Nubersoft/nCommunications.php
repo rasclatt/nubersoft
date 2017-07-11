@@ -101,10 +101,10 @@ class nCommunications extends nApp implements \Nubersoft\Communicator
 				if($break)
 					$this->ajaxResponse(array('alert'=>$break));
 				# If not admin, stop
-				if(!$this->isAdmin($user[0]['usergroup']))
+				if(!$this->isAdmin($user['usergroup']))
 					$this->ajaxResponse(array('alert'=>'Invalid Username or Password'));
 				# Try logging in
-				$valid	=	PasswordGenerator::Engine()->verify($password,$user[0]['password'])->isValid();
+				$valid	=	PasswordGenerator::Engine()->verify($password,$user['password'])->isValid();
 				# If invalid, stop
 				if(empty($valid))
 					$this->ajaxResponse(array('alert'=>'Invalid Username or Password'));
@@ -113,11 +113,11 @@ class nCommunications extends nApp implements \Nubersoft\Communicator
 				# Create a messaging for emailing
 				$success	=	$this->addMessage('Your code from '.$this->siteUrl().': '.$code)
 					->addTo($mobile.$carrier)
-					->addTo($user[0]['email'])
+					->addTo($user['email'])
 					->send();
 				# If the sms was successfully sent, let user know
 				if($success)
-					$this->setSession('login_temp_code',array('code'=>$code,'user'=>$user[0]),true);
+					$this->setSession('login_temp_code',array('code'=>$code,'user'=>$user),true);
 				else
 					$this->getHelper('nSessioner')->destroy('login_temp_code');
 				# Return the code form back to the user

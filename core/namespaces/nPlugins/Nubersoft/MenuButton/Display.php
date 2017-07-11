@@ -5,6 +5,7 @@ $action			=	((isset($this->getDataNode('_SERVER')->HTTP_REFERER))? $this->getDat
 $this->saveSetting('nProcessor', $nProccessor);
 # Determine if the component is new or old
 $function			=	($CompSet)? 'update': 'add';
+
 # Determine if it's been admin locked
 $echoField	=	(!empty($this->data['admin_lock']))? $this->isAdmin() : true;
 if(empty($this->data['unique_id']))

@@ -43,3 +43,5 @@ p	{
 	</div>
 </body>
 </html>
+<script>
+<?php echo printpre($this->getDataNode()) ?>

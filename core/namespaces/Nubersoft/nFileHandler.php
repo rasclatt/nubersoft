@@ -5,7 +5,8 @@ class nFileHandler extends \Nubersoft\nFunctions
 	{
 		public	static	$allowClone;
 	
-		private	$targets;
+		private	$targets,
+				$nApp;
 		
 		protected	$name,
 					$allowTypes,
@@ -21,6 +22,7 @@ class nFileHandler extends \Nubersoft\nFunctions
 		
 		public	function __construct($name = 'file',$checkByMime = false)
 			{
+				$this->nApp			=	nApp::call();
 				$this->allow		=	false;
 				$this->inclusive	=	true;
 				$this->setInputName($name);
@@ -135,15 +137,15 @@ class nFileHandler extends \Nubersoft\nFunctions
 				
 				if(!is_dir($url) && $make) {
 					try{
-						if(!@mkdir($url,0755,true))
+						if(!$this->isDir($url))
 							throw new \Exception("Error while creating folder: {$url}. Check permissions or proper path");
 					}
 					catch(\Exception $e) {
-						if(nApp::call()->isAdmin()) {
+						if($this->nApp->isAdmin()) {
 							die($e->getMessage());
 						}
 						
-						nApp::call()->saveToLogFile('error_uploads.txt',$e->getMessage(),array('logging','exceptions'));
+						$this->nApp->saveToLogFile('error_uploads.txt',$e->getMessage(),array('logging','exceptions'));
 					}
 				}
 				
@@ -211,62 +213,62 @@ class nFileHandler extends \Nubersoft\nFunctions
 			{
 				if(!isset($_FILES[$this->name]))
 					return false;
-				// Reorganize the files into block data
+				# Reorganize the files into block data
 				$files		=	$this->organizeFileArray();
-				// Get all available mime types 
+				# Get all available mime types 
 				$allMimes	=	$this->getAllMimes();
-				// Count how many extensions go with each mime type
+				# Count how many extensions go with each mime type
 				$mCount		=	array_count_values($allMimes);
-				// Loop through each file attached
+				# Loop through each file attached
 				foreach($files as $file) {
-					// Get the extension
+					# Get the extension
 					$ext						=	strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-					// Split name
+					# Split name
 					$name						=	trim(str_replace($ext,'',$file['name']),'.');
 					$name						=	preg_replace('/[^a-zA-Z0-9\_\.\-]/i','',strip_tags($name));
 					$file['name']				=	"{$name}.{$ext}";
-					// Get the temp name
+					# Get the temp name
 					$type						=	$file['type'];
-					// Add file path (DB-friendly)
+					# Add file path (DB-friendly)
 					$file['file_path']			=	str_replace(NBR_ROOT_DIR,'',$this->dir);
-					// Save the file size (DB-friendly)
+					# Save the file size (DB-friendly)
 					$file['file_size']			=	$file['size'];
-					// Save the file size in MB (DB-friendly)
+					# Save the file size in MB (DB-friendly)
 					$minVal						=	number_format(($file['size']/1024000),3);
 					$file['disp_size']['MB']	=	$minVal;
 					$file['disp_size']['KB']	=	number_format(($file['size']/1024),2);
 					$file['disp_size']['RAW']	=	$file['file_size'];
-					// Save file name (DB-friendly)
+					# Save file name (DB-friendly)
 					$file['file_name']			=	$file['name'];
-					// Save unique name
+					# Save unique name
 					$file['unique_name']		=	md5($file['name'].date('YmdHis')).".{$ext}";
 					$file['full_paths']			=	array(
 														'base'=>$file['file_path'].$file['file_name'],
 														'unique'=>$file['file_path'].$file['unique_name']
 													);
-					// Save file ext (DB-friendly)
+					# Save file ext (DB-friendly)
 					$file['file_ext']			=	$ext;
-					// Save file mime (DB-friendly)
+					# Save file mime (DB-friendly)
 					$file['file_mime']			=	$type;
-					// Get the temp name
+					# Get the temp name
 					$tempName					=	$file['tmp_name'];
-					// Find the mime from the list
+					# Find the mime from the list
 					$getMime					=	$this->mimeFromExt($ext);
-					// Set staging array
+					# Set staging array
 					$gMimes						=	array();
-					// See if mime is set
+					# See if mime is set
 					if(isset($mCount[$getMime]) && $mCount[$getMime] > 1) {
-						// If there are more than one extensions associate with mime (like jpg,jpeg,etc..)
-						// loop through all the mimes and get accepted extensions
+						# If there are more than one extensions associate with mime (like jpg,jpeg,etc..)
+						# loop through all the mimes and get accepted extensions
 						$gMimes	=	array_map(function($v) use ($getMime) {
 							if($v == $getMime)
 								return $getMime;
 						}, $allMimes);
-						// Get all accepted extensions used by mime
+						# Get all accepted extensions used by mime
 						$extMime	=	array_keys(array_filter($gMimes));
 					}
 					else
-						// IF there is only one, just assign it.
+						# IF there is only one, just assign it.
 						$extMime	=	array($ext);
 					
 					if(!empty($this->allowedMimeTypes)) {
@@ -301,9 +303,9 @@ class nFileHandler extends \Nubersoft\nFunctions
 				
 				if(!is_array($this->allow))
 					$this->allow	=	array();
-				// Name of class or function (see call_user_func_array() in php manual to see how to pass)
+				# Name of class or function (see call_user_func_array() in php manual to see how to pass)
 				$cName	=	(!empty($func['name']))? $func['name'] : false;
-				// Specify class or function, function is default
+				# Specify class or function, function is default
 				$cType	=	(!empty($func['type']))? $func['type'] : 'func';
 				
 				if($cType == 'func')
@@ -336,47 +338,47 @@ class nFileHandler extends \Nubersoft\nFunctions
 		
 		public	function writeToFile($settings = false)
 			{
-				// What is to be written to the document
+				# What is to be written to the document
 				$settings['content']	=	(!empty($settings['content']))? $settings['content']: false;
-				// File destination
+				# File destination
 				$settings['save_to']	=	(!empty($settings['save_to']))? $settings['save_to']: false;
-				// How to write to doc (a,a+,etc)
+				# How to write to doc (a,a+,etc)
 				$settings['type']		=	(!empty($settings['type']))? $settings['type']: 'a';
-				// Delete file before writing new
+				# Delete file before writing new
 				$settings['overwrite']	=	(!empty($settings['overwrite']))? $settings['overwrite']: false;
-				// Delete file before writing new
+				# Delete file before writing new
 				$settings['secure']		=	(isset($settings['secure']))? $settings['secure'] : false;
-				// If no destination, stop
+				# If no destination, stop
 				if(empty($settings['save_to'])) {
 					throw new \Exception('Writing to a file requires a destination (path/filename).');
 					return false;
 				}
 				if($settings['overwrite'] && is_file($settings['save_to']))
 					unlink($settings['save_to']);
-				// Get the path info
+				# Get the path info
 				$fInfo	=	pathinfo($settings['save_to']);
-				// Parent directory
+				# Parent directory
 				$dir	=	$fInfo['dirname'];
-				// Create folder if not exists
+				# Create folder if not exists
 				$write	=	$this->isDir($dir,true,0755);
-				// If all is good, write file
+				# If all is good, write file
 				if(!$write) {
-					// Directory could not be made
+					# Directory could not be made
 					throw new \Exception('Directory failed to be created: '.$dir);
 					return false;
 				}
-				// If the folder is supposed to be secured
+				# If the folder is supposed to be secured
 				if($settings['secure']) {
-					// Check that there is a htaccess file
+					# Check that there is a htaccess file
 					$dir		=	$this->toSingleDs(DS.$dir.DS);
 					$htaccess	=	$dir.'.htaccess';
-					// If no file, then make
+					# If no file, then make
 					if(!is_file($htaccess))
 						\Nubersoft\nReWriter::serverReadWrite(array("dir"=>$dir,'write'=>true));
-					// Throw exception
+					# Throw exception
 					if(!is_file($htaccess)) {
 						$this->autoload('printpre');
-						throw new \Exception(printpre('Can not write error to log. Security is not enabled on directory: '.nApp::call()->stripRoot($dir),'{backtrace}','{whitelist}'));
+						throw new \Exception(printpre('Can not write error to log. Security is not enabled on directory: '.$this->nApp->stripRoot($dir),'{backtrace}','{whitelist}'));
 						return false;
 					}
 				}
@@ -384,7 +386,7 @@ class nFileHandler extends \Nubersoft\nFunctions
 				$fh		=	fopen($settings['save_to'], $settings['type']);
 				fwrite($fh, $settings['content']);
 				fclose($fh);
-				// See if file succeeded to be created
+				# See if file succeeded to be created
 				if(!is_file($settings['save_to'])) {
 					throw new nException('Failed to create: '.$settings['save_to'],10002);
 					return false;
@@ -392,8 +394,12 @@ class nFileHandler extends \Nubersoft\nFunctions
 				
 				return true;
 			}
-		
-		public	function deleteContents($filename)
+		/*
+		**	@description	Will delete a folder (and all it's contents) or a file
+		**	@param	$filename	[string | array]	Filename or folder to be removed
+		**	@param	$timeout	[int]	Amount of seconds to force the script to run
+		*/	
+		public	function deleteContents($filename, $timeout = 30)
 			{
 				$dFiles		=	(!is_array($filename))? array($filename) : $filename;
 				
@@ -401,7 +407,14 @@ class nFileHandler extends \Nubersoft\nFunctions
 					$this->addTarget($destination);
 				}
 				
-				return	$this->deleteAll(30);
+				return	$this->deleteAll($timeout);
+			}
+		/*
+		**	@description	Alias of deleteContents() method
+		*/
+		public	function remove($filename, $timeout = 30)
+			{
+				return $this->deleteContents($filename, $timeout);
 			}
 		
 		public function delete($path,$deleteKey = 'delete_cache')
@@ -433,13 +446,13 @@ class nFileHandler extends \Nubersoft\nFunctions
 						}	
 					}
 					
-					nApp::call()->saveIncidental($deleteKey,array('success'=>true,'paths'=>$removed));
+					$this->nApp->saveIncidental($deleteKey,array('success'=>true,'paths'=>$removed));
 				}
 				catch (Exception $e) {
-					if(nApp::call()->isAdmin())
+					if($this->nApp->isAdmin())
 						die($e->getMessage());
 					else
-						nApp::call()->saveIncidental($deleteKey,array('success'=>false,'paths'=>false));
+						$this->nApp->saveIncidental($deleteKey,array('success'=>false,'paths'=>false));
 				}
 				
 				if(rmdir($path))
@@ -447,10 +460,13 @@ class nFileHandler extends \Nubersoft\nFunctions
 				
 				return (!empty($removed))? $removed : false;
 			}
-		
+		/*
+		**	@description	Add a file or folder slated to be deleted
+		**	@param	$path	[string]	Path of the file/folder
+		*/
 		public	function addTarget($path = false)
 			{
-				if(empty($path))
+				if(empty($path) || (!is_dir($path) && !is_file($path)))
 					return $this;
 					
 				$this->targets[]	=	$path;

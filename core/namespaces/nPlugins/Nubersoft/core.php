@@ -34,16 +34,33 @@ class core extends \nPlugins\Nubersoft\CoreHelper
 				$currType	=	$this->getInfo($key,'component_type','undefined');
 				$isCode		=	($currType == 'code');
 				$renderWrap	=	($currType == 'div' || $currType == 'row' || $isCode);
+				$locales	=	$this->getLocaleRestrictions($id);
+				# If there is an array of locales (possible restrictions), set to restrict
+				$restrict	=	(!empty($locales));
+				# If there is an array of ids
+				if(is_array($locales) && !empty($locales)) {
+					# If the current locale is in the array of approved
+					if(in_array($this->getLocale(),$locales)) {
+						# Set no restrictions
+						$restrict	=	false;
+					}
+				}
+				else
+					# Remove restriction if false positive
+					$restrict	=	false;
 				
 				if(empty($current)) {
 					if($_perm) {
-						if($currType == 'code' && $this->isAdmin()) { ?><article data-cid="<?php echo $id; ?>"><?php }
-						echo $this->renderEngine->Display()->getDisplay();
-						if($currType == 'code' && $this->isAdmin()) { ?></article><?php }
+						if($currType == 'code' && $this->isAdmin() && ($restrict === false)) { ?><article data-cid="<?php echo $id; ?>"><?php }
+	
+						if($restrict === false)
+							echo $this->renderEngine->Display()->getDisplay();
+	
+						if($currType == 'code' && $this->isAdmin() && ($restrict === false)) { ?></article><?php }
 					}
 				}
 				
-				if($_perm) {
+				if($_perm && ($restrict === false)) {
 						if(is_array($current) || $isCode) {
 							if($renderWrap) { ?>
 
@@ -84,6 +101,14 @@ class core extends \nPlugins\Nubersoft\CoreHelper
 										->orderBy(array("page_order"=>"ASC"))
 										->fetch();
 					
+					# Saves default state for IDs as unrestricted
+					$localeRestrict	=	true;
+					# Fetch current
+					$lList	=	$this->storeLocalesList($_content);
+					# Save the list for use in the iterator
+					$this->saveLocales();
+					if($lList->getLocaleCount() > 0)
+						$localeRestrict	=	true;
 					# If there are rows found for page, continue on	
 					if($_content !== 0) {
 						# See if the editor is turned on
@@ -98,7 +123,6 @@ class core extends \nPlugins\Nubersoft\CoreHelper
 								unset($object['c_options']);
 							
 							$object	=	array_merge($object,$css);
-
 							# Assign final array
 							$this->info[$object['unique_id']]	=	$object;
 							# Filter the array out
@@ -162,6 +186,79 @@ class core extends \nPlugins\Nubersoft\CoreHelper
 <?php						}
 					}
 				}
+			}
+		
+		public	function getLocaleCount()
+			{
+				# Get the list of ids
+				$keys	=	$this->getStoredLocales();
+				# If there are no ids
+				if(empty($keys))
+					return 0;
+				
+				$count	=	$this->nQuery()
+					->query("SELECT COUNT(*) as count FROM component_locales WHERE comp_id IN (".$keys.")")
+					->getResults(true);
+				
+				return $count['count'];
+			}
+			
+		protected	$localesList,
+					$locales;
+		
+		protected	function storeLocalesList($keys,$col = 'ID')
+			{
+				if(!is_array($keys))
+					return $this;
+				
+				$this->localesList[$col]	=	implode(",",array_keys($this->organizeByKey($keys,$col)));
+				
+				return $this;
+			}
+		
+		public	function getStoredLocales($col = 'ID')
+			{
+				return (!empty($this->localesList[$col]))? $this->localesList[$col] : false;
+			}
+		
+		public	function saveLocales()
+			{
+				if($this->getLocaleCount() == 0)
+					$this->locales	=	array();
+				else
+					$this->locales	=	$this->getLocaleList();
+				
+				return $this;
+			}
+			
+		public	function getLocaleRestrictions($ID)
+			{
+				if(isset($this->locales[$ID]))
+					return $this->locales[$ID];
+					
+				return false;
+			}
+		
+		public	function getLocaleList($keys = false)
+			{
+				if(empty($keys) && empty($this->getStoredLocales()))
+					return false;
+				
+				if(empty($keys))
+					$keys	=	$this->getStoredLocales();
+				
+				$locales	=	$this->nQuery()
+					->query("SELECT `locale_abbr`, `comp_id` FROM component_locales WHERE comp_id IN (".$keys.")")
+					->getResults();
+					
+				if($locales == 0)
+					return false;
+				
+				foreach($locales as $row) {
+					$new[$row['comp_id']][]	=	$row['locale_abbr'];
+				}
+				
+				return $new;
 			}
 		
 		public	function trackView($root_folder = false, $payload,$content)

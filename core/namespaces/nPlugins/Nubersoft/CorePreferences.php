@@ -6,7 +6,7 @@ class CorePreferences extends \Nubersoft\GetSitePrefs
 		public	function getAdminUserPrefPath($action)
 			{
 				$sessPath	=	realpath($this->getCacheFolder().DS.'..');
-				return $sessPath.DS.'session'.DS.'admin'.DS.$this->getSession('usergroup').DS.$this->getSession('ID').DS.$action.'.json';
+				return $sessPath.DS.'preferences'.DS.'session'.DS.'admin'.DS.$this->getSession('usergroup').DS.$this->getSession('ID').DS.$action.'.json';
 			}
 		
 		public	function saveAdminUserPref($data=false)

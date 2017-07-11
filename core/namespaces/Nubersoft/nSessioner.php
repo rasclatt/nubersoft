@@ -7,11 +7,15 @@ class	nSessioner extends \Nubersoft\nFunctions
 				$sp_chars;
 		
 		const	SAFE	=	's';
+		
+		private	$nApp;
+		
 		/*
 		**	@param	[const] If value equals 's', the session values will save with htmlspecialchars etc.
 		*/
 		public	function __construct()
 			{
+				$this->nApp		=	nApp::call();
 				$this->sp_chars	=
 				$this->opts		=	false;
 				
@@ -239,5 +243,12 @@ class	nSessioner extends \Nubersoft\nFunctions
 		public	function sessionStarted()
 			{
 				return (session_status() == PHP_SESSION_NONE)? false : true;
+			}
+			
+		public	function saveAction($actionName = 'action')
+			{
+				if(!empty($this->nApp->getPost($actionName))) {
+					$this->setSession($actionName,$this->nApp->getPost($actionName),true);
+				}
 			}
 	}

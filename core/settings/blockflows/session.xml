@@ -19,5 +19,11 @@
 				<method>setSessionGlobal</method>
 			</class>
 		</object>
+		<object event="nbr_nsessioner_save_action">
+			<class>
+				<name>\Nubersoft\nSessioner</name>
+				<method>saveAction</method>
+			</class>
+		</object>
 	</workflow>
 </config>

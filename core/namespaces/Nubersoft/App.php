@@ -7,4 +7,9 @@ class	App extends \Nubersoft\nApp
 			{
 				return parent::__construct();
 			}
+		
+		public	function getData()
+			{
+				return $this->getHelper('Methodize');
+			}
 	}

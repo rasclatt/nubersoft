@@ -46,7 +46,9 @@ class	AdminToolsComponentEditor extends \nPlugins\Nubersoft\ComponentWidget
 				
 				return $data;
 			}
-		
+		/*
+		**	@description	Creates the component to edit in the page editor UI
+		*/
 		public	function display($data = array(), $allowAdd = true, $command = false)
 			{
 				$this->data			=	$data;
@@ -55,9 +57,8 @@ class	AdminToolsComponentEditor extends \nPlugins\Nubersoft\ComponentWidget
 				$this->display_path	=	$this->getDisplayLayout();
 				
 				ob_start();
-				# Check if this component contains an active data set
-				$CompSet	=	(isset($this->data['unique_id']));
-				include($this->getDefTempFile('Display'));
+				$this->passToNext($data);
+				echo $this->useTemplatePlugin('component', $this->display_path.DS.'Display.php');
 				$data	=	ob_get_contents();
 				ob_end_clean();
 				return $data;

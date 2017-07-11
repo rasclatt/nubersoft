@@ -78,6 +78,8 @@ class HeadProcessor extends \Nubersoft\nApp
 					if(is_file($dir))
 						continue;
 						
+					$this->isDir(pathinfo($dir,PATHINFO_DIRNAME));
+					
 					if(file_put_contents($dir,$deny))
 						$this->toAlert('Protection of directory set: '.$this->stripRoot($dir));
 				}
@@ -98,7 +100,7 @@ class HeadProcessor extends \Nubersoft\nApp
 		
 		public	function login($skipRedirect = false,$ajaxRespond = false)
 			{
-				$logFilePath	=	array('client','settings','errorlogs','login.txt');
+				$logFilePath	=	array('client','settings','reporting','errorlogs','login.txt');
 				$action			=	$this->getRequest('action');
 				$allow			=	false;
 				switch($action) {
@@ -195,7 +197,7 @@ class HeadProcessor extends \Nubersoft\nApp
 						$_bypass	=	(is_file($bfile));
 						$lMsg		=	PHP_EOL.date('Y-m-d H:i:s')." TOKEN: [OK] USERNAME: [".$this->getPost("username")."] LINE: [".__LINE__."] CLASS: [".__CLASS__.']';
 						$fName		=	array(
-											"path"=>NBR_CLIENT_DIR.DS."settings".DS."errorlogs".DS,
+											"path"=>NBR_CLIENT_DIR.DS."settings".DS.'reporting'.DS."errorlogs".DS,
 											"filename"=>"login.txt"
 										);
 						
@@ -336,10 +338,8 @@ class HeadProcessor extends \Nubersoft\nApp
 		public	function processJumpPage($path=false)
 			{
 				if($this->getRequest('jumppage') || !empty($path)) {
-					if(!empty($path))
-						$link	=	$path;
-					else
-						$link	=	$this->getHelper('Safe')->decOpenSSL($this->getRequest('jumppage'),array("urlencode"=>true));
+					# Fetch the path
+					$link	=	(!empty($path))? $path : $this->getJumpPage($this->getRequest('jumppage'));
 					if(!preg_match('/^http/',$link))
 						$link	=	$this->siteUrl("/".ltrim($link,'/'));
 					# Redirect using ajax if requested
@@ -348,11 +348,12 @@ class HeadProcessor extends \Nubersoft\nApp
 					$this->nRouter->addRedirect($link);
 				}
 			}
-		
+		/*
+		**	@description	Alias to nRouter method of the same name
+		*/
 		public	function doAjaxRedirect($path)
 			{
-				if($this->isAjaxRequest())
-					$this->ajaxResponse(array('html'=>array('<script>window.location="'.$path.'";</script>'),'sendto'=>array('body')));
+				$this->getHelper('nRouter')->{__FUNCTION__}($path);
 			}
 		/*
 		**	@description	Determines how to forward

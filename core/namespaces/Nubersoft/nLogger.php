@@ -147,8 +147,11 @@ class nLogger extends \Nubersoft\nApp
 					$value	=	(is_array($value) || is_object($value))? json_encode($value) : $value;
 					$str	.=	$key.": ".ltrim("[{$value}]").PHP_EOL;
 				}
-				
-				if($this->isDir(pathinfo($path,PATHINFO_DIRNAME),array('make'=>true))) {
+				$dirPath	=	pathinfo($path,PATHINFO_DIRNAME);
+				if(!is_dir($dirPath))
+					@mkdir($dirPath,0755,true);
+	
+				if(is_dir($dirPath)) {
 					$this->getHelper('nFileHandler')->writeToFile(array(
 						'content'=>$str.'-----------------------------------'.PHP_EOL,
 						'save_to'=>$path,

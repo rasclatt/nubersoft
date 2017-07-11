@@ -24,7 +24,7 @@
                                 	<table class="base_rollover">
                                     	<tr>
                                         	<td><div class="WYSIWYG_button"></div></td>
-                                            <td style="color: #FFFFFF; vertical-align: middle;">WYSIWYG</td>
+                                            <td style="color: #FFFFFF; vertical-align: middle;">EDIT HTML (FULL PAGE)</td>
                                         </tr>
                                    </table>
                                 </div>

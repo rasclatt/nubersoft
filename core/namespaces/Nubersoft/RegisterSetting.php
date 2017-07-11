@@ -49,7 +49,7 @@ class RegisterSetting extends \Nubersoft\nFunctions
 							$sArr	=	NubeData::$settings[$this->objname];
 							
 							if(is_array($this->value))
-								NubeData::$settings[$this->objname]	=	array_merge($sArr,$this->value);
+								NubeData::$settings[$this->objname]	=	(is_array($this->toArray($sArr)))? array_merge($this->toArray($sArr),$this->value) : $this->value;
 							else {
 								if(is_array(NubeData::$settings[$this->objname]))
 									NubeData::$settings[$this->objname][]	=	$this->value;

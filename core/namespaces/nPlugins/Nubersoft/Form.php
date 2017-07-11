@@ -71,4 +71,39 @@ class Form extends \Nubersoft\nForm
 			{
 				return $this->optionMenu;
 			}
+		
+		public	function createFormFieldArray($array)
+			{
+				if(!is_array($array))
+					return false;
+				elseif(empty($array))
+					return false;
+				
+				foreach($array as $column => $value) {
+					$columns[]	=	$column;
+					$opts		=	$this->createOptions($column,$value)->getOptions();
+					if(empty($opts))
+						continue;
+					
+					$opts	=	array_map(function($v) use ($opts) {
+						if(isset($v['ID']))
+							unset($v['ID']);
+						if(isset($v['page_order']))
+							unset($v['page_order']);
+							
+						return $v;
+						
+					},$opts);
+					
+					unset($opts['ID']);
+					
+					$options[$column]	=	$opts;
+				}
+				
+				//$Methodizer	=	$this->getHelper('Methodize');
+				$Methodizer	=	new \Nubersoft\Methodize();
+				$Methodizer->saveAttr('form_builder_fields',$this->getHelper('nGet')->allowSaved(false)->getFormBuilder($columns));
+				$Methodizer->saveAttr('form_builder_options',$options);
+				return $Methodizer;
+			}
 	}

@@ -9,7 +9,7 @@
 			</class>
 		</object>
 	</action>
-	<action event="nbr_edit_system_settings" after="nbr_set_registry" request="post" is_admin="true" is_ajax="true">
+	<action event="nbr_edit_system_settings" after="nbr_set_registry" request="post" is_admin="true">
 		<object event="nbr_edit_system_settings">
 			<class>
 				<name>\nPlugins\Nubersoft\CorePreferences</name>

@@ -106,76 +106,65 @@ class nRouter extends \Nubersoft\nApp
 					if($path == '/home/')
 						$path	=	'/';
 						
-					if(!$this->isAjaxRequest())
+					if(!$this->isAjaxRequest()) {
 						$this->addRedirect($this->siteUrl($path));
+					}
 				}
 				
 				if($this->getPageURI('is_admin') > 2)
 					$this->getHelper('nSessioner')->destroy('LOCALE');
-				/*
-				if(empty($this->getPageURI('invalid_uri')) && !$this->checkIsResetCo()) {
-					if(!$this->isAjaxRequest())
-						$this->nSession()->destroy('LOCALE');
-					return;
-				}
 				
-				if(!$this->checkIsResetCo()) {
-					if(!empty($redirect)) {
-						$filter	=	$this->getPrefFile(
-							'countries',
-							array(
-								'xml' => NBR_CLIENT_SETTINGS,
-								'save' => true
-							),
-							false,
-							function($path,$nApp) {
-								return array_keys($nApp
-									->organizeByKey($nApp
-										->getHelper('nRegister')
-										->parseXmlFile($path)['country'],'abbr'
-									)
-								);
-						});
-						
-						$exp	=	array_values(array_filter(explode('/',$redirect)));
-						$dir	=	array_shift($exp);
-						
-						if(!in_array(strtoupper(trim($dir,'/')),$filter))
-							return;
-						
-						$path	=	(!empty($exp))? str_replace('//','/','/'.implode('/',$exp).'/') : '/';
-						
-						$this->getHelper('nGet')->getPageURI($path,$path);
-						if(!empty($page['invalid_id'])) {
-							if(strpos($redirect,$this->getSession('LOCALE').'/')!== false) {
-								$path	=	preg_replace('!^'.$this->getSession('LOCALE').'!','',$redirect);
-								$this->getHelper('nGet')->getPageURI($path,$path);
-							}
-						}
-						else {
-							if(empty($this->getSession('LOCALE'))) {
-								$this->setSession('LOCALE','/'.$dir,true);
-							}
-						}
-					}
-				}
-				else {
-					$append	=	$this->createAbbrevAppend();
-					if($append == 'usa') {
-						if($this->getSession('LOCALE',true)) {
-							$this->addRedirect($this->siteUrl());
-						}
-					}
-					else {
-						$this->setSession('LOCALE','/'.$append,true);
-						$this->addRedirect($this->localeUrl());
-					}
-				}
-				*/
 			}
 			
 		public	function createAbbrevAppend()
 			{
 				return preg_replace('/[^a-zA-Z0-9\-\_]/','',strtolower(trim(str_replace(array(' ',),array('_'),$this->getRequest('country')))));
+			}
+		/*
+		**	@description	Creates an Open SSL-encoded path for use when redirecting
+		*/
+		public	function createJumpPage($url)
+			{
+				return $this->safe()->encOpenSSL($url);
+			}
+		/*
+		**	@description	Decrypts the createJumpPage() path. May require the urldecode for proper decoding
+		*/
+		public	function decodeJumpPage($url,$urldec = true)
+			{
+				return $this->safe()->decOpenSSL($url,array("urlencode"=>$urldec));
+			}
+		/*
+		**	@description	Creates a redirect via ajax/javascript
+		*/
+		public	function doAjaxRedirect($path,$instructions = false)
+			{
+				# If not an ajax request, stop
+				if(!$this->isAjaxRequest())
+					return;
+				# Create default script
+				$instr	=	array(
+					'html'=>array(
+						'<script>window.location="'.$path.'";</script>'
+					),
+					'sendto'=>array(
+						'body'
+					)
+				);
+				# Include anymore html elements
+				if(!empty($instructions['html'])) {
+					$instr['html']	=	array_merge($instructions['html'],$instr['html']);
+					unset($instructions['html']);
+				}
+				# Include sendto elements
+				if(!empty($instructions['sendto'])) {
+					$instr['sendto']	=	array_merge($instructions['sendto'],$instr['sendto']);
+					unset($instructions['sendto']);
+				}
+				# If there are anymore elements, combine them with default
+				if(is_array($instructions) && count($instructions) > 0)
+					$instr	=	array_merge($instr,$instructions);
+				
+				$this->ajaxResponse($instr);
 			}
 	}

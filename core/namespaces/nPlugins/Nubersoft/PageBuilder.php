@@ -28,10 +28,7 @@ class PageBuilder extends \Nubersoft\nApp
 		
 		public	function __construct()
 			{
-				ini_set('display_errors',1);
-				error_reporting(E_ALL);
-				autoload_function('nquery,check_empty');
-				$this->nubquery	=	nquery();
+				$this->nubquery	=	$this->nQuery();
 				
 				return parent::__construct();
 			}
@@ -451,7 +448,7 @@ class PageBuilder extends \Nubersoft\nApp
 					}
 					// Remake the folder
 					if($_build_dir == 'on') {
-						if(!@mkdir($this->recurseDir, 0755,true))
+						if(!$this->isDir($this->recurseDir))
 							die('Folder Build Failed: Level 1.:' . $this->recurseDir);
 					}
 				//	echo '<br />Remake Folder' . $this->recurseDir;
@@ -461,7 +458,7 @@ class PageBuilder extends \Nubersoft\nApp
 					if($_isRootDir !== true) {
 						if($_build_dir == 'on') {
 						//	echo '<br />MAKE DIRECTORY: ' . $this->recurseDir;
-							if(!@mkdir($this->recurseDir, 0755, true))
+							if(!$this->isDir($this->recurseDir))
 								die('Folder Build Failed: Level 2.:' . $this->recurseDir);
 						}
 					}

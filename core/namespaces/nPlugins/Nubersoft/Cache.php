@@ -96,7 +96,8 @@ class Cache extends \Nubersoft\nCache
 		*/
 		public	function getCacheQueuePath()
 			{
-				return NBR_CLIENT_SETTINGS.DS.'cache_start.pref';
+				# Send path back
+				return $this->getHelper('Flags\Controller')->flagName('cache_start')->getFlagPath();
 			}
 		/*
 		**	@description	Create a file to indicate the caching process needs to draw
@@ -104,30 +105,27 @@ class Cache extends \Nubersoft\nCache
 		*/
 		public	function setCacheBypass()
 			{
-				$file	=	$this->getCacheQueuePath();
-				if(is_file($file))
+				$hasFlag	=	\Nubersoft\Flags\Controller::hasFlag('cache_start');
+				
+				if($hasFlag)
 					return true;
 				
-				return (file_put_contents($file,true) !== false);
+				\Nubersoft\Flags\Controller::create('cache_start',true);
+				
+				return \Nubersoft\Flags\Controller::hasFlag('cache_start');
 			}
 		/*
 		**	@description	Remove file to indicate the delete cache process has ended
 		*/
 		public	function removeCacheBypass()
 			{
-				$file	=	$this->getCacheQueuePath();
-				if(is_file($file)) {
-					return (@unlink($file));
-				}
-				
-				return true;
+				return \Nubersoft\Flags\Controller::delete('cache_start');
 			}
 		/*
 		**	@description	Checks to see if the settings should draw from live data or not
 		*/
 		public	function allowCacheRead()
 			{
-				if(!is_file($this->getCacheQueuePath()))
-					return true;
+				return (!\Nubersoft\Flags\Controller::hasFlag('cache_start'));
 			}
 	}

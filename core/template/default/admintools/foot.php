@@ -14,5 +14,5 @@ $(document).ready(function() {
 }
 ?>
 	<footer>
-		Copyright &reg;<?php echo date("Y"); ?> nUbersoft.
+		Copyright &reg;<?php echo date("Y"); ?> <a href="http://www.nubersoft.com/" target="_blank">nUbersoft</a>.
 	</footer>

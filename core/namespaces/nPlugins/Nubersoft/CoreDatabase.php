@@ -1,4 +1,37 @@
 <?php
+/*
+**	Copyright (c) 2017 Nubersoft.com
+**	Permission is hereby granted, free of charge *(see acception below in reference to
+**	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+**	and associated documentation files (the "Software"), to deal in the Software without
+**	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+**	or distribute copies of the Software, and to permit persons to whom the Software is
+**	furnished to do so, subject to the following conditions:
+**	
+**	The base CMS software* is not used for commercial sales except with expressed permission.
+**	A licensing fee or waiver is required to run software in a commercial setting using
+**	the base CMS software.
+**	
+**	*Base CMS software is defined as running the default software package as found in this
+**	repository in the index.php page. This includes use of any of the nAutomator with the
+**	default/modified/exended xml versions workflow/blockflows/actions.
+**	
+**	The above copyright notice and this permission notice shall be included in all
+**	copies or substantial portions of the Software.
+**
+**	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+**	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+**	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+**	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+**	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+**	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+**	SOFTWARE.
+
+**SNIPPETS:**
+**	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+**	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+**	NOT BEEN LOCATED AND DELETED.
+*/
 namespace nPlugins\Nubersoft;
 
 class CoreDatabase extends \Nubersoft\ConstructMySQL
@@ -234,6 +267,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 					$query->execute($bind);
 				}
 				catch(\PDOException $e) {
+					echo printpre();
 					die($e->getMessage());
 				}
 			}
@@ -534,8 +568,10 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 					return;
 				# Fetch the post array
 				$POST	=	$this->toArray($this->getPost());
+				# Get the table
+				$rTable	=	(!empty($POST['requestTable']))? $POST['requestTable'] : 'components';
 				# Get the request table
-				$table	=	$this->safe()->sanitize($POST['requestTable']);
+				$table	=	$this->safe()->sanitize($rTable);
 				# Make the default table the request table
 				$this->setTable($table);
 				# If there is an action to delete, just do so
@@ -586,6 +622,11 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 				return $PasswordEngine->hash($this->safe()->decode($password))->getHash();
 			}
 		
+		public	function getHash($password)
+			{
+				return $this->hashUserPassword($password);
+			}
+		
 		public	function runRawQuery($input = false,$type = false)
 			{
 				if(!$this->isAdmin())
@@ -614,5 +655,34 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 					return "({$cols}) VALUES({$vals})";
 				else
 					return "({$vals})";
+			}
+			
+		public	function saveToComponentLocale()
+			{
+				if(!$this->isAdmin())
+					return;
+				$nQuery		=	$this->nQuery();
+				# Get the component id
+				$ID			=	$this->getPost('ID');
+				# Get locales list
+				$locales	=	$this->toArray($this->getPost('component_locales'));
+				# Remove all sets
+				$nQuery->query('delete from `component_locales` WHERE comp_id = :0',array($ID));
+				
+				if(!empty($locales)) {
+					$bindKeys	=	array_map(function($v) {
+						return ":{$v}";
+					},array_keys($locales));
+					$thisObj	=	$this;
+					$vals		=	array_map(function($v) use ($ID,$thisObj) {
+						$id	=	str_replace(array('.',' '),'',$thisObj->fetchUniqueId().microtime());
+						return "({$ID},{$v},'on','".$id."')";
+					},$bindKeys);
+					
+					$sql	=	"INSERT INTO `component_locales` (`comp_id`,`locale_abbr`,`page_live`,`unique_id`) VALUES".implode(',',$vals);
+					$nQuery->query($sql,$locales);
+				}
+				
+				$this->getHelper('nRouter')->addRedirect($this->localeUrl($this->getPageURI('full_path')));
 			}
 	}

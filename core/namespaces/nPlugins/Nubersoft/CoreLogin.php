@@ -73,7 +73,7 @@ class CoreLogin extends \Nubersoft\HeadProcessor
 						$_bypass	=	false;
 						$lMsg		=	PHP_EOL.date('Y-m-d H:i:s')." TOKEN: [OK] USERNAME: [".$this->getPost("username")."] LINE: [".__LINE__."] CLASS: [".__CLASS__.']';
 						$fName		=	array(
-											"path"=>NBR_CLIENT_DIR.DS."settings".DS."errorlogs".DS,
+											"path"=>NBR_CLIENT_DIR.DS."settings".DS.'reporting'.DS."errorlogs".DS,
 											"filename"=>"login.txt"
 										);
 						
@@ -195,7 +195,7 @@ class CoreLogin extends \Nubersoft\HeadProcessor
 						return false;
 				}
 					
-				$result	=	$this->getHelper('User')->getUser($POST['username']);
+				$result	=	$this->Users()->getUser($POST['username']);
 				
 				if($result != 0)
 					$this->loginByRequest();

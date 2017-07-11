@@ -29,8 +29,43 @@ class nMarkUp extends \Nubersoft\nRender
 					}
 					# This will attempt to add a template component
 					elseif(stripos($replaced,'PLUGIN::') !== false) {
-						$file	=	str_replace('PLUGIN::','',$replaced);
-						return $this->useTemplatePlugin($file);
+						$thisObj	=	$this;
+						$baseMatch	=	str_replace('PLUGIN::','',$replaced);
+						$sub		=	false;
+						
+						if(preg_match('/\[/',$baseMatch)) {
+							$exp	=	array_map(function($v) use ($thisObj) {
+								$val	=	trim($thisObj->safe()->decode($v),']');	
+								
+								if(strpos($val,'/') !== false)
+									return	explode('/',$val);
+									
+								return $val;
+								
+							},explode('[',$baseMatch));
+							
+							$new	=	array();
+							foreach($exp as $instr) {
+								if(is_array($instr)) {
+									$file	=	array_shift($instr);
+									$sub	=	implode(DS,$instr);
+									$new	=	array_merge($new,$instr);
+								}
+								else
+									$new[]	=	$instr;
+							}
+							
+							$this->getHelper('Methodize')->saveAttr('plugin_'.$new[0],$new[0]);
+							$this->saveSetting('current_matched_plugin_content',$new);
+
+							if(empty($file)) {
+								$file	=	$new[0];
+							}
+						}
+						else
+							$file	=	$baseMatch;
+
+						return $this->useTemplatePlugin($file,$sub);
 					}
 					# This will attempt to add a template component
 					elseif(strtolower($replaced) == 'site_url') {

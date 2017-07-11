@@ -1,9 +1,18 @@
+/*
+**	@copyright		Nubersoft 2017
+**	@permission		All rights reserved. Free to use however no permission is given to sell
+**					any portion of this script.
+**	@Third Party	All 3rd party vendors (such as jQuery) have their own terms of use and
+**					are governed by their terms. Nubersoft takes no ownership of third party
+**					libraries but does take ownership of the custom implementation of third
+**					party libraries
+*/
 // Set error reporting
 error_reporting		=	true;
 // Shows the path the automation takes
 path_reporting		=	false;
 // Show data packages at key points
-package_reporting	=	false;
+package_reporting	=	true;
 // Shows the ajax responses
 response_reporting	=	true;
 // Used to document realtime actions like rollovers
@@ -762,6 +771,8 @@ function subFxtor(subfX,thisObj,thisSpeed)
 		// This will try and get any acton subfx for the object	
 		var thisSubFx	=	thisObj.data('subfx');
 		var	subFxData	=	false;
+			
+		console.log([thisObj,subfX,thisSubFx]);
 				
 		switch (subfX) {
 			case('fadeIn'):
@@ -1436,6 +1447,73 @@ function runWorkflow_DEFAULT(activeBtn,setInstr,skip)
 		default_action(activeBtn,setInstr,skip);
 	}
 
+var	QuickFx	=	function(jQuery)
+	{
+		var	self	=	this;
+		var	$		=	jQuery;
+		
+		this.innerObj	=	'';
+			
+		this.check	=	function(acton)
+			{
+				if(!empty(acton))
+					self.innerObj	=	this.getJQObj;
+	
+				(self.innerObj).prop('checked',true);
+				
+				return self;
+			};
+			
+		this.unCheck	=	function(acton)
+			{
+				if(!empty(acton))
+					self.innerObj	=	this.getJQObj;
+	
+				(self.innerObj).prop('checked',unCheck);
+				
+				return self;
+			};
+		
+		this.getJQObj	=	function(acton)
+			{
+				return (is_object(acton))? acton : $(acton);
+			}
+			
+		this.checkToggle	=	function(acton)
+			{
+				if(!empty(acton))
+					self.innerObj	=	this.getJQObj;
+				
+				(self.innerObj).prop('checked',(self.innerObj.is(":checked"))? false : true);
+				return self;
+			};
+		
+		this.doAction	=	function(data)
+			{
+				if(isset(data,'quickfx'))
+					data	=	data.quickfx;
+				
+				if(!isset(data.FX))
+					return false;
+				
+				var	fxAction	=	data.FX;
+				
+				$.each(fxAction.acton, function(k,v) {
+					switch(fxAction.acton.fx[k]) {
+						case ('check'):
+							self.check(v);
+							break;
+						case ('unCheck'):
+							self.check(v);
+							break;
+						default:
+							self.checkToggle(v);
+							break;
+					}
+				});
+			};
+	};
+
 var setActiveObjScope;
 var sortActiveObjScope;
 var doActionScope;
@@ -1532,6 +1610,16 @@ njQuery(document).ready(function($) {
 					// Reset the element
 					$(activeBtn).replaceWith(lastCloneElem);
 				}
+			}
+			else {
+				if(targetType == 'mouseout') {
+								
+					if(path_reporting)
+						console.log('***START ROLLOVER ACTION: '+e.type+'***','doc.on');
+
+					default_action(activeBtn,{"instructions":setInstr});
+				}
+	
 			}
 		}
 		/*
@@ -1648,7 +1736,10 @@ njQuery(document).ready(function($) {
 	
 	fetchAllTokens($);
 	
-	$('.dragonit').draggable({"cancel":".nodrag"});
+	$('.dragonit').draggable({
+		"cancel":".nodrag",
+		'containment': 'body'
+	});
 	var	getDisabled	=	$('.disabled-submit');
 	if(!empty(getDisabled)) {
 		$.each(getDisabled,function(k,v) {

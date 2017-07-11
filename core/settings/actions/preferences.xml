@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 
+	<action event="nbr_media_file" after="nbr_session_to_node" request="get">
+		<object event="nbr_media_file">
+			<class>
+				<name>\Nubersoft\nRouter\View\Media</name>
+				<method>listen</method>
+			</class>
+		</object>
+	</action>
+
 	<action event="nbr_cart_clear" after="nbr_session_to_node" request="get">
 		<object event="nbr_cart_clear">
 			<class>
@@ -11,6 +20,15 @@
 					<inject>Cart has been cleared.</inject>
 					<into>reRouteCurrent</into>
 				</dependency>
+			</class>
+		</object>
+	</action>
+	
+	<action event="nbr_edit_component_locale" after="nbr_session_to_node" request="post" is_admin="true">
+		<object event="nbr_edit_component_locale">
+			<class>
+				<name>\nPlugins\Nubersoft\CoreDatabase</name>
+				<method>saveToComponentLocale</method>
 			</class>
 		</object>
 	</action>

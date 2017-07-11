@@ -5,7 +5,10 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 	{
 		private	$page,
 				$site;
-		
+		/*
+		**	@description	Listen for template options and assign page options
+		**	@tag-on			This has a listener for direct nOnce actions
+		*/
 		public	function listen()
 			{
 				$this->page	=	$this->getPage();
@@ -34,7 +37,7 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 				}
 				# If the page is admin, check if there is an associated whitelist
 				if($admin){
-					if(!$this->onWhiteList($_SERVER['REMOTE_ADDR'])) {
+					if(!$this->onWhiteList($this->getDataNode('_SERVER')->REMOTE_ADDR)) {
 						$this->autoload('nbr_fetch_error',NBR_FUNCTIONS);
 						# create a log file
 						self::call('nLogger')->ErrorLogs_WhiteList(nbr_fetch_error('whitelist',__FILE__,__LINE__));
@@ -48,6 +51,11 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 					$this->site->template	=	$this->getTemplate($template,$admin);
 				else
 					$this->saveSetting('site',array('template'=>$this->getObserverTemplate($template,$admin)));
+				# Check for straight automations
+				if(empty($this->getRequest('automate')))
+					return;
+				# Create an action automator
+				(new \nPlugins\Nubersoft\Automator\Observer())->listen();
 			}
 		/*
 		**	@description	Create default header for file not found
@@ -291,14 +299,13 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 			{
 				# Forces to country signed up in
 				if($this->isLoggedIn()) {
-					
 					if($this->getRequest('action') == 'logout') {
 						$this->getHelper('nSessioner')->destroy();
 						$this->getHelper('nRouter')->addRedirect($this->siteUrl($this->getPageURI('full_path')));
 					}
 					
 					if(!empty($this->getSession('country'))) { //&& ($this->getSession('country') != 'USA')
-						if($this->getLocale() != $this->getSession('country')) {
+						if($this->getLocale() != $this->getSession('country') && !$this->isAdmin()) {
 							$this->setSession('LOCALE',$this->getSession('country'),true);
 							if(!$this->isAjaxRequest())
 								$this->getHelper('nRouter')->addRedirect($this->localeUrl($this->getPageURI('full_path')));

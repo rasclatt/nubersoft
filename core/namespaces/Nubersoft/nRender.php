@@ -1,4 +1,37 @@
 <?php
+/*
+**	Copyright (c) 2017 Nubersoft.com
+**	Permission is hereby granted, free of charge *(see acception below in reference to
+**	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+**	and associated documentation files (the "Software"), to deal in the Software without
+**	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+**	or distribute copies of the Software, and to permit persons to whom the Software is
+**	furnished to do so, subject to the following conditions:
+**	
+**	The base CMS software* is not used for commercial sales except with expressed permission.
+**	A licensing fee or waiver is required to run software in a commercial setting using
+**	the base CMS software.
+**	
+**	*Base CMS software is defined as running the default software package as found in this
+**	repository in the index.php page. This includes use of any of the nAutomator with the
+**	default/modified/exended xml versions workflow/blockflows/actions.
+**	
+**	The above copyright notice and this permission notice shall be included in all
+**	copies or substantial portions of the Software.
+**
+**	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+**	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+**	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+**	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+**	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+**	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+**	SOFTWARE.
+
+**SNIPPETS:**
+**	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+**	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+**	NOT BEEN LOCATED AND DELETED.
+*/
 namespace Nubersoft;
 
 class nRender extends \Nubersoft\nApp
@@ -13,24 +46,44 @@ class nRender extends \Nubersoft\nApp
 		
 		public	function __construct()
 			{
+				# Fetches the template obj
 				$this->nTemplate	=	$this->getHelper('nTemplate');
-				
+				# Tries to create some header prefrences
 				if(empty(self::$page_settings))
 					$this->getHeadPrefs();
-				
+				# Returns original construct()
 				return parent::__construct();
 			}
 		
+		public	function thumbnail($path,$h = 30,$w = 30,$max = false,$gray=false)
+			{
+				$max	=	(!empty($max))? 'max-' : '';
+				$gray	=	(!empty($gray))? ' -webkit-filter: grayscale(100%); filter: grayscale(100%);' : '';
+				
+				return $this->getHelper('nImage')->image($path,array('style'=>$max.'height: '.$h.'px; '.$max.'width: '.$w.'px;'.$gray,'class'=>'nbr_thumbnail'),false,false);
+			}
+		
+		/*
+		**	@description	Fetches a template method to create a path
+		**	@param	$type	[sring]	FrontEnd or BackEnd
+		**	@param	$content	[any]	Includes content for the method to use
+		*/
 		public	function getTemplateByType($type,$content = false)
 			{
 				return $this->nTemplate->{"get{$type}"}($content);
 			}
-		
+		/*
+		**	@description	Alias to getTemplateByType() using FrontEnd with root path added
+		**	@param	$content	[any]	Includes content for the method to use
+		*/
 		public	function getFrontEnd($content=false)
 			{
 				return $this->toSingleDs(NBR_ROOT_DIR.DS.$this->getTemplateByType('FrontEnd',$content));
 			}
-			
+		/*
+		**	@description	Alias to getTemplateByType() using BackEnd with root path added
+		**	@param	$content	[any]	Includes content for the method to use
+		*/
 		public	function getBackEnd($content=false)
 			{
 				return $this->toSingleDs(NBR_ROOT_DIR.DS.$this->getTemplateByType('BackEnd',$content));
@@ -46,18 +99,28 @@ class nRender extends \Nubersoft\nApp
 				return NBR_ROOT_DIR.DS.$this->nTemplate->getTemplateFrom('js');
 			}
 		/*
-		**	@description	Core tool to fetch a file from the current template directory
+		**	@description	Returns back the template engine to get the current state of the nTemplate engine
+		*/
+		public	function getTemplateEngine()
+			{
+				return $this->nTemplate;
+			}
+		/*
+		**	@description	Core tool to fetch a file path from the current template/{name}/plugins directory
+		**	@args	[string | string]	main directory name | file within the plugin (default is index.php)
 		*/
 		public	function getTemplatePlugin()
 			{
 				$opts	=	func_get_args();
 				$dir	=	(!empty($opts[0]))? $opts[0] : false;
-				$append	=	(!empty($opts[1]))? $opts[1] : false;
+				$append	=	(!empty($opts[1]))? $opts[1] : 'index.php';
 				$path	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$this->nTemplate->getTemplateFrom('plugins'.DS.$dir,$append));
 				
 				return $path;
 			}
-		
+		/*
+		**	@description	Checks to see if a plugin exists
+		*/
 		public	function templatePluginExists($dir,$append = 'index.php')
 			{
 				return is_file($this->toSingleDs($this->getTemplatePlugin($dir,$append)));
@@ -66,10 +129,10 @@ class nRender extends \Nubersoft\nApp
 		**	@description	Fetches the plugin from the current template folder
 		**					/client/template/{$current}/plugins/{$dir}/{$append}
 		*/
-		public	function useTemplatePlugin($dir,$append = 'index.php')
+		public	function useTemplatePlugin($dir,$append = 'index.php',$obj = false)
 			{
 				$path	=	$this->toSingleDs($this->getTemplatePlugin($dir,$append));
-				return $this->render($path);
+				return $this->render($path,$obj);
 			}
 		/*
 		**	@description	Same function as useTemplatePlugin() only the path is found in
@@ -129,8 +192,12 @@ class nRender extends \Nubersoft\nApp
 				
 				return (!empty($prefs['template_folder'][0]))? $prefs['template_folder'][0] : $template;
 			}
-		
-		public	function getDoc($template,$type = 'frontend')
+		/*
+		**	@description	Fetches and renders a template file within the current/global/default template folder
+		**	@param	$template	[string]	Name of the file
+		**	@param	$type	[string]	Used to determine if the template should grab from the front or admin dir
+		*/
+		public	function getTemplateDoc($template,$type = 'frontend')
 			{
 				$this->data	=	(!empty($this->data))? $this->data : false; 
 				$inc		=	($type == 'frontend')? $this->getFrontEndPath($template) : $this->getBackEndPath($template);
@@ -140,13 +207,16 @@ class nRender extends \Nubersoft\nApp
 				# Throw exception
 				throw new \Exception('Template file not found: '.$this->Safe()->encode($inc));
 			}
-			
+		/*
+		**	@description	Fetches the config file
+		*/
 		protected	function getConfig()
 			{
+				# Returns if already applied
 				if(!empty(self::$config))
 					return self::$config;
-
-				$config		=	$this->toSingleDs($this->getTemplatePath(DS.'settings'.DS.'config.xml'));
+				# Fetches and sets the config to memory
+				$config			=	$this->toSingleDs($this->getTemplatePath(DS.'settings'.DS.'config.xml'));
 				self::$config	=	$config;
 				return	$config;
 			}
@@ -170,7 +240,9 @@ class nRender extends \Nubersoft\nApp
 				
 				return true;
 			}
-		
+		/*
+		**	@descrtription	Fetches the current default template path
+		*/
 		public	function getTemplateBase()
 			{
 				if(!isset(self::$page_settings['current_base_template']))
@@ -178,8 +250,11 @@ class nRender extends \Nubersoft\nApp
 					
 				return	self::$page_settings['current_base_template'];
 			}
-		
-		protected	function cacheCall($path)
+		/*
+		**	@description	Creates a standard path similar to the nApp version. This is more to store
+		**					json/css/js preferences in cache
+		*/
+		protected	function getStandardMediaPath($path)
 			{
 				if(!empty($path['state']))
 					$state	=	$path['state'];
@@ -207,11 +282,14 @@ class nRender extends \Nubersoft\nApp
 				$isSsl		=	($this->isSsl())? 'https' : 'http';
 				return $this->toSingleDs($cacheDir.DS.$isSsl.DS.$base.DS.$country.DS.$type.DS.$tempBase.DS.$defPath.DS.$loggedIn.$useGet.$usePost.DS.$toggled.DS.$state.DS.$usergroup.DS.$ID.$ext);
 			}
-		
+		/*
+		**	@description	Fetches the config file and finds a media layout based on the template xml config
+		**	@param	$type	[string]	This is the type that is to be returned in the template config
+		*/
 		public	function getMediaSrc($type = 'stylesheet',$frontend = false)
 			{
 				# create a cache file path
-				$cached	=	$this->cacheCall(array('type'=>$type));
+				$cached	=	$this->getStandardMediaPath(array('type'=>$type));
 				$skip	=	false;
 				if(is_file($cached) && !$skip)
 					$contents	=	$this->getJson($cached);
@@ -544,13 +622,13 @@ class nRender extends \Nubersoft\nApp
 				if(!is_file($display))
 					throw new \Nubersoft\nException('Error template is invalid (not found ironically): '.$display);	
 				ob_start();
-				echo $this->getDoc('error.head.php');
+				echo $this->getTemplateDoc('error.head.php');
 ?>
 
 <body class="nbr">
 <?php
 				echo $this->error404($display,$message);
-				echo $this->getDoc('error.foot.php');
+				echo $this->getTemplateDoc('error.foot.php');
 ?>
 </body>
 </html>
@@ -691,5 +769,61 @@ class nRender extends \Nubersoft\nApp
 				}
 				
 				return trim($layout);
+			}
+			
+		public	function Accessibility($type = 'View')
+			{
+				return $this->getHelper('Accessibility\\'.$type);
+			}
+		/*
+		**	@description	Create a tokenable document
+		*/
+		public	function dynamicMediaSrc($path,$key,$type='css')
+			{
+				$nOnce		=	$this->getHelper('nToken')->nOnce($key,$path)->getToken();
+				$encPath	=	$this->localeURL('/index.php?action=nbr_media_file&controller='.$this->safe()->encOpenSSL(json_encode(array('token'=>$nOnce,'type'=>'css'))));
+				switch($type) {
+					case('css'):
+						return $this->getHelper('nHtml')->styleSheet($encPath,false,false);
+					case('js'):
+						return $this->getHelper('nHtml')->javaScript($encPath,false,false);
+				}
+			}
+		/*
+		**	@description	Returns the site preferences from the data node and wraps it in the methodize class
+		*/
+		public	function getSitePreferences()
+			{
+				return $this->getMethodizeObj('preferences')->getSettingsSite();
+			}
+		/*
+		**	@description	Returns the site preferences custom attributes (if available)
+		*/
+		public	function getCustomAttr()
+			{
+				return $this->getSitePreferences()->getContent()->getCustom();
+			}
+		
+		public	function getMenus()
+			{
+				return $this->getMethodizeObj('menu_data');
+			}
+		
+		public	function getMethodizeObj($lookup,$name = false)
+			{
+				if(empty($name))
+					$name	=	$lookup;
+					
+				$prefs		=	$this->toArray($this->getDataNode($lookup));
+				$Methodize	=	(new \Nubersoft\Methodize())->saveAttr($name,$prefs);
+				return $Methodize->{$name}();
+			}
+		/*
+		**	@description	Fetches a component from database based on column
+		*/
+		public	function getComponent($value,$type='ref_spot')
+			{
+				$Component	=	$this->getPlugin('\nPlugins\Nubersoft\Component\Model');
+				return $Component->getComponent([$type=>$value]);
 			}
 	}

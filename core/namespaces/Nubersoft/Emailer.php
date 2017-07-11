@@ -133,4 +133,11 @@ class	Emailer extends \Nubersoft\nApp
 				
 				return (!empty($arr['return_response']))? $arr['return_response'] : false;
 			}
+			
+		public	function resetSendArray()
+			{
+				$this->sending	=	array();
+				
+				return $this;
+			}
 	}

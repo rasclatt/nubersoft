@@ -17,56 +17,8 @@ require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'Singleton.php');
 require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'nFunctions.php');
 # Create class autoloader
 spl_autoload_register('nloader');
-# Use nApp as the main loader
-use Nubersoft\nApp as nApp;
-# Create instance for sharing
-$nApp	=	new nApp();
-# Load our backtracer and load printpre
-$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
-	->getHelper('nFunctions')->autoload(array('printpre'));
-# Create a general error message
-$msg	=	'Whoops! Our fault, an error occurred displaying the page.';
-# Try loading some initilizers
-try {
-	$order	=	array(
-		'blockflow/session',
-		'blockflow/database',
-		'blockflow/preferences',
-		'blockflow/timezone'
-	);
-	# Get the automator
-	$nAutomator	=	$nApp->getHelper('nAutomator', $nApp);
-	$i = 0;
-	# Run through all the flows
-	foreach($order as $flow) {
-		# Add session observer
-		$nAutomator
-			->setListenerName('action')
-			->getInstructions($flow);
-		$i++;
-	}
-}
-catch (Nubersoft\nException $e) {
-	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
-		echo $e->getMessage().printpre($e->getTrace());
-		die(printpre(__FILE__.' ('.__LINE__.')'));
-	}
-	else {
-		$nApp->autoload('nLog');
-		nLog($e);
-		die($msg);
-	}
-}
-catch (Exception $e) {
-	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
-		echo $e->getMessage().printpre($e->getTrace());
-		die(printpre(__FILE__.' ('.__LINE__.')'));
-	}
-	else {
-		$nApp->autoload('nLog');
-		if(function_exists('nLog')) {
-			nLog($e);
-		}
-		die($msg);
-	}
+# Check for error flag and turn errors on if found
+if(\Nubersoft\Flags\Controller::hasFlag('errors')) {
+	error_reporting(E_ALL);
+	ini_set('display_errors',1);
 }

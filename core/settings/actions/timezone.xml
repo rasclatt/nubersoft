@@ -5,13 +5,15 @@
 			<class>
 				<name>\Nubersoft\HeadProcessor</name>
 				<method>login</method>
-				<inject>true</inject>
+				<inject>false</inject>
 			</class>
+			<!--
 			<class>
 				<name>\nPlugins\Nubersoft\InspectorPallet</name>
 				<method>loginToggle</method>
 				<after>\Nubersoft\HeadProcessor\login</after>
 			</class>
+			-->
 		</object>
 	</action>
 	<action event="nbr_load_single_editor" request="get">

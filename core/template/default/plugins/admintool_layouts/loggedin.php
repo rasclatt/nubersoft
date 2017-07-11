@@ -10,12 +10,22 @@ elseif(!empty($this->getGet('requestTable')) && $this->templatePluginExists($plu
 else {
 ?>
 <div style="margin: 0 auto;">
-	<?php echo $this->useTemplatePlugin('admintools_body') ?>
+	<?php
+	if(!empty($this->getGet('requestTable')))
+		echo $this->useTemplatePlugin('admintools_body');
+	else {
+	?>
+	<div style="text-align: left; border: 1px solid #CCC; padding: 30px; margin: 30px 30px;">
+		<h1 class="nbr_ux_element">Back Office</h1>
+	</div>
+	<?php } ?>
 </div>
+<?php if(!empty($this->getGet('requestTable'))) { ?>
 <div style="max-width: 1200px; margin: 0 auto;">
 	<?php echo $this->useTemplatePlugin('admintools_sql_master') ?>
 </div>
 <?php
+	}
 }
 ?>
 <div style="max-width: 1200px; margin: 0 auto;">

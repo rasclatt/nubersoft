@@ -20,7 +20,22 @@ $getCount	=	$this->nQuery()->query("select COUNT(*) as count from `{$table}`")->
 $count		=	($getCount !== 0)? $getCount['count'] : 0;
 if($count > 1000)
 	$count	=	number_format(($count/1000),2).'K';
+
 ksort($select);
+
+# Filter usergroups menus
+if(!empty($dropdowns['usergroup'])) {
+	
+	$myUGroup	=	$this->getCurrentGroup(false);
+	
+	foreach($dropdowns['usergroup'] as $dKey => $arr) {
+		
+		$uGroup	=	$this->convertUserGroup($arr['value']);
+		
+		if($myUGroup > $uGroup)
+			$dropdowns['usergroup'][$dKey]['disabled']	=	true;
+	}
+}
 ?>
 <?php echo $this->getHelper('nImage')->image(NBR_MEDIA_IMAGES.DS.'ui'.DS.'loader.gif',array('style'=>'max-height: 60px;','class'=>'nbr_load_image')) ?>
 <?php if($this->tableExists($table)) { ?>

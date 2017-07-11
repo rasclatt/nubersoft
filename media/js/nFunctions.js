@@ -202,7 +202,7 @@ function get_dom_type(value)
 		if(value instanceof jQuery)
 			return (isset(value,0) && !empty(value[0].nodeName))? value[0].nodeName : false;
 		
-		return value.nodeName;
+		return (!empty(value.nodeName))? value.nodeName : false;
 	}
 
 function preg_match(regex,value)
@@ -252,4 +252,9 @@ function echo(value,line)
 function trim(value)
 	{
 		return (is_string(value))? value.trim() : value;
+	}
+
+function is_mobile()
+	{
+		return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 	}

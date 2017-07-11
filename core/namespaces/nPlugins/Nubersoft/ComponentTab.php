@@ -36,14 +36,20 @@ class ComponentTab
 					}
 				}
 			}
-			
+		
+		public	function getData()
+			{
+				return $this->nApp->getHelper('App')->getData();
+			}
+		
 		public	function __call($name,$args = false)
 			{
 				if(!$this->nApp->isAdmin())
 					return;
-					
+				
 				$this->data['unique_id']	=	$this->nApp->getPage('unique_id');
 				$this->useData				=	$args;
+				$this->nApp->getHelper('Methodize')->saveAttr('component_tab_data',$this->data);
 				if(!include(__DIR__.DS.'ComponentTab'.DS.$name.DS.'index.php')) {
 					echo printpre();
 					throw new \Exception("File could not be found: {$name}");

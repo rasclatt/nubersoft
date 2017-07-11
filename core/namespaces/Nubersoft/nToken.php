@@ -11,9 +11,9 @@ class	nToken extends \Nubersoft\nApp
 				return $token;
 			}
 		
-		public	function fetch($key)
+		public	function fetch($key,$clear = true)
 			{
-				$value	=	$this->getSession('token_'.$key,true);
+				$value	=	$this->getSession('token_'.$key,$clear);
 				if(empty($value))
 					return false;
 				
@@ -233,5 +233,79 @@ class	nToken extends \Nubersoft\nApp
 				}
 				
 				return false;
+			}
+		
+		public	function nOnceDecode($value, $urlenc = true, $json = false)
+			{
+				$decVal	=	$this->safe()->decOpenSSL($value,array('urlencode'=>$urlenc));
+				$decode	=	($json)? json_decode($decVal,true) : $decVal;
+				$value	=	($json)? $this->safe()->decOpenSSL($decode[$json]) : $decVal;
+				return $this->nOnce($value);
+			}
+		
+		public	function nOnce($name,$value=NULL)
+			{
+				$Methodizer	=	$this->getHelper('Methodize');
+				$nQuery	=	$this->nQuery();
+				$sqlGet	=	"SELECT
+									`ID`,`ref_spot`,`content`
+								FROM
+									components
+								WHERE
+									`component_type` = 'nonce'
+								AND
+									`ref_spot` = :0";
+				if($value == NULL) {
+					$nonce	=	$nQuery->query($sqlGet,array($name))->getResults(true);
+					if($nonce == 0)
+						return $Methodizer;
+					
+					$Methodizer->saveAttr('token',$this->safe()->encOpenSSL($name));
+					$Methodizer->saveAttr('value',$nonce['content']);
+					
+					return $Methodizer;
+				}
+				else {
+					$sql	=	"SELECT
+									COUNT(*) as count
+								FROM
+									components
+								WHERE
+									`component_type` = 'nonce'
+								AND
+									`ref_spot` = :0";
+					
+					$query	=	$nQuery->query($sql,array($name))->getResults(true);
+					
+					if($query['count'] == 0) {
+						$sql	=	"INSERT INTO components 
+										(`component_type`,`ref_spot`,`content`)
+									VALUES
+										('nonce', :0, :1)";
+						
+						$nQuery->query($sql,array($name,$value));
+					}
+						
+					$query	=	$nQuery->query($sqlGet,array($name))->getResults(true);
+					
+					$Methodizer->saveAttr('token',$this->safe()->encOpenSSL($name));
+					$Methodizer->saveAttr('value',$query['content']);
+					
+					return $Methodizer;
+				}
+			}
+			
+		public	function nOnceClear($key)
+			{
+				$sql	=	"DELETE 
+							FROM
+								components
+							WHERE
+								`component_type` = 'nonce'
+							AND
+								`ref_spot` = :0";
+				
+				$this->nQuery()->query($sql,array($key));
+				return $this;
 			}
 	}

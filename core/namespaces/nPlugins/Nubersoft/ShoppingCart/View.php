@@ -120,6 +120,8 @@ class View extends \Nubersoft\nRender
 
 					if($method == 'select') {
 						$title	=	(strpos($col,'_') !== false)? $this->colToTitle($col) : ucwords($col);
+						if($title == 'Region')
+							$title	=	'State/Prov';
 						$opts	=	(isset($options[$col]))? $options[$col] : array('~NULL~'=>'Select '.$title);
 						$field	=	$Form->{$method}(array("name"=>"{$type}[{$col}]","value"=>$values[$col],'id'=>$type.'_'.$col,"options"=>$opts));
 						$this->layout[]	=	'<div class="nbr_select">'.str_replace('~NULL~','',(($strip)? strip_tags($field,'<input><select><option><optgroup><textarea>') : $field)).'</div>';
@@ -153,6 +155,7 @@ class View extends \Nubersoft\nRender
 				$sendto		=	$cou['sendto'];
 				$country	=	$cou['country'];
 				$regions	=	$this->getPlugin('\nPlugins\Nubersoft\ShoppingCart\Model')->getRegions($country);
+				$str[]		=	'<option value="">Select State/Province</option>';
 				
 				if(!empty($regions)) {
 					foreach($regions as $key => $value) {
@@ -162,6 +165,13 @@ class View extends \Nubersoft\nRender
 				
 				$string	=	(!empty($str))? implode(PHP_EOL,$str) : '<option value="">NA</option>';
 				
-				$this->ajaxResponse(array('html'=>array($string),'sendto'=>array($sendto)));
+				$this->ajaxResponse(array(
+					'html'=>array(
+						$string
+					),
+					'sendto'=>array(
+						$sendto
+					)
+				));
 			}
 	}

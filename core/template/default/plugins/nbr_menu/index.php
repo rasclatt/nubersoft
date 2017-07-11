@@ -1,0 +1,1 @@
+<?php echo $this->safe()->decode($this->getHelper('Methodize')->getMenu()->getContent());

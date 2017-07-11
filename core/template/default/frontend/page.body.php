@@ -1,10 +1,9 @@
-<div id="loadspot_modal"></div>
-<?php echo $this->useTemplatePlugin('adminbar_persist') ?>
+<?php $View = $this->getPlugin('\nPlugins\Nubersoft\View') ?>
 <div id="content" class="nbr_wrapper">
-	<?php echo $this->getPlugin('\nPlugins\Nubersoft\View')->renderMastHead(); // Create a standard head ?>
-	<?php echo $this->getPlugin('\nPlugins\Nubersoft\View')->renderMenuBar(); // Create a standard menu bar ?>
+	<?php echo $View->renderMastHead(); // Create a standard head ?>
+	<?php echo $View->renderMenuBar(); // Create a standard menu bar ?>
 	<div id="maincontent">
-		<?php 
+		<?php
 		// Check to see if page requires a login
 		echo $this->useTemplatePlugin('login_window').PHP_EOL;
 		?>

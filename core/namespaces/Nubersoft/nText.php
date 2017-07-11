@@ -297,7 +297,7 @@ class nText
 		public	function savePersonalFile($dir,$filename,$lang = 'en')
 			{
 				if(!is_dir($dir)) {
-					if(@!mkdir($dir,0755,true)) {
+					if(!nApp::call()->isDir($dir)) {
 						throw new \Exception($this->errorMsg('1006',$dir));
 					}
 				}

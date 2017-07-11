@@ -15,7 +15,7 @@ if(!empty($this->getHtml('javascript'))) {
 <?php
 }
 ?>
-<?php echo $this->getDoc('noscript.php').PHP_EOL; ?>
+<?php echo $this->getTemplateDoc('noscript.php').PHP_EOL; ?>
 <?php if(!empty($this->getHtml('inline_css'))) { ?>
 <style>
 <?php echo $this->getHtml('inline_css') ?>

@@ -3,7 +3,8 @@ namespace nPlugins\Nubersoft;
 
 class TimeStamp extends \Nubersoft\nApp
 	{
-		protected	$db;
+		protected	$db,
+					$flag;
 
 		public		$row_count,
 					$_time,
@@ -15,16 +16,36 @@ class TimeStamp extends \Nubersoft\nApp
 			{
 				# Interval
 				$this->_time	=	$_time;
-				# Save and open database
-				$this->initialize();
 				return parent::__construct();
 			}
 		
+		public	function setFlagName($flag)
+			{
+				$this->flag	=	$flag;
+				return $this;
+			}
+		
+		
+		public	function isActive()
+			{
+				if(empty($this->flag) && $this->isAdmin())
+					die(printpre());
+				
+				return (!\Nubersoft\Flags\Controller::hasFlag($this->flag));
+			}
+			
 		public	function initialize()
 			{
-				if(!empty($this->getDataNode('_SESSION')->username)) {
+				if($this->isAjaxRequest())
+					return;
+				
+				if(!$this->isActive())
+					return;
+				
+				$userId	=	(!empty($this->getDataNode('_SESSION')->username))? $this->getDataNode('_SESSION')->username : $this->getClientIp();
+				if(!empty($userId)) {
 					# Record into db
-					$this->record($this->getDataNode('_SESSION')->username);
+					$this->record($userId);
 					# Check db, print users
 					//$this->users	=	$this->getResults($this->getDataNode('_SESSION')->username);
 				}
@@ -94,14 +115,28 @@ class TimeStamp extends \Nubersoft\nApp
 					
 					if(!$query)
 						return false;
-						
-					$connected		=	$query	->query("INSERT into `members_connected` (`unique_id`,`username`,`timestamp`,`ip_address`) VALUES (:0,:1,:2,:3) ON DUPLICATE KEY UPDATE `timestamp` = :4, `ip_address` = :5",array(
+					
+					$sql	=	"INSERT INTO
+									`members_connected`
+									(`unique_id`,`username`,`timestamp`,`ip_address`,`domain`)
+								VALUES
+									(:0,:1,:2,:3,:6)
+								ON DUPLICATE KEY
+								UPDATE
+									`timestamp` = :4,
+									`ip_address` = :5,
+									`domain` = :7";
+					
+					$host		=	$this->siteHost();
+					$connected	=	$query->query($sql,array(
 						$payload["unique_id"],
 						$payload["username"],
 						$payload['timestamp'],
 						$payload["ip_address"],
 						$payload['timestamp'],
-						$payload["ip_address"]
+						$payload["ip_address"],
+						$host,
+						$host
 					));
 					
 					$this->saveSetting('timestamp_logged',true);

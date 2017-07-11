@@ -238,8 +238,10 @@ div.component_header {
 	padding: 0;
 	position: relative;
 	text-decoration: none;
-	height: 115px !important;
-	width: 115px !important;
+	height: 115px;
+	width: 115px;
+	max-height: 115px;
+	max-width: 115px;
 	height: auto;
 	float: left;
 	margin: 10px;

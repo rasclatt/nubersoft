@@ -5,16 +5,6 @@ class ComponentEditor extends \Nubersoft\nRender
 	{
 		protected	$useData;
 		
-		public	function __construct($err = false)
-			{
-				if($err) {
-					ini_set("display_errors",1);
-					error_reporting(E_ALL);
-				}
-				
-				return parent::__construct();
-			}
-		
 		public	function saveAjaxRequest()
 			{
 				if($this->isAjaxRequest()) {

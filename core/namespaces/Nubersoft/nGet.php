@@ -343,6 +343,7 @@ class nGet extends \Nubersoft\nFunctions
 				$dDowns	=	$nquery	->select(array("assoc_column","menuName","menuVal"))
 									->from('dropdown_menus')
 									->whereIn("assoc_column",$cols)
+									->orderBy(array("page_order"=>'ASC'))
 									->fetch();
 									
 				if(!empty($dDowns)) {
@@ -361,20 +362,37 @@ class nGet extends \Nubersoft\nFunctions
 				return $new;
 			}
 		
-		public	function getFormBuilder()
+		private	$allow;
+		
+		public	function allowSaved($allow = true)
 			{
-				$nquery	=	$this->nApp->nQuery();
-				$gCols	=	array(
-								"column_name",
-								"column_type",
-								"size"
-							);
-				$query	=	$nquery	->select($gCols)
-									->from("form_builder")
-									->where(array("page_live"=>'on'))
-									->fetch();
-									
-				$cols	=	$this->organizeByKey($query, 'column_name',true);
+				$this->allow	=	$allow;
+				return $this;
+			}
+		
+		public	function getFormBuilder($columns = false,$gCols = array("column_name","column_type","size"),$org = 'column_name')
+			{
+				$OR		=	"WHERE";
+				
+				if(!empty($columns) && is_array($columns))
+					$OR	.=	PHP_EOL."`column_name` = '".implode("' OR `column_name` = '",$columns)."' AND".PHP_EOL;
+				
+				$sql	=	"SELECT
+								`".implode('`,`',$gCols)."`
+							FROM
+								`form_builder`
+							{$OR}
+								page_live = 'on'
+							ORDER BY
+								page_order ASC";
+								
+				$query	=	$this->nApp->nQuery()->query($sql)->getResults();	
+				$cols	=	$this->organizeByKey($query, $org, true);
+	
+				if(is_bool($this->allow)) {
+					if($this->allow !== true)
+						return $cols;
+				}
 				
 				$this->nApp->saveSetting('form_builder',$cols);
 				

@@ -36,14 +36,15 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 		private	function unZipToTemp(\ZipArchive $zip, \Nubersoft\nApp $nApp, $path)
 			{
 				if($zip->open($path) !== false) {
-					$ROOT	=	pathinfo($path,PATHINFO_DIRNAME);
+					$ROOT		=	pathinfo($path,PATHINFO_DIRNAME);
 					$zip->extractTo($ROOT);
 					$zip->close();
 					$newContent	=	$ROOT.DS.pathinfo($path,PATHINFO_FILENAME);
 					$contents	=	$nApp->getDirList($newContent);
-					
 					foreach($contents['host'] as $filepath) {
 						if(!is_file($filepath))
+							continue;
+						elseif(strpos($filepath,'.DS_STORE') !== false)
 							continue;
 						
 						$new['from'][]	=	$filepath;
@@ -66,6 +67,9 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 					}
 					
 					$nApp->saveIncidental('deploy',array('msg'=>'Package installed: '.pathinfo($path,PATHINFO_FILENAME)));
+					
+					//die(printpre($nApp->getIncidental()));
+					
 					unlink($path);
 					return $newContent;
 				}
@@ -85,7 +89,7 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 		
 		private	function getErrorMessage()
 			{
-				return 'There was a prodlem creating a required directory/file';
+				return 'There was a problem creating a required directory/file';
 			}
 		
 		private	function doUniversalResponse($message,$nApp)

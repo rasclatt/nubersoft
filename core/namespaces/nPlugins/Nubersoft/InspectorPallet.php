@@ -23,13 +23,14 @@ class InspectorPallet extends \Nubersoft\nApp
 		
 		public	function execute($settings = false)
 			{
+				if(!$this->isAdmin())
+					return;
+					
 				$animate	=	(!empty($settings['fx']))? $settings['fx']:'fade';
 				$buttons	=	(!empty($settings['toolbar']) && is_array($settings['toolbar']))? $settings['toolbar']:false;
 				$this->ID	=	(!empty($settings['ID']))? $settings['ID'] : false;
-				
-				if($this->isAdmin()) {
-					include(__DIR__.DS.'InspectorPallet'.DS.'execute.php');
-				}	
+				# Create a top bar
+				echo $this->getHelper('nRender')->useTemplatePlugin('admintools_top_bar');
 			}
 			
 		public	function getAjaxPallet()
@@ -175,6 +176,18 @@ class InspectorPallet extends \Nubersoft\nApp
 		private	function setDefaultToggle($value)
 			{
 				return (empty($value))? 'track' : $value;
+			}
+		/*
+		**	@description	Checks if the toolbar is on or not
+		*/
+		public	function toolBarActive()
+			{
+				$array	=	$this->getSession('admintools');
+				
+				if(!isset($array->editor))
+					return false;
+				
+				return ($array->editor == 'on');
 			}
 			
 		public	function loginToggle()

@@ -37,6 +37,15 @@
 			</class>
 		</object>
 	</action>
+	<!-- // Replaces the signup ajax -->
+	<action event="nbr_admin_load_plugin" request="post" is_ajax="true" is_admin="true">
+		<object event="nbr_admin_load_plugin" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\Render</name>
+				<method>renderAdminPlugin</method>
+			</class>
+		</object>
+	</action>
 	<action event="nbr_open_site_prefs" request="post" is_ajax="true">
 		<object event="nbr_open_site_prefs" before="nbr_nobservertemplate_tobrowser_template">
 			<include>~NBR_AJAX_DIR~/helpers/form.site.prefs.php</include>
@@ -55,14 +64,20 @@
 			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
 		</object>
 	</action>
-	<action event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true">
+	<action event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true" is_admin="true">
 		<object event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template">
+			<class>
+				<name>\nPlugins\Nubersoft\ComponentWidget</name>
+				<method>renderComponent</method>
+			</class>
+			<!--
 			<function>
 				<name>ajax_admintools_component</name>
 				<echo>true</echo>
 				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_admintools_component.php</include>
 				<dependency>\Nubersoft\nApp</dependency>
 			</function>
+			-->
 		</object>
 	</action>
 	<action event="ajax_load_favicons">

@@ -3,6 +3,8 @@ namespace Nubersoft;
 
 class nAutomator extends \Nubersoft\Singleton
 	{
+		const	START_RECORDING	=	true;
+		
 		private	$nApp,
 				$actionArr,
 				$listenForKey,
@@ -18,6 +20,7 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function __construct(\Nubersoft\nApp $nApp)
 			{
+				date_default_timezone_set('America/Los_Angeles');
 				$this->nApp	=	$nApp;
 				return parent::__construct();
 			}
@@ -117,9 +120,64 @@ class nAutomator extends \Nubersoft\Singleton
 				}
 			}
 		
+		public	function getTimeCastLast()
+			{
+				$time	=	$this->nApp->toArray($this->nApp->getDataNode('workflow_runtime'));
+				if(empty($time))
+					return $this->getMicroTimeNow();
+				
+				$time	=	array_reverse($time);
+				
+				return $time[0]['now'];
+			}
+		
+		public	function getTimeCastSum($time)
+			{
+				$totals	=	array_map(function($v){
+					return $v['time'];
+				},$time);
+				
+				return array_sum($totals);
+			}
+		
+		public	function getTimeCast($then,$app)
+			{
+				$time	=	$this->nApp->toArray($this->nApp->getDataNode('workflow_runtime'));	
+				if(empty($time))
+					$time	=	array();
+				
+				$now	=	$this->getMicroTimeNow();
+				
+				$time[]	=	array(
+								'time'=>number_format(($now-$then),6),
+								'now'=>$now,
+								'then'=>$then,
+								'total'=>number_format($this->getTimeCastSum($time),6),
+								'app'=>$app
+							);
+				
+				$this->nApp->saveSetting('workflow_runtime',$time,true);
+				$this->nApp->saveSetting('workflow_runtime_total',$this->getTimeCastSum($time),true);
+			}
+		
+		public	function getMicroTimeNow()
+			{
+				list($usec, $sec) = explode(" ", microtime());
+				return ((float)$usec + (float)$sec);
+			}
+		
+		private	function isActiveRecording()
+			{
+				return	self::START_RECORDING;
+			}
+		
 		private	function automateByClass($typeOpts,$inject = false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject)));
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				
 				$func	=	function($class,$typeOpts = false,$inject = false)
 					{
@@ -154,7 +212,11 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		private	function automateByFunction($typeOpts,$inject = false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject)));
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				
 				$func	=	(!empty($typeOpts['name']))? $typeOpts['name'] : false;
 				
@@ -463,8 +525,11 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function doClassWorkflow($obj, $inject = false, $dependency = false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency)));
-				
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				# Get the name of the class
 				$func				=	(isset($obj['name']))? $obj['name'] : false;
 				
@@ -562,7 +627,11 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function chain($obj,$instance,$method,$inject = false,$dependency=false,$dependency_arr=false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$obj,$method,$inject,$dependency)));
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$method,$inject,$dependency));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				
 				if(!is_array($obj['chain']))
 					$obj['chain']	=	array($method,$obj['chain']);
@@ -611,7 +680,11 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function doClassInject($obj,$func,$inject,$method = false,$dependency = false,$dependency_arr = false,$constr_dependency = false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$obj,$func,$method,$inject,$dependency,$constr_dependency)));
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$func,$method,$inject,$dependency,$constr_dependency));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				
 				if($dependency)
 					$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($dependency))->{$method}($this->injector($inject));
@@ -627,7 +700,11 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function doFunctionWorkflow($obj,$inject = false,$dependency = false)
 			{
-				//$this->nApp->saveSetting('workflow_run',array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency)));
+				if($this->isActiveRecording()) {
+					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
+					$this->getTimeCast($this->getTimeCastLast(),$rec);
+					$this->nApp->saveSetting('workflow_run',$rec);
+				}
 				
 				$func	=	$obj['name'];
 				if(!function_exists($func)) {

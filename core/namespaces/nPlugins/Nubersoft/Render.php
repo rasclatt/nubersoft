@@ -13,4 +13,12 @@ class Render extends \Nubersoft\nRender
 					));
 				}
 			}
+			
+		public	function renderAdminPlugin()
+			{
+				if(!$this->isAdmin())
+					return;
+				
+				$this->useTemplatePlugin($this->getPost('plugin'));
+			}
 	}

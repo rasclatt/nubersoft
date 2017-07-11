@@ -20,7 +20,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 		public	function set($fetch = false)
 			{
 				$GetSitePrefs	=	$this;
-				$getPrefs		=	$this->getPrefFile('preferences',array('save'=>true),false,function($path,$nApp) use ($GetSitePrefs,$fetch) {
+				$getPrefs		=	$this->getPrefFile('preferences',array('save'=>(!$this->isAjaxRequest())),false,function($path,$nApp) use ($GetSitePrefs,$fetch) {
 					try {
 						if($fetch) {
 							if(!is_array($fetch)) {
@@ -52,13 +52,18 @@ class GetSitePrefs extends \Nubersoft\nApp
 					foreach($getPrefs as $type => $data) {
 						$getPrefs[$type]['content']	=	json_decode(htmlspecialchars_decode($data['content'],ENT_QUOTES));
 					}
+					
 					return	$getPrefs;
 				});
 				
 				$this->saveSetting('preferences',$getPrefs);
 				
-				if(empty($getPrefs))
-					throw new \Exception('Your system prefernces are not available.');
+				if(empty($getPrefs)) {
+					if($this->isAdmin())
+						echo printpre($getPrefs);
+					//\Nubersoft\Flags\Controller::create('maintenance');
+					throw new \Exception('Your system preferences are not available.',200);
+				}
 				
 				return $this;
 			}
@@ -79,7 +84,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 				if(!is_file($location))
 					return;
 				# Try and retrieve config array from defines
-				$getDefines	=	$this->getPrefFile('defines',array('xml'=>pathinfo($location,PATHINFO_DIRNAME),'save'=>true),false,function($path,$nApp){
+				$getDefines	=	$this->getPrefFile('defines',array('xml'=>pathinfo($location,PATHINFO_DIRNAME),'save'=>false),false,function($path,$nApp){
 					$configs	=	$nApp->toArray($nApp->getHelper('nRegister')->parseXmlFile($path));
 					if(empty($configs))
 						return false;
@@ -310,7 +315,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 		
 		public	function setRegistry()
 			{
-				$config	=	$this->getPrefFile('registry',array('save'=>true),false,function($path,$nApp) {
+				$config	=	$this->getPrefFile('registry',array('save'=>false),false,function($path,$nApp) {
 					$name	=	'registry';
 					# Get registry file
 					$config	=	NBR_CLIENT_SETTINGS.DS."{$name}.xml";
@@ -448,6 +453,12 @@ class GetSitePrefs extends \Nubersoft\nApp
 					'backend'=>$siteDirTemp.DS.'admintools'
 				);
 				
+				$templateBase	=	array(
+					'dir'=>$siteDirTemp = DS.trim($this->stripRoot(NBR_CLIENT_DIR.DS.'template'),DS),
+					'frontend'=>$siteDirTemp.DS.'frontend',
+					'backend'=>$siteDirTemp.DS.'admintools'
+				);
+				
 				$settings	=	array(
 					'page'=>$site,
 					'admin_page'=>$isAdmin,
@@ -455,6 +466,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 					'page_valid'=>(!empty($site->ID)),
 					'templates'=>array(
 						'template_page'=>((is_array($pageTemplate))? $pageTemplate : $siteTemplate),
+						'template_base'=>$templateBase,
 						'template_site'=>$siteTemplate,
 						'template_default'=>$defTemplate,
 						'has_global_template' =>(!is_array($pageTemplate))
