@@ -1,0 +1,2 @@
+
+<a href="<?php echo $this->adminUrl('/?action=nbr_update_master_app') ?>" title="Download and install latest GitHub application version" class="nbr_admintool_plugin_button"><img src="<?php echo $this->getHelper('nImage')->toBase64(__DIR__.DS.'images'.DS.'giddownload.png') ?>" /></a>
