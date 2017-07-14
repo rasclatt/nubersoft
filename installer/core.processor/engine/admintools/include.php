@@ -1,1 +1,0 @@
-<?php include(NBR_RENDER_LIB.'/admintools/include.php'); ?>
