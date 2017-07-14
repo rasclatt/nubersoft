@@ -6,7 +6,7 @@ class Observer extends \Nubersoft\nApp
 		public	function listen()
 			{
 				if(!$this->isAdmin())
-					continue;
+					return;
 				
 				$GET		=	json_decode($this->safe()->decOpenSsl(urldecode(urlencode($this->getGet('info')))),true);		
 				$ip			=	$GET['ip'];
