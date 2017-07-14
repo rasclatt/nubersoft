@@ -14,7 +14,7 @@ $Inspector	=	$this->getPlugin('\nPlugins\Nubersoft\InspectorPallet');
 	<div class="toggle_bar_cont">
 		<div class="nbr_tool_bar_menu nTrigger" id="nbr_tooltoggle" data-instructions='{"FX":{"fx":["sideSlide"],"acton":["#InspectorPalletWrap"],"fxspeed":["fast"]}}'></div>
 		<div class="nbr_tool_bar_menu">
-			<a href="<?php echo $this->localeUrl($admin_link['full_path']) ?>?requestTable=users"><?php echo $admin_link['menu_name']; ?></a>
+			<a href="<?php echo $this->localeUrl($admin_link['full_path']) ?>"><?php echo $admin_link['menu_name']; ?></a>
 			<div class="admin_tools_popup">
 				<ul class="admin_tools_menu_cont">
 					<?php echo $Inspector->AdminToolsQuickLinks($admin_link); ?>
