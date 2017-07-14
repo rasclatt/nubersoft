@@ -12,9 +12,9 @@ error_reporting		=	true;
 // Shows the path the automation takes
 path_reporting		=	false;
 // Show data packages at key points
-package_reporting	=	true;
+package_reporting	=	false;
 // Shows the ajax responses
-response_reporting	=	true;
+response_reporting	=	false;
 // Used to document realtime actions like rollovers
 realtime_reporting	=	false;
 /*

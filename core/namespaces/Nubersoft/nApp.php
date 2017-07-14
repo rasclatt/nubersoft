@@ -1407,12 +1407,19 @@ class	nApp extends \Nubersoft\nFunctions
 				NubeData::$settings->engine->table_name	=	$table;
 			}
 		/*
+		**	@description	Returns the designated settings folder
+		*/
+		public	function getSettingsDir($append = false)
+			{
+				return (!empty($append))? $this->toSingleDs(NBR_CLIENT_SETTINGS.DS.$append) : NBR_CLIENT_SETTINGS;
+			}
+		/*
 		**	@description	Returns the designated cache folder
 		*/
 		public	function getCacheFolder($append = false)
 			{
 				# Cache pref location
-				$cache	=	NBR_CLIENT_SETTINGS.DS.'cache_dir.pref';
+				$cache	=	$this->getSettingsDir('cache_dir.pref');
 				# See if the cache has already pulled and return it
 				if(!empty($this->getDataNode('site')->cache_dir)) {
 					$cachePath	=	rtrim($this->toSingleDs(NBR_ROOT_DIR.DS.$this->getDataNode('site')->cache_dir.DS.$append),DS);

@@ -8,15 +8,13 @@ class Media extends \Nubersoft\nRouter
 		public	function toStyleSheet($path)
 			{
 				$this->saveSetting('dynamic_content','css');
-				$this->addHeader('Content-type: text/css');
-				die($this->render($path));
+				echo $this->render($path);
 			}
 			
 		public	function toJavaScript($path)
 			{
 				$this->saveSetting('dynamic_content','js');
-				$this->addHeader('Content-type: text/javascript');
-				die($this->render($path));
+				echo $this->render($path);
 			}
 		/*
 		**	@description	Listens for dynamic media
@@ -39,14 +37,28 @@ class Media extends \Nubersoft\nRouter
 				# Get the token
 				$token	=	$Token->getToken();
 				# Path stored in value
-				$path	=	$Token->getValue();
+				$path	=	$this->safe()->decode($Token->getValue());
 				switch($decode['type']) {
 					case('css'):
+						# Add the header so the browser doesn't error in strict mode
+						$this->addHeader('Content-type: text/css');
 						if(!empty($path) && is_file($path))
-							$this->toStyleSheet($this->safe()->decode($path));
+							$this->toStyleSheet($path);
+						else {
+							echo '/* CSS File Not found: '.$this->stripRoot($path).' */';
+						}
+						# Stop
+						exit;
 					case('js'):
+						# Add the header so the browser doesn't error in strict mode
+						$this->addHeader('Content-type: text/javascript');
 						if(!empty($path) && is_file($path))
-							$this->toJavaScript($this->safe()->decode($path));
+							$this->toJavaScript($path);
+						else {
+							echo '/* JavaScript File Not found: '.$this->stripRoot($path).' */';
+						}
+						#stop
+						exit;
 				}
 			}
 	}

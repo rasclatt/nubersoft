@@ -146,7 +146,7 @@ class Methodize	extends \Nubersoft\nFunctions
 				if(count($this->info) == 1) {
 					# Send back just that value
 					$vals	=	array_values($this->info);
-					return $vals[0];
+					return (!empty($vals[0]) && is_string($vals[0]))? $vals[0] : '';
 				}
 				# If array, send that back in formatted string
 				return json_encode($this->info);

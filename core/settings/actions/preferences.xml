@@ -10,6 +10,24 @@
 		</object>
 	</action>
 
+	<action event="nbr_deploy" request="get" is_admin="true">
+		<object event="nbr_deploy">
+			<class dependency="\Nubersoft\nApp">
+				<name>\Nubersoft\nZip</name>
+				<method>deploy</method>
+			</class>
+		</object>
+	</action>
+	
+	<action event="nbr_update_master_app" after="nbr_session_to_node" request="request">
+		<object event="nbr_update_master_app">
+			<class>
+				<name>\nPlugins\Nubersoft\CoreUpdater</name>
+				<method>getGitFile</method>
+			</class>
+		</object>
+	</action>
+
 	<action event="nbr_cart_clear" after="nbr_session_to_node" request="get">
 		<object event="nbr_cart_clear">
 			<class>
