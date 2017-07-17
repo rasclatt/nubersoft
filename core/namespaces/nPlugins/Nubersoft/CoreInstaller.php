@@ -17,7 +17,20 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 				if(!is_dir($this->DEPLOY_ROOT))
 					return $this->doUniversalResponse($this->getDefaultMessage(false),$nApp);
 				
-				$contents	=	$nApp->getDirList($this->DEPLOY_ROOT);
+				foreach(scandir($this->DEPLOY_ROOT) as $item) {
+					if(in_array($item,array('.','..')))
+						continue;
+					
+					if(is_file($this->DEPLOY_ROOT.DS.$item))
+						continue;
+					
+					if(is_dir($this->DEPLOY_ROOT.DS.$item)) {
+						$this->deleteContents($this->DEPLOY_ROOT.DS.$item);
+					}
+				}
+				
+				$contents			=	$nApp->getDirList($this->DEPLOY_ROOT);
+				$contents['host']	=	array_unique($contents['host']);
 				
 				if(empty($contents['host']))
 					return $this->doUniversalResponse($this->getNoPackagesMessage(false),$nApp);
@@ -36,6 +49,7 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 		private	function unZipToTemp(\ZipArchive $zip, \Nubersoft\nApp $nApp, $path)
 			{
 				if($zip->open($path) !== false) {
+					$baseDir	=	pathinfo($path,PATHINFO_FILENAME);
 					$ROOT		=	pathinfo($path,PATHINFO_DIRNAME);
 					$zip->extractTo($ROOT);
 					$zip->close();
@@ -51,7 +65,8 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 						$new['to'][]	=	$nApp->toSingleDs(NBR_ROOT_DIR.DS.str_replace($newContent ,'',$filepath));
 					}
 					
-					$new	=	array_filter($new);
+					$new['from']	=	array_unique($new['from']);
+					$new['to']		=	array_unique($new['to']);
 					
 					if(empty($new))
 						return $this->doUniversalResponse($this->getNoPackagesMessage(false),$nApp);
@@ -67,9 +82,6 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 					}
 					
 					$nApp->saveIncidental('deploy',array('msg'=>'Package installed: '.pathinfo($path,PATHINFO_FILENAME)));
-					
-					//die(printpre($nApp->getIncidental()));
-					
 					unlink($path);
 					return $newContent;
 				}
