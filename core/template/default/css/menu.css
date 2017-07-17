@@ -27,7 +27,22 @@ ul#menuContainer > li {
 }
 ul#menuContainer > li {
 	display: table-cell;
+	padding: 0px;
 }
+li.nbr_default_menu > div.main > a:link,
+li.nbr_default_menu > div.main > a:visited {
+	color: #FFF;
+	cursor: pointer;
+	text-decoration: none;
+	padding: 10px 20px;
+	display: inline-block;
+}
+li.nbr_default_menu > div.main > a:hover {
+	background-color: #900;
+	padding: 10px 20px;
+	display: inline-block;
+}
+
 /*
 ul#menuContainer li	{
 	display: inline-block;

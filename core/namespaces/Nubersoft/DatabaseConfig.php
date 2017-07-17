@@ -3,15 +3,24 @@
 /*Description: This class implements the DatabseDriver interface which only requires the connect() method. This is the default driver, which is a PDO MySQL driver.*/
 namespace Nubersoft;
 
-class DatabaseConfig implements \Nubersoft\DatabaseDriver
+class DatabaseConfig extends \Nubersoft\nApp implements \Nubersoft\DatabaseDriver
 	{
 		public	static	$con,
 						$valid,
 						$database,
 						$dbOpts;
 		
+		private	static	$nApp;
+		
 		const	REFRESH_OPTS	=	true;
 		const	NEW_DBC			=	"new_conn";
+		
+		public	function __construct()
+			{
+				self::$nApp	=	$this;
+				
+				return parent::__construct();
+			}
 		
 		public	static	function connect($settings = false)
 			{
@@ -43,8 +52,8 @@ class DatabaseConfig implements \Nubersoft\DatabaseDriver
 				# If the credentials are not set, return false and set errors
 				if(!$thisConn) {
 					# Save response to global array
-					nApp::call()->saveSetting('connection', array('database'=>false,'health'=>false));
-					nApp::call()->saveError('connection', array('success'=>false,'error'=>'incomplete/invalid db creds'));
+					self::$nApp->saveSetting('connection', array('database'=>false,'health'=>false));
+					self::$nApp->saveError('connection', array('success'=>false,'error'=>'incomplete/invalid db creds'));
 					return false;
 				}
 				# Try connecting to database
@@ -59,15 +68,12 @@ class DatabaseConfig implements \Nubersoft\DatabaseDriver
 					$_error				=	(!empty(self::$con))? self::$con->errorInfo() : array();	
 					$dbokay				=	array_filter($_error);
 					# Save to nubedata
-					if(self::$con instanceof \PDO)
-						nApp::call()->saveSetting('connection', array('database'=>$creds['data'],'health'=>true));
-					else
-						nApp::call()->saveSetting('connection', array('database'=>$creds['data'],'health'=>false));
+					self::$nApp->saveSetting('connection', array('database'=>$creds['data'],'health'=>(self::$con instanceof \PDO)));
 				}
 				catch (\PDOException $e) {
 					# Save to nubedata
-					nApp::call()->saveSetting('connection', array('database'=>$creds['data'],'health'=>false));
-					nApp::call()->saveError('connection','Connection Failure.');
+					self::$nApp->saveSetting('connection', array('database'=>$creds['data'],'health'=>false));
+					self::$nApp->saveError('connection','Connection Failure.');
 					self::$con	=	false;
 				}
 				# Add error handling
@@ -87,17 +93,17 @@ class DatabaseConfig implements \Nubersoft\DatabaseDriver
 				}
 				
 				if(!self::$valid) {
-					nApp::call()->saveIncidental('database','Connection Error.');
+					self::$nApp->saveIncidental('database','Connection Error.');
 					# Notify that sql is not working
 					\Nubersoft\NubeData::$settings->sql	=	false;
 					# See if user table exists
 					if(self::$con == false)
 						$_checkUsers	=	0;
 					else {
-						$tables			=	nApp::call()->toArray(nApp::call()->getTables());
+						$tables			=	self::$nApp->toArray(self::$nApp->getTables());
 						
 						if(is_array($tables) && in_array('users',$tables)) {
-							$nubquery		=	nApp::call()->nQuery();
+							$nubquery		=	self::$nApp->nQuery();
 							$_checkUsers	=	$nubquery	->select("COUNT(*) as count")
 															->from("users")
 															->fetch();
@@ -107,12 +113,12 @@ class DatabaseConfig implements \Nubersoft\DatabaseDriver
 						}
 					}
 					
-					if(nApp::call()->isAdmin()) {
+					if(self::$nApp->isAdmin()) {
 						# If no users are return or table does not exist.
 						if($_checkUsers == 0) {
-							nApp::call()->saveIncidental('database', array('con_admin'=>'Database Failure on line '.__LINE__.'=>'.__FILE__));									
+							self::$nApp->saveIncidental('database', array('con_admin'=>'Database Failure on line '.__LINE__.'=>'.__FILE__));									
 							
-							nApp::call()->getHelper('CoreMySQL')
+							self::$nApp->getHelper('CoreMySQL')
 								->installAllTables()
 								->installAllRows();
 						}
@@ -157,10 +163,10 @@ class DatabaseConfig implements \Nubersoft\DatabaseDriver
 		public	function dbHealth()
 			{
 				# Store Database Name
-				nApp::call()->saveSetting('engine',array('dbname'=>nApp::call()->getDbName()));
+				$this->saveSetting('engine',array('dbname'=>$this->getDbName()));
 				# Send verification that server is working
-				nApp::call()->saveSetting('engine',array('sql'=>nApp::call()->siteValid()));
+				$this->saveSetting('engine',array('sql'=>$this->siteValid()));
 				# If live status has not yet been determined by now, set it to offline
-				nApp::call()->saveSetting('engine',array('site_live'=>nApp::call()->siteLive()));
+				$this->saveSetting('engine',array('site_live'=>$this->siteLive()));
 			}
 	}

@@ -21,14 +21,16 @@ class	MenuButton extends \nPlugins\Nubersoft\CoreHelper
 			{
 				$_toggle	=	$core->getEditStatus();
 				if(empty($this->getDataNode('gmenu')) && $this->siteValid()) {
-					foreach($this->getDataNode('menu_data') as $unique_id => $row) {
-						if($row->page_live != 'on') {
-							if(!$_toggle)
-								continue;
+					if(!empty($this->getDataNode('menu_data'))) {
+						foreach($this->getDataNode('menu_data') as $unique_id => $row) {
+							if($row->page_live != 'on') {
+								if(!$_toggle)
+									continue;
+							}
+							
+							$row->page_options	=	json_decode($this->safe()->decode($row->page_options));
+							$gmenu[$unique_id]	=	$row;
 						}
-						
-						$row->page_options	=	json_decode($this->safe()->decode($row->page_options));
-						$gmenu[$unique_id]	=	$row;
 					}
 					
 					if(isset($gmenu))

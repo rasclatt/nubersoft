@@ -25,12 +25,12 @@ $Inspector	=	$this->getPlugin('\nPlugins\Nubersoft\InspectorPallet');
 			<?php echo $Inspector->button(); ?>
 		</div>
 		
-		<div class="nbr_tool_bar_menu nTrigger" data-instructions='{"action":"nbr_delete_cache_folder_ajax"}'>
-			<a href="#">Delete Cache</a>
+		<div class="nbr_tool_bar_menu nTrigger" data-instructions='{"FX":{"fx":["opacity"],"acton":["body"]},"action":"nbr_delete_cache_folder_ajax","DOM":{"html":["<img src=\"/media/images/ui/loader.gif\" style=\"max-height: 15px; margin: 0 0 0 5px;\" />"],"sendto":[".nbr_loader_now"],"event":["click"]},"data":{"deliver":{"ux_loader_reset":[".nbr_loader_now"]}}}'>
+			<a href="#">Delete Cache<span class="nbr_loader_now"></span></a>
 		</div>
 		
-		<div class="nbr_tool_bar_menu nTrigger" data-instructions='{"action":"nbr_open_site_prefs","FX":{"acton":["body"],"fx":["opacity"]}}'>
-			<a href="#">Site Preferences</a>
+		<div class="nbr_tool_bar_menu nTrigger" data-instructions='{"action":"nbr_open_site_prefs","FX":{"acton":["body"],"fx":["opacity"]},"DOM":{"html":["<img src=\"/media/images/ui/loader.gif\" style=\"max-height: 15px; margin: 0 0 0 5px;\" />"],"sendto":[".nbr_loader_prefs"],"event":["click"]},"data":{"deliver":{"ux_loader_reset":[".nbr_loader_prefs"]}}}'>
+			<a href="#">Site Preferences<span class="nbr_loader_prefs"></span></a>
 		</div>
 		<?php if(is_array($buttons)) { ?>
 		<div class="nbr_tool_bar_menu">

@@ -56,10 +56,14 @@
 				<chain>setPageRequestSettings</chain>
 				<chain>setCallMethod</chain>
 				<chain>setCallTables</chain>
+				<!--
 				<chain>autoFunctions</chain>
+				-->
 				<chain>setCurrentAction</chain>
 				<chain>setPasswordEngine</chain>
+				<!--
 				<chain>setBypass</chain>
+				-->
 			</class>
 		</object>
 		<!--

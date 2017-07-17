@@ -502,14 +502,35 @@ class HeadProcessor extends \Nubersoft\nApp
 					$msg[]	=	'Cache Folder Deleted (/'.pathinfo($cache, PATHINFO_BASENAME).')';
 					
 					if($this->isAjaxRequest()) {
+						$resetDomThinker	=	$this->processResetThinkers();
 						$deleted['alert']	=	implode(', ',$msg);
-						$this->saveIncidental('ajax',$deleted);
+						$this->ajaxResponse(array_merge(array(
+							'alert' => $deleted['alert'],
+							'fx' => array(
+								'rOpacity'
+							),
+							'acton' => array(
+								'body'
+							)
+						),$resetDomThinker));
 					}
 					else
 						$this->saveIncidental('cache_delete',implode(', ',$msg));
 				}
 				
 				return $this;
+			}
+		
+		public	function processResetThinkers()
+			{
+				$deliver	=	$this->toArray($this->getPost('deliver'));
+				$node		=	(new \Nubersoft\Methodize())->saveAttr('deliver',$deliver);
+				$dom		=	$node->getDeliver()->getUxLoaderReset()->toArray();
+				
+				return array(
+					'html' => array_fill(0,count($dom),''),
+					'sendto' => $dom
+				);
 			}
 		
 		public	function resetClientDefine()

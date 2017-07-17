@@ -3,8 +3,18 @@ namespace Nubersoft;
 
 class nObserverFirstRun extends \Nubersoft\nApp implements nObserver
 	{
+		/*
+		**	@description	Listening mode for user table
+		*/
 		public	function listen()
 			{
+				if(defined('SERVER_MODE')) {
+					if(SERVER_MODE == 'live' || SERVER_MODE == 'production' || SERVER_MODE == 'true' || SERVER_MODE ===true)
+						return false;
+				}
+				elseif(!defined('SERVER_MODE'))
+					return false;
+				
 				if($this->userCount() == 0) {
 					if(!empty($this->getSession('usergroup')))
 						return;

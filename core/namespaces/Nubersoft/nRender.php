@@ -826,4 +826,39 @@ class nRender extends \Nubersoft\nApp
 				$Component	=	$this->getPlugin('\nPlugins\Nubersoft\Component\Model');
 				return $Component->getComponent([$type=>$value]);
 			}
+		/*
+		**	@description	Fetches the social media links
+		*/
+		public	function getSocialMedia($var = false, $not = array())
+			{
+				$elem	=	$this->getFooterContent();
+				$filter	=	array_merge(array("html"),$not);
+
+				if(empty($elem))
+					return false;
+				
+				if($var && !in_array($var,$filter)) {
+					return (!empty($elem->{$var}))? $elem->{$var} : false;
+				}
+				else {
+					if(empty($elem))
+						return false;
+					
+					foreach($elem as $key => $value) {
+						if(in_array($key,$filter))
+							continue;
+							
+						$new[$key]	=	$value;
+					}
+					
+					return (!empty($new))? $this->toObject($new) : false;
+				}
+			}
+		
+		public	function getSiteContent()
+			{
+				$prefs	=	$this->getSitePrefs();
+				
+				return (isset($prefs->content))? $prefs->content : false;
+			}
 	}

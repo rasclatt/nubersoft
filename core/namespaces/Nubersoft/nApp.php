@@ -151,8 +151,8 @@ class	nApp extends \Nubersoft\nFunctions
 				$append		=	($useAppend && !empty($co))? $co : ''; //die($this->isSsl());
 				$forceSSL	=	(!isset($forceSSL))? false : $forceSSL;
 				$url		=	(!isset($url))? $append.'' : $append.$url;
-				$baseUrl	=	(defined("BASE_URL"))? BASE_URL : 'http://'.$_SERVER['HTTP_HOST'];
-				$sslUrl		=	(defined("BASE_URL_SSL"))? BASE_URL_SSL : 'https://'.$_SERVER['HTTP_HOST'];
+				$baseUrl	=	(defined("BASE_URL") && BASE_URL != '{domain}')? BASE_URL : 'http://'.$_SERVER['HTTP_HOST'];
+				$sslUrl		=	(defined("BASE_URL_SSL") && BASE_URL_SSL != '{domain}')? BASE_URL_SSL : 'https://'.$_SERVER['HTTP_HOST'];
 				$forceSSL	=	(defined("FORCE_URL_SSL"))? FORCE_URL_SSL : $forceSSL;
 				
 				if($forceSSL)
@@ -497,18 +497,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function toAlert($msg, $action = 'general', $opts = false, $type = true, $toSess = true)
 			{
-				if($this->isAjaxRequest())
-					$this->ajaxAlert($msg);
-					
-				$msgArr	=	array('msg'=>$msg);
-				$array	=	(is_array($opts) && !empty($opts))? array_merge($msgArr,$opts) : $msgArr;
-				if($type)
-					$this->saveIncidental('alerts',array($action=>$array));
-				else
-					$this->saveError('alerts',array($action=>$array));
-				
-				if($toSess)
-					$this->setSession('alerts',array($action=>$array),true);
+				$this->getHelper('Messenger')->{__FUNCTION__}($msg, $action, $opts, $type, $toSess);
 			}
 		/*
 		**	@description	Saves errors to session and errors or incidentals data node
@@ -601,23 +590,14 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function getPageById($id,$key=false)
 			{
-				$find	=	'*';
-				if(!empty($key))
-					$find	=	'`'.implode('`,`',$key).'`';
-					
-				$sql	=	"SELECT {$find} FROM `main_menus` WHERE ID = :0";
-				return $this->nQuery()->query($sql,array($id))->getResults(true);
+				return $this->getHelper('nRouter\Model')->{__FUNCTION__}($id,$key);
 			}
 		
-		public	function getPage($var = false)
+		public	function getPage()
 			{
-				$pageURI	=	$this->getDataNode('pageURI');
-				if(!empty($pageURI)) {
-					if(!empty($var))
-						return (!empty($pageURI->{$var}))? $pageURI->{$var} : false;
-						
-					return $pageURI;
-				}
+				$args		=	func_get_args();
+				$var		=	(!empty($args[0]))? $args[0] : false;
+				return $this->getHelper('nRouter\Model')->{__FUNCTION__}($var);
 			}
 		
 		public	function getTemplate()
@@ -767,39 +747,6 @@ class	nApp extends \Nubersoft\nFunctions
 				
 				return 'users';
 			}
-		
-		public	function getSocialMedia($var = false, $not = array())
-			{
-				$elem	=	$this->getFooterContent();
-				$filter	=	array_merge(array("html"),$not);
-
-				if(empty($elem))
-					return false;
-				
-				if($var && !in_array($var,$filter)) {
-					return (!empty($elem->{$var}))? $elem->{$var} : false;
-				}
-				else {
-					if(empty($elem))
-						return false;
-					
-					foreach($elem as $key => $value) {
-						if(in_array($key,$filter))
-							continue;
-							
-						$new[$key]	=	$value;
-					}
-					
-					return (!empty($new))? $this->toObject($new) : false;
-				}
-			}
-		
-		public	function getSiteContent()
-			{
-				$prefs	=	$this->getSitePrefs();
-				
-				return (isset($prefs->content))? $prefs->content : false;
-			}
 		/*
 		**	@description	Creates the site preferences
 		*/
@@ -830,77 +777,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getRegistry($key = false)
 			{
-				$Cache	=	$this->nCache();
-				# See if stored in the load
-				if(!empty($this->getDataNode('registry')) && !empty($this->getCacheFolder()) && $Cache->allowCacheRead()) {
-					$reg	=	$this->toArray($this->getDataNode('registry'));
-					if(!empty($key))
-						return (!empty($reg[$key]))? $reg[$key] : false;
-					
-					return $reg;
-				}
-				# Cached file for registry
-				$cache	=	$this->toSingleDs($this->getCacheFolder().DS.'registry.json');
-				# If there is a registry cached
-				if(is_file($cache) && $Cache->allowCacheRead()) {
-					# Decode and send back
-					$decode	=	json_decode(file_get_contents($cache),true);
-					# Save to settings
-					if(empty($this->getDataNode('registry')))
-						$this->saveSetting('registry',$decode);
-					if($key)
-						return (isset($decode[$key]))? $decode[$key] : false;
-					return $decode;
-				}
-				# Default location for registry file
-				$file	=	NBR_CLIENT_DIR.DS.'settings'.DS.'registry.xml';
-				# If not found
-				if(!is_file($file)) {
-					# Let it be known
-					throw new nException('No registry found.',404001);
-					return false;
-				}
-				# Parse the xml
-				$reg	=	$this->getHelper('nRegister')->parseXmlFile($file);
-				# Set the default path to the cache folder
-				$cDir	=	str_replace(NBR_ROOT_DIR,'',NBR_CLIENT_DIR).DS.'settings'.DS.'cachefiles';
-				# If reg is parsed
-				if(!empty($reg)) {
-					# If there is a previous define
-					if(defined('CACHE_DIR'))
-						$cDir	=	CACHE_DIR;
-					else {
-						# Try and extract cache dir from reg file
-						$cDirFind	=	$this->getMatchedArray(array('ondefine','cache_dir'),false,$reg);
-						# If there is a cache folder, assign it
-						if(!empty($cDirFind['cache_dir'][0]))
-							$cDir	=	$cDirFind['cache_dir'][0];
-					}
-				}
-				# Build the path to cache
-				$cDir	=	NBR_ROOT_DIR.DS.trim($cDir,DS).DS;
-				# Strip out any double forward slashes
-				$cache	=	$this->toSingleDs($cDir.DS.'registry.json');
-				# If not empty
-				if(!empty($reg)) {
-					$opts	=	array(
-									'content'=>json_encode($reg),
-									'save_to'=>$cache,
-									'secure'=>true,
-									'overwrite'=>true
-								);
-					# Save to disk as json
-					if($Cache->allowCacheRead() && !$this->isAjaxRequest())
-						$this->getHelper('nFileHandler')->writeTofile($opts);
-					# Save to settings
-					$this->saveSetting('registry',$reg);
-					# Return
-					$reg	=	$this->toArray($this->getDataNode('registry'));
-					if(!empty($key))
-						return (!empty($reg))? $reg[$key] : false;
-					
-					return $reg;
-				}
+				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($key);
 			}
 		/*
 		**	@description	This method gets the paths to search out for new config files
@@ -908,123 +785,14 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getLoadZones($xmlParser = false)
 			{
-				# See if this node is available
-				$loadZones		=	$this->getDataNode('loadzones');
-				# If available, return it
-				if(!empty($loadZones))
-					return $this->toArray($loadZones);
-				# Assign Parser
-				$xmlParser		=	(is_object($xmlParser))? $xmlParser : new nRegister();
-				# Common zone file path
-				$zoneFilePath	=	'settings'.DS."register".DS.'config.xml';
-				# Try parsing the core loadzone
-				$regfile		=	NBR_CORE.DS.$zoneFilePath;
-				# Client loadzone
-				$cRegfile		=	NBR_CLIENT_DIR.DS.$zoneFilePath;
-				# Parse xml
-				$loadZoneNbr	=	$xmlParser->parseXmlFile($regfile);
-				# Try and parse client loadzone
-				$loadZoneClient	=	(is_file($cRegfile))? $xmlParser->parseXmlFile($cRegfile) : false;
-				# Create instance of nFunctions()
-				$nFunc			=	$this;
-				# Create a parsing function for strings returned by xml
-				$combineConf	=	function($array,&$new) use ($nFunc)
-					{
-						$zones	=	array_keys($array['loadzones']);
-						$nAuto	=	new \Nubersoft\nAutomator($this);
-						foreach($zones as $zone) {
-							$new[$zone]	=	$nFunc->getMatchedArray(array('loadzones',$zone),'_',$array);
-							foreach($new[$zone][$zone] as $val) {
-								if(is_array($val)) {
-									foreach($val as $subVal) {
-										$string[$zone][]	=	$subVal;
-									}
-								}
-								else
-									$string[$zone][]	=	$val;
-							}
-							
-							if(isset($string[$zone]))
-								$new[$zone][$zone]	=	$string[$zone];
-							
-							if(!empty($new[$zone][$zone])) {
-								$packed		=	array_map(function($v) use ($nAuto) {
-									return $nAuto->matchFunction($v);
-								},$new[$zone][$zone]);
-								
-								$new[$zone]	=	$packed;
-							}
-						}
-					};
-				$core	=	
-				$client	=	array();
-				$combineConf($loadZoneNbr,$core);
-				if(!empty($loadZoneClient)) {
-					$combineConf($loadZoneClient,$client);
-				}
-				# Get unique categories from both client and core arrays
-				$looper	=	array_unique(array_merge(array_keys($core),array_keys($client)));
-				# Set a final array to store the paths
-				$final	=	array();
-				foreach($looper as $title) {
-					if(isset($core[$title])) {
-						if(isset($client[$title]))
-							$final[$title]	=	array_merge($core[$title],$client[$title]);
-						else
-							$final[$title]	=	$core[$title];
-					}
-					elseif(isset($client[$title])) {
-						$final[$title]	=	$client[$title];
-					}
-					
-					if(isset($final[$title]))
-						$final[$title]	=	array_unique($final[$title]);
-				}
-				# Check if there is a cache pause on
-				$allow		=	$this->nCache()->allowCacheRead();
-				# Allow saving if no cache pause is active and request is not ajax
-				if($allow && !$this->isAjaxRequest()) {
-					# Save to file
-					$this->savePrefFile('loadzones',$final);
-					# Save loadzones to data array
-					$this->saveSetting('loadzones',$final);
-				}
-				# Return the values
-				return $final;
+				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($xmlParser);
 			}
 		
 		public	function getConfigs()
 			{
-				# Get args
 				$args		=	func_get_args();
-				# Set the location for the file
 				$location	=	(!empty($args[0]))? $args[0] : false;
-				# Fetch the paths of where configs can load from
-				$zones		=	$this->getLoadZones();
-				# Get the configs parser
-				$parser		=	new configFunctions(new nAutomator($this));
-				# If there are pages to loop through
-				if(!empty($zones)) {
-					foreach($zones as $title => $zoneArr) {
-						# If a loadzone is empty, skip
-						if(empty($zoneArr))
-							continue;
-						# If a set of data is available, loop through it
-						foreach($zoneArr as $loadspots) {
-							$parser	->addLocation($loadspots);
-						}
-					}
-				}
-				# This setting allows for the addition of new search locations
-				if(is_array($location)) {
-					//Loop through array and load
-					foreach($location as $load) {
-						$parser	->addLocation($this->getHelper('nAutomator',$this)->matchFunction($load));
-					}
-				}
-				# Parse and fetch xml array
-				$regFiles	=	$parser->getConfigsArr();
-				return (is_array($regFiles))? $regFiles : $regFiles;
+				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($location);
 			}
 			
 		public	function getPlugins()
@@ -1288,33 +1056,6 @@ class	nApp extends \Nubersoft\nFunctions
 			{
 				return self::call('nGet');
 			}
-		
-		public	function getRoutingTables($table = false)
-			{
-				if(isset(NubeData::$settings->routing_tables)) {
-					if(!empty($table))
-						return (isset(NubeData::$settings->routing_tables->{$table}))? NubeData::$settings->routing_tables->{$table} : false;
-					else
-						return NubeData::$settings->routing_tables;
-				}
-				else {
-					$tables	=	$this->nGet()->getRoutingTables();
-					
-					if(!is_array($tables))
-						return false;
-					
-					foreach($tables as $rows) {
-						$tIds[$rows['table_name']]	=	$rows['table_id'];
-					}
-					
-					$this->saveSetting('routing_tables',((!empty($tIds))? $tIds : false));
-	
-					if(!empty($table))
-						return (isset($tIds[$table]))? $tIds[$table] : false;
-					else
-						return (isset($tIds[$table]))? $tIds : false;
-				}
-			}
 		/*
 		**	@description	Fetches the current page
 		*/
@@ -1418,56 +1159,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getCacheFolder($append = false)
 			{
-				# Cache pref location
-				$cache	=	$this->getSettingsDir('cache_dir.pref');
-				# See if the cache has already pulled and return it
-				if(!empty($this->getDataNode('site')->cache_dir)) {
-					$cachePath	=	rtrim($this->toSingleDs(NBR_ROOT_DIR.DS.$this->getDataNode('site')->cache_dir.DS.$append),DS);
-					return $cachePath;
-				}
-				# If there is a define, use it first
-				elseif(defined('CACHE_DIR') && !empty(constant('CACHE_DIR'))) {
-					$this->saveSetting('site',array('cache_dir'=>CACHE_DIR));
-					# Trim the right side and remove any double forward slashes
-					$cachePath	=	rtrim($this->toSingleDs(NBR_ROOT_DIR.DS.CACHE_DIR.DS.$append),DS);
-					return $cachePath;
-				}
-				# If no define exists, the try and extract the cached one
-				elseif(is_file($cache)) {
-					$cacheContent	=	@file_get_contents($cache);
-					$this->saveSetting('site',array('cache_dir'=>$cacheContent));
-					$cachePath	=	rtrim($this->toSingleDs(NBR_ROOT_DIR.DS.$cacheContent.DS.$append),DS);
-					return $cachePath;
-				}
-				# If no define or cache file is found, create a cache file
-				else {
-					# Try and get the client reg file but if not found use base
-					$getRegFunc	=	function() use ($append)
-						{
-							$path[]		=	NBR_CLIENT_SETTINGS.DS.'registry.xml';
-							$path[]		=	NBR_SETTINGS.DS.'registry.xml';
-							
-							foreach($path as $spot) {
-								if(!is_file($spot))
-									continue;
-									
-								$reg	=	$this->getMatchedArray(array('ondefine','cache_dir'),'',$this->getHelper('nRegister')->parseXmlFile($spot));
-								
-								if(!empty($reg['cache_dir'][0]))
-									return rtrim($this->toSingleDs($reg['cache_dir'][0].DS.$append),DS);
-							}
-						};
-					# Run the above anon function to get the path for the cache file
-					$cachePath	=	$getRegFunc();
-					# Save to data node
-					$this->saveSetting('site',array('cache_dir'=>$cachePath));
-					# Save the pref file. Have to use this instead of savePrefFile() because it
-					# runs into a loop
-					$this->saveFile(rtrim($cachePath,DS),$cache);
-					# Return the folder from the settings
-					$cachePath	=	trim($this->toSingleDs(NBR_ROOT_DIR.DS.$this->getDataNode('site')->cache_dir.DS.$append),DS);
-					return $cachePath;
-				}
+				return $this->getHelper('nCache')->{__FUNCTION__}($append);
 			}
 		
 		public	function getRequestTable($from = 'r')
@@ -1497,55 +1189,9 @@ class	nApp extends \Nubersoft\nFunctions
 				else
 					return 'Forbidden Access';
 			}
-		
-		public	function getRunList()
-			{	
-				$arr['funcs']	=	$this->runList();
-				$arr['class']	=	$this->runList(true);
-				
-				ob_start();
-				echo printpre($arr);
-				$data	=	ob_get_contents();
-				ob_end_clean();
-				
-				return $data;
-			}
-		
-		private	static	function runList($use = false)
-			{
-				$filter	=	array('.','..');
-				$fDir	=	($use)? scandir(NBR_CLASS_CORE) : scandir(NBR_FUNCTIONS);
-				$rep	=	($use)? 'class' : 'function';
-				$fDir	=	array_diff($fDir,$filter);
-				
-				foreach($fDir as $files) {
-					preg_match("/(".$rep."\.)([^\.]{1,})(\.php)$/i",$files,$match).'<br />';
-					if(empty($match[2]))
-						continue;
-					
-					if(!$use) {
-						if(function_exists($match[2]))
-							$arr['active'][]	=	$match[2];
-						else
-							$arr['inactive'][]	=	$match[2];
-					}
-					else {
-						if(class_exists($match[2]))
-							$arr['active'][]	=	$match[2];
-						else
-							$arr['inactive'][]	=	$match[2];
-					}
-				}
-				
-				asort($arr['active'],SORT_NATURAL);
-				asort($arr['inactive'],SORT_NATURAL);
-				
-				$arr['active']		=	array_values($arr['active']);
-				$arr['inactive']	=	array_values($arr['inactive']);
-				
-				return $arr;
-			}
-		
+		/*
+		**	@description	Check if there is a login restriction
+		*/
 		public function adminRestrict()
 			{
 				# See if loading page is an admin page
@@ -1587,17 +1233,17 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function jsEngine()
 			{
-				return self::getClass('\JsLibrary');
+				return new \nPlugins\Nubersoft\JsLibrary();
 			}
 		
 		public	function getEmailer()
 			{
-				return self::getClass('\Emailer');
+				return $this->getHelper('Emailer');
 			}
 		
 		public	function cacheEngine()
 			{
-				return self::getClass('\Nubersoft\BuildCache');
+				return $this->getHelper('BuildCache');
 			}
 		
 		public	function userCount()
@@ -1609,12 +1255,12 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function nFunc()
 			{
-				return self::getClass('\Nubersoft\\'.str_replace('_','',__FUNCTION__).'tions');
+				return $this;
 			}
 			
 		public	function nSession()
 			{
-				return self::getClass('\Nubersoft\\'.str_replace('_','',__FUNCTION__).'er');
+				return $this->getHelper('nSessioner');
 			}
 		
 		public	function con()
@@ -1676,59 +1322,14 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getWhiteList($type)
 			{
-				if(!is_string($type))
-					return false;
-				
-				$searchArr	=	array('whitelist',$type,'ip');
-				$sName		=	'nbr_'.implode('_',$searchArr);
-				$whitelist	=	$this->getConfigSetting($searchArr);
-				$dbList		=	$this->getPrefFile($sName,array('save'=>true),false,function($path,$nApp) use ($sName){
-					$ipList	=	$nApp->nQuery()->query("select `content` from `components` where `ref_spot` = :0 and `page_live` = 'on'",array($sName))->getResults();
-					if($ipList != 0)
-						return array_keys($nApp->organizeByKey($ipList,'content',array('multi'=>true)));
-					
-					return array();
-				});
-				
-				$ips	=	(!empty($whitelist['ip']))? $whitelist['ip'] : false;
-				
-				if(!empty($ips)) {
-					if(!empty($dbList))
-						$ips	=	array_merge($dbList,$ips);
-				}
-				else
-					$ips	=	(!empty($dbList))? $dbList : false;
-				
-				return (is_array($ips))? $this->getRecursiveValues($ips) : false;
+				return $this->getPlugin('\nPlugins\Nubersoft\Permission')->{__FUNCTION__}($type);
 			}
-		
+		/*
+		**	@description	Checks if element is in a whitelist
+		*/
 		public	function onWhiteList($ip,$type = 'admintools')
 			{
-				# Get the whitelist
-				$list	=	$this->getWhiteList($type);
-				# If not there
-				if(!is_array($list) || empty($list)) {
-					# Just warn there is no listing
-					$this->saveIncidental('whitelist_'.$type, array('whitelist_'.$type.'_warning'=>'no white list available for '.$type));
-					# Return user allowed
-					return true;
-				}
-				# If the value is returned but has a mixture of arrays and values
-				if(isset($list[0]) && is_array($list[0])) {
-					$new	=	array();
-					# Loop through the list
-					foreach($list as $ipSet) {
-						# Filter values from arrays
-						if(is_array($ipSet))
-							$new	=	array_merge($ipSet,$new);
-						else
-							$new[]	=	$ipSet;
-					}
-					# Save to list value
-					$list	=	$new;
-				}
-				
-				return (in_array($ip,$list));
+				return $this->getPlugin('\nPlugins\Nubersoft\Permission')->{__FUNCTION__}($ip,$type);
 			}
 		/*
 		**	@description	This function pulls the data from the `file_types` table
@@ -1743,21 +1344,7 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function getUploadDir($table,$settings = false)
 			{
-				$table		=	(!empty($table))? trim($table) : false;
-				$append		=	(!isset($settings['append']) || !empty($settings['append']));
-				$default	=	(!empty($settings['dir']))? $settings['dir'] : '/client/images/default/';
-				
-				if(empty($table))
-					return $default;
-				
-				$dir	=	nquery()	->select("file_path")
-										->from("upload_directory")
-										->where(array("assoc_table"=>$table))
-										->fetch();
-				
-				$path	=	($dir != 0)? $dir[0]["file_path"] : $default;
-				
-				return ($append)? str_replace(DS.DS,DS,NBR_ROOT_DIR.DS.$path) : $path;
+				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($table,$settings);
 			}
 		/*
 		**	@description	This method will return the class object
@@ -1779,7 +1366,7 @@ class	nApp extends \Nubersoft\nFunctions
 					return $function($inject);
 				# If the force render is not on, throw an exception
 				if(!$this->forceRender())
-					throw new \Exception('Function is unavailable: '.self::call('Safe')->encode($function));
+					throw new \Exception('Function is unavailable: '.$this->safe()->encode($function));
 			}
 		
 		public	function getErrorMode($fromConfig = false)
@@ -1871,120 +1458,12 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getSettingsFile($name,$func,$ext = 'json',$path = false)
 			{
-				$ext	=	(empty($ext))? 'json' : $ext;
-				$path	=	(!empty($path) && is_dir($path))? $path : NBR_CLIENT_SETTINGS.DS.'preferences';
-				$file	=	$path.DS.$name.'.'.$ext;
-				# Check if there is a cache pause on
-				$allow	=	$this->nCache()->allowCacheRead();
-				# Save htaccess file
-				if($this->isDir($allow,false) && !is_file($htaccess = $path.DS.'.htaccess'))
-					file_put_contents($htaccess,$this->getHelper('nReWriter')->getScript('serverReadWrite'));
-				
-				if(is_file($file) && $allow) {
-					return ($ext == 'json')? json_decode(file_get_contents($file),true) : file_get_contents($file);
-				}
-				# Process
-				$contents	=	(is_callable($func))? $func($this,$file) : $func;
-				# Make save directory
-				if(!$this->isDir($path))
-					trigger_error("Path ({$path}) could not be saved for perminant storage.");
-				if(is_array($contents) || is_object($contents))
-					$contents	=	json_encode($contents);
-				# Save file
-				if(!$this->isAjaxRequest() && $allow)
-					file_put_contents($file,$contents);
-				# Return the contents for use
-				return $contents;
+				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($name,$func,$ext,$path);
 			}
 		
 		public	function getPrefFile($name,$settings = false,$raw = false,$callback = false)
-			{	
-				$named			=	(!empty($settings['node']))? $settings['node'] : false;
-				$pref_name		=	(!empty($settings['name']))? $settings['name'] : $name;
-				$save			=	(!empty($settings['save']))? $settings['save'] : false;
-				$parseLocation	=	(!empty($settings['xml']))? $settings['xml'] : false;
-				$type			=	(!empty($settings['type']))? $settings['type'] : 'json';
-				$matched		=	(!empty($settings['match']))? $settings['match'] : false;
-				$limit			=	(!empty($settings['limit']))? $settings['limit'] : false;
-				$pre_proc		=	(isset($settings['preprocess']))? $settings['preprocess'] : true;
-				$reset			=	(isset($settings['reset']))? $settings['reset'] : true;
-				$prefFile		=	($raw)? $name : $this->toSingleDs($this->getCacheFolder().DS.'prefs'.DS.$pref_name.'.'.$type);
-				$Cache			=	$this->nCache();
-				
-				if(is_file($prefFile) && $Cache->allowCacheRead()) {
-					$cont	=	json_decode(file_get_contents($prefFile),true);
-					if($reset) {
-						if(!empty($cont))
-							return $cont;
-					}
-					else
-						return $cont;
-				}
-				# If there is no directory set
-				if(empty($parseLocation)) {
-					if(is_callable($callback))
-						$config	=	$callback($prefFile,$this);
-					else
-						return false;
-				}
-				else
-					$parseFile		=	$this->toSingleDs($parseLocation.DS.$name.'.xml');
-				
-				if(!empty($parseFile) && is_file($parseFile)) {
-					if(is_callable($callback)) {
-						$config	=	$callback($parseFile,$this);
-					}
-					else {
-						$config	=	$this->toArray($this->getHelper('nRegister')->parseXmlFile($parseFile));
-						# If there is a matched array
-						if(!empty($matched)) {
-							# Retieve an array from the main array
-							$matchArr	=	$this->getMatchedArray($matched,'_',$config);
-							# Jump to the end of the search array
-							end($matched);
-							# Get the key
-							$getLastKey	=	key($matched);
-							# Get the last value from search array
-							$lastKey	=	$matched[$getLastKey];
-							# If there is a valid array do more to whittle it down
-							if(!empty($matchArr[$lastKey])) {
-								if($limit) {
-									if($limit == 1) 
-										$config	=	(isset($matchArr[$lastKey][0]))? $matchArr[$lastKey][0] : false;
-									else {
-										for($i = 0; $i < $limit; $i++)
-											$config[$i]	=	$matchArr[$lastKey][$i];
-									}
-								}
-								else
-									$config	=	$matchArr[$lastKey];
-							}
-							else
-								$config	=	false;
-						}
-					}
-				}
-				
-				if(!isset($config))
-					return array();
-					
-				if(is_array($config) && $pre_proc) {
-					$nApp	=	$this;
-					$config	=	$this->arrayWalkRecursive($config,function($value) use ($nApp) {
-						$v	=	$nApp->getHelper('nAutomator',$this)->matchFunction($nApp->getBoolVal($value));
-						return $v;
-					});
-				}
-				
-				if($save && !$this->isAjaxRequest() && $Cache->allowCacheRead() && !empty($config)) {
-					$this->savePrefFile($pref_name,$config);
-				}
-				
-				if($named) { // && !$this->isAjaxRequest() && $Cache->allowCacheRead()
-					$this->saveSetting($named,$config);
-				}
-				
-				return $config;
+			{
+				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($name,$settings,$raw,$callback);
 			}
 		
 		public	function getSiteTemplate()
@@ -1995,32 +1474,7 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function getDefaultTemplate()
 			{
-				$pref		=	$this->toSingleDs(NBR_CLIENT_SETTINGS.DS.'template.pref');
-				$default	=	DS.'core'.DS.'template'.DS.'default';
-				if(is_file($pref))
-					return (is_file($pref))? @file_get_contents($pref) : false;
-				
-				if(empty($this->getDataNode('preferences')))
-					(new GetSitePrefs)->set();
-				
-				$getTemp	=	$this->getMatchedArray(array(
-					'settings_site',
-					'content',
-					'template_folder'
-				),'',$this->toArray($this->getDataNode('preferences')));
-
-				$template	=	(!empty($getTemp['template'][0]))? trim($this->toSingleDs(DS.$getTemp['template'][0]),DS) : $pref;
-				if(!is_dir(NBR_ROOT_DIR.DS.$template))
-					$template	=	$default;
-				
-				$this->getHelper('nFileHandler')->writeToFile(array(
-					'content'=>$template,
-					'save_to'=>$pref,
-					'overwrite'=>true,
-					'secure'=>true
-					));
-				
-				return $template;
+				return $this->getHelper('nTemplate')->{__FUNCTION__}();
 			}
 		
 		public	function cacheHtml($type,$content)
@@ -2037,56 +1491,6 @@ class	nApp extends \Nubersoft\nFunctions
 					return;
 				
 				return	$this->render($path);
-			}
-		/*
-		**	@description	This overloading method will call a class based on the method name.
-		**	@param	$name	[string]	This is automated by php and is the name of the method (and class)
-		**	@param	$args	[bool|array]	This can pass arguments to the class being called
-		**	@return	[object]	The class will return the class object
-		*/
-		public static	function __callStatic($name,$args = false)
-			{
-				return self::callClass($name,$args);
-			}
-		
-		public	static	function call()
-			{
-				$args	=	func_get_args();
-				$class	=	(!empty($args[0]))? $args[0] : false;
-				$pass	=	(!empty($args[1]))? $args[1] : false;
-				
-				if(empty($class)) {
-					if(!(self::$singleton instanceof \Nubersoft\nApp))
-						self::$singleton	=	new nApp();
-					
-					return self::$singleton;
-				}
-				else {
-					return self::callClass($class,false);
-				}
-			}
-		/*
-		public	function __call($name,$args=false)
-			{
-				return self::callClass($name,$args);
-			}
-		*/
-		protected	static	function callClass($name,$args=false)
-			{
-				# If the method name has an underscore, try to namespace it
-				if(strpos($name,'_') !== false) {
-					# Trim it off the front and back
-					$dynamic	=	trim($name,'_');
-					# Namespace it
-					$dynamic	=	str_replace('_','\\',$dynamic);
-				}
-				# Set the default name 
-				$uName	=	(isset($dynamic))? '\\'.$dynamic : '\Nubersoft\\'.$name;
-				# This is for a 1-inject object class
-				if(count($args) == 1)
-					$args	=	$args[0];
-				# Try and return the class
-				return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
 			}
 		/*
 		**	@description	This method will return the class object
@@ -2115,17 +1519,7 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function getTemplatePathMatch($path,$dirType = 'frontend',$array = false)
 			{
-				$templates	=	(!empty($array))? $array : $this->toArray($this->getDataNode('site')->templates);
-				
-				if(!is_array($templates))
-					return;
-				
-				foreach($templates as $type) {
-					if(is_file($file = NBR_ROOT_DIR.$type[$dirType].DS.$path))
-						return $file;
-					elseif(is_dir($dir = NBR_ROOT_DIR.$type[$dirType].DS.$path))
-						return $dir;
-				}
+				return $this->getHelper('nTemplate')->{__FUNCTION__}($path,$dirType,$array);
 			}
 		/*
 		**	@description	Fetches current usergroup from the session
@@ -2189,51 +1583,26 @@ class	nApp extends \Nubersoft\nFunctions
 				
 				return true;
 			}
-		
+		/*
+		**	@description	Set a session variable (also sets a data node)
+		*/
 		public	function setSession($var,$value,$reset = true)
 			{
 				$this->getHelper('nSessioner')->setSession($var,$value,$reset);
 			}
-		
+		/*
+		**	@description	Retrieve error messages
+		*/
 		public	function getAllAlerts($key = false)
 			{
-				$errors				=
-				$warnings			=	array();
-				$err				=	$this->toArray($this->getError());
-				$inc				=	$this->toArray($this->getIncidental());
-				
-				if(!empty($err))
-					$this->flattenArrayByKey($err,$errors,'msg');
-				
-				if(!empty($inc))
-					$this->flattenArrayByKey($inc,$warnings,'msg');
-				
-				$array['warnings']	=	$warnings;
-				$array['errors']	=	$errors;
-				
-				return (!empty($key) && isset($array[$key]))? $array[$key] : $array;
+				return $this->getHelper('Messenger')->getAllAlerts($key);
 			}
-			
+		/*
+		**	@description	Retrieve error messages
+		*/
 		public	function getAlertsByKind($key = false,$type = false)
 			{
-				$errors				=
-				$warnings			=	array();
-				$err				=	$this->toArray($this->getError());
-				$inc				=	$this->toArray($this->getIncidental());
-				
-				if(!empty($err) && isset($err[$key]))
-					$this->flattenArrayByKey($err,$errors,'msg');
-				
-				if(!empty($inc) && isset($inc[$key]))
-					$this->flattenArrayByKey($inc,$warnings,'msg');
-				
-				$array['warnings']	=	$warnings;
-				$array['errors']	=	$errors;
-			
-				if(!empty($type))
-					return (isset($array[$type]))? $array[$type] : array();
-					
-				return $array;
+				return $this->getHelper('Messenger')->getAlertsByKind($key,$type);
 			}
 		/*
 		**	@description	Creates a autoloader for classes
@@ -2242,30 +1611,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function addNamespace($path)
 			{
-				$nApp	=	$this;
-				
-				if(is_callable($path))
-					spl_autoload_register($path);
-				else {
-					spl_autoload_register(function($class) use ($path,$nApp) {
-						
-						if(is_array($path)) {
-							foreach($path as $namespace) {
-								$classPath	=	$nApp->toSingleDs($namespace.DS.str_replace('\\',DS,$class)).'.php';
-						
-								if(is_file($classPath))
-									require_once($classPath);
-								}
-						}
-						else {
-							$classPath	=	$nApp->toSingleDs($path.DS.str_replace('\\',DS,$class)).'.php';
-						
-							if(is_file($classPath))
-								require_once($classPath);
-						}
-					});
-				}
-				return $this;
+				return (new nRouter\Controller())->addNamespace($path);
 			}
 		/*
 		**	@description	Creates a standard cache path for saving cached elements into the cache folder
@@ -2275,28 +1621,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getStandardPath($appendPath = false,$cou = 'USA',$func = false)
 			{
-				$cacheDir	=	$this->getCacheFolder().DS.'pages'.DS;
-				$state		=	(empty($this->getPageURI('is_admin')) || $this->getPageURI('is_admin') > 1)? 'base_view' : 'admin_view';
-				$toggled	=	(!empty($this->getDataNode('_SESSION')->toggle->edit))? 'is_toggled' : 'not_toggle';
-				$post		=	$this->getPost('action');
-				$get		=	$this->getGet('action');
-				$usePost	=	(is_string($post))? DS.md5($post) : '';
-				$useGet		=	(is_string($get))? DS.md5($get) : '';
-				$country	=	(!empty($this->getSession('LOCALE')))? trim($this->getSession('LOCALE'),'/') : $cou;
-				$tempBase	=	$this->getDataNode('site')->templates->template_site->dir;
-				$defPath	=	(!empty($this->getPageURI('full_path')))? trim(str_replace('/',DS,$this->getPageURI('full_path')),DS) : 'static';
-				$ID			=	(!empty($this->getPageURI('ID')))? $this->getPageURI('ID') : (($defPath == 'static')? 'error' : md5($defPath));
-				$loggedIn	=	($this->isLoggedIn())? 'loggedin' : 'loggedout';
-				$usergroup	=	(!empty($this->getSession('usergroup')))? $this->getSession('usergroup') : 'static';
-				$isSsl		=	($this->isSsl())? 'https' : 'http';
-				$group_id	=	(!empty($this->getSession('group_id')))? 'gid_'.$this->getSession('group_id') : 'gid_base';
-				$finalPath	=	$this->toSingleDs($cacheDir.DS.$country.DS.$isSsl.DS.$tempBase.DS.$defPath.DS.$loggedIn.$useGet.$usePost.DS.$toggled.DS.$state.DS.$usergroup.DS.$group_id.DS.$ID.$appendPath);
-				
-				if(is_callable($func))
-					return $func($this,$finalPath);
-				else
-					return $finalPath;
-				
+				return $this->getHelper('nCache')->{__FUNCTION__}($appendPath,$cou,$func);
 			}
 		/*
 		**	@description	Alias to the nRouter method to create an OpenSSL encoded string containing path
@@ -2362,4 +1687,132 @@ class	nApp extends \Nubersoft\nFunctions
 			{
 				return new NubeData();
 			}
+		/*
+		**	@description	This overloading method will call a class based on the method name.
+		**	@param	$name	[string]	This is automated by php and is the name of the method (and class)
+		**	@param	$args	[bool|array]	This can pass arguments to the class being called
+		**	@return	[object]	The class will return the class object
+		*/
+		public static	function __callStatic($name,$args = false)
+			{
+				return self::callClass($name,$args);
+			}
+		/*
+		**	@description	Static overlader, default is to call nApp (itself). Wrapper to callClass() and return self
+		**	@param	$arg1	[string]	The name of the method (and class)
+		**	@param	$arg2	[any]		This can pass arguments to the class being called
+		*/
+		public	static	function call()
+			{
+				$args	=	func_get_args();
+				$class	=	(!empty($args[0]))? $args[0] : false;
+				$pass	=	(!empty($args[1]))? $args[1] : false;
+				
+				if(empty($class)) {
+					if(!(self::$singleton instanceof \Nubersoft\nApp))
+						self::$singleton	=	new nApp();
+					
+					return self::$singleton;
+				}
+				else {
+					return self::callClass($class,false);
+				}
+			}
+		
+		protected	static	function callClass($name,$args=false)
+			{
+				# If the method name has an underscore, try to namespace it
+				if(strpos($name,'_') !== false) {
+					# Trim it off the front and back
+					$dynamic	=	trim($name,'_');
+					# Namespace it
+					$dynamic	=	str_replace('_','\\',$dynamic);
+				}
+				# Set the default name 
+				$uName	=	(isset($dynamic))? '\\'.$dynamic : '\Nubersoft\\'.$name;
+				# This is for a 1-inject object class
+				if(count($args) == 1)
+					$args	=	$args[0];
+				# Try and return the class
+				return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
+			}
+		
+		/*
+		REMOVALS
+		
+		public	function getRoutingTables($table = false)
+			{
+				if(isset(NubeData::$settings->routing_tables)) {
+					if(!empty($table))
+						return (isset(NubeData::$settings->routing_tables->{$table}))? NubeData::$settings->routing_tables->{$table} : false;
+					else
+						return NubeData::$settings->routing_tables;
+				}
+				else {
+					$tables	=	$this->nGet()->getRoutingTables();
+					
+					if(!is_array($tables))
+						return false;
+					
+					foreach($tables as $rows) {
+						$tIds[$rows['table_name']]	=	$rows['table_id'];
+					}
+					
+					$this->saveSetting('routing_tables',((!empty($tIds))? $tIds : false));
+	
+					if(!empty($table))
+						return (isset($tIds[$table]))? $tIds[$table] : false;
+					else
+						return (isset($tIds[$table]))? $tIds : false;
+				}
+			}
+			
+		public	function getRunList()
+			{	
+				$arr['funcs']	=	$this->runList();
+				$arr['class']	=	$this->runList(true);
+				
+				ob_start();
+				echo printpre($arr);
+				$data	=	ob_get_contents();
+				ob_end_clean();
+				
+				return $data;
+			}
+		
+		private	static	function runList($use = false)
+			{
+				$filter	=	array('.','..');
+				$fDir	=	($use)? scandir(NBR_CLASS_CORE) : scandir(NBR_FUNCTIONS);
+				$rep	=	($use)? 'class' : 'function';
+				$fDir	=	array_diff($fDir,$filter);
+				
+				foreach($fDir as $files) {
+					preg_match("/(".$rep."\.)([^\.]{1,})(\.php)$/i",$files,$match).'<br />';
+					if(empty($match[2]))
+						continue;
+					
+					if(!$use) {
+						if(function_exists($match[2]))
+							$arr['active'][]	=	$match[2];
+						else
+							$arr['inactive'][]	=	$match[2];
+					}
+					else {
+						if(class_exists($match[2]))
+							$arr['active'][]	=	$match[2];
+						else
+							$arr['inactive'][]	=	$match[2];
+					}
+				}
+				
+				asort($arr['active'],SORT_NATURAL);
+				asort($arr['inactive'],SORT_NATURAL);
+				
+				$arr['active']		=	array_values($arr['active']);
+				$arr['inactive']	=	array_values($arr['inactive']);
+				
+				return $arr;
+			}
+		*/
 	}

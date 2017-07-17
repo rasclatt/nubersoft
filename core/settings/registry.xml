@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <register>
-	<!--ADDS .htaccess to close off file permission to browser including child folders
-	***WARNING:***
-	It is not advisable to remove security on these folders
-	CONFIG FILES MAY BE EXPOSED!
-	-->
 	<protectflush>true</protectflush>
 	<protectdirectory>
 		<var>~NBR_ROOT_DIR~/ajax/</var>
 		<var>~NBR_ROOT_DIR~/core/</var>
 		<var>~NBR_CLIENT_DIR~/installer/</var>
-		<var>~NBR_CLIENT_DIR~/apps/</var>
-		<var>~NBR_CLIENT_DIR~/plugins/</var>
-		<var>~NBR_CLIENT_DIR~/settings/</var>
-		<var>~NBR_CLIENT_DIR~/templates/</var>
+		<var>~NBR_CLIENT_DIR~/</var>
 	</protectdirectory>
-	<!--REMOVES .htaccess files to allow direct access via browser
-	<unprotectdirectory>
-		<var>/core/</var>
-	</unprotectdirectory>
-	-->
-	<!--ADDS .htaccess files to allow direct access via browser. Made to override parent folder no-access permissions -->
 	<unprotectset>
 		<var>~NBR_ROOT_DIR~/core/template/default/css/</var>
 		<var>~NBR_ROOT_DIR~/media/</var>
@@ -37,26 +23,14 @@
 		<application>
 			<name>template</name>
 			<include>~NBR_ROOT_DIR~/core/workflows/template.xml</include>
-			<!--<include>~NBR_CLIENT_DIR~/workflows/template.xml</include>-->
 		</application>
 	</workflows>
 	<onload>
-		<classes>
-			<coreLoader>
-				<dir>/client/plugins/coreLoader/</dir>
-				<instr>replace/core</instr>
-				<method>getCore</method>
-			</coreLoader>
-		</classes>
 		<!-- Toggle this to force the site to allow case-sensitive urls -->
 		<strict>
 			<url>false</url>
 		</strict>
 	</onload>
-	<onlogin>
-		<classes>
-		</classes>
-	</onlogin>
 	<admintoolsmenu>
 		<menu>
 			<name>PAGE EDITOR</name>
@@ -73,17 +47,17 @@
 		<session_on>true</session_on>
 		<allow_eval>true</allow_eval>
 		<f_access>true</f_access>
-		<file_salt>12940193470294019347292093292093</file_salt>
+		<file_salt>~randomFileSalt~</file_salt>
 		<max_up_files>2000</max_up_files>
-		<base_url>http://www.nubersoft.com</base_url>
-		<base_url_ssl>https://www.nubersoft.com</base_url_ssl>
+		<base_url>{domain}</base_url>
+		<base_url_ssl>{domain}</base_url_ssl>
 		<force_url_ssl>false</force_url_ssl>
 		<session_expire_time>1600</session_expire_time>
 		<temp_dir>/client/settings/tempfiles/</temp_dir>
 		<cache_dir>/client/settings/cachefiles/</cache_dir>
 		<sys_prefs_temp>false</sys_prefs_temp>
-		<openssl_salt>32940193470294019347292093292093</openssl_salt>
-		<openssl_iv>6392847651093762</openssl_iv>
+		<openssl_salt>~randomCryptIv~</openssl_salt>
+		<openssl_iv>~randomCryptKey~</openssl_iv>
 		<nbr_superuser>1</nbr_superuser>
 		<nbr_admin>2</nbr_admin>
 		<nbr_web>3</nbr_web>
@@ -131,31 +105,31 @@
 	</messaging>
 	<whitelist>
 		<admintools>
-			<ip>75.140.32.34</ip>
+			<ip>71.9.20.97</ip>
 			<ip>97.92.107.58</ip>
 		</admintools>
 		<printpre>
-			<ip>75.140.32.34</ip>
+			<ip>71.9.20.97</ip>
 		</printpre>
 	</whitelist>
-	<sms>
-		<carrier>
-			<name>AT&T</name>
-			<to>@txt.att.net</to>
-			<digits>10</digits>
-		</carrier>
-		
-		<carrier>
-			<name>Verizon</name>
-			<to>@vtext.com</to>
-			<digits>10</digits>
-		</carrier>
-		
-		<carrier>
-			<name>Sprint</name>
-			<to>@messaging.sprintpcs.com</to>
-			<digits>10</digits>
-		</carrier>
-	
-	</sms>
+	<sms_options>
+		<sms_carrier>
+			<sms_name>AT&amp;amp;T</sms_name>
+			<sms_domain>@txt.att.net</sms_domain>
+			<sms_digits>10</sms_digits>
+		</sms_carrier>
+		<sms_carrier>
+			<sms_name>Verizon</sms_name>
+			<sms_domain>@vtext.com</sms_domain>
+			<sms_digits>10</sms_digits>
+		</sms_carrier>
+		<sms_carrier>
+			<sms_name>Sprint</sms_name>
+			<sms_domain>@messaging.sprintpcs.com</sms_domain>
+			<sms_digits>10</sms_digits>
+		</sms_carrier>
+	</sms_options>
+	<cart_options>
+		<active>true</active>
+	</cart_options>
 </register>

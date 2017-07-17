@@ -79,7 +79,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 				$this->setClientDefine()->includeDefine();
 				# See if there are any other defines to include
 				if(!$location)
-					$location	=	NBR_CLIENT_SETTINGS.DS.'defines.xml';
+					$location	=	$this->getSettingsDir('defines.xml');
 				# If there is no define file, continue
 				if(!is_file($location))
 					return;
@@ -152,12 +152,17 @@ class GetSitePrefs extends \Nubersoft\nApp
 				$this->client_define	=	$this->toSingleDs($dir.DS.'config-client.php');
 				return $this;
 			}
-			
+		/*
+		**	@description	Creates a user config define file. Created based on the registry file
+		*/
 		public	function getClientDefinesFromRegistry($registry = false)
 			{
 				$getDefines	=	$this->defines();
 				# If it exists, save the file and return the path
 				if(!empty($getDefines)) {
+					# Autoload the functions folder
+					$this->autoloadContents(NBR_FUNCTIONS);
+					$nAutomator	=	$this->getHelper('nAutomator');
 					foreach($getDefines as $const => $value) {
 						if(!is_bool($value)) {
 							if(empty($value))
@@ -180,7 +185,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 							die(printpre($value));
 						
 						$defines[]	=	'if(!defined("'.$const.'"))
-	define("'.$const.'"'.','.$value.');';
+	define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 					}
 					return $defines;
 				}
@@ -315,7 +320,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 		
 		public	function setRegistry()
 			{
-				$config	=	$this->getPrefFile('registry',array('save'=>false),false,function($path,$nApp) {
+				$config	=	$this->getPrefFile('registry',array('save'=>true),false,function($path,$nApp) {
 					$name	=	'registry';
 					# Get registry file
 					$config	=	NBR_CLIENT_SETTINGS.DS."{$name}.xml";
@@ -421,7 +426,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 		
 		public	function setCurrentAction()
 			{
-				$this->saveSetting('site',array('action'=>$this->getPost('action')));
+				$this->saveSetting('site',array('action'=>$this->getRequest('action')));
 				return $this;
 			}
 		
@@ -540,15 +545,12 @@ class GetSitePrefs extends \Nubersoft\nApp
 				$hasMPref	=	$this->getPrefFile('main_menus');
 				if($hasMPref)
 					return;
-				
-				$hasMenus	=	$this->nQuery()->query("select COUNT(*) as count from `main_menus`")->getResults(true);
-				
-				if($hasMenus['count'] == 0) {
-					$this->nQuery()->query("INSERT INTO `main_menus`
-					 (`unique_id`,`link`,`is_admin`,`menu_name`,`full_path`,`session_status`,`page_live`,`usergroup`)
-					 VALUES('".$this->fetchUniqueId()."','admin',1,'Nubersoft','/admin/','on','on','NBR_ADMIN')");
-					$this->savePrefFile('main_menus',array("set"=>true));
-				}
+				# Check if there is an admin menu
+				$sql		=	"SELECT COUNT(*) as count FROM `main_menus` WHERE `is_admin` = 1";
+				$hasMenus	=	$this->nQuery()->query($sql)->getResults(true);
+				# Add not an admin menu
+				if($hasMenus['count'] == 0)
+					$this->getPlugin('\nPlugins\Nubersoft\CoreInstaller')->installDefaultMenu($this);
 			}
 		
 		public	function getSetToken(\Nubersoft\nToken $nToken)

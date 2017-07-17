@@ -26,13 +26,14 @@
 				<method>startCache</method>
 			</class>
 		</object>
-		
+		<!--
 		<object event="nbr_nobservermenus_listen">
 			<class>
 				<name>\Nubersoft\nObserverMenus</name>
 				<method>listen</method>
 			</class>
 		</object>
+		-->
 		<object event="nbr_nobserverfirstrun_listen">
 			<class>
 				<name>\Nubersoft\nObserverFirstRun</name>

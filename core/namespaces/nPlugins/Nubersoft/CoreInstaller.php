@@ -12,18 +12,15 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 				if(!$nApp->isAdmin())
 					return;
 				
-				$this->DEPLOY_ROOT	=	$nApp->getSettingsDir(DS.'deploy');
+				$this->DEPLOY_ROOT	=	NBR_CLIENT_SETTINGS.DS.'deploy';
 				
 				if(!is_dir($this->DEPLOY_ROOT))
 					return $this->doUniversalResponse($this->getDefaultMessage(false),$nApp);
 				
 				$contents	=	$nApp->getDirList($this->DEPLOY_ROOT);
 				
-				
 				if(empty($contents['host']))
 					return $this->doUniversalResponse($this->getNoPackagesMessage(false),$nApp);
-				
-				$contents['host']	=	array_unique($contents['host']);
 				
 				$zip	=	new \ZipArchive();
 				
@@ -42,11 +39,9 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 					$ROOT		=	pathinfo($path,PATHINFO_DIRNAME);
 					$zip->extractTo($ROOT);
 					$zip->close();
-					
 					$newContent	=	$ROOT.DS.pathinfo($path,PATHINFO_FILENAME);
 					$contents	=	$nApp->getDirList($newContent);
-					
-					foreach(array_filter(array_unique($contents['host'])) as $filepath) {
+					foreach($contents['host'] as $filepath) {
 						if(!is_file($filepath))
 							continue;
 						elseif(strpos($filepath,'.DS_STORE') !== false)
@@ -103,6 +98,13 @@ class CoreInstaller extends \Nubersoft\nFileHandler
 					$nApp->ajaxResponse(array('alert'=>$message));
 				
 				$nApp->saveIncidental('deploy',array('msg'=>$message));
-
+			}
+		
+		public	function installDefaultMenu($nApp)
+			{
+				$nApp->nQuery()->query("INSERT INTO `main_menus`
+					 (`unique_id`,`link`,`is_admin`,`menu_name`,`full_path`,`session_status`,`page_live`,`usergroup`)
+					 VALUES('".$nApp->fetchUniqueId()."','admin',1,'Nubersoft','/admin/','on','on','NBR_ADMIN')");
+					$nApp->savePrefFile('main_menus',array("set"=>true));
 			}
 	}

@@ -1,12 +1,11 @@
 <?php
 namespace Nubersoft;
 
-class nAutomator extends \Nubersoft\Singleton
+class nAutomator extends \Nubersoft\nApp
 	{
-		const	START_RECORDING	=	true;
+		const	START_RECORDING	=	false;
 		
-		private	$nApp,
-				$actionArr,
+		private	$actionArr,
 				$listenForKey,
 				$organizeBy,
 				$cachedArr,
@@ -18,16 +17,15 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		protected	$combinedArr;
 		
-		public	function __construct(\Nubersoft\nApp $nApp)
+		public	function __construct()
 			{
 				date_default_timezone_set('America/Los_Angeles');
-				$this->nApp	=	$nApp;
 				return parent::__construct();
 			}
 		
 		public	function getApp()
 			{
-				return $this->nApp;
+				return $this;
 			}
 		/*
 		**	@description	!!! The automator requires the addition of two method-set attributes, `listenFor()` and `organizeBy()`
@@ -122,7 +120,7 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function getTimeCastLast()
 			{
-				$time	=	$this->nApp->toArray($this->nApp->getDataNode('workflow_runtime'));
+				$time	=	$this->toArray($this->getDataNode('workflow_runtime'));
 				if(empty($time))
 					return $this->getMicroTimeNow();
 				
@@ -142,7 +140,7 @@ class nAutomator extends \Nubersoft\Singleton
 		
 		public	function getTimeCast($then,$app)
 			{
-				$time	=	$this->nApp->toArray($this->nApp->getDataNode('workflow_runtime'));	
+				$time	=	$this->toArray($this->getDataNode('workflow_runtime'));	
 				if(empty($time))
 					$time	=	array();
 				
@@ -156,8 +154,8 @@ class nAutomator extends \Nubersoft\Singleton
 								'app'=>$app
 							);
 				
-				$this->nApp->saveSetting('workflow_runtime',$time,true);
-				$this->nApp->saveSetting('workflow_runtime_total',$this->getTimeCastSum($time),true);
+				$this->saveSetting('workflow_runtime',$time,true);
+				$this->saveSetting('workflow_runtime_total',$this->getTimeCastSum($time),true);
 			}
 		
 		public	function getMicroTimeNow()
@@ -176,7 +174,7 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				
 				$func	=	function($class,$typeOpts = false,$inject = false)
@@ -215,7 +213,7 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				
 				$func	=	(!empty($typeOpts['name']))? $typeOpts['name'] : false;
@@ -338,13 +336,13 @@ class nAutomator extends \Nubersoft\Singleton
 					
 					switch($method) {
 						case('get'):
-							$this->actionArr	=	$this->nApp->getGet($action);
+							$this->actionArr	=	$this->getGet($action);
 							break;
 						case('request'):
-							$this->actionArr	=	$this->nApp->getRequest($action);
+							$this->actionArr	=	$this->getRequest($action);
 							break;
 						default:
-							$this->actionArr	=	$this->nApp->getPost($action);
+							$this->actionArr	=	$this->getPost($action);
 					}
 				
 					return $this;
@@ -352,11 +350,11 @@ class nAutomator extends \Nubersoft\Singleton
 				else {
 					foreach($action as $name) {
 						if($method == 'get')
-							$this->actionArr	=	$this->nApp->getGet($name);
+							$this->actionArr	=	$this->getGet($name);
 						elseif($method == 'request')
-							$this->actionArr	=	$this->nApp->getRequest($name);
+							$this->actionArr	=	$this->getRequest($name);
 						else
-							$this->actionArr	=	$this->nApp->getPost($name);
+							$this->actionArr	=	$this->getPost($name);
 					
 						if(!empty($this->actionArr)) {
 							$this->listenForKey	=	$name;
@@ -381,7 +379,7 @@ class nAutomator extends \Nubersoft\Singleton
 				$name		=	(!empty($settings['organize_by']))? $settings['organize_by'] : 'name';
 				$this	->listenFor($action,$request)
 						->organizeBy($name)
-						->automate($this->nApp->getConfigs());
+						->automate($this->getConfigs());
 			}
 		/*
 		**	@description	This method runs through a one dimensional array with settings per sub array
@@ -447,7 +445,7 @@ class nAutomator extends \Nubersoft\Singleton
 									$file	=	$this->matchFunction($doAction[$value]);
 									
 									if(is_file($file)) {
-										$nRender	=	nApp::call('nRender');
+										$nRender	=	$this->getHelper('nRender');
 										switch($value) {
 											case('include'):
 												if(isset($doAction['render']) && strtolower($doAction['render']) == 'false'){
@@ -484,6 +482,9 @@ class nAutomator extends \Nubersoft\Singleton
 						}
 					}
 				}
+				
+			//	if($this->getDataNode('workflow_runtime_total') > '0.61082')
+			//		die(printpre($this->getDataNode('workflow_runtime'),['backtrace'=>false]));
 			}
 		
 		public	function callDynamicWorkflow($type,$obj,$inject,$dependency)
@@ -517,7 +518,7 @@ class nAutomator extends \Nubersoft\Singleton
 					$parsedPath	=	$this->matchFunction($obj['namespace']);
 					
 					if(is_dir($parsedPath))
-						$this->nApp->addNamespace($parsedPath);
+						$this->addNamespace($parsedPath);
 					else
 						throw new \Exception('Support file not found for :'.$func);
 				}
@@ -528,7 +529,7 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				# Get the name of the class
 				$func				=	(isset($obj['name']))? $obj['name'] : false;
@@ -587,27 +588,27 @@ class nAutomator extends \Nubersoft\Singleton
 							else {
 								if($dependency) {
 									if($constr_dependency)
-										$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($constr_dependency))->{$method}($this->nApp->getPlugin($dependency));
+										$instance	=	$this->getPlugin($func,$this->getPlugin($constr_dependency))->{$method}($this->getPlugin($dependency));
 									else
-										$instance	=	$this->nApp->getPlugin($func)->{$method}($this->nApp->getPlugin($dependency));
+										$instance	=	$this->getPlugin($func)->{$method}($this->getPlugin($dependency));
 								}
 								else {
 									if($constr_dependency)
-										$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($constr_dependency))->{$method}();
+										$instance	=	$this->getPlugin($func,$this->getPlugin($constr_dependency))->{$method}();
 									else
-										$instance	=	$this->nApp->getPlugin($func)->{$method}();
+										$instance	=	$this->getPlugin($func)->{$method}();
 								}
 							}
 						}
 					}
 					else {
 						if($inject)
-							$instance	=	$this->nApp->getPlugin($func,$this->injector($inject));
+							$instance	=	$this->getPlugin($func,$this->injector($inject));
 						else {
 							if($dependency)
-								$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($dependency));
+								$instance	=	$this->getPlugin($func,$this->getPlugin($dependency));
 							else
-								$instance	=	$this->nApp->getPlugin($func);
+								$instance	=	$this->getPlugin($func);
 						}
 					}
 					
@@ -620,7 +621,7 @@ class nAutomator extends \Nubersoft\Singleton
 			
 		public	function doClassChaining($obj,$func,$inject,$method = false,$dependency = false,$dependency_arr = false,$constr_dependency = false)
 			{
-				$instance	=	($constr_dependency)? $this->nApp->getPlugin($func,$this->nApp->getPlugin($constr_dependency)) : $this->nApp->getPlugin($func);
+				$instance	=	($constr_dependency)? $this->getPlugin($func,$this->getPlugin($constr_dependency)) : $this->getPlugin($func);
 				
 				$this->chain($obj,$instance,$method,$inject,$dependency);	
 			}
@@ -630,7 +631,7 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$method,$inject,$dependency));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				
 				if(!is_array($obj['chain']))
@@ -644,7 +645,7 @@ class nAutomator extends \Nubersoft\Singleton
 						if(is_array($dependency)) {
 							if(is_array($dependency_arr) && isset($dependency_arr[$method])) {
 								$useDep	=	$dependency_arr[$method];
-								$instance->{$method}($this->nApp->getPlugin($useDep));
+								$instance->{$method}($this->getPlugin($useDep));
 							}
 							else {
 								if($inject && $i == 0)
@@ -683,16 +684,16 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$func,$method,$inject,$dependency,$constr_dependency));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				
 				if($dependency)
-					$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($dependency))->{$method}($this->injector($inject));
+					$instance	=	$this->getPlugin($func,$this->getPlugin($dependency))->{$method}($this->injector($inject));
 				else {
 					if($constr_dependency)
-						$instance	=	$this->nApp->getPlugin($func,$this->nApp->getPlugin($constr_dependency))->{$method}($this->injector($inject));
+						$instance	=	$this->getPlugin($func,$this->getPlugin($constr_dependency))->{$method}($this->injector($inject));
 					else
-						$instance	=	$this->nApp->getPlugin($func)->{$method}($this->injector($inject));
+						$instance	=	$this->getPlugin($func)->{$method}($this->injector($inject));
 				}
 				
 				return $instance;
@@ -703,7 +704,7 @@ class nAutomator extends \Nubersoft\Singleton
 				if($this->isActiveRecording()) {
 					$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
 					$this->getTimeCast($this->getTimeCastLast(),$rec);
-					$this->nApp->saveSetting('workflow_run',$rec);
+					$this->saveSetting('workflow_run',$rec);
 				}
 				
 				$func	=	$obj['name'];
@@ -716,10 +717,10 @@ class nAutomator extends \Nubersoft\Singleton
 						require_once($inc);
 					}
 					else
-						$this->nApp->autoload(array($func));
+						$this->autoload(array($func));
 					
 					if(!function_exists($func) && $func != 'die' && $func != 'exit')
-						throw new \Exception($this->nApp->getHelper('Safe')->encodeSingle("Function ({$func}) does not exist. Use an include line: <include>/path/to/php</include>"));
+						throw new \Exception($this->getHelper('Safe')->encodeSingle("Function ({$func}) does not exist. Use an include line: <include>/path/to/php</include>"));
 				}
 				
 				if(!empty($inject)) {	
@@ -756,7 +757,7 @@ class nAutomator extends \Nubersoft\Singleton
 				$listener	=	(!empty($settings['listen_for']))? $settings['listen_for'] : 'action';
 				$organize	=	(!empty($settings['organize_by']))? $settings['organize_by'] : 'name';
 				# Get all the config files
-				$configs	=	$this->nApp->getHelper('nRegister')->parseRegFile($dir);
+				$configs	=	$this->getHelper('nRegister')->parseRegFile($dir);
 				# Convert them to an array
 				$configs	=	$this->toArray($configs);
 				# Run the automator
@@ -800,7 +801,7 @@ class nAutomator extends \Nubersoft\Singleton
 					$nFiles->recordTransaction();
 					# Send success
 					if(!empty($nFiles->getData()))
-						$this->nApp->saveError('file_listener',array('success'=>true));
+						$this->saveError('file_listener',array('success'=>true));
 					# Send back the array
 					return	$nFiles->getData();
 				}
@@ -810,9 +811,9 @@ class nAutomator extends \Nubersoft\Singleton
 						die($e->getMessage());
 					}
 					# Save to error array
-					$this->nApp->saveError('file_upload',array('success'=>false,'msg'=>'upload failed'));
+					$this->saveError('file_upload',array('success'=>false,'msg'=>'upload failed'));
 					# Save to log file
-					$this->nApp->saveToLogFile('error_uploads.txt',$e->getMessage(),array('logging','exceptions'));
+					$this->saveToLogFile('error_uploads.txt',$e->getMessage(),array('logging','exceptions'));
 					# Set 
 					return false;
 				}
@@ -826,7 +827,7 @@ class nAutomator extends \Nubersoft\Singleton
 			{
 				$this->cachedArr	=	false;
 				# Get the cache directory
-				$dir	=	(!empty($this->nApp->getDataNode('site')->cache_folder))? $this->nApp->getDataNode('site')->cache_folder : DS.'client'.DS.'settings'.DS;
+				$dir	=	(!empty($this->getDataNode('site')->cache_folder))? $this->getDataNode('site')->cache_folder : DS.'client'.DS.'settings'.DS;
 				# If the cache config file is available, parse and return
 				if(is_file($prefs = $dir.'configs.json'))
 					$this->cachedArr	=	array(
@@ -842,20 +843,20 @@ class nAutomator extends \Nubersoft\Singleton
 		*/
 		public	function saveCachedConfigs()
 			{
-				$dir		=	$this->nApp->toSingleDs(DS.trim(NBR_ROOT_DIR.DS.$this->nApp->getDataNode('site')->cache_folder,DS).DS);
+				$dir		=	$this->toSingleDs(DS.trim(NBR_ROOT_DIR.DS.$this->getDataNode('site')->cache_folder,DS).DS);
 				$filename	=	$dir.'configs.json';
 				$xmlList	=	$dir.'xml_add_list.json';
 				
 				if(is_file($filename))
 					return;
 
-				$configs		=	$this->nApp->getConfigs();
-				$xml_add_list	=	$this->nApp->getData()->getXmlAddList();
+				$configs		=	$this->getConfigs();
+				$xml_add_list	=	$this->getData()->getXmlAddList();
 				
 				if(!empty($configs)) {
-					if($this->nApp->isDir($dir,true,0755)) {
-						$this->nApp->savePrefFile('configs',$configs);
-						$this->nApp->savePrefFile('xml_add_list',$xml_add_list);
+					if($this->isDir($dir,true,0755)) {
+						$this->savePrefFile('configs',$configs);
+						$this->savePrefFile('xml_add_list',$xml_add_list);
 					}
 				}
 			}
@@ -864,8 +865,8 @@ class nAutomator extends \Nubersoft\Singleton
 			{
 				$configs	=	$this->cachedArr;
 				if(!empty($configs['configs'])) {
-					$this->nApp->saveSetting('config',$configs['configs']);
-					$this->nApp->saveSetting('xml_add_list',$configs['xml_add_list']);
+					$this->saveSetting('config',$configs['configs']);
+					$this->saveSetting('xml_add_list',$configs['xml_add_list']);
 				}
 			}
 		/*
@@ -873,7 +874,7 @@ class nAutomator extends \Nubersoft\Singleton
 		*/
 		public	function getInstructions($type,$search = 'workflow',$append=false,$settings=false)
 			{
-				$Sortify	=	$this->nApp->getHelper('Sortify');
+				$Sortify	=	$this->getHelper('Sortify');
 				# Get the action sort
 				$configs	=	$Sortify
 									->setActionName($this->listenForKey)
@@ -982,18 +983,18 @@ class nAutomator extends \Nubersoft\Singleton
 						elseif(in_array($before,$holding) && !in_array($after,$holding)) {
 							$placeKey	=	(array_search($before));
 							$befPlace	=	($placeKey < 0)? 0 : $placeKey;
-							$holding	=	$this->nApp->insertIntoArray($holding,$after,$befPlace);
+							$holding	=	$this->insertIntoArray($holding,$after,$befPlace);
 						}
 						elseif(!in_array($before,$holding) && in_array($after,$holding)) {
 							$placeKey	=	(array_search($after,$holding));
-							$holding	=	$this->nApp->insertIntoArray($holding,$before,$placeKey);
+							$holding	=	$this->insertIntoArray($holding,$before,$placeKey);
 						}
 						elseif(in_array($before,$holding) && in_array($after,$holding)) {
 							$this->saveIncidental('sorting_order',array('msg'=>'Events have been ordered already. Further ordering will likely remove a previous ordered item.'));
 							
 							//$bKey		=	(array_search($before,$holding));
 							//$aKey		=	(array_search($after,$holding));
-							//$holding	=	$this->nApp->insertIntoArray($holding,$after,$befPlace);
+							//$holding	=	$this->insertIntoArray($holding,$after,$befPlace);
 						}
 					}
 				}
@@ -1020,7 +1021,7 @@ class nAutomator extends \Nubersoft\Singleton
 			{
 				if(isset($array['@attributes']))
 					$array	=	array($array);
-					
+				
 				$addToObj	=	function($obj1,$obj2,$nApp)
 					{
 						

@@ -75,4 +75,51 @@ class nTemplate extends \Nubersoft\nApp
 				
 				return $value;
 			}
+		
+		public	function getDefaultTemplate()
+			{
+				$pref		=	$this->toSingleDs($this->getSettingsDir('template.pref'));
+				$default	=	DS.'core'.DS.'template'.DS.'default';
+				if(is_file($pref))
+					return (is_file($pref))? @file_get_contents($pref) : false;
+				
+				if(empty($this->getDataNode('preferences')))
+					(new GetSitePrefs)->set();
+				
+				$getTemp	=	$this->getMatchedArray(array(
+					'settings_site',
+					'content',
+					'template_folder'
+				),'',$this->toArray($this->getDataNode('preferences')));
+
+				$template	=	(!empty($getTemp['template'][0]))? trim($this->toSingleDs(DS.$getTemp['template'][0]),DS) : $pref;
+				if(!is_dir(NBR_ROOT_DIR.DS.$template))
+					$template	=	$default;
+				
+				$this->getHelper('nFileHandler')->writeToFile(array(
+					'content'=>$template,
+					'save_to'=>$pref,
+					'overwrite'=>true,
+					'secure'=>true
+					));
+				
+				return $template;
+			}
+		
+		public	function getTemplatePathMatch($path,$dirType = 'frontend',$array = false)
+			{
+				$templates	=	(!empty($array))? $array : $this->toArray($this->getDataNode('site')->templates);
+				
+				if(!is_array($templates))
+					return false;
+				
+				foreach($templates as $type) {
+					if(is_file($file = NBR_ROOT_DIR.$type[$dirType].DS.$path))
+						return $file;
+					elseif(is_dir($dir = NBR_ROOT_DIR.$type[$dirType].DS.$path))
+						return $dir;
+				}
+				
+				return false;
+			}
 	}

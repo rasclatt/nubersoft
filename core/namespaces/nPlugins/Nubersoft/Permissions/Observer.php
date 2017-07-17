@@ -1,7 +1,7 @@
 <?php
 namespace nPlugins\Nubersoft\Permissions;
 
-class Observer extends \Nubersoft\nApp
+class Observer extends \nPlugins\Nubersoft\Permissions
 	{
 		public	function listen()
 			{
@@ -34,22 +34,5 @@ class Observer extends \Nubersoft\nApp
 				# Remove get string
 				$this->getHelper('nRouter')->addRedirect($this->adminUrl('?requestTable=order_transactions'));
 			
-			}
-		
-		public	function getBannedStatus($username,$ip)
-			{
-				$ipBanSql	=	"SELECT COUNT(*) as count from `api_mxi_banned_ips` where `dist_id` =:0 OR `username`= :1";
-				$count		=	$this->nQuery()->query($ipBanSql,array($username,$username))->getResults(true);
-				$userCnt	=	$count['count'];
-				
-				$ipBanSql	=	"SELECT COUNT(*) as count from `api_mxi_banned_ips` where `ip_address` = :0";
-				$count		=	$this->nQuery()->query($ipBanSql,array($ip))->getResults(true);
-				
-				$ipCnt		=	$count['count'];
-				
-				return array(
-					'ip'=>$ipCnt,
-					'user'=>$userCnt
-				);
 			}
 	}
