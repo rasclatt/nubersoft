@@ -525,10 +525,10 @@ class HeadProcessor extends \Nubersoft\nApp
 			{
 				$deliver	=	$this->toArray($this->getPost('deliver'));
 				$node		=	(new \Nubersoft\Methodize())->saveAttr('deliver',$deliver);
-				$dom		=	$node->getDeliver()->getUxLoaderReset();
+				$dom		=	$node->getDeliver();
 				
 				if(!is_string($dom))
-					$dom	=	$node->toArray();
+					$dom	=	$node->getUxLoaderReset()->toArray();
 				
 				return array(
 					'html' => array_fill(0,count($dom),''),
