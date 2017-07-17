@@ -5,7 +5,7 @@ if(!$this->isAdmin()) {
 }
 
 ob_start();
-$nApp					=	\Nubersoft\nApp::call();
+$nApp					=	\Nubersoft\nApp::call()->getHelper('nRender');
 # Get all prefs
 $siteArr				=	$this->getSitePrefs();
 $headerArr				=	$this->getHeader();
@@ -21,6 +21,7 @@ $site					=	$nApp->getSiteContent();
 $header					=	$nApp->getHeaderContent();
 $footer					=	$nApp->getFooterContent();
 $nProcToken				=	$this->getHelper('nToken')->getSetToken('nProcessor',array('formsiteprefs',rand(1000,9999)),true);
+$reseters				=	$this->getHelper('HeadProcessor')->processResetThinkers();
 # Sets and returns a token
 $this->saveSetting('nProcessor', $nProcToken);
 # Render site prefs
@@ -36,10 +37,19 @@ echo $this->useData(array(
 
 $html	=	ob_get_contents();
 ob_end_clean();
-
-die(json_encode(array(
-	'html'=>array($html),
-	'sendto'=>array('#loadspot_modal'),
-	"acton"=>array("#loadspot_modal",'body'),
-	"fx"=>array("slideDown",'rOpacity')
-	)));
+$nApp->ajaxResponse(array(
+		'html'=>array_merge(array(
+			$html
+		),$reseters['html']),
+		'sendto'=>array_merge(array(
+			'#loadspot_modal'
+		),$reseters['sendto']),
+		"acton"=>array(
+			"#loadspot_modal",
+			'body'
+		),
+		"fx"=>array(
+			"slideDown",
+			'rOpacity'
+		)
+	));
