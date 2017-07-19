@@ -15,4 +15,4 @@
 </body>
 </html>
 <?php
-die(printpre($this->getDataNode()));
+//die(printpre($this->getDataNode()));
