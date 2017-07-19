@@ -204,4 +204,32 @@ class Controller extends \Nubersoft\nApp
 				$regFiles	=	$parser->getConfigsArr();
 				return (is_array($regFiles))? $regFiles : $regFiles;
 			}
+		/*
+		**	@description	Checks the mode the site is in (dev or prod)
+		*/
+		public	function serverMode()
+			{
+				# Live possibilities
+				$live	=	array('live','production','prod','p','true',true);
+				
+				if(defined('SERVER_MODE')) {
+					return (in_array(strtolower(SERVER_MODE),$live))? 'prod' : 'dev';
+				}
+				
+				return 'dev';
+			}
+		/*
+		**	@description	Wrapper for checking if production
+		*/
+		public	function isLiveMode()
+			{
+				return ($this->serverMode() == 'prod');
+			}
+		/*
+		**	@description	Wrapper for checking if developer mode
+		*/
+		public	function isDevMode()
+			{
+				return ($this->serverMode() == 'dev');
+			}
 	}

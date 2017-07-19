@@ -854,11 +854,21 @@ class nRender extends \Nubersoft\nApp
 					return (!empty($new))? $this->toObject($new) : false;
 				}
 			}
+		/*
+		**	@description	Alias of the settings controller same-named method
+		*/
+		public	function isDevMode()
+			{
+				$class	=	'\nPlugins\Nubersoft\Settings\Controller';
+				return (empty($this->getPlugin($class)->{__FUNCTION__}()));
+			}
 		
+		/*
 		public	function getSiteContent()
 			{
 				$prefs	=	$this->getSitePrefs();
 				
 				return (isset($prefs->content))? $prefs->content : false;
 			}
+		*/
 	}

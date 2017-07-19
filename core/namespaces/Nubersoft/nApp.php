@@ -931,7 +931,6 @@ class	nApp extends \Nubersoft\nFunctions
 				return in_array($table,$this->getTables());
 			}
 		
-		
 		public	function siteLive()
 			{
 				$site	=	$this->getSitePrefs();
