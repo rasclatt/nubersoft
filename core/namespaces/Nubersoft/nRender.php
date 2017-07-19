@@ -862,13 +862,13 @@ class nRender extends \Nubersoft\nApp
 				$class	=	'\nPlugins\Nubersoft\Settings\Controller';
 				return (empty($this->getPlugin($class)->{__FUNCTION__}()));
 			}
-		
 		/*
+		**	@description	Used in the site prefs page
+		*/
 		public	function getSiteContent()
 			{
 				$prefs	=	$this->getSitePrefs();
 				
 				return (isset($prefs->content))? $prefs->content : false;
 			}
-		*/
 	}
