@@ -205,31 +205,56 @@ class Controller extends \Nubersoft\nApp
 				return (is_array($regFiles))? $regFiles : $regFiles;
 			}
 		/*
-		**	@description	Checks the mode the site is in (dev or prod)
-		*/
-		public	function serverMode()
-			{
-				# Live possibilities
-				$live	=	array('live','production','prod','p','true',true);
-				
-				if(defined('SERVER_MODE')) {
-					return (in_array(strtolower(SERVER_MODE),$live))? 'prod' : 'dev';
-				}
-				
-				return 'dev';
-			}
-		/*
 		**	@description	Wrapper for checking if production
 		*/
 		public	function isLiveMode()
 			{
-				return ($this->serverMode() == 'prod');
+				return ($this->getServerMode() == 'prod');
 			}
 		/*
 		**	@description	Wrapper for checking if developer mode
 		*/
 		public	function isDevMode()
 			{
-				return ($this->serverMode() == 'dev');
+				return ($this->getServerMode() == 'dev');
+			}
+		/*
+		**	@description	Fetches modes from the user config or registry if set
+		**	@returns		Returns either the contstant's value or default value ($default)
+		*/
+		public	function getMode($type,$default,$fromConfig = false)
+			{
+				$raw	=	strtolower($type.'_mode');
+				# Build constant
+				$const	=	strtoupper($raw);
+				# If only required to look in config file, send back response
+				if(!$fromConfig)
+					return (defined($const))? constant($const) : $default;
+				# Fetch from the config file
+				$mData	=	$this->getMatchedArray(array('ondefine',$raw));
+				
+				if(!empty($mData[$raw][0]) && !is_array($mData[$raw][0]))
+					return $mData[$raw][0];
+				
+				return $default;
+			}
+		/*
+		**	@description	Wrapper for getting the current error mode
+		*/
+		public	function getErrorMode($fromConfig = false)
+			{
+				return $this->getMode('error','E_ALL',$fromConfig);
+			}
+		/*
+		**	@description	Wrapper for getting the current server mode
+		*/
+		public	function getServerMode($def = 'live',$fromConfig = false)
+			{
+				# Get the server mode from config
+				$serverMode	=	strtolower($this->getMode('server',$def,$fromConfig));
+				# Live possibilities
+				$live		=	array('live','production','prod','p','true',true);
+				# Send back standard response
+				return (in_array($serverMode,$live))? 'prod' : 'dev';
 			}
 	}

@@ -777,7 +777,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getRegistry($key = false)
 			{
-				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($key);
+				return $this->settingsManager()->{__FUNCTION__}($key);
 			}
 		/*
 		**	@description	This method gets the paths to search out for new config files
@@ -785,14 +785,14 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getLoadZones($xmlParser = false)
 			{
-				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($xmlParser);
+				return $this->settingsManager()->{__FUNCTION__}($xmlParser);
 			}
 		
 		public	function getConfigs()
 			{
 				$args		=	func_get_args();
 				$location	=	(!empty($args[0]))? $args[0] : false;
-				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller')->{__FUNCTION__}($location);
+				return $this->settingsManager()->{__FUNCTION__}($location);
 			}
 			
 		public	function getPlugins()
@@ -1343,7 +1343,7 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		public	function getUploadDir($table,$settings = false)
 			{
-				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($table,$settings);
+				return $this->fileManager('Controller')->{__FUNCTION__}($table,$settings);
 			}
 		/*
 		**	@description	This method will return the class object
@@ -1366,34 +1366,6 @@ class	nApp extends \Nubersoft\nFunctions
 				# If the force render is not on, throw an exception
 				if(!$this->forceRender())
 					throw new \Exception('Function is unavailable: '.$this->safe()->encode($function));
-			}
-		
-		public	function getErrorMode($fromConfig = false)
-			{
-				return $this->getMode('error','E_ALL',$fromConfig);
-			}
-			
-		public	function getServerMode($fromConfig = false)
-			{
-				return $this->getMode('server','production',$fromConfig);
-			}
-		
-		public	function getMode($type,$default,$fromConfig = false)
-			{
-				$raw	=	strtolower($type.'_mode');
-				$const	=	strtoupper($raw);
-				
-				if(!$fromConfig) {
-					if(defined($const))
-						return constant($const);
-				}
-				
-				$mData	=	$this->getMatchedArray(array('ondefine',$raw));
-				
-				if(!empty($mData[$raw][0]) && !is_array($mData[$raw][0]))
-					return $mData[$raw][0];
-				
-				return $default;
 			}
 		
 		public	function getPrefFilePath($append = false)
@@ -1434,7 +1406,7 @@ class	nApp extends \Nubersoft\nFunctions
 					'secure'=>(isset($opts['secure']))? $opts['secure'] : true
 				);
 				
-				$this->getHelper('nFileHandler')->writeToFile($data);
+				$this->fileManager()->writeToFile($data);
 			}
 		
 		public	function getCachedPref($name,$type = 'json')
@@ -1457,12 +1429,19 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function getSettingsFile($name,$func,$ext = 'json',$path = false)
 			{
-				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($name,$func,$ext,$path);
+				return $this->fileManager('Controller')->{__FUNCTION__}($name,$func,$ext,$path);
 			}
 		
 		public	function getPrefFile($name,$settings = false,$raw = false,$callback = false)
 			{
-				return $this->getHelper('nFileHandler\Controller')->{__FUNCTION__}($name,$settings,$raw,$callback);
+				return $this->fileManager('Controller')->{__FUNCTION__}($name,$settings,$raw,$callback);
+			}
+		/*
+		**	@description	Alias/wrapper to the nFileHandler
+		*/
+		public	function fileManager($append='')
+			{
+				return $this->getHelper(trim('nFileHandler\\'.$append,'\\'));
 			}
 		
 		public	function getSiteTemplate()
@@ -1610,7 +1589,7 @@ class	nApp extends \Nubersoft\nFunctions
 		*/
 		public	function addNamespace($path)
 			{
-				return (new nRouter\Controller())->addNamespace($path);
+				return $this->getHelper('nRouter\Controller')->addNamespace($path);
 			}
 		/*
 		**	@description	Creates a standard cache path for saving cached elements into the cache folder
@@ -1687,6 +1666,13 @@ class	nApp extends \Nubersoft\nFunctions
 				return new NubeData();
 			}
 		/*
+		**	@description	Alias to fetch the settings controller
+		*/
+		public	function settingsManager()
+			{
+				return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller');
+			}
+		/*
 		**	@description	This overloading method will call a class based on the method name.
 		**	@param	$name	[string]	This is automated by php and is the name of the method (and class)
 		**	@param	$args	[bool|array]	This can pass arguments to the class being called
@@ -1735,7 +1721,28 @@ class	nApp extends \Nubersoft\nFunctions
 				# Try and return the class
 				return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
 			}
-		
+		/*
+		**	@description	Wrapper/Alias for getting the current error mode
+		*/
+		public	function getErrorMode($fromConfig = false)
+			{
+				return $this->settingsManager()->getErrorMode($fromConfig);
+			}
+		/*
+		**	@description	Wrapper/Alias for getting the current server mode
+		*/
+		public	function getServerMode($def = 'live',$fromConfig = false)
+			{
+				return $this->settingsManager()->getServerMode($def,$fromConfig);
+			}
+		/*
+		**	@description	Fetches modes from the user config or registry if set
+		**	@returns		Returns either the contstant's value or default value ($default)
+		*/
+		public	function getMode($type,$default,$fromConfig = false)
+			{
+				return $this->settingsManager()->getMode($type,$default,$fromConfig);
+			}
 		/*
 		REMOVALS
 		
