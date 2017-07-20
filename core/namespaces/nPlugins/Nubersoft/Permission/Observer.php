@@ -1,7 +1,7 @@
 <?php
 namespace nPlugins\Nubersoft\Permission;
 
-class Observer extends \nPlugins\Nubersoft\Permissions
+class Observer extends \nPlugins\Nubersoft\Permission
 	{
 		public	function listen()
 			{
