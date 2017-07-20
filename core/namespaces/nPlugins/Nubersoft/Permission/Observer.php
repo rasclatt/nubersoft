@@ -1,5 +1,5 @@
 <?php
-namespace nPlugins\Nubersoft\Permissions;
+namespace nPlugins\Nubersoft\Permission;
 
 class Observer extends \nPlugins\Nubersoft\Permissions
 	{
