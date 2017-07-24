@@ -611,8 +611,10 @@ class	nApp extends \Nubersoft\nFunctions
 				return $this->nGet()->{"getSite"}($var);
 			}
 		
-		public	function getUser($var = false)
+		public	function getUser()
 			{
+				$args	=	func_get_args();
+				$var	=	(!empty($args[0]))? $args[0] : false;
 				$user	=	$this->getDataNode('user');
 				
 				if(empty($user))

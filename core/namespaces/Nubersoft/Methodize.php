@@ -144,12 +144,16 @@ class Methodize	extends \Nubersoft\nFunctions
 				}
 				# Check if there is one value in the array
 				if(count($this->info) == 1) {
+					if(is_array($this->info))
+						next($this->info);
+	
 					# Send back just that value
-					$vals	=	array_values($this->info);
-					return (!empty($vals[0]) && is_string($vals[0]))? $vals[0] : '';
+					$vals	=	(is_array($this->info))? array_values($this->info) : $this->info;
+					if(!is_array($vals))
+						return $vals;
 				}
 				# If array, send that back in formatted string
-				return json_encode($this->info);
+				return (empty($this->info))? '' : json_encode($this->info);
 			}
 		/*
 		**	@description	Serializes the array

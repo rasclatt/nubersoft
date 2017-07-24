@@ -131,6 +131,11 @@ class nRender extends \Nubersoft\nApp
 		*/
 		public	function useTemplatePlugin($dir,$append = 'index.php',$obj = false)
 			{
+				$layout	=	$this->useGlobalPlugin($dir,$append);
+				
+				if(!empty($layout))
+					return $layout;
+				
 				$path	=	$this->toSingleDs($this->getTemplatePlugin($dir,$append));
 				return $this->render($path,$obj);
 			}
@@ -140,8 +145,11 @@ class nRender extends \Nubersoft\nApp
 		*/
 		public	function useGlobalPlugin($dir,$append = 'index.php')
 			{
-				$path	=	$this->toSingleDs(NBR_CLIENT_DIR.DS.'template'.DS.'plugins'.DS.$dir.$append);
-				return $this->render($path);
+				$path	=	$this->toSingleDs(NBR_CLIENT_DIR.DS.'template'.DS.'plugins'.DS.$dir.DS.$append);
+				if(is_file($path))
+					return $this->render($path);
+				
+				return false;
 			}
 		
 		public	function error404($error404,$message = false)

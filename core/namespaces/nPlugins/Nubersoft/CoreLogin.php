@@ -256,20 +256,23 @@ class CoreLogin extends \Nubersoft\HeadProcessor
 				$password	=	$POST['password'];
 				# First check if this user is an admin user
 				$isAdmin	=	$this->getHelper('UserEngine')->isAdmin(trim($username));
-				# If admin, send invalid. Required to login to the admin page
-				if($isAdmin) {
-					$msg	=	'Invalid login. Status Invalid.';
-					if($this->isAjaxRequest())
-						$this->ajaxResponse(array(
-							'alert'=>$msg,
-							'html'=>array(''),
-							'sendto'=>array('.nbr_action_loader')
-						)
-					);
-					
-					$this->toAlert($msg,'login');
+				if(defined('OPEN_ADMIN')) {
+					if(!$this->getBoolVal(OPEN_ADMIN)) {
+						# If admin, send invalid. Required to login to the admin page
+						if($isAdmin) {
+							$msg	=	'Invalid login. Status Invalid.';
+							if($this->isAjaxRequest())
+								$this->ajaxResponse(array(
+									'alert'=>$msg,
+									'html'=>array(''),
+									'sendto'=>array('.nbr_action_loader')
+								)
+							);
+							
+							$this->toAlert($msg,'login');
+						}
+					}
 				}
-					
 				$valid	=	$User->login($username,$password);
 				$err	=	$this->toArray($this->getIncidental('login_error'));
 				

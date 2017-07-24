@@ -51,8 +51,11 @@ class nCookie
 				if(!empty($name))
 					$this->setName($name);
 	
-				if($this->cookieExists($this->cookieName))
-					setcookie($this->cookieName,null,(time()-1000));
+				if($this->cookieExists($this->cookieName)) {
+					unset($_COOKIE['Hello']);
+					setcookie($this->cookieName, NULL, -1, '/');
+					setcookie($this->cookieName, NULL, (time()-1000), '/');
+				}
 			}
 		/*
 		** @description Self-explanatory

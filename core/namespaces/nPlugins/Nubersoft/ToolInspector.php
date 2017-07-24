@@ -39,7 +39,7 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 					$sql	.=	" AND `unique_id` != '{$unique_id}'";
 					
 				$containers	=	$this->nQuery()->query($sql." ORDER BY `menu_name` ASC")->getResults();
-				
+				$_parents	=	array();
 				if(is_array($containers)) {
 					foreach($containers as $_objects) {
 						if(!empty($_objects['parent_id']))
@@ -119,6 +119,8 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 		
 		protected	function folderStucture($array,$key = false)
 			{
+				if(!is_array($array))
+					return false;
 				
 				foreach($array as $col => $value) {
 				?>
@@ -139,6 +141,9 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 		
 		protected	function menuTable($_table_prefs,$_return_array)
 			{
+				if(empty($this->getDataNode('menu_data')))
+					$this->getPlugin('\nPlugins\Nubersoft\MenuEngine')->fetchMenuData();
+	
 				$this->payload	=	$this->toArray($this->getDataNode('menu_data'));
 				$structure		=	$this->toArray($this->getDataNode('menu_struc'));
 				return $this->render($this->folderStucture($structure));
