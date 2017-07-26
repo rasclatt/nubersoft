@@ -9,18 +9,20 @@ class nFtp extends \Nubersoft\nFunctions
 				$root,
 				$listed;
 		
-		public	function __construct($host,$user,$pass,$root = false)
+		public	function __construct($host,$user,$pass,$root = false,$port = 21,$timeout = 90)
 			{
 				$this->root	=	$root;
-				$this->con	=	ftp_connect($host);
-				$login		=	ftp_login($this->con, $user, $pass); 
-				if ((!$this->con) || (!$login)) {
+				$this->con	=	ftp_connect($host,$port,$timeout);
+				if (!$this->con)
 					throw new \Exception('Connection to FTP failed.');
-				}
 				
-				if($this->root) {
+				$login		=	ftp_login($this->con, $user, $pass); 
+				
+				if(!$login)
+					throw new \Exception('Login failed.');
+				
+				if($this->root)
 					$this->changeDir($this->root);
-				}
 				
 				return $this;
 			}

@@ -65,6 +65,13 @@
 		<error_mode>E_ALL</error_mode>
 		<server_mode>developer</server_mode>
 		<force_mode>true</force_mode>
+		<ftp_remote_active>false</ftp_remote_active>
+		<ftp_remote_host>remote.host.com</ftp_remote_host>
+		<ftp_remote_dir>httpdocs/</ftp_remote_dir>
+		<ftp_remote_username>myusername</ftp_remote_username>
+		<ftp_remote_remote_path>/httpdocs/</ftp_remote_remote_path>
+		<ftp_remote_local_path>~NBR_ROOT_DIR~</ftp_remote_local_path>
+		<ftp_remote_port>21</ftp_remote_port>
 	</ondefine>
 	<logging>
 		<db_read>
