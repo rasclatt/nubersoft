@@ -97,7 +97,7 @@ class nFtp extends \Nubersoft\nFunctions
 				
 				foreach($directories as $path) {
 					if(ftp_size($this->con,$path) == '-1') {
-						$this->recurseDownload($this->changeDir($path)->dirList(),$root);
+						$this->recurseDownload($this->changeDir($path)->dirList(),$root,$ext);
 					}
 					else {
 						if(in_array(strtolower(pathinfo($path,PATHINFO_EXTENSION)),$ext)) {
