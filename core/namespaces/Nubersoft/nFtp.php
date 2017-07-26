@@ -13,13 +13,19 @@ class nFtp extends \Nubersoft\nFunctions
 			{
 				$this->root	=	$root;
 				$this->con	=	ftp_connect($host,$port,$timeout);
-				if (!$this->con)
-					throw new \Exception('Connection to FTP failed.');
+				if (!$this->con) {
+					trigger_error('Connection to FTP failed.',E_USER_NOTICE);
+					//throw new \Exception('Connection to FTP failed.');
+					return $this;
+				}
 				
 				$login		=	ftp_login($this->con, $user, $pass); 
 				
-				if(!$login)
-					throw new \Exception('Login failed.');
+				if(!$login) {
+					trigger_error('Login failed.',E_USER_NOTICE);
+					//throw new \Exception('Login failed.');
+					return $this;
+				}
 				
 				if($this->root)
 					$this->changeDir($this->root);
