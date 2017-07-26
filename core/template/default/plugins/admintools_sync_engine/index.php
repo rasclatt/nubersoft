@@ -22,12 +22,15 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	$FTP			=	new nFtp($remote,$user,$pass,$remote_path,$port,$timeout);
 	$client			=	$FTP->dirList();
 	$movelist		=	$FTP->recurseDownload($client,$local_path)->getList();
-	if(!empty($movelist['to'])) {
-		foreach($movelist['to'] as $key => $path) {
-			if(!is_file($path)) {
-				if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
-					$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
-				});
+	
+	if(empty($this->getPost('check_host'))) {
+		if(!empty($movelist['to'])) {
+			foreach($movelist['to'] as $key => $path) {
+				if(!is_file($path)) {
+					if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
+						$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
+					});
+				}
 			}
 		}
 	}
@@ -38,6 +41,12 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	<h3 class="nbr_ux_element nTrigger nbr_pointer" data-instructions='{"FX":{"fx":["slideUp","slideToggle"],"acton":[".hideall","next::accordian"],"fxspeed":["fast","fast"]}}'>Remote Sync</h3>
 	<div class="hideall" style="display: none; font-family: Arial, Helvetica, sans-serif;">
 		<p>Retrieve files from the remote server</p>
+		<?php
+		if(!empty($this->getPost('check_host'))) {
+			echo printpre($movelist,['backtrace'=>false]);
+		}
+		?>
+		
 		<form action="" method="post">
 			<input type="hidden" name="action" value="nbr_sync_server" />
 			<hr />
@@ -57,6 +66,7 @@ if($this->getPost('action') == 'nbr_sync_server') {
 			<hr />
 			<label style="font-size: 12px;">PASSWORD</label>
 			<input type="password" name="ftp_password" value="" autocomplete="off" style="font-size: 16px; width: 99%;" />
+			<input type="checkbox" name="check_host" /><label style="font-size: 12px;">Check connection</label>
 			<div class="nbr_button">
 				<input type="submit" value="FETCH" />
 			</div>
