@@ -95,7 +95,8 @@ $(document).ready(function(docevent){
 			this.countDown	=	function(timeout)
 				{
 					return setTimeout(function(){
-						self.elem.style.display	=	'none';
+						if(isset(self,'elem'))
+							self.elem.style.display	=	'none';
 					},timeout);
 				}
 				
