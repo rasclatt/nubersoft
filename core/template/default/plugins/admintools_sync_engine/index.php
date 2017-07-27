@@ -21,16 +21,14 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	$port			=	$this->getPost('port');
 	$FTP			=	new nFtp($remote,$user,$pass,$remote_path,$port,$timeout);
 	$client			=	$FTP->dirList();
-	$movelist		=	$FTP->recurseDownload($client,$local_path)->getList();
+	$movelist		=	$FTP->recurseDownload($client,$local_path,array('jpg','jpeg','gif','png','php'))->getList();
 	
 	if(empty($this->getPost('check_host'))) {
 		if(!empty($movelist['to'])) {
 			foreach($movelist['to'] as $key => $path) {
-				if(!is_file($path)) {
-					if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
-						$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
-					});
-				}
+				if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
+					$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
+				});
 			}
 		}
 	}
@@ -42,8 +40,19 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	<div class="hideall" style="display: none; font-family: Arial, Helvetica, sans-serif;">
 		<p>Retrieve files from the remote server</p>
 		<?php
-		if(!empty($this->getPost('check_host'))) {
-			echo printpre($movelist,['backtrace'=>false]);
+		$thisObj	=	$this;
+		if(!empty($movelist)) { ?>
+			<div style="padding: 10px; background-color: #A1AFA9; border: 2px dotted #333;">
+			<?php
+			if(!empty($movelist['from']))
+				echo '<h4 class="nbr_ux_element" style="margin: 0;">FROM</h4><p style="font-size: 11px; font-family: Courier; color: #222;">'.implode('<br />',$movelist['from']).'</p>';
+			if(!empty($movelist['to']))
+				echo '<h4 class="nbr_ux_element" style="margin: 0;">TO</h4><p style="font-size: 11px; font-family: Courier; color: #222;">'.implode('<br />',array_map(function($v) use ($thisObj){
+					return $thisObj->stripRoot($v);
+				},$movelist['to'])).'</p>';
+			?>
+			</div>
+			<?php
 		}
 		?>
 		
@@ -66,8 +75,8 @@ if($this->getPost('action') == 'nbr_sync_server') {
 			<hr />
 			<label style="font-size: 12px;">PASSWORD</label>
 			<input type="password" name="ftp_password" value="" autocomplete="off" style="font-size: 16px; width: 99%;" />
-			<input type="checkbox" name="check_host" /><label style="font-size: 12px;">Check connection</label>
-			<div class="nbr_button">
+			<label style="font-size: 12px;"><input type="checkbox" name="check_host" />Check connection</label>
+			<div class="nbr_button" style="float: right;">
 				<input type="submit" value="FETCH" />
 			</div>
 		</form>
