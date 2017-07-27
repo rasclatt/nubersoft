@@ -9,7 +9,7 @@ if(!$this->isAdmin())
 $(document).ready(function() {
 	var	classTime	=	false;
 	var	loadTime	=	<?php echo number_format($this->getDataNode('workflow_runtime_total'),3) ?>;
-	$('#nbr_load_time').html(loadTime+' <a href="<?php echo $this->localeURL($this->getPageURI('full_path').'?automate='.$this->getHelper('nToken')->nOnceClear('workflow_runtime_total')->nOnce('workflow_runtime_total',json_encode(array('action'=>'download','file'=>$this->getCacheFolder($name),'usergroup'=>'NBR_SUPERUSER')))->getToken()) ?>">secs</a>');
+	$('#nbr_load_time').html(loadTime+'&nbsp;<a href="<?php echo $this->localeURL($this->getPageURI('full_path').'?automate='.$this->getHelper('nToken')->nOnceClear('workflow_runtime_total')->nOnce('workflow_runtime_total',json_encode(array('action'=>'download','file'=>$this->getCacheFolder($name),'usergroup'=>'NBR_SUPERUSER')))->getToken()) ?>">secs</a>');
 	if(loadTime > 2)
 		classTime	=	'badtime';
 	else if(loadTime <= 1)
