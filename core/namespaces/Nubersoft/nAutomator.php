@@ -166,7 +166,7 @@ class nAutomator extends \Nubersoft\nApp
 		
 		private	function isActiveRecording()
 			{
-				return	self::START_RECORDING;
+				return	(defined('WORKFLOW_RUNTIME'))? WORKFLOW_RUNTIME : self::START_RECORDING;
 			}
 		
 		private	function automateByClass($typeOpts,$inject = false)
