@@ -236,7 +236,7 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 						)
 					));
 					# Isolate
-					$xml	=	 (!empty($files['host']))? $files['host'] : array();
+					$xml	=	 (!empty($files['host']))? $files['host'] : array(); 
 					# If there are none, stop
 					if(empty($xml))
 						return false;
