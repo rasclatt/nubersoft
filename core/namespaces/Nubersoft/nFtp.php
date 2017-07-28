@@ -56,7 +56,12 @@ class nFtp extends \Nubersoft\nFunctions
 		
 		public	function currentDir()
 			{
-				return ftp_pwd($this->con);
+				$current	=	@ftp_pwd($this->con);
+				
+				if(!$current)
+					$this->getHelper('nApp')->toAlert('Could not get a current directory.');
+					
+				return $current;
 			}
 		
 		public	function close()
