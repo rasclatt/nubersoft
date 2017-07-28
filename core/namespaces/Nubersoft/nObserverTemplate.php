@@ -268,11 +268,11 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 					# Simplify
 					$type	=	strtolower($object['@attributes']['type']);
 					# Assign current redirect path
-					if(!isset($thisPage)) {
-						$SERVER		=	$this->getDataNode('_SERVER');
-						$REDIR		=	(isset($SERVER->REDIRECT_URL))? $SERVER->REDIRECT_URL : $SERVER->REQUEST_URI;
-						$thisPage	=	$REDIR;
-					}
+					$SERVER		=	$this->getDataNode('_SERVER');
+					# Get the URI path
+					$REDIR		=	(isset($SERVER->REQUEST_URI))? $SERVER->REQUEST_URI : $SERVER->SCRIPT_URL;
+					# Push path
+					$thisPage	=	$REDIR;
 					# Check that ther is a path set up
 					$rPath	=	(!empty($object['object']['routing']['full_path']))? trim($object['object']['routing']['full_path']) : false;
 					# If there is a path that matches the route
