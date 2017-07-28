@@ -104,6 +104,9 @@ class nFtp extends \Nubersoft\nFunctions
 					return $this;
 				}
 				
+				if(empty($directories))
+					return $this;
+				
 				foreach($directories as $path) {
 					if(ftp_size($this->con,$path) == '-1') {
 						$this->recurseDownload($this->changeDir($path)->dirList(),$root,$ext);
