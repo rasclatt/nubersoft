@@ -5,6 +5,9 @@
 <?php if(is_file(NBR_ROOT_DIR.DS.'pinlogo.svg')) { ?>
 <link rel="mask-icon" href="/pinlogo.svg" color="red">
 <?php } ?>
+<?php if(is_file(NBR_ROOT_DIR.DS.'favicon.ico')) { ?>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+<?php } ?>
 <?php echo $this->getHtml('meta') ?>
 <?php echo $this->getViewPort() ?>
 <?php echo $this->getHtml('favicons').PHP_EOL ?>
