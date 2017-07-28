@@ -14,15 +14,15 @@ class nFtp extends \Nubersoft\nFunctions
 				$this->root	=	$root;
 				$this->con	=	ftp_connect($host,$port,$timeout);
 				if (!$this->con) {
-					trigger_error('Connection to FTP failed.',E_USER_NOTICE);
+					$this->getHelper('nApp')->toAlert('Connection to FTP failed.');
 					//throw new \Exception('Connection to FTP failed.');
 					return $this;
 				}
 				
-				$login		=	ftp_login($this->con, $user, $pass); 
+				$login		=	@ftp_login($this->con, $user, $pass); 
 				
 				if(!$login) {
-					trigger_error('Login failed.',E_USER_NOTICE);
+					$this->getHelper('nApp')->toAlert('Login failed.');
 					//throw new \Exception('Login failed.');
 					return $this;
 				}
@@ -46,7 +46,11 @@ class nFtp extends \Nubersoft\nFunctions
 		
 		public	function changeDir($path)
 			{
-				ftp_chdir($this->con,$path);
+				$change	=	@ftp_chdir($this->con,$path);
+				
+				if(!$change)
+					$this->getHelper('nApp')->toAlert('Could change directory to '.$path);
+					
 				return $this;
 			}
 		
