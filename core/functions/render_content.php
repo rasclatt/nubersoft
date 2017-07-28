@@ -15,7 +15,7 @@ function render_content()
 			if(!empty($nApp->getDataNode('pageURI'))) {
 				ob_start();
 				$inc	=	$nApp->getPageURI('include');
-				if(!empty($inc))
+				if(!empty($inc) && is_file($inc))
 					echo $nApp->getHelper('nRender')->render($inc);
 				else
 					$nApp->getPlugin('\nPlugins\Nubersoft\core')->execute();
