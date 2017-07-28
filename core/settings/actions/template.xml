@@ -48,7 +48,11 @@
 	</action>
 	<action event="nbr_open_site_prefs" request="post" is_ajax="true">
 		<object event="nbr_open_site_prefs" before="nbr_nobservertemplate_tobrowser_template">
-			<include>~NBR_AJAX_DIR~/helpers/form.site.prefs.php</include>
+			<class>
+				<name>\Nubersoft\nRender</name>
+				<method>render</method>
+				<inject>~NBR_DEFAULT_TEMPLATE~/admintools/preferences.php</inject>
+			</class>
 		</object>
 	</action>
 	<action event="admintools_load_tools">
