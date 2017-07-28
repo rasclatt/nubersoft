@@ -8,6 +8,8 @@ class nFtp extends \Nubersoft\nFunctions
 				$errors,
 				$root,
 				$listed;
+				
+		private	$ftpname	=	'FTP';
 		
 		public	function __construct($host,$user,$pass,$root = false,$port = 21,$timeout = 90)
 			{
@@ -22,7 +24,7 @@ class nFtp extends \Nubersoft\nFunctions
 				$login		=	@ftp_login($this->con, $user, $pass); 
 				
 				if(!$login) {
-					$this->getHelper('nApp')->toAlert('Login failed.');
+					$this->getHelper('nApp')->toAlert($this->ftpname.': Login failed.');
 					//throw new \Exception('Login failed.');
 					return $this;
 				}
@@ -49,7 +51,7 @@ class nFtp extends \Nubersoft\nFunctions
 				$change	=	@ftp_chdir($this->con,$path);
 				
 				if(!$change)
-					$this->getHelper('nApp')->toAlert('Could change directory to '.$path);
+					$this->getHelper('nApp')->toAlert($this->ftpname.': Could change directory to '.$path);
 					
 				return $this;
 			}
@@ -59,7 +61,7 @@ class nFtp extends \Nubersoft\nFunctions
 				$current	=	@ftp_pwd($this->con);
 				
 				if(!$current)
-					$this->getHelper('nApp')->toAlert('Could not get a current directory.');
+					$this->getHelper('nApp')->toAlert($this->ftpname.': Could not get a current directory.');
 					
 				return $current;
 			}
@@ -98,7 +100,7 @@ class nFtp extends \Nubersoft\nFunctions
 				fclose($file);
 			}
 			
-		public	function recurseDownload($directories,$root,$ext=array('jpg','jpeg','gif','png'))
+		public	function recurseDownload($directories,$root,$ext=array('jpg','jpeg','gif','png','php','html','html','xml'))
 			{
 				if(count($this->listed) >= 50) {
 					return $this;
