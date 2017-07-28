@@ -21,7 +21,7 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	$port			=	$this->getPost('port');
 	$FTP			=	new nFtp($remote,$user,$pass,$remote_path,$port,$timeout);
 	$client			=	$FTP->dirList();
-	$movelist		=	$FTP->recurseDownload($client,$local_path,array('jpg','jpeg','gif','png','php'))->getList();
+	$movelist		=	$FTP->recurseDownload($client,$local_path)->getList();
 	
 	if(empty($this->getPost('check_host'))) {
 		if(!empty($movelist['to'])) {
