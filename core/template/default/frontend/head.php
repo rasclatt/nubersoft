@@ -6,11 +6,13 @@
 <link rel="mask-icon" href="/pinlogo.svg" color="red">
 <?php } ?>
 <?php if(is_file(NBR_ROOT_DIR.DS.'favicon.ico')) { ?>
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+<link rel="shortcut icon" href="/favicon.ico">
+<?php } ?>
+<?php if(is_file(NBR_ROOT_DIR.DS.'favicon.png')) { ?>
+<link rel="apple-touch-icon image_src" href="/favicon.png">
 <?php } ?>
 <?php echo $this->getHtml('meta') ?>
 <?php echo $this->getViewPort() ?>
-<?php echo $this->getHtml('favicons').PHP_EOL ?>
 <?php echo $this->getMediaSrc('javascript') ?>
 <?php echo $this->getMediaSrc('stylesheet');
 if(!empty($this->getHtml('javascript'))) {
