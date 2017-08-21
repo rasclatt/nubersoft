@@ -253,4 +253,9 @@ class	JsLibrary extends \Nubersoft\nRender
 				if(is_file($build))
 					$this->saveIncidental('javascript_write',array('success'=>true));
 			}
+		
+		public function __toString()
+			{
+				return $this->getResults();
+			}
 	}

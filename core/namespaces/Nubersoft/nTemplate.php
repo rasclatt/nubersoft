@@ -122,4 +122,15 @@ class nTemplate extends \Nubersoft\nApp
 				
 				return false;
 			}
+		
+		protected	function createComponent($type,$data,$refspot = 'ntemplate',$refpage = false, $parent = false)
+			{
+				$comp['ref_anchor']	=	$type;
+				$comp['content']	=	$data;
+				$comp['ref_spot']	=	$refspot;
+				$comp['ref_page']	=	(!empty($refpage))? $refpage : $this->getPageURI('unique_id');
+				$comp['parent_id']	=	(!empty($parent))? $parent : false;
+				
+				$this->getPlugin('\nPlugins\Nubersoft\CoreDatabase')->addComponent($comp);
+			}
 	}

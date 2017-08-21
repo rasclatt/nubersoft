@@ -1,6 +1,6 @@
 <?php
 $message	=	$this->toArray($this->getDataNode('error404'));
-$title		=	(isset($message['title']))? $message['title'] : "Whoops! Wrong Page.";
+$title		=	(isset($message['title']))? strip_tags($message['title']) : "Whoops! Wrong Page.";
 $image		=	$this->getHelper('nImage')->toBase64(__DIR__.DS.'error404'.DS.'background.jpg');
 ?>
 <style>
