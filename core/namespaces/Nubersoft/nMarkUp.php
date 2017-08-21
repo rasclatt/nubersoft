@@ -88,8 +88,8 @@ class nMarkUp extends \Nubersoft\nRender
 						$_perm		=	$coreRender->checkPermissions();
 						return $coreRender->display(true)->getDisplay();
 					}
-					elseif(preg_match('/app::/i',$replaced)) {
-						$replaced	=	str_replace(array("app::","APP::"),"",$replaced);
+					elseif(preg_match('/app::|function::/i',$replaced)) {
+						$replaced	=	str_replace(array("app::","APP::","FUNCTION::","function::"),"",$replaced);
 						$settings	=	explode("[",trim($replaced,"]"));
 						$settings	=	array_filter($settings);
 						$function	=	array_shift($settings);
