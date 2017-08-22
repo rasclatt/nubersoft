@@ -52,7 +52,7 @@
 		<base_url>{domain}</base_url>
 		<base_url_ssl>{domain}</base_url_ssl>
 		<force_url_ssl>false</force_url_ssl>
-		<session_expire_time>1600</session_expire_time>
+		<session_expire_time>3200</session_expire_time>
 		<temp_dir>/client/settings/tempfiles/</temp_dir>
 		<cache_dir>/client/settings/cachefiles/</cache_dir>
 		<sys_prefs_temp>false</sys_prefs_temp>
@@ -112,11 +112,10 @@
 	</messaging>
 	<whitelist>
 		<admintools>
-			<ip>71.9.20.97</ip>
-			<ip>97.92.107.58</ip>
+			<ip>123.123.123.123</ip>
 		</admintools>
 		<printpre>
-			<ip>71.9.20.97</ip>
+			<ip>123.123.123.123</ip>
 		</printpre>
 	</whitelist>
 	<sms_options>
