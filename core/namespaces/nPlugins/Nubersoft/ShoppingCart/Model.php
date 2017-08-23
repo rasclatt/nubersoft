@@ -13,11 +13,13 @@ class Model extends \Nubersoft\ShoppingCart
 				return	(!empty($this->getBoolVal($registry['active'])));
 			}
 		
-		public	function getCatelogueByCategory()
+		public	function getCatelogueByCategory($on = false)
 			{
+				if($on)
+					$on	=	" AND `page_live` != '' AND `page_live` != 'off' ";
 				$LOCALE		=	(!empty($this->getLocale()))? $this->getLocale() : 'USA';
 				return $this->getPrefFile('cart_products_category_'.$LOCALE,array('save'=>true),false,function($path,$nApp) use ($LOCALE) {
-					$all	=	$nApp->nQuery()->query("SELECT *, CONCAT(file_path,file_name) as image_path FROM cart_products WHERE `product_sku` IN (select `product_sku` from `cart_products_locales` WHERE `locale_abbr` = '{$LOCALE}')")->getResults();
+					$all	=	$nApp->nQuery()->query("SELECT *, CONCAT(file_path,file_name) as image_path FROM cart_products WHERE `product_sku` IN (select `product_sku` from `cart_products_locales` WHERE `locale_abbr` = '{$LOCALE}'){$on}")->getResults();
 					return (is_array($all))? $nApp->organizeByKey($all,'product_category',array('multi'=>true)) : array();
 				});
 			}
