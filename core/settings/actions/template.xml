@@ -65,7 +65,7 @@
 	</action>
 	<action event="nbr_open_modal" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true">
 		<object event="nbr_open_modal">
-			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+			<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/modal.php</include>
 		</object>
 	</action>
 	<action event="ajax_admintools_component" before="nbr_nobservertemplate_tobrowser_template" request="post" is_ajax="true" is_admin="true">
@@ -78,7 +78,7 @@
 			<function>
 				<name>ajax_admintools_component</name>
 				<echo>true</echo>
-				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_admintools_component.php</include>
+				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/function.ajax_admintools_component.php</include>
 				<dependency>\Nubersoft\nApp</dependency>
 			</function>
 			-->
@@ -88,7 +88,7 @@
 		<object event="ajax_load_favicons" is_admin="true" request="post" is_ajax="true" before="nbr_nobservertemplate_tobrowser_template">
 			<function>
 				<name>ajax_load_favicons</name>
-				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_load_favicons.php</include>
+				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/function.ajax_load_favicons.php</include>
 			</function>
 		</object>
 	</action>
@@ -96,18 +96,18 @@
 		<object event="ajax_load_logo" is_admin="true" request="post" is_ajax="true" before="nbr_nobservertemplate_tobrowser_template">
 			<function>
 				<name>ajax_load_favicons</name>
-				<include>~NBR_AJAX_DIR~/helpers/functions/function.ajax_load_logo.php</include>
+				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/function.ajax_load_logo.php</include>
 			</function>
 		</object>
 	</action>
 	<action event="nbr_delete_components_confirm" before="nbr_nobservertemplate_tobrowser_template" is_admin="true" request="post" is_ajax="true">
 		<object event="nbr_delete_components_confirm">
-			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+			<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/modal.php</include>
 		</object>
 	</action>
 	<action event="nbr_delete_main_menus_confirm" before="nbr_nobservertemplate_tobrowser_template" is_admin="true" request="post" is_ajax="true">
 		<object event="nbr_delete_main_menus_confirm">
-			<include>~NBR_AJAX_DIR~/helpers/modal.php</include>
+			<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/modal.php</include>
 		</object>
 	</action>
 	<action event="nbr_menu_button_edit" after="nbr_nobservertemplate_tobrowser_template" request="post" is_admin="true">
@@ -115,7 +115,7 @@
 			<function>
 				<name>graphic_menu_component</name>
 				<echo>true</echo>
-				<include>~NBR_AJAX_DIR~/helpers/functions/graphic_menu_component.php</include>
+				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/graphic_menu_component.php</include>
 				<dependency>\Nubersoft\nApp</dependency>
 			</function>
 		</object>
@@ -125,7 +125,7 @@
 			<class>
 				<name>\nPlugins\Nubersoft\CoreTables</name>
 				<method>saveComponentById</method>
-				<include>~NBR_AJAX_DIR~/helpers/functions/graphic_menu_component.php</include>
+				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/graphic_menu_component.php</include>
 				<dependency>\Nubersoft\nApp</dependency>
 			</class>
 		</object>
