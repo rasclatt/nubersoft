@@ -16,7 +16,7 @@ class Model extends \Nubersoft\ShoppingCart
 		public	function getCatelogueByCategory($on = false)
 			{
 				if($on)
-					$on	=	"(`page_live` != '' AND `page_live` != 'off') AND";
+					$on	=	"(`page_live` != '' AND `page_live` != 'off' AND `for_sale` != '') AND";
 				$LOCALE		=	(!empty($this->getLocale()))? $this->getLocale() : 'USA';
 				return $this->getPrefFile('cart_products_category_'.$LOCALE,array('save'=>true),false,function($path,$nApp) use ($LOCALE) {
 					$all	=	$nApp->nQuery()->query("SELECT *, CONCAT(file_path,file_name) as image_path FROM cart_products WHERE {$on} `product_sku` IN (select `product_sku` from `cart_products_locales` WHERE `locale_abbr` = '{$LOCALE}')")->getResults();

@@ -56,7 +56,7 @@ class nMarkUp extends \Nubersoft\nRender
 							}
 							
 							$this->getHelper('Methodize')->saveAttr('plugin_'.$new[0],$new[0]);
-							$this->saveSetting('current_matched_plugin_content',$new);
+							$this->saveSetting('current_matched_plugin_content',$new,true);
 
 							if(empty($file)) {
 								$file	=	$new[0];
