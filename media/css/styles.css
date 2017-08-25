@@ -608,6 +608,15 @@ div.allblocks.mxi_main_body_attr ul > li a.nbr_button:visited {
 	font-weight: bold;
 	opacity: 0.4;
 }
+
+.nbr_origin_item {
+	background-color: red;
+	color: #FFF;
+	font-size: 15px;
+	padding: 3px 6px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
 @media all and (max-width: 600px) {
 	.hide_mobile,
 	.nbr_hide.mobile {

@@ -879,4 +879,15 @@ class nRender extends \Nubersoft\nApp
 				
 				return (isset($prefs->content))? $prefs->content : false;
 			}
+		/*
+		**	@description	Render a block origin
+		*/
+		public	function showBlockOrigin($path)
+			{
+				if(!empty($this->getSession('admintools')->editor)) {
+					if($this->getSession('admintools')->editor == 'on')
+						return '<div class="nbr_origin_item">'.$this->stripRoot($path).'</div>';
+				}
+			}
+		
 	}
