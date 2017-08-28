@@ -44,4 +44,9 @@ class Payment extends \Nubersoft\ShoppingCart
 				
 				return $this;
 			}
+			
+		public	function getCardTypes($json = false)
+			{
+				return ($json)? json_encode(self::$cardTypes) : self::$cardTypes;
+			}
 	}
