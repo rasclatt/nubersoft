@@ -130,11 +130,19 @@ class nRender extends \Nubersoft\nApp
 		*/
 		public	function getPluginShortCode($key=false)
 			{
-				$pregd	=	array_filter($this->toArray($this->getDataNode('current_matched_plugin_content')));
-				
+				# Fetch the current plugin
+				$pluginNode	=	$this->toArray($this->getDataNode('current_matched_plugin_content'));
+				# Stop if empty
+				if(empty($pluginNode))
+					return false;
+				# Filter
+				$pregd	=	array_filter($pluginNode);
+				# Send back if key requested
 				if(!empty($key))
 					return (isset($pregd[$key]))? $pregd[$key] : false;
-					
+				# Remove the plugin content
+				$this->saveSetting('current_matched_plugin_content',false,true);
+				# Return the fresh content
 				return array_values($pregd);
 			}
 		/*
@@ -151,6 +159,7 @@ class nRender extends \Nubersoft\nApp
 				$path	=	$this->toSingleDs($this->getTemplatePlugin($dir,$append));
 				$render	=	$this->render($path,$obj);
 				$this->saveSetting('current_matched_plugin_content',false,true);
+				
 				return $render;
 			}
 		/*
