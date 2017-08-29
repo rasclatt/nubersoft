@@ -128,13 +128,14 @@ class nRender extends \Nubersoft\nApp
 		/*
 		**	@description	Fetches the current plugin data extracted from the shortcode matching in the view
 		*/
-		public	function getPluginShortCode()
+		public	function getPluginShortCode($key=false)
 			{
 				$pregd	=	array_filter($this->toArray($this->getDataNode('current_matched_plugin_content')));
-				if(!empty($pregd[1]))
-					return explode('|',$pregd[1]);
-				elseif(!empty($pregd))
-					return $pregd;
+				
+				if(!empty($key))
+					return (isset($pregd[$key]))? $pregd[$key] : false;
+					
+				return $pregd;
 			}
 		/*
 		**	@description	Fetches the plugin from the current template folder
