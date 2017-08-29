@@ -130,9 +130,9 @@ class nRender extends \Nubersoft\nApp
 		*/
 		public	function getPluginShortCode()
 			{
-				$pregd	=	$this->getDataNode('current_matched_plugin_content');
-				if(!empty($pregd->{1}))
-					return explode('|',$pregd->{1});
+				$pregd	=	array_filter($this->toArray($this->getDataNode('current_matched_plugin_content')));
+				if(!empty($pregd[1]))
+					return explode('|',$pregd[1]);
 				elseif(!empty($pregd))
 					return $pregd;
 			}
