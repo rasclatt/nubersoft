@@ -38,6 +38,7 @@ class Methodize	extends \Nubersoft\nFunctions
 	{
 		protected	$info		=	false;
 		protected	$is_strict	=	false;
+		protected	$current_key;
 		
 		public	function saveAttr($name,$value)
 			{
@@ -64,6 +65,7 @@ class Methodize	extends \Nubersoft\nFunctions
                 # Split method name by upper case
                 $getMethod  =   preg_split('/(?=[A-Z])/', $name, -1, PREG_SPLIT_NO_EMPTY);
                 # Create a variable from that split
+				$this->current_key	=	
                 $getKey     =   strtolower(implode('_',$getMethod));
 				# Create a new instance
 				$Methodize	=	new Methodize();
@@ -153,7 +155,7 @@ class Methodize	extends \Nubersoft\nFunctions
 						return $vals;
 				}
 				# If array, send that back in formatted string
-				return (empty($this->info))? '' : json_encode($this->info);
+				return (empty($this->info) || empty($this->info[$this->current_key]))? '' : json_encode($this->info);
 			}
 		/*
 		**	@description	Serializes the array

@@ -884,10 +884,16 @@ class nRender extends \Nubersoft\nApp
 		*/
 		public	function showBlockOrigin($path)
 			{
-				if(!empty($this->getSession('admintools')->editor)) {
-					if($this->getSession('admintools')->editor == 'on')
-						return '<div class="nbr_origin_item">'.$this->stripRoot($path).'</div>';
-				}
+				return ($this->editorModeActive())? '<div class="nbr_origin_item">'.$this->stripRoot($path).'</div>' : '';
 			}
-		
+		/*
+		**	@description	Checks if editor is active
+		*/
+		public	function editorModeActive()
+			{
+				if(!empty($this->getSession('admintools')->editor))
+					return ($this->getSession('admintools')->editor == 'on');
+					
+				return false;
+			}
 	}
