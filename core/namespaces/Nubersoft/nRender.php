@@ -135,7 +135,7 @@ class nRender extends \Nubersoft\nApp
 				if(!empty($key))
 					return (isset($pregd[$key]))? $pregd[$key] : false;
 					
-				return $pregd;
+				return array_values($pregd);
 			}
 		/*
 		**	@description	Fetches the plugin from the current template folder
