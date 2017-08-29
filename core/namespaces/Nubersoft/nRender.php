@@ -126,6 +126,17 @@ class nRender extends \Nubersoft\nApp
 				return is_file($this->toSingleDs($this->getTemplatePlugin($dir,$append)));
 			}
 		/*
+		**	@description	Fetches the current plugin data extracted from the shortcode matching in the view
+		*/
+		public	function getPluginShortCode()
+			{
+				$pregd	=	$this->getDataNode('current_matched_plugin_content');
+				if(!empty($pregd->{1}))
+					return explode('|',$pregd->{1});
+				elseif(!empty($pregd))
+					return $pregd;
+			}
+		/*
 		**	@description	Fetches the plugin from the current template folder
 		**					/client/template/{$current}/plugins/{$dir}/{$append}
 		*/
@@ -137,7 +148,9 @@ class nRender extends \Nubersoft\nApp
 					return $layout;
 				
 				$path	=	$this->toSingleDs($this->getTemplatePlugin($dir,$append));
-				return $this->render($path,$obj);
+				$render	=	$this->render($path,$obj);
+				$this->saveSetting('current_matched_plugin_content',false,true);
+				return $render;
 			}
 		/*
 		**	@description	Same function as useTemplatePlugin() only the path is found in
