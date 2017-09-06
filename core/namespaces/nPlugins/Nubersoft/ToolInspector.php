@@ -143,10 +143,11 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 			{
 				if(empty($this->getDataNode('menu_data')))
 					$this->getPlugin('\nPlugins\Nubersoft\MenuEngine')->fetchMenuData();
-	
+				
 				$this->payload	=	$this->toArray($this->getDataNode('menu_data'));
 				$structure		=	$this->toArray($this->getDataNode('menu_struc'));
-				return $this->render($this->folderStucture($structure));
+				# Use the default core render
+				return $this->getHelper('nApp')->render($this->folderStucture($structure));
 			}
 			
 		public	function addNewComponent($CompSet = false)
@@ -179,7 +180,7 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 				
 				if(!$data)
 					return;
-
+				# User core renderer
 				return $this->render(__DIR__.DS.'ToolInspector'.DS.'AllMenus.php',$data);
 			}
 		

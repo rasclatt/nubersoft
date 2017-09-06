@@ -91,8 +91,8 @@ class	MenuEngine extends \Nubersoft\nApp
 							$this->current_menu	=	$currentMenu;
 						}
 					}
-						
-					$this->menu_dir[$current]	=	$dirs[$current];
+					# This is not accurate, so just hide it
+					// $this->menu_dir[$current]	=	$dirs[$current];
 				}
 
 				$this->buildDirectoryStructure();
