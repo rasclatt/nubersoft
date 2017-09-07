@@ -312,7 +312,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 					$script	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$this->getDataNode('_SERVER')->SCRIPT_URL);
 	
 					if(!is_file($script) && !is_dir($script)) {
-						self::call('nObserverTemplate')->offline($nRender);
+						$this->getHelper('nObserverTemplate')->offline($nRender);
 						exit;
 					}
 				}

@@ -658,7 +658,7 @@ class nRender extends \Nubersoft\nApp
 
 	public	function error404Page()
 	{
-		return $this->usePluginTemplate('error_404_page');
+		return $this->useTemplatePlugin('error_404_page');
 	}
 
 	public	function maintenancePage()
