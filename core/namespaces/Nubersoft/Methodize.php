@@ -135,6 +135,13 @@ class Methodize	extends \Nubersoft\nFunctions
 		return $this->safe()->toObject($this->info);
 	}
 	/**
+	*	@description	Sets current object to json
+	*/
+	public	function toJson()
+	{
+		return json_encode($this->info);
+	}
+	/**
 	*	@description	Returns a json encoded string unless strict has been toggled
 	*/
 	public	function __toString()
@@ -154,7 +161,7 @@ class Methodize	extends \Nubersoft\nFunctions
 				return $vals;
 		}
 		# If array, send that back in formatted string
-		return (empty($this->info) || empty($this->info[$this->current_key]))? '' : json_encode($this->info);
+		return (empty($this->info) || empty($this->info[$this->current_key]))? '' : $this->toJson($this->info);
 	}
 	/**
 	*	@description	Serializes the array
