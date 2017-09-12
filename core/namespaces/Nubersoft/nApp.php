@@ -1843,4 +1843,18 @@ class	nApp extends \Nubersoft\nFunctions
 		
 		return $data;
 	}
+	/**
+	*	@description	Used to decode html entities
+	*/
+	public	function decode($content)
+	{
+		return $this->getHelper('Safe')->decode($content);
+	}
+	/**
+	*	@description	Used to encode html entities
+	*/
+	public	function encode($content)
+	{
+		return $this->getHelper('Safe')->encode($content);
+	}
 }
