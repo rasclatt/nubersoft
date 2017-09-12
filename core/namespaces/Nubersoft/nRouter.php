@@ -75,19 +75,26 @@ class nRouter extends \Nubersoft\nApp
 		
 		public	function toErrorPage()
 			{
+				$args		=	func_get_args();
+				$errorCode	=	(!empty($args[0]))? $args[0] : 404;
+				$errorMsg	=	(!empty($args[1]))? $args[1] : 'http/1.1 '.$errorCode.' Not Found';
+					
 				$page['is_admin']	=	false;
 				# Reset the notification that path is bad
-				NubeData::$settings->error404	=	true;
+				NubeData::$settings->{"error".$errorCode}	=	true;
 				# Create a redirect notice
 				$this->saveSetting('pageURI_redirect',false,true);
 				# Update the page settings so there is no error 404
-				NubeData::$settings->site->page	=	false;
+				if(!isset(NubeData::$settings->site->page))
+					$this->saveSetting('site',array('page'=>false));
+				else
+					NubeData::$settings->site->page	=	false;
 				$this->saveSetting("getPageURI",array(),true);
 				$this->saveSetting('pageURI',array(),true);
 				$this->getHelper('GetSitePrefs')->setPageRequestSettings();
 				NubeData::$settings->site->page_valid	=	false;
-				http_response_code(404);
-				header('http/1.1 404 Not Found');
+				http_response_code($errorCode);
+				header($errorMsg);
 			}
 		
 		private	function checkIsResetCo()

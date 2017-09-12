@@ -39,9 +39,9 @@ class Model extends \nPlugins\Nubersoft\CoreTables
 		public	function getComponent($array)
 			{
 				foreach($array as $key => $value) {
-					$new[]	=	"`$key` = '{$value}'";
+					$new[]	=	"`{$key}` = '{$value}'";
 				}
-				$where	=	" WHERE ".implode(' AND WHERE ',$new);
+				$where	=	" WHERE ".implode(' AND ',$new);
 				$sql	=	"SELECT * FROM components {$where}";
 				return $this->nQuery()->query($sql)->toNode(true);
 			}

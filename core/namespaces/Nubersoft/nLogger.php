@@ -160,4 +160,13 @@ class nLogger extends \Nubersoft\nApp
 					));
 				}
 			}
+		
+		public	function toFile($msg,$path)
+		{
+
+			if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
+			   return file_put_contents($path,$msg,FILE_APPEND);
+			
+			return false;
+		}
 	}
