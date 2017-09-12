@@ -36,13 +36,13 @@ namespace nPlugins\Nubersoft\Component;
 
 class Model extends \nPlugins\Nubersoft\CoreTables
 	{
-		public	function getComponent($array)
+		public	function getComponent($array,$limitone=true)
 			{
 				foreach($array as $key => $value) {
 					$new[]	=	"`{$key}` = '{$value}'";
 				}
 				$where	=	" WHERE ".implode(' AND ',$new);
 				$sql	=	"SELECT * FROM components {$where}";
-				return $this->nQuery()->query($sql)->toNode(true);
+				return $this->nQuery()->query($sql)->toNode($limitone);
 			}
 	}
