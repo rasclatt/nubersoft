@@ -874,10 +874,10 @@ class nRender extends \Nubersoft\nApp
 	/**
 	*	@description	Fetches a component from database based on column
 	*/
-	public	function getComponent($value,$type='ref_spot')
+	public	function getComponent($value,$type='ref_spot',$limit=false)
 	{
 		$Component	=	$this->getPlugin('\nPlugins\Nubersoft\Component\Model');
-		return $Component->getComponent([$type=>$value]);
+		return $Component->getComponent([$type=>$value],$limit);
 	}
 	/**
 	*	@description	Fetches the social media links
