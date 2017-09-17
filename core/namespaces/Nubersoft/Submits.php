@@ -80,7 +80,7 @@ class Submits extends \Nubersoft\nApp
 					return $this->strReplaceCharsRev(html_entity_decode($array, ENT_QUOTES, self::$enc));
 					
 				foreach($array as $key => $value) {
-					$new[$key]	=	$this->reverseArrayEncode($value);
+					$new[$key]	=	$this->reverseEncoding($value);
 				}
 				
 				return $new;
