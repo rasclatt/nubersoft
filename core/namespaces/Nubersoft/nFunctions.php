@@ -222,9 +222,17 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function isAjaxRequest($type = 'HTTP_X_REQUESTED_WITH')
 	{
+		# If force is set
+		if(defined('BROWSER_FORCED')) {
+			# If request is set to force request to browser
+			if(BROWSER_FORCED === true)
+				# Ajax is not required
+				return false;
+		}
+		# Check if the server key is set
 		if(!empty(nApp::call()->getDataNode('_SERVER')->{$type}))
 			return true;
-
+		
 		return (!empty($_SERVER[$type]));
 	}
 	/**

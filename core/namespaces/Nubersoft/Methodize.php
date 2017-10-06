@@ -1,35 +1,35 @@
 <?php
-	/**
-	*	Copyright (c) 2017 Nubersoft.com
-	*	Permission is hereby granted, free of charge *(see acception below in reference to
-	*	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
-	*	and associated documentation files (the "Software"), to deal in the Software without
-	*	restriction, including without limitation the rights to use, copy, modify, merge, publish,
-	*	or distribute copies of the Software, and to permit persons to whom the Software is
-	*	furnished to do so, subject to the following conditions:
-	*	
-	*	The base CMS software* is not used for commercial sales except with expressed permission.
-	*	A licensing fee or waiver is required to run software in a commercial setting using
-	*	the base CMS software.
-	*	
-	*	*Base CMS software is defined as running the default software package as found in this
-	*	repository in the index.php page. This includes use of any of the nAutomator with the
-	*	default/modified/exended xml versions workflow/blockflows/actions.
-	*	
-	*	The above copyright notice and this permission notice shall be included in all
-	*	copies or substantial portions of the Software.
-	*
-	*	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	*	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	*	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	*	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	*	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	*	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	*	SOFTWARE.
-	*	**SNIPPETS:**
-	*	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
-	*	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
-	*	NOT BEEN LOCATED AND DELETED.
+/**
+*	Copyright (c) 2017 Nubersoft.com
+*	Permission is hereby granted, free of charge *(see acception below in reference to
+*	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+*	and associated documentation files (the "Software"), to deal in the Software without
+*	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+*	or distribute copies of the Software, and to permit persons to whom the Software is
+*	furnished to do so, subject to the following conditions:
+*	
+*	The base CMS software* is not used for commercial sales except with expressed permission.
+*	A licensing fee or waiver is required to run software in a commercial setting using
+*	the base CMS software.
+*	
+*	*Base CMS software is defined as running the default software package as found in this
+*	repository in the index.php page. This includes use of any of the nAutomator with the
+*	default/modified/exended xml versions workflow/blockflows/actions.
+*	
+*	The above copyright notice and this permission notice shall be included in all
+*	copies or substantial portions of the Software.
+*
+*	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*	SOFTWARE.
+*	**SNIPPETS:**
+*	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+*	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+*	NOT BEEN LOCATED AND DELETED.
 */
 namespace Nubersoft;
 
@@ -79,14 +79,26 @@ class Methodize	extends \Nubersoft\nFunctions
 					# Return obj
 					return $Methodize;
 				}
-				else
+				else {
+					# Store current key
+					if(empty($getDataSet))
+						$Methodize->setCurrentKey($name);
 					return (!empty($getDataSet))? $getDataSet : $Methodize->saveAttr($name,false);
+				}
 			}
 			else {
-				if(is_string($args[0]))
+				if(is_string($args[0])) {
+					# Store current key
+					if(!isset($getDataSet[$args[0]]))
+						$Methodize->setCurrentKey($name);
+					
 					return (isset($getDataSet[$args[0]]))? $getDataSet[$args[0]] : $Methodize->saveAttr($name,false);
+				}
 			}
-
+			# Store current key
+			if(empty($getDataSet))
+				$Methodize->setCurrentKey($name);
+			
 			return (empty($getDataSet))? $Methodize->saveAttr($name,false) : $getDataSet;
 		}
 		# Checks if there is a key with the raw name (no get though)
@@ -104,11 +116,16 @@ class Methodize	extends \Nubersoft\nFunctions
 					return $getDataSet;
 			}
 			else {
-				if(is_string($args[0]))
+				if(is_string($args[0])) {
+					# Store the current key
+					if(!isset($getDataSet[$args[0]]))
+						$Methodize->setCurrentKey($name);
+					
 					return (isset($getDataSet[$args[0]]))? $getDataSet[$args[0]] : $Methodize->saveAttr($name,false);
+				}
 			}
 		}
-
+		$Methodize->setCurrentKey($name);
 		# Returns false
 		return $Methodize->saveAttr($name,false);
 	}
@@ -125,7 +142,15 @@ class Methodize	extends \Nubersoft\nFunctions
 	*/
 	public	function toArray()
 	{
-		return $this->safe()->toArray($this->info);
+		# Convert to array
+		$array	=	$this->safe()->toArray($this->info);
+		# Check if there is a single storage and if it matches the stored key
+		if(!empty($this->current_key) && count($array) == 1)
+			# Return empty array if the storage key matches and is empty
+			return (isset($array[$this->current_key]) && empty($array[$this->current_key]))? array() : $array;
+		else
+			# Just return the base array
+			return $array;
 	}
 	/**
 	*	@description	Sets current object to standard data object
@@ -250,5 +275,11 @@ class Methodize	extends \Nubersoft\nFunctions
 	public	function hasValue()
 	{
 		return (!empty($this->__toString()));
+	}
+	
+	public	function setCurrentKey($name)
+	{
+		$this->current_key	=	$name;
+		return $this;
 	}
 }
