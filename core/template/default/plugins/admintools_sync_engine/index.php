@@ -4,6 +4,14 @@ namespace Nubersoft;
 if((defined('FTP_REMOTE_ACTIVE') && !FTP_REMOTE_ACTIVE) || !defined('FTP_REMOTE_ACTIVE'))
 	return;
 
+# Default settings for okayed extensions
+$def_types		=	array('jpg','jpeg','gif','png','php','html','xml','css');
+# Fetch from registry
+$reg_types		=	$this->getMatchedArray(['ftp','extensions','type'],$this->getRegistry());
+# Assign if not empty
+if(!empty($reg_types['type'][0]))
+   $def_types	=	$reg_types['type'][0];
+# Get defines
 $remote			=	(defined("FTP_REMOTE_HOST"))? FTP_REMOTE_HOST : false;
 $start			=	(defined("FTP_REMOTE_DIR"))? FTP_REMOTE_DIR : false;
 $user			=	(defined("FTP_REMOTE_USERNAME"))? FTP_REMOTE_USERNAME : false;
@@ -21,16 +29,31 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	$port			=	$this->getPost('port');
 	$FTP			=	new nFtp($remote,$user,$pass,$remote_path,$port,$timeout);
 	$client			=	$FTP->dirList();
-	$movelist		=	$FTP->recurseDownload($client,$local_path)->getList();
+	$basedir		=	pathinfo($remote_path,PATHINFO_BASENAME);
+	$filtered		=	false;
+	if(is_array($client)) {
+		$filtered	=	array_filter(array_map(function($v) use ($basedir){
+			$path	=	array_filter(explode('/',$v));
+			return (in_array($basedir,$path));
+		
+		},$client));
+	}
 	
-	if(empty($this->getPost('check_host'))) {
-		if(!empty($movelist['to'])) {
-			foreach($movelist['to'] as $key => $path) {
-				if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
-					$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
-				});
+	if(!empty($filtered)) {
+		$movelist		=	$FTP->recurseDownload($client,$local_path,$def_types)->getList();
+		
+		if(empty($this->getPost('check_host'))) {
+			if(!empty($movelist['to'])) {
+				foreach($movelist['to'] as $key => $path) {
+					if($this->isDir(pathinfo($path,PATHINFO_DIRNAME)))
+						$FTP->doWhile($movelist['from'][$key],$path,function($from,$to) {
+					});
+				}
 			}
 		}
+	}
+	else {
+		$this->toAlert('Path doesn\'t match! No "'.$basedir.'" found.');
 	}
 	$FTP->close();
 }
