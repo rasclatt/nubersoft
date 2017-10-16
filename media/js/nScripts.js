@@ -729,6 +729,14 @@ function default_action(activeBtn,response,skipParse)
 				}
 			}
 			
+			// Write blocks
+			if(isset(json,'htmlBlock')) {
+				console.log(json.htmlBlock);
+				$.each(json.htmlBlock,function(k,v){
+					$(v.sendto).html(v.html);
+				});
+			}
+			
 			if(isset(json,'input')) {
 				writeToInput(json);
 			}
@@ -1216,6 +1224,13 @@ function doAutomation(activeBtn,activeObj,burn)
 				console.log(activeObj);
 
 			try	{
+				
+				if(isset(nPacket,'htmlBlock')) {
+					console.log(nPacket.htmlBlock);
+					$.each(nPacket.htmlBlock,function(k,v){
+						$(v.sendto).html(v.html);
+					});
+				}
 				
 				if(isset(nPacket,'input')) {
 					writeToInput(nPacket);

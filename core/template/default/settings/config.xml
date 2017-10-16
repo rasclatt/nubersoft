@@ -72,9 +72,12 @@
 			<include is_admin="true">
 				<path>~NBR_NAMESPACE_CORE~/nPlugins/Nubersoft/ComponentTab/css/tooltab.css</path>
 			</include>
-			
+			<!-- CORE STYLES -->
 			<include>
 				<path>~NBR_MEDIA~/css/styles.css</path>
+			</include>
+			<include>
+				<path>~NBR_MEDIA~/css/grid.css</path>
 			</include>
 			
 		</stylesheet>
