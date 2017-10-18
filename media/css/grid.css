@@ -27,6 +27,9 @@
 .col-count-3 {
 	grid-template-columns: repeat(3, 33.3333%);
 }
+.col-count-3.offset {
+	grid-template-columns: 0.25fr 2fr 0.25fr;
+}
 .col-count-4 {
 	grid-template-columns: repeat(4, 25%);
 }
@@ -34,7 +37,7 @@
 	grid-template-columns: repeat(5, 20%);
 }
 .col-count-6 {
-	grid-template-columns: repeat(5, 16.66666%);
+	grid-template-columns: repeat(6, 16.66666%);
 }
 .col-1,
 .col-2,
@@ -99,6 +102,12 @@
 }
 @media all and (max-width: 655px) {
 	/* Overwrites column spans */
+	.push-col-2.medium,
+	.push-col-1-2.medium {
+		grid-column-start: 1 !important;
+		grid-column-end: span 2 !important;
+	}
+	/* Overwrites column spans */
 	.push-col-3.medium,
 	.push-col-1-3.medium {
 		grid-column-start: 1 !important;
@@ -116,6 +125,12 @@
 	}
 }
 @media all and (max-width: 375px) {
+	/* Overwrites column spans */
+	.push-col-2.small,
+	.push-col-1-2.small {
+		grid-column-start: 1 !important;
+		grid-column-end: span 2 !important;
+	}
 	/* Overwrites column spans */
 	.push-col-3.small,
 	.push-col-1-3.small {
