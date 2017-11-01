@@ -35,14 +35,31 @@
 namespace nPlugins\Nubersoft\Component;
 
 class Model extends \nPlugins\Nubersoft\CoreTables
+{
+	public	function getComponent($array,$limitone=true)
 	{
-		public	function getComponent($array,$limitone=true)
-			{
-				foreach($array as $key => $value) {
-					$new[]	=	"`{$key}` = '{$value}'";
-				}
-				$where	=	" WHERE ".implode(' AND ',$new);
-				$sql	=	"SELECT * FROM components {$where}";
-				return $this->nQuery()->query($sql)->toNode($limitone);
-			}
+		foreach($array as $key => $value) {
+			$sKey			=	":{$key}";
+			$bind[$sKey]	=	$value;
+			$new[]			=	"`{$key}` = {$sKey}";
+		}
+		$where	=	" WHERE ".implode(' AND ',$new);
+		$sql	=	"SELECT * FROM components {$where}";
+		return $this->nQuery()->query($sql,$bind)->toNode($limitone);
 	}
+
+	public	function getCodeComponentsFor($unique_id)
+	{
+		$sql	=	"SELECT
+						`ID`,`component_type`, `content`, `page_live`
+					FROM
+						`components`
+					WHERE
+						`ref_page` = :0
+					ORDER BY
+						page_order ASC,
+						ID ASC";
+
+		return $this->nQuery()->query($sql,[$unique_id])->getResults();
+	}
+}
