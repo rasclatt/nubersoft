@@ -132,6 +132,24 @@
 .span-6 {
 	grid-column-end: span 6 !important;
 }
+.span-7 {
+	grid-column-end: span 7 !important;
+}
+.span-8 {
+	grid-column-end: span 8 !important;
+}
+.span-9 {
+	grid-column-end: span 9 !important;
+}
+.span-10 {
+	grid-column-end: span 10 !important;
+}
+.span-11 {
+	grid-column-end: span 11 !important;
+}
+.span-12 {
+	grid-column-end: span 12 !important;
+}
 @media all and (max-width: 1038px) {
 	/* Overwrites column spans */
 	.push-col-2.large,
