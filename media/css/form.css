@@ -1,4 +1,23 @@
 /* CSS Document */
+
+label {
+	font-size: 0.8em;
+	color: #333;
+	display: inline-block;
+	width: 100%;
+}
+input.nbr[type=text],
+input.nbr[type=password],
+textarea.nbr,
+select.nbr {
+	display: block;
+	width: calc(100% - 1em);
+	padding: 0.5em;
+	font-size: 1.1em;
+	border: 1px solid #CCC;
+	border-radius: 3px;
+	margin: 0.5em 0 0 0;
+}
 .nbr_select select,
 .nbr_input input[type=text],
 .nbr_input textarea	{
@@ -9,7 +28,6 @@
 	border-bottom: none;
 	border-radius: 3px;
 }
-
 .nbr_input input[type=text],
 .nbr_input textarea	{
 	margin: 0;
