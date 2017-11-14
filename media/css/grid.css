@@ -150,6 +150,15 @@
 .span-12 {
 	grid-column-end: span 12 !important;
 }
+.align-left	{
+	text-align: left;
+}
+.align-center	{
+	text-align: center;
+}
+.align-right	{
+	text-align: right;
+}
 @media all and (max-width: 1038px) {
 	/* Overwrites column spans */
 	.push-col-2.large,
