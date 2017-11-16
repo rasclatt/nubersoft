@@ -1555,8 +1555,11 @@ class	nFunctions extends \Nubersoft\Singleton
 	/**
 	*	@description	Toggle error reporting
 	*/
-	public	function setErrorMode($status = true)
+	public	function setErrorMode($status = false)
 	{
+		if(!isset(\Nubersoft\NubeData::$settings))
+			\Nubersoft\NubeData::$settings	=	$this->toObject([]);
+		
 		if($status) {
 			# Save status of error method
 			\Nubersoft\NubeData::$settings->error_mode	=	new \ArrayObject(array("status"=>E_ALL));

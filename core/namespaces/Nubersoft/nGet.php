@@ -239,6 +239,11 @@ class nGet extends \Nubersoft\nFunctions
 				return $tables;
 			}
 		
+		public	function getScriptUri($def='/')
+		{
+			return (isset($_SERVER['REQUEST_URI']))? $_SERVER['REQUEST_URI'] : '/';
+		}
+	
 		public	function getPageURI($def = false,$reqUrl = false)
 			{
 				if(!empty($def))
@@ -250,8 +255,8 @@ class nGet extends \Nubersoft\nFunctions
 					$query_uri	=	$_SERVER['REDIRECT_URL'];
 				else
 					$query_uri	=	(!empty($def))? $def : DS;
-				
-				$reqUrl			=	(!empty($reqUrl))? $reqUrl : $_SERVER['REQUEST_URI'];
+
+				$reqUrl			=	(!empty($reqUrl))? $reqUrl : $this->getScriptUri();
 				
 				$uri['subdir']	=	str_replace(DS.DS,DS,str_replace(DS.DS,DS,preg_replace("/[^0-9a-zA-Z\_\-\/]/","",$query_uri)));
 				$uri['query']	=	str_replace(DS.DS,DS,DS.preg_replace("/([^\?]{1,})\?([^\?]{1,})/","$2",$reqUrl)."/");
