@@ -1,4 +1,9 @@
 <?php
+#check if cron job set
+if(!empty($argv[1])) {
+	$_REQUEST	=	[];
+	parse_str($argv[1],$_REQUEST);
+}
 # Configuration
 require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
 # Check if maintenance flag is set
@@ -51,6 +56,8 @@ catch (\Nubersoft\nException $e) {
 	}
 }
 catch (\Exception $e) {
+	if(!isset($_SESSION))
+		session_start();
 	
 	$is_admin	=	(isset($_SESSION['usergroup']) && $_SESSION['usergroup'] <= 2);
 	
@@ -73,7 +80,25 @@ catch (\Exception $e) {
 			# Inform user
 			die(\Nubersoft\nApp::getErrorLayout('noreg'));
 		default:
-			$msg	=	($is_admin)? $e->getMessage() : 'An error occurred.';
-			echo '<p style="font-family: helvetica, sans-serif;">'.$msg.'</p>';
+			$reg = NBR_CLIENT_SETTINGS.DS.'registry.xml';
+			if(!is_file($reg)) {
+				if(!is_dir($regdir = NBR_CLIENT_SETTINGS))
+					mkdir($regdir,0755,true);
+				
+				copy(NBR_SETTINGS.DS.'registry.xml',$reg);
+				echo (is_file($reg))? 'Registry created!' : 'Registry could not be created.';
+				if(is_file($reg)) {
+					$_SESSION['first_run']	=	$_SERVER['HTTP_HOST'];
+					$xml	=	simplexml_load_file($reg);
+					$xml->ondefine->base_url	=	
+					$xml->ondefine->base_url	=	'http://'.$_SERVER['HTTP_HOST'];
+					$xml->asXml($reg);
+				}
+			}
+			else {
+				$msg	=	($is_admin || $_SESSION['first_run'])? $e->getMessage() : 'An error occurred.';
+				echo '<p style="font-family: helvetica, sans-serif;">'.$msg.'</p>';
+				echo \Nubersoft\nApp::call()->safe()->encodeSingle(file_get_contents($reg));
+			}
 	}
 }
