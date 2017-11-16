@@ -1557,8 +1557,13 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function setErrorMode($status = false)
 	{
-		if(!isset(\Nubersoft\NubeData::$settings))
-			\Nubersoft\NubeData::$settings	=	$this->toObject([]);
+		if(!isset(\Nubersoft\NubeData::$settings) || (isset(\Nubersoft\NubeData::$settings) && !is_object(\Nubersoft\NubeData::$settings))) {
+			if(!is_object(\Nubersoft\NubeData::$settings) && is_array(\Nubersoft\NubeData::$settings))
+				\Nubersoft\NubeData::$settings	=	$this->toObject(\Nubersoft\NubeData::$settings);
+			else
+				\Nubersoft\NubeData::$settings	=	$this->toObject([]);
+		}
+			
 		
 		if($status) {
 			# Save status of error method
