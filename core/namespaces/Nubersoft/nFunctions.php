@@ -1557,27 +1557,21 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function setErrorMode($status = false)
 	{
-		if(!isset(\Nubersoft\NubeData::$settings) || (isset(\Nubersoft\NubeData::$settings) && !is_object(\Nubersoft\NubeData::$settings))) {
-			if(!is_object(\Nubersoft\NubeData::$settings) && is_array(\Nubersoft\NubeData::$settings))
-				\Nubersoft\NubeData::$settings	=	$this->toObject(\Nubersoft\NubeData::$settings);
-			else
-				\Nubersoft\NubeData::$settings	=	$this->toObject([]);
-		}
-			
-		
 		if($status) {
+			\Nubersoft\NubeData::$settings	=	$this->toArray(\Nubersoft\NubeData::$settings);
 			# Save status of error method
-			\Nubersoft\NubeData::$settings->error_mode	=	new \ArrayObject(array("status"=>E_ALL));
+			\Nubersoft\NubeData::$settings['error_mode']	=	["status"=>E_ALL];
 			ini_set("display_errors",1);
 			error_reporting(E_ALL);
 		}
 		else {
+			\Nubersoft\NubeData::$settings	=	$this->toArray(\Nubersoft\NubeData::$settings);
 			# Save status of error method
-			\Nubersoft\NubeData::$settings->error_mode	=	false;
+			\Nubersoft\NubeData::$settings['error_mode']	=	false;
 			ini_set('display_errors','off');
 			error_reporting(0);
 		}
-
+		\Nubersoft\NubeData::$settings	=	$this->toObject(\Nubersoft\NubeData::$settings);
 		return $this;
 	}
 	/**
