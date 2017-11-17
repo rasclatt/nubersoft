@@ -955,4 +955,27 @@ class nRender extends \Nubersoft\nApp
 
 		return false;
 	}
+	/**
+	*	@desctription	Fetches the footer prefs from the system_prefs table
+	*/
+	protected	function getFootPrefs()
+	{
+		$foot	=	[];
+		if(!empty($this->getDataNode('preferences')->settings_foot->content))
+			$foot	=	$this->toArray($this->getDataNode('preferences')->settings_foot->content);
+		# Return prefs
+		return	$foot;
+	}
+	/**
+	*	@description	Renders the html content pulled from the head prefs from system_prefs
+	*/
+	protected	function renderFoot()
+	{
+		$foot	=	$this->getFootPrefs();
+		if(empty($foot['html']['value']))
+			return false;
+		
+		return ($foot['html']['toggle'] == 'on')? $this->safe()->decode($foot['html']['value']) : false;
+			
+	}
 }
