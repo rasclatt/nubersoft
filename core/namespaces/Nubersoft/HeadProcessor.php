@@ -465,14 +465,14 @@ class HeadProcessor extends \Nubersoft\nApp
 
 				}
 				else {
-					if(is_dir($path)) {
+					if(is_dir($new)) {
 						if(!isset($Files))
 							$Files	=	$this->getHelper('nFileHandler');
 						# Delete the folder
-						$Files->deleteContents($path);
+						$Files->deleteContents($new);
 					}
 					
-					$deleted[]	=	array('file'=>$path,'success'=>is_dir($path));
+					$deleted[]	=	array('file'=>$path,'success'=>is_dir($new));
 				}
 
 				$msg[]	=	"File deleted (".trim($path,DS).")";
