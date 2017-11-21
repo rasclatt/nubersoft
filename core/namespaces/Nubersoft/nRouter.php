@@ -58,13 +58,14 @@ class nRouter extends \Nubersoft\nApp
 		
 		public	function resetPageRouting($page)
 			{
+			die(printpre($page));
 				$page['is_admin']	=	(isset($page['is_admin']))? $this->getBoolVal($page['is_admin']) : false;
 				# Reset the notification that path is bad
 				NubeData::$settings->error404	=	false;
 				# Create a redirect notice
 				$this->saveSetting('pageURI_redirect',$page['include']);
 				# Update the page settings so there is no error 404
-				NubeData::$settings->site->page	=	$page;
+				NubeData::$settings->site->page	=	$page; 
 				$this->saveSetting("getPageURI{$page['full_path']}",$page,true);
 				$this->saveSetting('pageURI',$page,true);
 				$this->getHelper('GetSitePrefs')->setPageRequestSettings();
