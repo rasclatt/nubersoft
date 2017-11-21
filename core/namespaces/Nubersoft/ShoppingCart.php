@@ -512,7 +512,7 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 	
 	public	function getShippingPrice($sku)
 	{
-		$q	=	$this->nQuery()->query("SELECT `shipping_price` FROM cart_products WHERE product_sku = :0",[$sku])->getResults();
+		$q	=	$this->nQuery()->query("SELECT `shipping_price` FROM cart_products WHERE product_sku = :0",[$sku])->getResults(true);
 		
 		return ($q == 0)? false : $q['shipping_price'];
 	}
