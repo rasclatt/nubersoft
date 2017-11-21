@@ -21,132 +21,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			foreach($args as $type) {
 				if(is_bool($type) && $type === true)
 					$reset	= true;
-<<<<<<< HEAD
-			}
-		}
-		# If there is no item code, stop
-		if(empty($itemcode))
-			return;
-		# Get the current cart
-		$cart	=	$this->toArray($this->getSession('cart'));
-		# No current cart set, start one
-		if(empty($cart))
-			$cart	=	array();
-		# If the item is already in the cart, add onto it
-		if(isset($cart[$itemcode]) && !$reset)
-			$cart[$itemcode]['qty']	+=	$qty;
-		# Start the cart 
-		else
-			$cart[$itemcode]['qty']	=	$qty;
-		# Reset the cart
-		$this->setSession('cart',$cart,true);
-	}
-
-	public	function remove($itemcode,$qty = false)
-	{
-		# Get cart
-		$cart	=	$this->toArray($this->getSession('cart'));
-		# No cart, return
-		if(empty($cart))
-			return;
-		# Cart but no same item in cart, return
-		elseif(!isset($cart[$itemcode]))
-			return;
-		# If there is no value to subtract from cart
-		if(!is_numeric($qty))
-			# Remove completely
-			unset($cart[$itemcode]);
-		else {
-			# Do some math
-			$qty	=	($cart[$itemcode]['qty'] > 0)? ($cart[$itemcode]['qty']-$qty) : 0;
-			# If the quantiy is 0, remove entirely
-			if($qty <= 0)
-				unset($cart[$itemcode]);
-			# Revise quantity
-			else
-				$cart[$itemcode]['qty']	=	$qty;
-		}
-		# Reset the cart
-		$this->setSession('cart',$cart,true);
-	}
-
-	public	function clear()
-	{
-		# Reset the cart
-		$this->setSession('cart',array(),true);
-		return $this;
-	}
-
-	public	function getTotalQty()
-	{
-		$cart = $this->toArray($this->getSession('cart'));
-		return (!empty($cart))? array_sum(array_map(function($v) { return $v['qty']; },$cart)) : 0;
-	}
-
-	public	function getTotalItems()
-	{
-		$cart = $this->toArray($this->getSession('cart'));
-		return (!empty($cart))? count(array_keys($cart)) : 0;
-	}
-
-	public	function hasItems()
-	{
-		return	$this->getTotalItems() > 0;
-	}
-
-	public	function getItems($itemcode = false)
-	{
-		$cart = $this->toArray($this->getSession('cart'));
-
-		if(empty($cart))
-			return array();
-
-		if(!empty($itemcode))
-			return (isset($cart[$itemcode]))? $cart[$itemcode] : array();
-
-		return $cart;
-	}
-	/*
-	**	@description	Takes one array with map settings like array("DISTID"=>"~dist_id~")
-	**					and finds the key/value pair in the $values array (in this case finds
-	**					$values['dist_id']) and moves the value to a new array ($new['DISTID'])
-	**	@param	$map	Contains the array mapping settings
-	**	@param	$values	Contains the "from" values
-	**	@param	$required	Not working, but the idea is to output an array of required fields
-	**	@return	$new [array]	This will be the transposed data
-	*/
-	public	function mapFields(array $map, array $values)//,&$required = false)
-	{
-		# The array to be returned
-		$new	=	array();
-
-		foreach($map as $to => $from) {
-			$new[$to]	=	preg_replace_callback('/~(.*?)~/',function($match) use ($values){
-				return (isset($values[$match[1]]))? $values[$match[1]] : '';
-			},$from);
-		}
-
-		//echo strip_tags(printpre($ref,array('backtrace'=>false)));
-		# Return final array
-		return $new;
-	}
-
-	protected	function assembleMapper($map,$values)
-	{
-		$ref	=	array();
-		if(empty($map))
-			return $ref;
-		# Start loop
-		foreach($map as $to => $from) {
-			$ref[$to]	=	preg_replace_callback('/~([^~]{1,})~/',function($match) use ($values){
-				return (isset($values[$match[1]]))? $values[$match[1]] : '';
-			},$from);
-		}
-
-		return array_filter($ref);
-	}
-	
-=======
 			}
 		}
 		# If there is no item code, stop
@@ -303,7 +177,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			return (isset($ref))? array_filter($ref) : array();
 		}
 	*/
->>>>>>> origin/master
 	protected	function getSettingsPath($append = false)
 	{
 		return rtrim(__DIR__.DS.'ShoppingCart'.DS.'Core'.DS.'settings'.DS.$append,DS);
@@ -412,9 +285,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			return $new;
 		});
 	}
-<<<<<<< HEAD
-	
-=======
 	/*
 	public	function getCountries($type=false)
 		{
@@ -447,7 +317,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			return (!empty($data[$type]))? $data[$type] : array();
 		}
 	*/
->>>>>>> origin/master
 	public	function getCountries($type=false)
 	{
 		$data	=	$this->getPrefFile('cart_locales',array('save'=>true),false,function($path,$nApp) {
@@ -489,22 +358,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 
 	public	function saveOrderTransaction($data)
 	{
-<<<<<<< HEAD
-		$username	=	$data['username'];
-		$first		=	$data['first_name'];
-		$last		=	$data['last_name'];
-		$ip			=	$data['ip_address'];
-		$error		=	$data['error'];
-		$success	=	$data['success'];
-		$last4		=	substr($data['cc'],-4,4);
-		$other		=	(!empty($data['other']))? $data['other'] : false;
-		$orderNub	=	$data['order_number'];
-
-		if(is_array($other))
-			$other	=	json_encode($other);
-
-		$this->nQuery()->query("INSERT INTO `order_transactions` (`unique_id`,`first_name`,`last_name`,`ip_address`,`success`,`error`,`cc`,`content`,`username`,`order_number`) VALUES ('".$this->fetchUniqueId()."',:0,:1,:2,:3,:4,:5,:6,:7,:8)",array($first,$last,$ip,$success,$error,$last4,$other,$username,$orderNub));
-=======
 		if(isset($data['other'])) {
 			$data['content']	=	(is_array($data['other']))? json_encode($data['other']) : $data['other'];
 			unset($data['other']);
@@ -531,7 +384,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 			if($this->isAdmin())
 				die(printpre([$data,$e->getMessage()]));
 		}
->>>>>>> origin/master
 
 		return $this;
 	}
@@ -657,7 +509,6 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 		$this->setSession('cart_messages',$msg);
 		$this->getHelper('nRouter')->addRedirect($this->localeUrl($this->getPageURI('full_path')));
 	}
-<<<<<<< HEAD
 	
 	public	function getShippingPrice($sku)
 	{
@@ -666,6 +517,3 @@ abstract class ShoppingCart extends \Nubersoft\nApp
 		return ($q == 0)? false : $q['shipping_price'];
 	}
 }
-=======
-}
->>>>>>> origin/master
