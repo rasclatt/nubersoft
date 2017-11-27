@@ -3,6 +3,7 @@
 if(!empty($argv[1])) {
 	$_REQUEST	=	[];
 	parse_str($argv[1],$_REQUEST);
+
 }
 # Configuration
 require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
@@ -17,7 +18,7 @@ if(\Nubersoft\Flags\Controller::hasFlag('maintenance')) {
 try {
 	# Create instance for sharing
 	$nApp	=	new \Nubersoft\nApp();
-	$nApp->setErrorMode();
+	$nApp->setErrorMode(true);
 	# Load our backtracer and load printpre
 	$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
 		->getHelper('nFunctions')->autoload(array('printpre'));

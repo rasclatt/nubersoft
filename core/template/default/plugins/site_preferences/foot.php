@@ -64,7 +64,8 @@ $settings	=	$this->toArray($this->getPreferences('foot')->content);
 			<div style="padding: 10px; background-color: #555; margin: 20px 0;">
 				<h2 style="color: #CCC;">Additional Social Media</h2>
 			<?php
-			foreach($footer->social_media as $key => $vals) {
+			
+			foreach($settings['social_media'] as $key => $vals) {
 			?>
 				<div class="form_custElemWrap">
 					<div class="form_removethis" style="color: #CCC; background-color: #000; padding: 15px 8px; border-radius: 3px; font-size: 13px; display: inline-block; float: right;">DELETE</div>

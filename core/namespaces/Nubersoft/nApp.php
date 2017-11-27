@@ -1636,28 +1636,28 @@ class	nApp extends \Nubersoft\nFunctions
 
 		return true;
 	}
-	/*
+	/**
 	*	@description	Set a session variable (also sets a data node)
 	*/
 	public	function setSession($var,$value,$reset = true)
 	{
 		$this->getHelper('nSessioner')->setSession($var,$value,$reset);
 	}
-	/*
+	/**
 	*	@description	Retrieve error messages
 	*/
 	public	function getAllAlerts($key = false)
 	{
 		return $this->getHelper('Messenger')->getAllAlerts($key);
 	}
-	/*
+	/**
 	*	@description	Retrieve error messages
 	*/
 	public	function getAlertsByKind($key = false,$type = false)
 	{
 		return $this->getHelper('Messenger')->getAlertsByKind($key,$type);
 	}
-	/*
+	/**
 	*	@description	Creates a autoloader for classes
 	*	@param	$path	[string | anon func]	This can be a path where classes can be found OR<br>
 	*					a callable function that the spl uses to create a loader
@@ -1666,7 +1666,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		return $this->getHelper('nRouter\Controller')->addNamespace($path);
 	}
-	/*
+	/**
 	*	@description	Creates a standard cache path for saving cached elements into the cache folder
 	*	@param	$appendPath	[string|empty]	Self-explanitory
 	*	@param	$cou	[string]	This is the default locale
@@ -1676,14 +1676,14 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		return $this->getHelper('nCache')->{__FUNCTION__}($appendPath,$cou,$func);
 	}
-	/*
+	/**
 	*	@description	Alias to the nRouter method to create an OpenSSL encoded string containing path
 	*/
 	public	function setJumpPage($url,$urlencode = true)
 	{
 		return $this->getHelper('nRouter')->createJumpPage($url,$urlencode);
 	}
-	/*
+	/**
 	*	@description	Alias to the nRouter method to decode the OpenSSL-encoded string containing path
 	*/
 	public	function getJumpPage($url)
@@ -1709,7 +1709,7 @@ class	nApp extends \Nubersoft\nFunctions
 		$locale	=	$this->getSession('LOCALE');
 		return (!empty($locale))? strtoupper(trim($locale,'/')) : $default;
 	}
-	/*
+	/**
 	*	@description	Alias to fetch the Cart Object
 	*/
 	public	function getCart($type = '\Model')
@@ -1719,35 +1719,35 @@ class	nApp extends \Nubersoft\nFunctions
 
 		return $this->getPlugin('\nPlugins\Nubersoft\ShoppingCart'.$type);
 	}
-	/*
+	/**
 	*	@description	Alias to fetch the Messenger Object
 	*/
 	public	function getMessenger()
 	{
 		return $this->getHelper('Messenger');
 	}
-	/*
+	/**
 	*	@description	Alias to fetch the cache engine
 	*/
 	public	function nCache()
 	{
 		return $this->getPlugin('\nPlugins\Nubersoft\Cache');
 	}
-	/*
+	/**
 	*	@description	Alias to fetch the Data storage engine
 	*/
 	public	function getData()
 	{
 		return new NubeData();
 	}
-	/*
+	/**
 	*	@description	Alias to fetch the settings controller
 	*/
 	public	function settingsManager()
 	{
 		return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller');
 	}
-	/*
+	/**
 	*	@description	This overloading method will call a class based on the method name.
 	*	@param	$name	[string]	This is automated by php and is the name of the method (and class)
 	*	@param	$args	[bool|array]	This can pass arguments to the class being called
@@ -1757,7 +1757,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		return self::callClass($name,$args);
 	}
-	/*
+	/**
 	*	@description	Static overlader, default is to call nApp (itself). Wrapper to callClass() and return self
 	*	@param	$arg1	[string]	The name of the method (and class)
 	*	@param	$arg2	[any]		This can pass arguments to the class being called
@@ -1796,21 +1796,21 @@ class	nApp extends \Nubersoft\nFunctions
 		# Try and return the class
 		return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
 	}
-	/*
+	/**
 	*	@description	Wrapper/Alias for getting the current error mode
 	*/
 	public	function getErrorMode($fromConfig = false)
 	{
 		return $this->settingsManager()->getErrorMode($fromConfig);
 	}
-	/*
+	/**
 	*	@description	Wrapper/Alias for getting the current server mode
 	*/
 	public	function getServerMode($def = 'live',$fromConfig = false)
 	{
 		return $this->settingsManager()->getServerMode($def,$fromConfig);
 	}
-	/*
+	/**
 	*	@description	Fetches modes from the user config or registry if set
 	*	@returns		Returns either the contstant's value or default value ($default)
 	*/
@@ -1818,7 +1818,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		return $this->settingsManager()->getMode($type,$default,$fromConfig);
 	}
-	/*
+	/**
 	*	@description	Out of scope retrieval files
 	*	@returns		Returns content
 	*/

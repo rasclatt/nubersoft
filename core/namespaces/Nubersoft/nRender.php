@@ -37,7 +37,8 @@ class nRender extends \Nubersoft\nApp
 {
 	private	$page,
 			$data,
-			$nTemplate;
+			$nTemplate,
+			$renderOrigin;
 
 	private	static	$settings,
 					$config,
@@ -53,7 +54,15 @@ class nRender extends \Nubersoft\nApp
 		# Returns original construct()
 		return parent::__construct();
 	}
-
+	/**
+	*	@description	Allows the render to not show its file origin
+	*/
+	public	function setRenderOrigin($origin = true)
+	{
+		$this->renderOrigin	=	$origin;
+		return $this;
+	}
+	
 	public	function thumbnail($path,$h = 30,$w = 30,$max = false,$gray=false)
 	{
 		$max	=	(!empty($max))? 'max-' : '';
@@ -193,7 +202,7 @@ class nRender extends \Nubersoft\nApp
 	{
 		unset(NubeData::$settings->configs);
 		unset(NubeData::$settings->xml_add_list);
-		echo $this->render($this->getTemplate());
+		echo $this->setRenderOrigin(false)->render($this->getTemplate());
 	}
 
 	public	function render()
@@ -209,7 +218,14 @@ class nRender extends \Nubersoft\nApp
 				echo printpre(__FUNCTION__);
 			return false;
 		}
-		
+		# Allow for cancelling the file position
+		if($this->renderOrigin && !empty($this->getSession('production_mode')))
+			# Shows the path of the file to include
+			echo $this->showBlockOrigin(__METHOD__.' > '.$include);
+		else
+			# Reset it or it will not show after this point
+			$this->setRenderOrigin(true);
+		# Start buffer
 		ob_start();
 		switch($type) {
 			case('include'):
@@ -941,9 +957,9 @@ class nRender extends \Nubersoft\nApp
 	/**
 	*	@description	Render a block origin
 	*/
-	public	function showBlockOrigin($path)
+	public	function showBlockOrigin($path,$class = 'nbr_origin_item')
 	{
-		return ($this->editorModeActive())? '<div class="nbr_origin_item">'.$this->stripRoot($path).'</div>' : '';
+		return ($this->editorModeActive())? '<div class="'.$class.'">'.$this->stripRoot($path).'</div>' : '';
 	}
 	/**
 	*	@description	Checks if editor is active

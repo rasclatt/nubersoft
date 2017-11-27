@@ -457,7 +457,10 @@ class nAutomator extends \Nubersoft\nApp
 											echo $nRender->render($file,'include');
 										break;
 									case('include_once'):
-										if(isset($doAction['render']) && strtolower($doAction['render']) == 'false'){
+										
+										$to_render	=	(isset($doAction['render']));
+										
+										if($to_render && (strtolower($doAction['render']) == 'false' || empty($doAction['render']))){
 											include_once($file);
 										}
 										else
@@ -883,7 +886,6 @@ class nAutomator extends \Nubersoft\nApp
 							->execute($type,$append,$settings);
 
 		$keys		=	array_keys($configs);
-
 		$this->doWorkflow($configs);
 
 		return $this;

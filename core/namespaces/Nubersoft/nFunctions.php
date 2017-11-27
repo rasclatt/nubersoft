@@ -835,7 +835,10 @@ class	nFunctions extends \Nubersoft\Singleton
 				}
 			}
 		}
-
+		# Show were things are located
+		if(defined('SITE_ORIGIN_RENDER') && SITE_ORIGIN_RENDER == TRUE)
+			echo $this->getHelper('nRender')->showBlockOrigin($inc);
+		# Start rendering
 		ob_start();
 		if(is_file($inc)) {
 			switch($incType) {

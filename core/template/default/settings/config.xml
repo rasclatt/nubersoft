@@ -7,6 +7,9 @@
 	<interface>
 		<stylesheet>
 			<!-- GENERAL STYLES -->
+			<include>
+				<path>~NBR_MEDIA~/css/grid.css</path>
+			</include>
 			<include is_local="false" version="false">
 				<path>https://fonts.googleapis.com/css?family=Abel</path>
 			</include>
@@ -75,9 +78,6 @@
 			<!-- CORE STYLES -->
 			<include>
 				<path>~NBR_MEDIA~/css/styles.css</path>
-			</include>
-			<include>
-				<path>~NBR_MEDIA~/css/grid.css</path>
 			</include>
 			
 		</stylesheet>
