@@ -421,8 +421,8 @@ class nGet extends \Nubersoft\nFunctions
 
 	public	function getAllMenus()
 	{
-		if(!empty($this->setDataAttr('all_menus')))
-			return $this->setDataAttr('all_menus');
+		if(!empty($this->getDataAttr('all_menus')))
+			return $this->getDataAttr('all_menus');
 		
 		$nquery	=	$this->nApp->nQuery();
 		$cols	=	array(
