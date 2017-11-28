@@ -81,15 +81,6 @@ a.nbr_table_pagination_num:hover {
 a.nbr_table_pagination_num:visited {
 	color: #FFF;
 }
-#foot_cache_block {
-	height: 80px;
-	background-color: #CCC;
-	color: #222;
-	position: fixed;
-	bottom: 0;
-	width: 100%;
-	right: 0;
-}
 .nbr_table_search_pagination {
 	float: right;
 }
