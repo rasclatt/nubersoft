@@ -197,7 +197,7 @@ class PageBuilder extends \Nubersoft\nApp
 				// Set up default label 
 				$this->payload['menu_name']	=	(!empty($this->payload['menu_name']))? $this->payload['menu_name']: ucwords(str_replace(array("_","-")," ",$this->payload['link']));
 				// Set up default template
-				$this->payload['template']	=	(!empty($this->payload['template']) && $this->payload['template'])? $this->payload['template']: \Nubersoft\NubeData::$settings->site->template;
+				$this->payload['template']	=	(!empty($this->payload['template']) && $this->payload['template'])? $this->payload['template']: parent::$settings->site->template;
 				$run	=	$query	->update("main_menus")
 									->setAlt($this->filter_array_to_json($this->payload))
 									->where(array("ID"=>$this->payload['ID']))
@@ -232,7 +232,7 @@ class PageBuilder extends \Nubersoft\nApp
 					}
 				}
 				
-				foreach(\Nubersoft\NubeData::$settings->menu_data as $menu_arr) {										
+				foreach(parent::$settings->menu_data as $menu_arr) {										
 					$menus	=	menu_create_dirlist(menu_organize_id(Safe::to_array(menu_get_all())),$menu_arr->unique_id);
 					$query	->update("main_menus")
 							->set(array("full_path"=>$menus))
@@ -315,7 +315,7 @@ class PageBuilder extends \Nubersoft\nApp
 				// Set up default label 
 				$this->payload['menu_name']	=	(!empty($this->payload['menu_name']))? $this->payload['menu_name']: ucwords(str_replace(array("_","-")," ",$this->payload['link']));
 				// Set up default template
-				$this->payload['template']	=	(!empty($this->payload['template']) && $this->payload['template'])? $this->payload['template']: \Nubersoft\NubeData::$settings->site->template;
+				$this->payload['template']	=	(!empty($this->payload['template']) && $this->payload['template'])? $this->payload['template']: parent::$settings->site->template;
 
 				autoload_function("menu_get_all,menu_organize_id,menu_create_dirlist");
 				$run	=	$query	->insert("main_menus")

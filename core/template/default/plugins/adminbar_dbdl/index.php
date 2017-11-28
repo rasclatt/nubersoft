@@ -10,42 +10,42 @@ if(!is_admin())
 	$nubquery	=	nquery();
 	
 	if((isset($_POST['plugin_action']) && $_POST['plugin_action'] == 'dbdl')) {
-			
-			if(!isset($_POST['table'])) {
-					header("Location: ".$_SERVER['HTTP_REFERER']);
-					exit;
-				}
-			
-			if(!empty($_POST['table'])) {
-					
-					if(!isset(NubeData::$settings->engine->temp_folder))
-						NubeData::$settings->engine->temp_folder	=	ROOT_DIR.'/../temp/';
-						
-					$csv	=	new ZipEngine(NubeData::$settings->engine->temp_folder);
-					
-					foreach($_POST['table'] as $name) {
-							$query	=	$nubquery->addCustom("describe ".$name,true)->getResults();
-							
-							if($query != 0) {
-									foreach($query as $row) {
-											$search[]	=	$row['Field'];
-										}
-								}
-							
-							$csv->FetchTable($name,$search,$name);
-							unset($search);
-						}
-					
-					if(!isset($_POST['zip_name']))
-						$zipname	=	date("YmdHis").preg_replace('/[^0-9a-zA-Z]/',"",$_SESSION['username']);
-					else
-						$zipname	=	date("YmdHis")."-".preg_replace('/[^0-9a-zA-Z]/',"",$_POST['zip_name']);
-		
-					$csv->Zipit($zipname.'.zip');
-				}
-			else
-				$error	=	true;
+
+		if(!isset($_POST['table'])) {
+			header("Location: ".$_SERVER['HTTP_REFERER']);
+			exit;
 		}
+
+		if(!empty($_POST['table'])) {
+
+			if(!isset(nApp::$settings->engine->temp_folder))
+				nApp::$settings->engine->temp_folder	=	ROOT_DIR.'/../temp/';
+
+			$csv	=	new ZipEngine(nApp::$settings->engine->temp_folder);
+
+			foreach($_POST['table'] as $name) {
+				$query	=	$nubquery->addCustom("describe ".$name,true)->getResults();
+
+				if($query != 0) {
+					foreach($query as $row) {
+						$search[]	=	$row['Field'];
+					}
+				}
+
+				$csv->FetchTable($name,$search,$name);
+				unset($search);
+			}
+
+			if(!isset($_POST['zip_name']))
+				$zipname	=	date("YmdHis").preg_replace('/[^0-9a-zA-Z]/',"",$_SESSION['username']);
+			else
+				$zipname	=	date("YmdHis")."-".preg_replace('/[^0-9a-zA-Z]/',"",$_POST['zip_name']);
+
+			$csv->Zipit($zipname.'.zip');
+		}
+		else
+			$error	=	true;
+	}
 ?>
 	<div id="dbdl-wrap">
 		<div id="dbdl-click"></div>

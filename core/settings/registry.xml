@@ -47,7 +47,7 @@
 		<session_on>true</session_on>
 		<allow_eval>true</allow_eval>
 		<f_access>true</f_access>
-		<file_salt>~randomFileSalt~</file_salt>
+		<file_salt>~FUNC::randomFileSalt~</file_salt>
 		<max_up_files>2000</max_up_files>
 		<base_url>{domain}</base_url>
 		<base_url_ssl>{domain}</base_url_ssl>
@@ -56,8 +56,8 @@
 		<temp_dir>/client/settings/tempfiles/</temp_dir>
 		<cache_dir>/client/settings/cachefiles/</cache_dir>
 		<sys_prefs_temp>false</sys_prefs_temp>
-		<openssl_salt>~randomCryptIv~</openssl_salt>
-		<openssl_iv>~randomCryptKey~</openssl_iv>
+		<openssl_salt>~FUNC::randomCryptIv~</openssl_salt>
+		<openssl_iv>~FUNC::randomCryptKey~</openssl_iv>
 		<nbr_superuser>1</nbr_superuser>
 		<nbr_admin>2</nbr_admin>
 		<nbr_web>3</nbr_web>

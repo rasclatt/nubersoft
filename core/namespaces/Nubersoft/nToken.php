@@ -215,7 +215,7 @@ public	function setToken($name = false, $salt = false, $multiToken = false)
 			$token	=	$this->getSession('token')->nProcessor->page;
 
 		if($token && $reset) {
-			\Nubersoft\NubeData::$settings->_SESSION->token->nProcessor->page	=	
+			parent::$settings->_SESSION->token->nProcessor->page	=	
 			$_SESSION['token']['nProcessor']['page']	=	$this->safe()->encOpenSSL(mt_rand());
 		}
 

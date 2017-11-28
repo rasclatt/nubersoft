@@ -4,7 +4,7 @@
 					<input type="hidden" name="requestTable" value="<?php echo fetch_table_id('image_bucket',$this->nuber); ?>" />
 					<input type="hidden" name="ID" value="" />
 					<input type="hidden" name="unique_id" value="" />
-					<input type="hidden" name="ref_page" value="<?php echo NubeData::$settings->page_prefs->unique_id; ?>" />
+					<input type="hidden" name="ref_page" value="<?php echo parent::$settings->page_prefs->unique_id; ?>" />
 					<div class="add_button"><input disabled="disabled" type="submit" name="add" value="<?php echo strtoupper('add'); ?>" /></div>
 				</form>
 			</div>

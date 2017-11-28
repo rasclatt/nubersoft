@@ -40,7 +40,7 @@ class nRender extends \Nubersoft\nApp
 			$nTemplate,
 			$renderOrigin;
 
-	private	static	$settings,
+	private	static	$render_settings,
 					$config,
 					$page_settings;
 
@@ -200,8 +200,8 @@ class nRender extends \Nubersoft\nApp
 
 	public	function renderView()
 	{
-		unset(NubeData::$settings->configs);
-		unset(NubeData::$settings->xml_add_list);
+		unset(parent::$settings->configs);
+		unset(parent::$settings->xml_add_list);
 		echo $this->setRenderOrigin(false)->render($this->getTemplate());
 	}
 
@@ -478,14 +478,14 @@ class nRender extends \Nubersoft\nApp
 
 	public	function getStoredTemplatePath($name)
 	{
-		if(isset(self::$settings[$name]))
-			return	self::$settings[$name];
+		if(isset(self::$render_settings[$name]))
+			return	self::$render_settings[$name];
 	}
 
 	public	function setStoredTemplatePath($name,$value)
 	{
-		if(!isset(self::$settings[$name]))
-			self::$settings[$name]	=	$this->toSingleDs($value);
+		if(!isset(self::$render_settings[$name]))
+			self::$render_settings[$name]	=	$this->toSingleDs($value);
 	}
 
 	public	function getTemplateFile($filepath=false,$frontend='frontend')

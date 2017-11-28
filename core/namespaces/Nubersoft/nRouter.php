@@ -60,15 +60,15 @@ class nRouter extends \Nubersoft\nApp
 	{
 		$page['is_admin']	=	(isset($page['is_admin']))? $this->getBoolVal($page['is_admin']) : false;
 		# Reset the notification that path is bad
-		NubeData::$settings->error404	=	false;
+		parent::$settings->error404	=	false;
 		# Create a redirect notice
 		$this->saveSetting('pageURI_redirect',$page['include']);
 		# Update the page settings so there is no error 404
-		NubeData::$settings->site->page	=	$page; 
+		parent::$settings->site->page	=	$page; 
 		$this->saveSetting("getPageURI{$page['full_path']}",$page,true);
 		$this->saveSetting('pageURI',$page,true);
 		$this->getHelper('GetSitePrefs')->setPageRequestSettings();
-		NubeData::$settings->site->page_valid	=	true;
+		parent::$settings->site->page_valid	=	true;
 		http_response_code(200);
 		header('http/1.1 200 OK');
 	}
@@ -81,18 +81,18 @@ class nRouter extends \Nubersoft\nApp
 
 		$page['is_admin']	=	false;
 		# Reset the notification that path is bad
-		NubeData::$settings->{"error".$errorCode}	=	true;
+		parent::$settings->{"error".$errorCode}	=	true;
 		# Create a redirect notice
 		$this->saveSetting('pageURI_redirect',false,true);
 		# Update the page settings so there is no error 404
-		if(!isset(NubeData::$settings->site->page))
+		if(!isset(parent::$settings->site->page))
 			$this->saveSetting('site',array('page'=>false));
 		else
-			NubeData::$settings->site->page	=	false;
+			parent::$settings->site->page	=	false;
 		$this->saveSetting("getPageURI",array(),true);
 		$this->saveSetting('pageURI',array(),true);
 		$this->getHelper('GetSitePrefs')->setPageRequestSettings();
-		NubeData::$settings->site->page_valid	=	false;
+		parent::$settings->site->page_valid	=	false;
 		http_response_code($errorCode);
 		header($errorMsg);
 	}

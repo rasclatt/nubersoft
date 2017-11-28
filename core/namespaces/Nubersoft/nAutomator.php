@@ -308,14 +308,28 @@ class nAutomator extends \Nubersoft\nApp
 								}
 							}
 							else {
-								if(function_exists($value))
-									return $value();
-								elseif(defined($value))
-									return constant($value);
-								else
-									# This should return with tags because it may get called later
-									# and won't be recognized anymore if stripped of the atildes
-									return '~'.$value.'~';//return trim($value,'~');
+								if(strpos(strtolower($value),'func::') !== false) {
+									$value	=	str_ireplace('FUNC::','',$value);
+									$this->autoload([$value]);
+									
+									if(!function_exists($value)) {
+										$msg	=	'The function '.$value.'() is not loaded.';
+										$this->toAlert($msg);
+										trigger_error($msg,E_USER_NOTICE);
+									}
+									else 
+										return $value();
+								}
+								else {
+									if(function_exists($value))
+										return $value();
+									elseif(defined($value))
+										return constant($value);
+									else
+										# This should return with tags because it may get called later
+										# and won't be recognized anymore if stripped of the atildes
+										return '~'.$value.'~';//return trim($value,'~');
+								}
 							}
 						}
 					},$str);

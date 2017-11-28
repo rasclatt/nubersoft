@@ -67,11 +67,11 @@
 		background-color: #FFF;
 	}
 	</style>
-	<h2 style="padding: 10px 20px; background-color: #666; border-top-left-radius: 6px; border-top-right-radius: 6px; color: #FFF; text-shadow: 1px 1px 3px #000; display: inline-block; cursor: default;">Viewing <?php echo ucwords(str_replace("_"," ",NubeData::$settings->engine->table_name)); ?></h2>
+	<h2 style="padding: 10px 20px; background-color: #666; border-top-left-radius: 6px; border-top-right-radius: 6px; color: #FFF; text-shadow: 1px 1px 3px #000; display: inline-block; cursor: default;">Viewing <?php echo ucwords(str_replace("_"," ",parent::$settings->engine->table_name)); ?></h2>
 	<table cellpadding="0" cellspacing="0" border="0" class="form-builder">
 <?php	if(is_array($this->columns)) {
 ?>		<form method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="requestTable" value="<?php echo NubeData::$settings->engine->table_name; ?>" />
+			<input type="hidden" name="requestTable" value="<?php echo parent::$settings->engine->table_name; ?>" />
 		<tr class="form-builder-head">
 			<?php BuildTableRows('head',$this->columns,$select,$dropdowns); ?>
 			<td style="background-color: #333; color: #FFF;">
@@ -91,7 +91,7 @@
 ?>
 		
 		<form method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="requestTable" value="<?php echo NubeData::$settings->engine->table_name; ?>" />
+			<input type="hidden" name="requestTable" value="<?php echo parent::$settings->engine->table_name; ?>" />
 		<tr class="<?php if(($i % 2) == 0) echo "even"; else echo "odd"; ?>-table-rows">
 			<?php BuildTableRows($this->data['results'][$i],$this->columns,$select,$dropdowns); ?>
 			<td>

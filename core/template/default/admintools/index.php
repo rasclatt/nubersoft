@@ -29,40 +29,67 @@ echo $this->getTemplateDoc('head.php','admintools');
 $this->getHelper('CoreMySQL')->saveDatabaseScheme(NBR_ROOT_DIR.DS.'installer'.DS.'sql');
 ?>
 <body class="nbr_admintools<?php if($this->isAdmin()) echo '_loggedin' ?>">
+	<!-- MODAL -->
 	<div id="loadspot_modal"></div>
+	<!-- CONTENT -->
 	<div id="content" class="nbr_wrapper">
-		<div id="admincontent">
-			<div style="height: 50px; overflow: visible;">
+		<!-- ADMIN CONTENT -->
+		<div id="admincontent" class="col-count-3 offset">
+			<?php
+				if($this->isAdmin()) {
+			?>
+			
+			<!-- ADMIN TOOL BAR CONTENT -->
+			<div class="col-1 span-3 top-bar">
 				<?php echo $this->get3rdPartyHelper('\nPlugins\Nubersoft\InspectorPallet')->execute(array('ID'=>$this->getPage('ID'))) ?>
 			</div>
-			<div style="text-align: center;">
+			
+			<?php } ?>
+			
+			<div class="col-1 span-3">
 				<?php
 				if($this->isAdmin()) {
 				?>
-				<div style="background-color: #333; margin-bottom: 15px; background-image: url('<?php echo $this->imagesUrl('/core/small_latice.jpg') ?>'); text-align: left;">
-					<?php
-					echo $this->useTemplatePlugin('button_user_deck') ?>
-					<div style="display: inline-block; height: 80px; width: 5px; background-color: #888; margin: 0 12px;"></div>
-						<?php echo $this->useTemplatePlugin('admintool_user_buttons') ?>
+				
+				<!-- ADMIN TOOLS PLUGIN BUTTONS -->
+				<div class="admintools-plugins">
+					<?php echo $this->useTemplatePlugin('button_user_deck') ?>
+					
+					<div class="vert-divider"></div>
+					
+					<?php echo $this->useTemplatePlugin('admintool_user_buttons') ?>
+
 				</div>
+				<!-- END ADMIN TOOLS PLUGIN BUTTONS -->
 				<?php
 				}
 				?>
+				
+				<!-- ADMIN TOOLS LAYOUT -->
+				
 				<?php echo $this->useTemplatePlugin('admintool_layouts',"logged{$layout}.php") ?>
+				
+				<!-- END ADMIN TOOLS LAYOUT -->
 			</div>
 		</div>
+		<!-- END ADMIN CONTENT -->
+		
 	</div>
-	<?php
-	if($this->isLoggedIn()) { ?>
-	<div id="foot_cache_block">
-	<?php } ?>
-		<footer class="nbr_foot">
-			<?php echo $this->render(__DIR__.DS.'foot.php'); if($this->isAdmin()) echo 'My Ip: '.$this->getClientIp().'. Database: "'.$this->getDbName().'"' ?>
-		</footer>
-	<?php
-	if($this->isLoggedIn()) { ?>
+	<div>
+		<?php
+		if($this->isLoggedIn()) { ?>
+		<div id="foot_cache_block">
+		<?php } ?>
+			<div class="nbr_foot">
+				<?php echo $this->render(__DIR__.DS.'foot.php'); if($this->isAdmin()) echo 'My Ip: '.$this->getClientIp().'. Database: "'.$this->getDbName().'"' ?>
+			</div>
+		<?php
+		if($this->isLoggedIn()) { ?>
+		</div>
+		<?php } ?>
 	</div>
+	<?php if($this->isAdmin()) { ?>
+	<span class="nListener" data-instructions='{"action":"nbr_get_email_receipt_count"}'></span>
 	<?php } ?>
-<span class="nListener" data-instructions='{"action":"nbr_get_email_receipt_count"}'></span>
 </body>
 </html>

@@ -26,10 +26,13 @@ div.nbr_input_hidden {
 }
 /**** FULL WRAP ****/
 .toggle_bar_wrap {
-	display: flex;
+	display: inline-block;
+	width: 100%;
 	background-color: #111;
 	background: linear-gradient(360deg, #111, #444 90%, #666);
 	z-index: 999;
+	height: auto;
+	max-height: none;
 }
 .toggle_bar_wrap_scroller {
 	display: block;
@@ -62,18 +65,22 @@ div.nbr_input_hidden {
 	align-content: center !important;
 	align-items: center !important;
 	text-align: center !important;
+	z-index: 100;
 }
-.nbr_tool_bar_menu > .admin_tools_popup {
+.nbr_tool_bar_menu > div:last-child {
+	position: relative;
+}
+.nbr_tool_bar_menu .admin_tools_popup {
 	background-color: #000;
 	position: absolute;
 	display: none;
-	max-width: 600px;
 	overflow: auto;
 	margin:0;
 	padding: 0;
 	box-shadow: 1px 1px 8px rgba(0,0,0,0.5);
+	z-index: 101;
 }
-.nbr_tool_bar_menu:hover >.admin_tools_popup {
+.nbr_tool_bar_menu:hover .admin_tools_popup {
 	display: table-row;
 }
 .admin_tools_menu_cont {
@@ -81,7 +88,6 @@ div.nbr_input_hidden {
 	list-style-type: none;
 	display: table-row;
 	table-layout: fixed;
-	width:100%;
 	font-size: 12px;
 }
 .admin_tools_menu_cont > li {
@@ -436,6 +442,30 @@ h1.nbr_block_error, h2.nbr_block_error, h3.nbr_block_error {
 	position: relative;
 }
 .col-count-6.toggle_bar_cont {
-	grid-template-columns: 50px 3fr 140px 2fr 2fr 3fr;
+	grid-template-columns: 50px 20% 140px 15% 15% auto;
 	position: relative;
+}
+#admincontent .top-bar {
+	height: auto !important;
+}
+#admincontent > div:first-child {
+	height: 50px;
+	overflow: visible;
+}
+
+#admincontent > div:nth-child(2) {
+	text-align: center;
+}
+#admincontent .admintools-plugins {
+	background-color: #333;
+	margin-bottom: 15px;
+	background-image: url('/media/images/core/small_latice.jpg');
+	text-align: left;
+}
+#admincontent .admintools-plugins .vert-divider {
+	display: inline-block;
+	height: 80px;
+	width: 5px;
+	background-color: #888;
+	margin: 0 12px;
 }

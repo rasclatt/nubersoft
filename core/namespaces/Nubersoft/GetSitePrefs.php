@@ -486,7 +486,7 @@ define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 		$settings['template_current']	=	($isAdmin)?
 				$this->getTemplatePathMatch('index.php','backend',$settings['templates']) : 
 				$this->getTemplatePathMatch('index.php','frontend',$settings['templates']);
-
+		
 		$this->saveSetting('site',$settings);
 
 		return $this;

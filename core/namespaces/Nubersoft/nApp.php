@@ -236,7 +236,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		# Use nGet to retrieve an element from data array
 		if($this->nGet()->issetCoreElement($key)){
-			unset(NubeData::$settings->{$key});
+			unset(parent::$settings->{$key});
 		}
 
 		return ($this->nGet()->issetCoreElement($key));
@@ -248,7 +248,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		foreach($array as $key => $values) {
 			foreach($values as $skey => $sval) {
-				\NubeData::$settings->{$key}->{$skey}	=	(is_array($sval))? $this->toObject($sval) : $sval;
+				parent::$settings->{$key}->{$skey}	=	(is_array($sval))? $this->toObject($sval) : $sval;
 			}
 		}
 	}
@@ -379,7 +379,7 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		$key	=	strtoupper("_{$key}");
 
-		if(!isset(NubeData::$settings->{$key}))
+		if(!isset(parent::$settings->{$key}))
 			$this->getHelper('Submits')->sanitize();
 
 		if(!empty($key) && empty($this->getDataNode($key)))
@@ -1069,11 +1069,11 @@ class	nApp extends \Nubersoft\nFunctions
 
 	public	function getAdminPage($key = false)
 	{
-		if(isset(NubeData::$settings->admin_page)) {
+		if(isset(parent::$settings->admin_page)) {
 			if(!empty($key))
-				return (isset(NubeData::$settings->admin_page->{$key}))? NubeData::$settings->admin_page->{$key} : false;
+				return (isset(parent::$settings->admin_page->{$key}))? parent::$settings->admin_page->{$key} : false;
 			else
-				return	NubeData::$settings->admin_page;
+				return	parent::$settings->admin_page;
 		}
 
 		$this->nGet()->getAdminPage();
@@ -1220,8 +1220,8 @@ class	nApp extends \Nubersoft\nFunctions
 	public	function resetTableAttr($table = 'users')
 	{
 		$this->saveSetting('table_name',$table);
-		NubeData::$settings->engine->table		=	$table;
-		NubeData::$settings->engine->table_name	=	$table;
+		parent::$settings->engine->table		=	$table;
+		parent::$settings->engine->table_name	=	$table;
 	}
 	/**
 	*	@description	Returns the designated settings folder

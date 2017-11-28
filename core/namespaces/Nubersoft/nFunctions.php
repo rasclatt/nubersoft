@@ -57,6 +57,7 @@ class	nFunctions extends \Nubersoft\Singleton
 
 		return parent::__construct();
 	}
+	
 	/**
 	*	@description	Fetches data from $data
 	*/
@@ -506,6 +507,11 @@ class	nFunctions extends \Nubersoft\Singleton
 
 	public	function findByKeyOrder($array,$keyArray)
 	{
+		//if(!is_array($array))
+		//	die(printpre($array));
+		if(!is_array($array))
+			return $this;
+		
 		foreach($array as $akey => $aval) {
 			$newArr	=	$keyArray;
 			if(!empty($keyArray[0]) && $keyArray[0] === $akey) {
@@ -1526,8 +1532,8 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function getClientIp($key = 'REMOTE_ADDR')
 	{
-		if(!empty(NubeData::$settings->_SERVER->{$key}))
-			return NubeData::$settings->_SERVER->{$key};
+		if(!empty(parent::$settings->_SERVER->{$key}))
+			return parent::$settings->_SERVER->{$key};
 		elseif(isset($_SERVER[$key]))
 			return $_SERVER[$key];
 	}
@@ -1561,20 +1567,20 @@ class	nFunctions extends \Nubersoft\Singleton
 	public	function setErrorMode($status = false)
 	{
 		if($status) {
-			\Nubersoft\NubeData::$settings	=	$this->toArray(\Nubersoft\NubeData::$settings);
+			parent::$settings	=	$this->toArray(parent::$settings);
 			# Save status of error method
-			\Nubersoft\NubeData::$settings['error_mode']	=	["status"=>E_ALL];
+			parent::$settings['error_mode']	=	["status"=>E_ALL];
 			ini_set("display_errors",1);
 			error_reporting(E_ALL);
 		}
 		else {
-			\Nubersoft\NubeData::$settings	=	$this->toArray(\Nubersoft\NubeData::$settings);
+			parent::$settings	=	$this->toArray(parent::$settings);
 			# Save status of error method
-			\Nubersoft\NubeData::$settings['error_mode']	=	false;
+			parent::$settings['error_mode']	=	false;
 			ini_set('display_errors','off');
 			error_reporting(0);
 		}
-		\Nubersoft\NubeData::$settings	=	$this->toObject(\Nubersoft\NubeData::$settings);
+		parent::$settings	=	$this->toObject(parent::$settings);
 		return $this;
 	}
 	/**

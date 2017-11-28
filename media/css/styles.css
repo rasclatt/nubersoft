@@ -1,4 +1,28 @@
 /** SOME GENERAL INTERFACE DEFAULTS **/
+html {
+	display: flex;
+	padding: 0 !important;
+	margin: 0 !important;
+	height: 100% !important;
+	width: 100% !important;
+}
+html {
+	overflow: hidden;
+}
+body {
+	display: grid;
+	grid-template-columns: 100%;
+	grid-template-rows: 0% 100%;
+	width: 100% !important;
+	margin: 0;
+	overflow: auto;
+}
+body > div {
+	padding: 0;
+	margin: 0;
+	display: block;
+	width: 100%;
+}
 *	{
 	cursor: default;
 }
@@ -25,11 +49,6 @@ p {
 .nbr_ux_element input,
 .nbr_ux_element select {
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
-}
-body.nbr {
-	text-align: center;
-	padding: 0;
-	margin: 0;
 }
 .allblocks {
 	margin: 0 auto;
