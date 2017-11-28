@@ -52,6 +52,7 @@ $refer	=	$POST->jumppage;
 	</div>
 </span>
 <script>
+$('#loadspot_modal').fadeIn();
 $('#nbr_checkbox_set').on('click',function(){
 	var	formAction	=	$('#nbr_edit_comp_action');
 	var	instAct		=	['nbr_edit_component_filename','nbr_delete_component_filename'];
