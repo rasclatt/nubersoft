@@ -1,4 +1,5 @@
-<?php $nForm	=	$this->getHelper('nForm') ?>
+<?php $nForm	=	$this->getHelper('nForm');
+?>
 <div class="nbr_menu_toggler_wrap">
 	<?php echo $formOpen = $nForm->open(array('enctype'=>"application/x-www-form-urlencoded")) ?>
 		<?php echo $nForm->fullhide(array('name'=>"action",'value'=>"nbr_admin_toggle")) ?>

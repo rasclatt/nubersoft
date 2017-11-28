@@ -61,18 +61,19 @@ class nForm extends \Nubersoft\nApp
 	}
 
 	protected	function processSettings($settings = false)
-	{		
-		$default	=	(!empty($settings['default']))? preg_replace_callback('/[^:]{1,}[:]{2}[^:]{1,}/',function($v) {
+	{
+		$thisObj	=	$this;
+		$default	=	(!empty($settings['default']))? preg_replace_callback('/[^:]{1,}[:]{2}[^:]{1,}/',function($v) use ($thisObj) {
 			$exp	=	explode('::',$v[0]);
 			switch($exp[0]) {
 				case('SESSION'):
 					return (isset($_SESSION[$exp[1]]))? $_SESSION[$exp[1]] : $v[0];
 				case('POST'):
-					return (!empty($this->getPost($exp[1])))? $this->getPost($exp[1]) : $v[0];
+					return (!empty($thisObj->getPost($exp[1])))? $thisObj->getPost($exp[1]) : $v[0];
 				case('GET'):
-					return (!empty($this->getGet($exp[1])))? $this->getGet($exp[1]) : $v[0];
+					return (!empty($thisObj->getGet($exp[1])))? $thisObj->getGet($exp[1]) : $v[0];
 				case('REQUEST'):
-					return (!empty($this->getRequest($exp[1])))? $this->getRequest($exp[1]) : $v[0];
+					return (!empty($thisObj->getRequest($exp[1])))? $thisObj->getRequest($exp[1]) : $v[0];
 				case('SERVER'):
 					return (isset($_SERVER[$exp[1]]))? $_SERVER[$exp[1]] : $v[0];
 				case('FUNC'):

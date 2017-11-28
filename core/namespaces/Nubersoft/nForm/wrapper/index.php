@@ -1,6 +1,6 @@
-<?php if(empty($this->settings)) return; ?>
-<div class="nbr_form_text_wrap wrap<?php echo (!empty($this->settings['wrap_class']))? ' '.$this->settings['wrap_class'] : ''; ?>">
-	<div<?php echo $this->settings['style'].$this->settings['id'].$this->settings['class'].$this->settings['other']; ?>>
-		<?php echo $this->settings['value']; ?>
+<?php if(empty($this->nform_settings)) return; ?>
+<div class="nbr_form_text_wrap wrap<?php echo (!empty($this->nform_settings['wrap_class']))? ' '.$this->nform_settings['wrap_class'] : ''; ?>">
+	<div<?php echo $this->nform_settings['style'].$this->nform_settings['id'].$this->nform_settings['class'].$this->nform_settings['other']; ?>>
+		<?php echo $this->nform_settings['value']; ?>
 	</div>
 </div>
