@@ -32,27 +32,30 @@ abstract class	Singleton
 		
 		return self::$settings;
 	}
-	
-	public	function toArray($item)
+	/**
+	*	@description	Turns an object to array
+	*/
+	public	function toArray()
 	{
-		if(!is_array($item) && !is_object($item))
-			return $item;
-		
-		if(is_object($item))
-			return json_decode(json_encode($item),true);
-		else
-			return $item;
+		$args	=	func_get_args();
+		$var	=	(!empty($args[0]))? $args[0] : false;
+
+		if(empty($var))
+			return $var;
+
+		return (is_object($var) || is_array($var))? json_decode(json_encode($var),true) : $var;
 	}
-	
-	public	function toObject($item)
+	/**
+	*	@description	Turns an array to object
+	*/
+	public	function toObject()
 	{
-		if(!is_array($item) && !is_object($item))
-			return $item;
-		
-		if(is_array($item))
-			return json_encode($item);
-		else
-			return $item;
+		$args	=	func_get_args();
+		$var	=	(!empty($args[0]))? $args[0] : false;
+
+		if(empty($var))
+			return $var;
+
+		return (is_object($var) || is_array($var))? json_decode(json_encode($var,JSON_FORCE_OBJECT)) : $var;
 	}
-	
 }

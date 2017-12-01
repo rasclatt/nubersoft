@@ -394,32 +394,6 @@ class	nFunctions extends \Nubersoft\Singleton
 		return (isset($array))? $array:false;
 	}
 	/**
-	*	@description	Turns an object to array
-	*/
-	public	function toArray()
-	{
-		$args	=	func_get_args();
-		$var	=	(!empty($args[0]))? $args[0] : false;
-
-		if(empty($var))
-			return $var;
-
-		return (is_object($var) || is_array($var))? json_decode(json_encode($var),true) : $var;
-	}
-	/**
-	*	@description	Turns an array to object
-	*/
-	public	function toObject()
-	{
-		$args	=	func_get_args();
-		$var	=	(!empty($args[0]))? $args[0] : false;
-
-		if(empty($var))
-			return $var;
-
-		return (is_object($var) || is_array($var))? json_decode(json_encode($var,JSON_FORCE_OBJECT)) : $var;
-	}
-	/**
 	*	@description	Includes all files inside a destination folder
 	*/
 	public	function autoloadContents($dir,$type='include_once')
