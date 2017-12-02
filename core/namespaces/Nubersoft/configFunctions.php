@@ -40,7 +40,11 @@ class configFunctions extends \Nubersoft\nFunctions
 	*/
 	public	function getSettings($val = false,$split = '_')
 	{
-		$useArray	=	(!empty($this->altArray))? $this->altArray : self::$configs;	
+		$useArray	=	(!empty($this->altArray))? $this->altArray : self::$configs;
+		# Both empty, fetch from registry
+		if(empty($useArray))
+			$useArray	=	nApp::call()->getRegistry();	
+		# Set to array
 		$useArray	=	$this->toArray($useArray);	
 		# Set default
 		$available	=	false;
