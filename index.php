@@ -97,9 +97,24 @@ catch (\Exception $e) {
 				}
 			}
 			else {
-				$msg	=	($is_admin || $_SESSION['first_run'])? $e->getMessage() : 'An error occurred.';
-				echo '<p style="font-family: helvetica, sans-serif;">'.$msg.'</p>';
-				echo \Nubersoft\nApp::call()->safe()->encodeSingle(file_get_contents($reg));
+				# If there is a caught Database exception
+				if($e instanceof \PDOException) {
+					# Fetch base app
+					$nApp	=	\Nubersoft\nApp::call();
+					# Set error
+					$nApp->setSession('app_error','Database error occurred.');
+					# Save the error to log file
+					$nApp->autoload('nLog');
+					nLog($e);
+					# Redirect back
+					header('Location: /?error=sql');
+					exit;
+				}
+				else {
+					$firstrun	=	(!empty($_SESSION['first_run']));
+					$msg		=	($is_admin || $firstrun)? $e->getMessage() : 'View log for details.';
+					echo '<p style="font-family: helvetica, sans-serif;">Unrecoverable Application Error. '.$msg.'</p>';
+				}
 			}
 	}
 }
