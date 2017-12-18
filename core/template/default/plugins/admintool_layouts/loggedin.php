@@ -5,14 +5,22 @@ if(!empty($this->getDataNode('pageURI_redirect'))) {
 	echo $this->render($this->getDataNode('pageURI_redirect'));
 }
 # Create $_GET plugin include
-elseif(!empty($this->getGet('requestTable')) && $this->templatePluginExists($plugin = 'admintools_pagelayout_'.$this->getGet('requestTable')))
-	echo $this->useTemplatePlugin($plugin);
+elseif(!empty($this->getGet('requestTable')) && $this->templatePluginExists($plugin = 'admintools_pagelayout_'.$this->getGet('requestTable'))) { ?>
+	<div style="display: block; overflow: auto;">
+		<?php  echo $this->useTemplatePlugin($plugin) ?>
+	</div>
+	<?php
+}
 else {
 ?>
-<div style="margin: 0 auto;">
+<div class="col-1 span-3">
 	<?php
-	if(!empty($this->getGet('requestTable')))
-		echo $this->useTemplatePlugin('admintools_body');
+	if(!empty($this->getGet('requestTable'))) { ?>
+	<div style="display: block; overflow: auto;">
+		<?php echo $this->useTemplatePlugin('admintools_body') ?>
+	</div>	
+	<?php
+	}
 	else {
 	?>
 	<div style="text-align: left; border: 1px solid #CCC; padding: 30px; margin: 30px 30px;">
@@ -21,16 +29,20 @@ else {
 	<?php } ?>
 </div>
 <?php if(!empty($this->getGet('requestTable'))) { ?>
-<div style="max-width: 1200px; margin: 0 auto;">
+
+<div class="col-2">
 	<?php echo $this->useTemplatePlugin('admintools_sql_master') ?>
 </div>
+
 <?php
 	}
 }
 ?>
-<div style="max-width: 1200px; margin: 0 auto;">
+
+<div class="col-2">
 	<?php echo $this->useTemplatePlugin('admintools_warning_display') ?>
 </div>
-<div style="max-width: 1200px; margin: 0 auto;">
+
+<div class="col-2">
 	<?php echo $this->useTemplatePlugin('admintools_error_display') ?>
 </div>
