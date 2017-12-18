@@ -447,7 +447,7 @@ class	nApp extends \Nubersoft\nFunctions
 	public	function getSession($key = false,$remove = false)
 	{
 		$array	=	$this->toArray($this->getDataNode('_SESSION'));
-		
+
 		if(empty($array))
 			return false;
 
@@ -460,14 +460,9 @@ class	nApp extends \Nubersoft\nFunctions
 				return $value;
 			}
 			else {
-				if($remove) {
-					if(is_array($key))
-						trigger_error('You can not remove session values in bulk.',E_USER_NOTICE);
-					else {
-						$this->getHelper('nSessioner')->destroy($key);
-					}
-				}
-				
+				if($remove)
+					$this->getHelper('nSessioner')->destroy($key);
+
 				return (!empty($array[$key]))? $this->toObject($array[$key]) : false;
 			}
 		}
@@ -1649,6 +1644,20 @@ class	nApp extends \Nubersoft\nFunctions
 		$this->getHelper('nSessioner')->setSession($var,$value,$reset);
 	}
 	/**
+	*	@description	Retrieve error messages
+	*/
+	public	function getAllAlerts($key = false)
+	{
+		return $this->getHelper('Messenger')->getAllAlerts($key);
+	}
+	/**
+	*	@description	Retrieve error messages
+	*/
+	public	function getAlertsByKind($key = false,$type = false)
+	{
+		return $this->getHelper('Messenger')->getAlertsByKind($key,$type);
+	}
+	/**
 	*	@description	Creates a autoloader for classes
 	*	@param	$path	[string | anon func]	This can be a path where classes can be found OR<br>
 	*					a callable function that the spl uses to create a loader
@@ -1737,6 +1746,16 @@ class	nApp extends \Nubersoft\nFunctions
 	public	function settingsManager()
 	{
 		return $this->getPlugin('\nPlugins\Nubersoft\Settings\Controller');
+	}
+	/**
+	*	@description	This overloading method will call a class based on the method name.
+	*	@param	$name	[string]	This is automated by php and is the name of the method (and class)
+	*	@param	$args	[bool|array]	This can pass arguments to the class being called
+	*	@return	[object]	The class will return the class object
+	*/
+	public static	function __callStatic($name,$args = false)
+	{
+		return self::callClass($name,$args);
 	}
 	/**
 	*	@description	Static overlader, default is to call nApp (itself). Wrapper to callClass() and return self
@@ -1837,142 +1856,5 @@ class	nApp extends \Nubersoft\nFunctions
 	public	function encode($content)
 	{
 		return $this->getHelper('Safe')->encode($content);
-	}
-	/**
-	*	@description	Core messaging
-	*/
-	/*
-	public	function toMsgSuccess($msg,$key='general',$persist=false)
-	{
-		$this->getHelper('nAlert')->saveSuccess($msg,$key,$persist);
-	}
-	
-	public	function toMsgCoreSuccess($msg,$key='general')
-	{
-		$this->toMsgSuccess($msg,$key,true);
-	}
-	
-	public	function toMsgAdminSuccess($msg,$key='',$persist=false)
-	{
-		$this->getHelper('nAlert')->saveSuccess($msg,'admin'.$key,$persist);
-	}
-	
-	public	function toMsgAdminCoreSuccess($msg,$key='')
-	{
-		$this->toMsgAdminSuccess($msg,$key,true);
-	}
-	
-	public	function msgSuccess($key=false)
-	{
-		return nAlert::getSuccess($key);
-	}
-	
-	public	function msgCoreSuccess($key=false)
-	{
-		if(empty($key))
-			$key	=	'general';
-		
-		return nAlert::getStoredMessage('success',$key);
-	}
-	
-	public	function msgAdminSuccess()
-	{
-		return nAlert::getSuccess('admin');
-	}
-	public	function msgAdminCoreSuccess($key=false)
-	{
-		if(empty($key))
-			$key	=	'admin';
-		
-		return nAlert::getStoredMessage('success',$key);
-	}
-	*/
-	/**
-	*	@description	Retrieve error messages
-	*/
-	public	function getAllAlerts($key = false)
-	{
-		return $this->getHelper('Messenger')->getAllAlerts($key);
-	}
-	/**
-	*	@description	Retrieve error messages
-	*/
-	public	function getAlertsByKind($key = false,$type = false)
-	{
-		return $this->getHelper('Messenger')->getAlertsByKind($key,$type);
-	}
-	
-	public	function doMessageService($name,$args=false)
-	{
-		
-		$nAlert		=	$this->getHelper('nAlert');
-		$msgType	=	$nAlert->sortMessageTypes($name);
-		$kind		=	$msgType['type'];
-		$type		=	(isset($msgType['admin']))? 'admin' : 'general';
-		$persist	=	(isset($msgType['persist']));
-		
-		if(count($args) > 1 && !empty($args[1]))
-			$type	=	$args[1];
-		
-		if(isset($msgType['to'])) {
-			switch($kind){
-				case('alert'):
-					$meth	=	"saveAlert";
-					break;
-				case('error'):
-					$meth	=	"saveError";
-					break;
-				default:
-					$meth	=	"saveSuccess";
-			}
-			
-			return $nAlert->{$meth}($args[0],$type,$persist);
-		}
-		else {
-			
-			if(!empty($args[0]))
-				$type	=	$args[0];
-			
-			if(!$persist) {
-				switch($kind){
-					case('alert'):
-						$meth	=	"getAlert";
-						break;
-					case('error'):
-						$meth	=	"getError";
-						break;
-					default:
-						$meth	=	"getSuccess";
-						break;
-				}
-				
-				return $nAlert->{$meth}($type);
-			}
-			else
-				return $nAlert->getStoredMessage($kind,$type);
-		}
-	}
-	
-	public	function getSystemMessages($kind='',$clear=true)
-	{
-		return $this->getHelper('nAlert')->{__FUNCTION__}($kind,$clear);
-	}
-	/**
-	*	@description	This overloading method will call a class based on the method name.
-	*	@param	$name	[string]	This is automated by php and is the name of the method (and class)
-	*	@param	$args	[bool|array]	This can pass arguments to the class being called
-	*	@return	[object]	The class will return the class object
-	*/
-	public static	function __callStatic($name,$args = false)
-	{
-		return self::callClass($name,$args);
-	}
-	
-	public	function __call($name,$args=false)
-	{
-		# Process messaging
-		if(stripos($name,'msg') !== false) {
-			return $this->doMessageService($name,$args);
-		}
 	}
 }

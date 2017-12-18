@@ -994,14 +994,4 @@ class nRender extends \Nubersoft\nApp
 		return ($foot['html']['toggle'] == 'on')? $this->safe()->decode($foot['html']['value']) : false;
 			
 	}
-	
-	public	static	function simpleRender($file, $dataArray = false)
-	{
-		ob_start();
-		include($file);
-		$data	=	ob_get_contents();
-		ob_end_clean();
-
-		return $data;
-	}
 }

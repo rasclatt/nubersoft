@@ -16,7 +16,7 @@ class	RegistryEngine extends \Nubersoft\Singleton
 			return false;
 
 		$use	=	(isset($args[0]) && is_string($args[0]))? $args[0] : false;
-		$data	=	(isset($args[1]))? $args[1] : '';//NBR::EMPTY
+		$data	=	(isset($args[1]))? $args[1] : 'NBR::EMPTY';
 
 		return (empty($use))?  array("use"=>false,"data"=>false) : array("use"=>$use,"data"=>$data);
 	}

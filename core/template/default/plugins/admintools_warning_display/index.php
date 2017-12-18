@@ -1,40 +1,23 @@
 <?php
-	$success	=	
-	$errors		=	[];
-	$msg		=	$this->getSystemMessages();
-
-	if(!empty($msg['success'])) {
-		$this->extractAll($msg['success'],$success);
-		echo '
-<div class="nbr_warning_wrap" style="display: none;">
-	<div class="col-1 span3 col-count-3 offset">
-		<div class="col-2">
-			<div class="nbr_success nTrigger pointer" data-instructions=\'{"FX":{"fx":["fadeOut"],"acton":[".nbr_success"]}}\'>'.implode('
-			</div>
-			<div class="nbr_success col-2">	
-				',$success).'
-			</div>
+	$errors		=	array_unique($this->getAllAlerts('warnings'));
+	if($errors) {
+	?>
+	<div style="text-align: left; display: none;" class="nbr_warning_wrap">
+		<div class="head-button nTrigger" data-instructions='{"FX":{"fx":["slideToggle"],"acton":["next::slideToggle"],"fxspeed":["fast"]}}'>
+			<ul>
+				<li><?php echo $this->getHelper('nImage')->imageBase64(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_alert.png',array('style'=>'max-height: 40px;')) ?></li>
+				<li>Warnings</li>
+			</ul>
+		</div>
+		<div class="nbr_warning" style="padding: 20px; text-align: left; overflow: auto; box-shadow: none; color: #000; text-shadow: none;">
+			<div>-<?php echo implode('</div><br /><div>-',$errors) ?></div>
 		</div>
 	</div>
-</div>';
-	}
-
-	if(!empty($msg['alert'])) {
-		$this->extractAll($msg['alert'],$errors);
-		echo '
-<div class="nbr_warning_wrap" style="display: none;">
-	<div class="col-1 span3 col-count-3 offset">
-		<div class="col-2">
-			<div class="nbr_warning">'.implode('
-			</div>
-			<div class="nbr_warning col-2">	
-				',$errors).'
-			</div>
-		</div>
-	</div>
-</div>';
+	<?php
 	}
 	?>
+</div>
+</div>
 <script>
 $('.nbr_warning_wrap').delay(1000).fadeIn('fast');
 </script>

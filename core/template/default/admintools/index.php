@@ -46,13 +46,13 @@ $this->getHelper('CoreMySQL')->saveDatabaseScheme(NBR_ROOT_DIR.DS.'installer'.DS
 			
 			<?php } ?>
 			
-			<div class="col-1 span-3 col-count-3 offset">
+			<div class="col-1 span-3">
 				<?php
 				if($this->isAdmin()) {
 				?>
 				
 				<!-- ADMIN TOOLS PLUGIN BUTTONS -->
-				<div class="admintools-plugins span-3">
+				<div class="admintools-plugins">
 					<?php echo $this->useTemplatePlugin('button_user_deck') ?>
 					
 					<div class="vert-divider"></div>
@@ -64,9 +64,12 @@ $this->getHelper('CoreMySQL')->saveDatabaseScheme(NBR_ROOT_DIR.DS.'installer'.DS
 				<?php
 				}
 				?>
-				<div class="col-1 span-3">
-					<?php echo $this->useTemplatePlugin('admintool_layouts',"logged{$layout}.php") ?>
-				</div>
+				
+				<!-- ADMIN TOOLS LAYOUT -->
+				
+				<?php echo $this->useTemplatePlugin('admintool_layouts',"logged{$layout}.php") ?>
+				
+				<!-- END ADMIN TOOLS LAYOUT -->
 			</div>
 		</div>
 		<!-- END ADMIN CONTENT -->

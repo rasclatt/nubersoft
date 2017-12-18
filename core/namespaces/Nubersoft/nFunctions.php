@@ -1,35 +1,35 @@
 <?php
-/**
-*	Copyright (c) 2017 Nubersoft.com
-*	Permission is hereby granted, free of charge *(see acception below in reference to
-*	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
-*	and associated documentation files (the "Software"), to deal in the Software without
-*	restriction, including without limitation the rights to use, copy, modify, merge, publish,
-*	or distribute copies of the Software, and to permit persons to whom the Software is
-*	furnished to do so, subject to the following conditions:
-*	
-*	The base CMS software* is not used for commercial sales except with expressed permission.
-*	A licensing fee or waiver is required to run software in a commercial setting using
-*	the base CMS software.
-*	
-*	*Base CMS software is defined as running the default software package as found in this
-*	repository in the index.php page. This includes use of any of the nAutomator with the
-*	default/modified/exended xml versions workflow/blockflows/actions.
-*	
-*	The above copyright notice and this permission notice shall be included in all
-*	copies or substantial portions of the Software.
-*
-*	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-*	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-*	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-*	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-*	SOFTWARE.
-*SNIPPETS:**
-*	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
-*	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
-*	NOT BEEN LOCATED AND DELETED.
+	/**
+	*	Copyright (c) 2017 Nubersoft.com
+	*	Permission is hereby granted, free of charge *(see acception below in reference to
+	*	base CMS software)*, to any person obtaining a copy of this software (nUberSoft Framework)
+	*	and associated documentation files (the "Software"), to deal in the Software without
+	*	restriction, including without limitation the rights to use, copy, modify, merge, publish,
+	*	or distribute copies of the Software, and to permit persons to whom the Software is
+	*	furnished to do so, subject to the following conditions:
+	*	
+	*	The base CMS software* is not used for commercial sales except with expressed permission.
+	*	A licensing fee or waiver is required to run software in a commercial setting using
+	*	the base CMS software.
+	*	
+	*	*Base CMS software is defined as running the default software package as found in this
+	*	repository in the index.php page. This includes use of any of the nAutomator with the
+	*	default/modified/exended xml versions workflow/blockflows/actions.
+	*	
+	*	The above copyright notice and this permission notice shall be included in all
+	*	copies or substantial portions of the Software.
+	*
+	*	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	*	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	*	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	*	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	*	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	*	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	*	SOFTWARE.
+	*SNIPPETS:**
+	*	ANY SNIPPETS BORROWED SHOULD BE SITED IN THE PAGE IT IS USED. THERE MAY BE SOME
+	*	THIRD-PARTY PHP OR JS STILL PRESENT, HOWEVER IT WILL NOT BE IN USE. IT JUST HAS
+	*	NOT BEEN LOCATED AND DELETED.
 */
 namespace Nubersoft;
 
@@ -57,6 +57,7 @@ class	nFunctions extends \Nubersoft\Singleton
 
 		return parent::__construct();
 	}
+	
 	/**
 	*	@description	Fetches data from $data
 	*/
@@ -218,6 +219,24 @@ class	nFunctions extends \Nubersoft\Singleton
 		return $this;
 	}
 	/**
+	*	@description	Checks if the request is ajax-based
+	*/
+	public	function isAjaxRequest($type = 'HTTP_X_REQUESTED_WITH')
+	{
+		# If force is set
+		if(defined('BROWSER_FORCED')) {
+			# If request is set to force request to browser
+			if(BROWSER_FORCED === true)
+				# Ajax is not required
+				return false;
+		}
+		# Check if the server key is set
+		if(!empty(nApp::call()->getDataNode('_SERVER')->{$type}))
+			return true;
+		
+		return (!empty($_SERVER[$type]));
+	}
+	/**
 	*	@description	Returns if a array key is set or not
 	*/
 	private	function validateVar($array = false,$key = false)
@@ -311,9 +330,9 @@ class	nFunctions extends \Nubersoft\Singleton
 		else
 			$recursive	=	$settings['recursive'];
 		$addpreg		=	($filetype != false)? "\.".implode("|\.",$filetype) : "\.php|\.csv|\.txt|\.htm|\.css|\.htm|\.js";
-		$array			=
-		$array['dirs']	=
-		$array['host']	=
+		$array			=	array();
+		$array['dirs']	=	array();
+		$array['host']	=	array();
 		$array['root']	=	array();
 
 		if(!is_dir($directory))
@@ -417,10 +436,30 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function autoload($func, $dir = false, $prefix = '',$ext = 'php')
 	{
+		# If there is a string but has commas, explode it
+		if(is_string($func) && strpos($func,',') !== false)
+			$func	=	explode(',',trim($func));
 		# Set where to load files from
 		$dir	=	(!empty($dir))? rtrim($dir,DS) : NBR_FUNCTIONS;
-		# Load up the functions
-		nAutoloadAsset::autoloadFunction($func,$dir,$prefix,$ext);
+		if(is_array($func)) {
+			# Filter if array
+			$func	=	array_filter($func);
+			foreach($func as $function) {
+				if(function_exists($function))
+					continue;	
+
+				if(is_file($fFile = $this->toSingleDs($dir.DS.$prefix.$function.'.'.$ext)))
+					include_once($fFile);
+			}
+		}
+		else {
+			if(function_exists($func))
+				return $this;
+
+			if(is_file($fFile = $this->toSingleDs($dir.DS.''.$func.'.php')))
+				include_once($fFile);
+		}
+
 		return $this;
 	}
 	/**
@@ -442,6 +481,8 @@ class	nFunctions extends \Nubersoft\Singleton
 
 	public	function findByKeyOrder($array,$keyArray)
 	{
+		//if(!is_array($array))
+		//	die(printpre($array));
 		if(!is_array($array))
 			return $this;
 		
@@ -470,6 +511,39 @@ class	nFunctions extends \Nubersoft\Singleton
 			return	(!empty($this->keyList[$val]))? $this->keyList[$val] : false;
 		else
 			return	(!empty($this->keyList))? $this->keyList : array();
+	}
+	/**
+	*	@description			This function is similar to the native PHP array_column()
+	*	@param	$array [array]	This is the array to search through
+	*	@param	$key [string]	This is the key to turn the array into associative
+	*	@param	$opts [array]	These are settings to modify the returned array.
+	*							"unset" - removes the searched key/value pair
+	*							"multi" - forces the organized arrays into numbered arrays. Without multi, if there are more than one
+	*									  arrays with the same key/value, it may mix up data
+	*/
+	public	function organizeByKey($array,$key = false,$opts = array('unset'=>true,'multi'=>false))
+	{
+		$unset	=	(!isset($opts['unset']) || !empty($opts['unset']));
+		$multi	=	(!empty($opts['multi']));
+
+		if(!is_array($array) || empty($key))
+			return array();
+
+		foreach($array as $value) {
+			if(isset($value[$key])) {
+				$newKey	=	$value[$key];
+
+				if($unset)
+					unset($value[$key]);
+
+				if($multi)
+					$new[$newKey][]	=	$value;
+				else
+					$new[$newKey]	=	$value;
+			}
+		}
+
+		return (!empty($new))? $new : array();
 	}
 	/**
 	*	@description	This will search an array recursively and find the named key then organize by nested key name
@@ -589,8 +663,9 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function fileWrite()
 	{
-		nFileHandler::simpleWrite($this->filedata['content'],$this->filedata['filename']);
-		return is_file($this->filedata['filename']);
+		$f	=	fopen($this->filedata['filename'],'a+');
+		fwrite($f,$this->filedata['content']);
+		fclose($f);
 	}
 	/**
 	*	@desciption	This function will render the contents of any included file
@@ -603,7 +678,12 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function renderContents($file, $dataArray = false)
 	{
-		return nRender::simpleRender($file,$dataArray);
+		ob_start();
+		include($file);
+		$data	=	ob_get_contents();
+		ob_end_clean();
+
+		return $data;
 	}
 	/**
 	*	@description	Checks to see if a .htaccess is present
@@ -646,7 +726,19 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function saveToCSV($array,$title)
 	{
-		nFileHandler::getCSVFile($array,$title);
+		header('Content-Type: text/csv');
+		header('Content-Disposition: attachment; filename='.$title.'.csv');
+		header('Cache-Control: no-cache, no-store, must-revalidate');
+		header('Pragma: no-cache');
+		header('Expires: 0');
+
+		$f	=	fopen("php://output", "w");
+		foreach($array as $row) {
+			fputcsv($f, $row);
+		}
+
+		fclose($f);
+		exit;
 	}
 	/**
 	*	@description	Sets the timezone at point of use
@@ -660,7 +752,10 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function arrayKeys($array)
 	{
-		return ArrayWorks::{__FUNCTION__}($array);
+		if(!is_array($array))
+			return array();
+
+		return (!empty($array))? array_keys($array) : array();
 	}
 	/**
 	*	@description	Sets data for the current action
@@ -781,6 +876,24 @@ class	nFunctions extends \Nubersoft\Singleton
 							->getSettings($array);
 	}
 	/**
+	*	@description	Splice value into another array at a certain point 
+	*/
+	public function insertIntoArray(array $array, $insert = '', $placement = 0)
+	{
+		$calc		=	($placement-1);
+		$placement	=	($calc < 0)? 0 : $calc;
+		$end		=	array_slice($array,$placement);
+		$front		=	array_diff($array,$end);
+		$front[]	=	$insert;
+
+		if(is_array($front) && is_array($end))
+			return array_merge($front, $end);
+		elseif(is_array($front) && !is_array($end))
+			return $front;
+		elseif(!is_array($front) && is_array($end))
+			return $end;
+	}
+	/**
 	*	@description	Extracts specific characteristics from XML array attributes
 	*/
 	public	function fetchScripts($array,&$new)
@@ -822,37 +935,199 @@ class	nFunctions extends \Nubersoft\Singleton
 	*	@description	Returns an associate array by column names in a table
 	*/
 	public	function filterArrayByTable($table,$array)
-	{	
+	{
 		if(empty(self::$filedata[$table])) {
-			$MySQL	=	new MySQL();
-			self::$filedata[$table]	=	$MySQL->getColumns($table);
-		}
-		
-		$cols	=	self::$filedata[$table];
-		ArrayWorks::filterByComparison($cols,$array);
+			$qEngine	=	nApp::call()->nQuery();
+			$query		=	$qEngine->describe($table)->getResults();
 
-		return $cols;
+			if($query == 0)
+				return false;
+
+			self::$filedata[$table]	=	array_keys($this->organizeByKey($query,'Field'));
+		}
+
+		$cols	=	self::$filedata[$table];
+		$aCols	=	array_diff($cols,array_diff($cols,array_keys($array)));
+		$files	=	array();
+		foreach($aCols as $key) {
+			if(isset($array[$key]))
+				$files[$key]	=	$array[$key];
+		}
+
+		return $files;
+	}
+	/**
+	*	@description	Extracts all values based on the name of a key
+	*/
+	public	function flattenArrayByKey($array,&$new,$keyName)
+	{
+		foreach($array as $key => $value) {
+			if($keyName === $key) {
+				if(isset($array[$key][0])) {
+					if(is_array($array[$key]))
+						$new	=	array_merge($new,$array[$key]);
+					else
+						$new[]	=	$array[$key];
+				}
+				else {
+					$new[]	=	$array[$key];
+				}
+			}
+			else {
+				if(is_array($value)) {
+					$this->flattenArrayByKey($value,$new,$keyName);
+				}
+			}
+		}
+	}
+	/**
+	*	@description	Extracts all values from an array recursively
+	*/
+	public	function extractAll($array,&$new)
+	{
+		foreach($array as $key => $value) {
+			if(is_array($value))
+				$this->extractAll($value,$new);
+			else
+				$new[]	=	$value;
+		}
 	}
 	/**
 	*	@description	Takes a value (string, int, bool) and determines it's BOOL value
 	*/
 	public	function getBoolVal($val)
 	{
-		return Conversion\Data::{__FUNCTION__}($val);
-	}
+		if(is_array($val) || is_object($val))
+			return $val;
+
+		if(empty($val))
+			return false;
+		elseif(is_bool($val))
+			return $val;
+		elseif(is_int($val)) {
+			if($val == (int) 0 || $val == (int) 1)
+				return ($val == (int) 1);
+		}
+		else {
+			$subVal	=	strtolower($val);
+			if($subVal == '1' || $subVal == '0')
+				return ($subVal == '1');
+			elseif($subVal == 'on' || $subVal == 'off')
+				return ($subVal == 'on');
+			elseif($subVal == 'true')
+				return true;
+			elseif($subVal == 'false')
+				return false;
+		}
+
+		return $val;
+	}		
 	/**
 	*	@description	Basic human-readable file size builder
 	*/
 	public	function getByteSize($val,$settings = false)
 	{
-		return Conversion\Data::{__FUNCTION__}($val,$settings);
+		$to			=	(!empty($settings['to']))? strtoupper($settings['to']) : 'KB';
+		$from		=	(!empty($settings['from']))? strtoupper($settings['from']) : 'MB';
+		$ext		=	(!empty($settings['extension']) || !empty($settings['ext']));
+		$round		=	(!empty($settings['round']) && is_numeric($settings['round']))? $settings['round']: false;
+		# Match it
+		preg_match('/^([0-9]{1,})([a-z]{1,})$/i',$val,$match);
+		if(!empty($match)) {
+			$num		=	(!empty($match[1]))? $match[1] : $match[0];
+			$type		=	(!empty($match[2]))? $match[2] : $from;
+		}
+
+		$num		=	$val;
+		$type		=	$from;
+		$div		=	1024;
+		$b			=	1;
+		$kb			=	$div*$b;
+		$mb			=	$div*$kb;
+		$gb			=	$div*$mb;
+		$tb			=	$div*$gb;
+
+		$conv['B']	=	$b;
+		$conv['KB']	=	$kb;
+		$conv['MB']	=	$mb;
+		$conv['GB']	=	$gb;
+		$conv['TB']	=	$tb;
+
+		if(!isset($conv[$type]))
+			die('FROM value not valid: '.$type);
+		elseif(!isset($conv[$to]))
+			die('TO value not valid: '.$to);
+
+		$currVal	=	$val*$conv[$type];
+		$returnVal	=	$currVal/$conv[$to];
+
+		if($round)
+			$returnVal	=	round($returnVal,$round);
+
+		return ($ext)? $returnVal.$to : $returnVal;
 	}
 	/**
 	*	@description	Removes double directory separators with just one
 	*/
 	public	function toSingleDs($val)
 	{
-		return (!is_array($val) && !is_object($val))? str_replace(DS.DS,DS,$val) : $val;
+		return str_replace(DS.DS,DS,$val);
+	}
+	/**
+	*	@description	Recursively searches for a key name in an array and returns the value associated with it.
+	*/
+	public	function getValuesByKeyName($array,$keyname,$useNameAsKey = true)
+	{
+		if(empty($array))
+			return false;
+
+		foreach($array as $key => $value) {
+			if($key == $keyname) {
+				if($useNameAsKey)
+					$new[$keyname][]	=	(isset($value[$keyname]))? $value[$keyname] : false;
+				else
+					$new[]	=	$value;
+			}
+			else{
+				if(is_array($value)) {
+					$new	=	$this->getValuesByKeyName($value,$keyname);
+				}
+			}
+		}
+
+		if(!empty($new))
+			return $new;
+	}
+	/**
+	*	@description	Extracts all vallues from a multi-dimensional array and puts them in one
+	*/
+	public	function flattenArray($array,&$new,$currKey = false)
+	{
+		if(empty($array))
+			return false;
+		elseif(!is_array($array))
+			return false;
+
+		foreach($array as $key => $value) {
+			if(!is_numeric($key)) {
+				if(!isset($new[$key]))
+					$new[$key]	=	array();
+
+				if(is_array($value)) {
+					$this->flattenArray($value,$new,$key);
+				}
+				else {
+					$new[$key][]	=	$value;
+				}
+			}
+			else {
+				if(isset($value[0][0]))
+					$this->flattenArray($value[$key],$new,$currKey);
+				else {
+					$new	=	(is_array($new) && is_array($value))? array_merge($new,$value) : $new;
+				}
+			}
+		}
 	}
 	/**
 	*	@description	
@@ -909,6 +1184,13 @@ class	nFunctions extends \Nubersoft\Singleton
 		return false;
 	}
 	/**
+	*	@description	Retrieve the html encoder/decoder
+	*/
+	public	function safe()
+	{
+		return $this->getHelper('Safe');
+	}
+	/**
 	*	@description	Creates a json response and dies for ajax-based requests
 	*/
 	public	function getJson($file)
@@ -919,32 +1201,47 @@ class	nFunctions extends \Nubersoft\Singleton
 		return json_decode(file_get_contents($file));
 	}
 	/**
-	*	@description	Checks if the request is ajax-based
-	*/
-	public	function isAjaxRequest($type = 'HTTP_X_REQUESTED_WITH')
-	{
-		return Ajax::{__FUNCTION__}($type);
-	}
-	/**
 	*	@description	Creates a json response and dies for ajax-based requests
 	*/
 	public	function ajaxResponse($array)
 	{
-		return Ajax::{__FUNCTION__}($array);
+		return die(json_encode($array));
 	}
 	/**
 	*	@description	General alerting for ajax responses
 	*/
 	public	function ajaxAlert($message,$merge = false)
 	{
-		return Ajax::{__FUNCTION__}($message,$merge);
+		if(!$this->isAjaxRequest())
+			return false;
+
+		$arr	=	array('alert'=>$message,'html'=>array(''),'sendto'=>array('.nbr_action_loader'));
+
+		if(is_array($merge)) {
+			if(isset($merge['html'])) {
+				$arr['html']	=	array_merge($merge['html'],$arr['html']);
+				$arr['sendto']	=	array_merge($merge['sendto'],$arr['sendto']);
+			}
+			else {
+				$arr	=	array_merge($arr,$merge);
+			}
+		}
+
+		$this->ajaxResponse($arr);
 	}
 	/**
 	*	@description	Creates a javascript-based "redirect"
 	*/
 	public	function ajaxRouter($link)
 	{
-		return Ajax::{__FUNCTION__}($link);
+		$this->ajaxResponse(array(
+			'html'=>array(
+				'<script>window.location="'.$link.'";</script>'
+			),
+			'sendto'=>array(
+				'body'
+			)
+		));
 	}
 	/**
 	*	@description	Takes an array such as `$_GET` and creates a query string. The query
@@ -963,9 +1260,33 @@ class	nFunctions extends \Nubersoft\Singleton
 	*					# Option 2 Gives you
 	*					key1=No+thank+you
 	*/
-	public	function createQueryString($notvar = false,$request = [],$keep = false)
+	public	function createQueryString($notvar = false,$request = array(),$keep = false)
 	{
-		return Conversion\Http::{__FUNCTION__}($notvar,$request,$keep);
+		$type		=	$request;
+		$filter		=	(!is_array($notvar))? array($notvar):$notvar;
+
+		if(is_array($type) && !empty($type)) {
+			foreach($type as $key => $value) {	
+				if(strpos($key,"/") !== false) {
+					unset($type[$key]);
+					continue;
+				}
+
+				if(in_array($key,$filter)) {
+					if($keep == false)
+						unset($type[$key]);
+				}
+				else {
+					if($keep != false)
+						unset($type[$key]);
+				}
+			}
+		}
+
+		if(isset($type) && is_array($type)) {		
+			$useAnd	=	(!empty($type))? "&":"";
+			return $useAnd.http_build_query($type);
+		}
 	}
 	/**
 	*	@description	Creates a date-based value
@@ -983,36 +1304,11 @@ class	nFunctions extends \Nubersoft\Singleton
 		return	$number;
 	}
 	/**
-	*	@description	Retrieve the html encoder/decoder
-	*/
-	public	function safe()
-	{
-		return $this->getHelper('Safe');
-	}
-	/**
 	*	@description	Initializes the Form creation object
 	*/
 	public	function getForm()
 	{
 		return $this->getHelper('nForm');
-	}
-	/**
-	*	@description	Turns a value like "table_name_here" to "Table Name Here"
-	*/
-	public	function colToTitle($title,$uc = true)
-	{
-		return $this->columnToTitle($title,$uc);
-	}
-	/**
-	*	@description	Alias of above
-	*/
-	public	function columnToTitle()
-	{
-		$args	=	func_get_args();
-		$title	=	(!empty($args[0]))? $args[0] : false;
-		$uc		=	(isset($args[1]))? $args[1] : true;
-		
-		return ($title)? Conversion::{__FUNCTION__}($title, $uc) : $title;
 	}
 	/**
 	*	@description	Basic parent / child extraction
@@ -1028,6 +1324,80 @@ class	nFunctions extends \Nubersoft\Singleton
 		$struc	=	(!empty($struc))? $struc: '';
 
 		return $struc; 
+	}
+	/**
+	*	@description	Replaces key names to match what the form requires
+	*/
+	public	function replaceKeys(&$array, $match)
+	{
+		foreach($array as $key => $value) {
+			if(in_array($key,$match)) {
+				$array[array_search($key,$match)]	=	$array[$key];
+				unset($array[$key]);
+			}
+		}
+	}
+	/**
+	*	@description	Turns a value like "table_name_here" to "Table Name Here"
+	*/
+	public	function colToTitle($title,$uc = true)
+	{
+		$title	= str_replace('_',' ',$title);
+		return ($uc)? ucwords($title) : $title;
+	}
+	/**
+	*	@description	Alias of above
+	*/
+	public	function columnToTitle($title,$uc = true)
+	{
+		return $this->colToTitle($title, $uc);
+	}
+	/**
+	*	@description	This will sort an array by a certain key
+	*/
+	public	function sortByKey($array,$key,$reverse = false)
+	{
+		usort($array,function($a,$b) use ($key) {
+			if(!isset($a[$key]) || !isset($b[$key]))
+				return 0;
+
+			 if ($a[$key] == $b[$key])
+				return 0;
+
+			if(is_numeric($a[$key]))
+				return ($a[$key] < $b[$key]) ? -1 : 1;
+			else
+				return strcmp($a[$key], $b[$key]);
+		});
+
+		foreach($array as $sKey => $sVal) {
+			$new["{$key}_{$sKey}"]	=	$sVal;
+		}
+
+		if(isset($new) && is_array($new)) {
+			if($reverse) {
+				$new	=	array_reverse($new);
+			}
+		}
+
+		return array_values($new);
+	}
+	/**
+	*	@description	Same essential function as array_walk_recursive()
+	*					only it will keep the keys the same
+	*/
+	public	function arrayWalkRecursive($array, $func)
+	{
+		foreach($array as $key => $value) {
+			if(is_array($value)) {
+				$new[$key]	=	$this->arrayWalkRecursive($value,$func);
+			}
+			else {
+				$new[$key]	=	$func($value);
+			}
+		}
+
+		return (isset($new))? $new : $array;
 	}
 	/**
 	* @description This function is a recursive iterator, meaning it will
@@ -1060,7 +1430,7 @@ class	nFunctions extends \Nubersoft\Singleton
 		return $arr;
 	}
 	/**
-	*  @description    This function takes your pool of ids and loops through them, sorting the arrays by parent and child
+	*  @description    This function takes your pool of ids and loops through them, sorting the menu items
 	*/
 	public	function nestedFromFlat($array, $pKey = 'parent_id', $cKey='id')
 	{
@@ -1106,6 +1476,32 @@ class	nFunctions extends \Nubersoft\Singleton
 		return $arr;
 	}
 	/**
+	*	@description	Basic extraction of all values from the array recursively
+	*/
+	public	function getRecursiveValues($array)
+	{
+		if(!is_array($array))
+			return $array;
+		elseif(empty($array))
+			return $array;
+
+		$new	=	array();
+		$this->extractAll($array,$new);
+		return $new;
+	}
+	/**
+	*	@description	Basic extraction of all keys from the array recursively
+	*/
+	public	function getRecursiveKeys($array,&$allKeys)
+	{
+		foreach($array as $key => $value) {
+			$allKeys[]	=	$key;
+			if(is_array($value)) {
+				$this->getRecursiveKeys($value,$allKeys);
+			}
+		}
+	}
+	/**
 	*	@description	Basic ip return from SERVER global
 	*/
 	public	function getClientIp($key = 'REMOTE_ADDR')
@@ -1116,11 +1512,28 @@ class	nFunctions extends \Nubersoft\Singleton
 			return $_SERVER[$key];
 	}
 	/**
-	*	@description	Simple dollar rendering
+	*	@description	Recursive trim
+	*/
+	public	function trimAll($array,$type=false)
+	{
+		if(empty($array))
+			return $array;
+		elseif(is_string($array))
+			return (!empty($type))? trim($array,$type) : trim($array);
+
+		foreach($array as $key => $value)
+			$array[$key]	=	$this->trimAll($value,$type);
+
+		return $array;
+	}
+	/**
+	*	@description	Basic dollar rendering
 	*/
 	public	function toDollar($string,$curr = '$',$dec=2,$sep=',',$dectype='.',$front=true)
 	{
-		return Conversion\Money::{__FUNCTION__}($string,$curr,$dec,$sep,$dectype,$front);
+		$string	=	preg_replace('/[^0-9\.]/','',$string);
+		$number	=	number_format($string,$dec,$dectype,$sep);
+		return ($front)? $curr.$number : $number.$curr;
 	}
 	/**
 	*	@description	Toggle error reporting
@@ -1146,113 +1559,23 @@ class	nFunctions extends \Nubersoft\Singleton
 	}
 	/**
 	*	@description	Recursively change the keys in an array to upper case or lowercase
-	*					Also allows callable functions for custom treatments
 	*/
 	public	function recurseArrayKeysChanged($array,$type = false,$sort=true)
 	{
-		return ArrayWorks::{__FUNCTION__}($array,$type,$sort);
-	}
-	/**
-	*	@description	Creates an array with regex values based on the values of an input array<br>
-	*					and a target array with the replacement maps
-	*	@example		$array = ['TEST'=>'best','REST'=>'fest']  AND $target = ['key1'=>'~TEST~, ~REST~','key2'=>'~REST~']
-	*					This example would give you a final array of ['key1'=>'best, fest','key2'=>'fest']
-	*/
-	public	function interChangeArrays(array $array, array $target,$split='/~[^~]+~/',$trim='~')
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$target,$split,$trim);
-	}
-	/**
-	*	@description	Recursive trim
-	*/
-	public	function trimAll($array,$type=false)
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$type);
-	}
-	/**
-	*	@description	Basic extraction of all keys from the array recursively
-	*/
-	public	function getRecursiveKeys($array,&$allKeys)
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$allKeys);
-	}
-	/**
-	*	@description	Basic extraction of all values from the array recursively
-	*/
-	public	function getRecursiveValues($array)
-	{
-		return ArrayWorks::{__FUNCTION__}($array);
-	}
-	/**
-	*	@description	Extracts all values from an array recursively
-	*/
-	public	function extractAll($array,&$new)
-	{
-		ArrayWorks::{__FUNCTION__}($array,$new);
-	}
-	/**
-	*	@description	Same essential function as array_walk_recursive()
-	*					only it will keep the keys the same
-	*/
-	public	function arrayWalkRecursive($array, $func)
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$func);
-	}
-	/**
-	*	@description	This will sort an array by a certain key
-	*/
-	public	function sortByKey($array,$key,$reverse = false)
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$key,$reverse);
-	}
-	/**
-	*	@description	Replaces key names to match what the form requires
-	*/
-	public	function replaceKeys(&$array, $match)
-	{
-		ArrayWorks::{__FUNCTION__}($array,$match);
-	}
-	/**
-	*	@description	Extracts all vallues from a multi-dimensional array and puts them in one
-	*/
-	public	function flattenArray($array,&$new,$currKey = false)
-	{
-		ArrayWorks::{__FUNCTION__}($array,$new,$currKey);
-	}
-	/**
-	*	@description	Recursively searches for a key name in an array and returns the value associated with it.
-	*/
-	public	function getValuesByKeyName($array,$keyname,$useNameAsKey = true)
-	{
-		$new	=	[];
-		ArrayWorks::{__FUNCTION__}($array,$keyname,$new,$useNameAsKey);
-		return $new;
-	}
-	/**
-	*	@description	Extracts all values based on the name of a key
-	*/
-	public	function flattenArrayByKey($array,&$new,$keyName)
-	{
-		ArrayWorks::{__FUNCTION__}($array,$new,$keyName);
-	}
-	/**
-	*	@description	Splice value into another array at a certain point 
-	*/
-	public function insertIntoArray(array $array, $insert = '', $placement = 0)
-	{
-		return ArrayWorks::{__FUNCTION__}($array, $insert, $placement);
-	}
-	/**
-	*	@description			This function is similar to the native PHP array_column()
-	*	@param	$array [array]	This is the array to search through
-	*	@param	$key [string]	This is the key to turn the array into associative
-	*	@param	$opts [array]	These are settings to modify the returned array.
-	*							"unset" - removes the searched key/value pair
-	*							"multi" - forces the organized arrays into numbered arrays. Without multi, if there are more than one
-	*									  arrays with the same key/value, it may mix up data
-	*/
-	public	function organizeByKey($array,$key,$opts = ['unset'=>true,'multi'=>false])
-	{
-		return ArrayWorks::{__FUNCTION__}($array,$key,$opts);
-	}
+		if(!is_array($array))
+			return $array;
+
+		if($sort)
+			ksort($array);
+
+		foreach($array as $key => $value) {
+			$useKey				=	($type)? strtoupper($key) : strtolower($key);
+			$return[$useKey]	=	$this->recurseArrayKeysChanged($value,$type);
+
+			if($sort && is_array($return[$useKey]))
+				ksort($return[$useKey]);
+		}
+
+		return (isset($return))? $return : $array;
+	}		
 }
