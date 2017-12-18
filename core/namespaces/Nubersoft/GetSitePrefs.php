@@ -261,8 +261,7 @@ define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 	{
 		if(!is_file($this->client_define)) {
 			$getDefine	=	$this->getPlugin('nPlugins\Nubersoft\CoreStartUp')->createDefine($this);
-			$txt		=	($getDefine)? 'Client prefs have been rebuilt.' : 'An error occurred rebuilding prefs';
-			$this->saveIncidental('rebuild_reg',array('msg'=>$txt));
+			$txt		=	($getDefine)? $this->toMsgAdminSuccess('Client prefs have been rebuilt.') : $this->toMsgAdminError('An error occurred rebuilding prefs');
 			if(is_file($this->client_define))
 				include_once($this->client_define);
 		}
