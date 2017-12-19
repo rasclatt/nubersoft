@@ -192,14 +192,15 @@ class nObserverTemplate extends \Nubersoft\nRender implements nObserver
 					echo $this->render($this->getBackEnd('index.php'));
 					break;
 				case('error'):
-
-					//die(printpre($this->getDataNode()));
-
-					if(!empty($cached))
+					$allowCached	=	(defined('CACHE_ERROR_404') && CACHE_ERROR_404);
+					if($allowCached && !empty($cached))
 						echo $cached;
 					else {
-						$html	=	$this->error404Page($cached);
-						$this->cacheHtml($type.$getPId,$html);
+						$html	=	$this->error404Page();
+
+						if($allowCached)
+							$this->cacheHtml($type.$getPId,$html);
+						
 						echo $html;
 					}
 					break;
