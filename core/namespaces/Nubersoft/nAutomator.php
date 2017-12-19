@@ -314,7 +314,7 @@ class nAutomator extends \Nubersoft\nApp
 									
 									if(!function_exists($value)) {
 										$msg	=	'The function '.$value.'() is not loaded.';
-										$this->toAlert($msg);
+										$this->toMsgCoreAdminAlert($msg);
 										trigger_error($msg,E_USER_NOTICE);
 									}
 									else 

@@ -53,7 +53,7 @@ if($this->getPost('action') == 'nbr_sync_server') {
 		}
 	}
 	else {
-		$this->toAlert('Path doesn\'t match! No "'.$basedir.'" found.');
+		$this->toMsgCoreAdminAlert('Path doesn\'t match! No "'.$basedir.'" found.');
 	}
 	$FTP->close();
 }

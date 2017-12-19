@@ -13,7 +13,7 @@ class Updater extends \Nubersoft\nApp
 		$this->localEndpoint	=	(!empty($localEndpoint))? $localEndpoint : $this->getSettingsDir(DS.'deploy'.DS.'nUberSoft-Framework-master.zip');
 		# Check if the deploy folder is already made
 		if(!$this->isDir(pathinfo($this->localEndpoint,PATHINFO_DIRNAME))) {
-			$this->toAlert('Save folder could not be created to move update to.');
+			$this->toMsgCoreAdminAlert('Save folder could not be created to move update to.');
 			return false;
 		}
 		# Get the git master file

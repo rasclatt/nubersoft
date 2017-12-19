@@ -2,81 +2,86 @@
 namespace Nubersoft;
 
 class Messenger extends \Nubersoft\nApp
+{
+	const	LOGGED_OUT	=	'You must be logged in to view this content';
+	/**
+	*	@description	Alerts the user regarding logged in state.
+	*/
+	public	function alertLoggedIn($msg = false,$wrapper = 'nbr_comment')
 	{
-		const	LOGGED_OUT	=	'You must be logged in to view this content';
-		/*
-		**	@description	Alerts the user regarding logged in state.
-		*/
-		public	function alertLoggedIn($msg = false,$wrapper = 'nbr_comment')
-			{
-				$msg	=	(empty($msg))? self::LOGGED_OUT : $msg;
-				
-				if(!$this->isLoggedIn()) {
-					if($this->isAjaxRequest())
-						$this->ajaxResponse(array('alert'=>$msg));
-					else
-						return '<span class="'.$wrapper.'">'.$msg.'</span>';
-				}
-			}
-		/*
-		**	Get alerts from data node
-		*/
-		public	function getAllAlerts($key = false)
-			{
-				$errors				=
-				$warnings			=	array();
-				$err				=	$this->toArray($this->getError());
-				$inc				=	$this->toArray($this->getIncidental());
-				
-				if(!empty($err))
-					$this->flattenArrayByKey($err,$errors,'msg');
-				
-				if(!empty($inc))
-					$this->flattenArrayByKey($inc,$warnings,'msg');
-				
-				$array['warnings']	=	$warnings;
-				$array['errors']	=	$errors;
-				
-				return (!empty($key) && isset($array[$key]))? $array[$key] : $array;
-			}
-		/*
-		**	Get alerts from data node
-		*/
-		public	function getAlertsByKind($key = false,$type = false)
-			{
-				$errors				=
-				$warnings			=	array();
-				$err				=	$this->toArray($this->getError());
-				$inc				=	$this->toArray($this->getIncidental());
-				
-				if(!empty($err) && isset($err[$key]))
-					$this->flattenArrayByKey($err,$errors,'msg');
-				
-				if(!empty($inc) && isset($inc[$key]))
-					$this->flattenArrayByKey($inc,$warnings,'msg');
-				
-				$array['warnings']	=	$warnings;
-				$array['errors']	=	$errors;
-			
-				if(!empty($type))
-					return (isset($array[$type]))? $array[$type] : array();
-					
-				return $array;
-			}
-		
-		public	function toAlert($msg, $action = 'general', $opts = false, $type = true, $toSess = true)
-			{
-				if($this->isAjaxRequest())
-					$this->ajaxAlert($msg);
-					
-				$msgArr	=	array('msg'=>$msg);
-				$array	=	(is_array($opts) && !empty($opts))? array_merge($msgArr,$opts) : $msgArr;
-				if($type)
-					$this->saveIncidental('alerts',array($action=>$array));
-				else
-					$this->saveError('alerts',array($action=>$array));
-				
-				if($toSess)
-					$this->setSession('alerts',array($action=>$array),true);
-			}
+		$msg	=	(empty($msg))? self::LOGGED_OUT : $msg;
+
+		if(!$this->isLoggedIn()) {
+			if($this->isAjaxRequest())
+				$this->ajaxResponse(array('alert'=>$msg));
+			else
+				return '<span class="'.$wrapper.'">'.$msg.'</span>';
+		}
 	}
+	/**
+	*	@description	Get alerts from data node
+	*/
+	public	function getAllAlerts($key = false)
+	{
+		return $this->getAlertsByKind($key);
+	}
+	/**
+	*	@description	Get alerts from data node
+	*/
+	public	function getAlertsByKind($key=false,$type = false)
+	{
+		$default			=
+		$success			=
+		$incidentals		=
+		$errors				=	[];
+		if(!empty($key)) {
+			$arr	=	$this->getSystemMessages($key);
+			if(empty($arr))
+				return $default;
+			
+			if(!empty($type))
+				return (!empty($arr[$type]))? $arr[$type] : $default;
+			
+			$this->extractAll($arr,$default);
+			
+			return $default;
+		}
+		
+		$alerts				=	$this->getSystemMessages();
+		
+		if(!empty($alerts['alert']))
+			$this->extractAll($alerts['alert'],$incidentals);
+		
+		if(!empty($alerts['error']))
+			$this->extractAll($alerts['error'],$errors);
+		
+		if(!empty($alerts['success']))
+			$this->extractAll($alerts['success'],$success);
+		
+		$array['warnings']	=	$incidentals;
+		$array['errors']	=	$errors;
+		$array['success']	=	$success;
+		
+		if(!empty($key))
+			return (isset($array[$key]))? $array[$key] : $default;
+
+		return $array;
+	}
+	/**
+	*	@description	
+	*/
+	public	function toAlert($msg, $action = 'general', $opts = false, $type = true, $presist = false)
+	{
+		if($this->isAjaxRequest())
+			$this->ajaxAlert($msg);
+		
+		if($type)
+			$meth	=	($presist)? "toMsgCoreAlert" : "toMsgAlert";
+		else
+			$meth	=	($presist)? "toMsgCoreError" : "toMsgError";
+
+		$this->{$meth}($msg,$action);
+		
+		return $this;
+	}
+}

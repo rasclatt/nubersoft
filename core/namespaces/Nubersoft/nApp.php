@@ -1839,55 +1839,6 @@ class	nApp extends \Nubersoft\nFunctions
 		return $this->getHelper('Safe')->encode($content);
 	}
 	/**
-	*	@description	Core messaging
-	*/
-	/*
-	public	function toMsgSuccess($msg,$key='general',$persist=false)
-	{
-		$this->getHelper('nAlert')->saveSuccess($msg,$key,$persist);
-	}
-	
-	public	function toMsgCoreSuccess($msg,$key='general')
-	{
-		$this->toMsgSuccess($msg,$key,true);
-	}
-	
-	public	function toMsgAdminSuccess($msg,$key='',$persist=false)
-	{
-		$this->getHelper('nAlert')->saveSuccess($msg,'admin'.$key,$persist);
-	}
-	
-	public	function toMsgAdminCoreSuccess($msg,$key='')
-	{
-		$this->toMsgAdminSuccess($msg,$key,true);
-	}
-	
-	public	function msgSuccess($key=false)
-	{
-		return nAlert::getSuccess($key);
-	}
-	
-	public	function msgCoreSuccess($key=false)
-	{
-		if(empty($key))
-			$key	=	'general';
-		
-		return nAlert::getStoredMessage('success',$key);
-	}
-	
-	public	function msgAdminSuccess()
-	{
-		return nAlert::getSuccess('admin');
-	}
-	public	function msgAdminCoreSuccess($key=false)
-	{
-		if(empty($key))
-			$key	=	'admin';
-		
-		return nAlert::getStoredMessage('success',$key);
-	}
-	*/
-	/**
 	*	@description	Retrieve error messages
 	*/
 	public	function getAllAlerts($key = false)
@@ -1904,7 +1855,6 @@ class	nApp extends \Nubersoft\nFunctions
 	
 	public	function doMessageService($name,$args=false)
 	{
-		
 		$nAlert		=	$this->getHelper('nAlert');
 		$msgType	=	$nAlert->sortMessageTypes($name);
 		$kind		=	$msgType['type'];

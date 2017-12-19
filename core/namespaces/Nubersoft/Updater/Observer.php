@@ -30,7 +30,7 @@ class Observer extends \Nubersoft\nObserver
 				$this->addRedirect($this->adminUrl('/?action=nbr_deploy_changes'));
 			# Don't do anything if it's not there
 			else
-				$this->toAlert('Update file was not found. Error probably occurred saving or retieving file.');
+				$this->toMsgAdminAlert('Update file was not found. Error probably occurred saving or retieving file.');
 		}
 	}
 	
