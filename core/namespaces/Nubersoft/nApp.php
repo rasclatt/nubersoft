@@ -1903,7 +1903,7 @@ class	nApp extends \Nubersoft\nFunctions
 		}
 	}
 	
-	public	function getSystemMessages($kind='',$clear=true)
+	public	function getSystemMessages($kind='',$clear=false)
 	{
 		return $this->getHelper('nAlert')->{__FUNCTION__}($kind,$clear);
 	}

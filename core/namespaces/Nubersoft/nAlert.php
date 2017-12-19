@@ -199,7 +199,7 @@ class nAlert extends NubeData
 	/**
 	*	@description	Returns all the messages in the session and internal arrays
 	*/
-	public	function getSystemMessages($kind='',$clear=true)
+	public	function getSystemMessages($kind='',$clear=false)
 	{
 		$use			=	[];
 		$stored			=	$this->getAllStoredMessages($clear);
