@@ -7,8 +7,8 @@ class MySQL extends \Nubersoft\CoreMySQL
 	
 	public	function getColumns($table)
 	{
-		$query		=	$this->describe($table)->getResults();
-
+		$query		=	$this->nQuery()->describe($table)->getResults();
+		
 		if($query == 0)
 			return false;
 

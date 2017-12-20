@@ -574,12 +574,11 @@ define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 		$login	=	(!empty($_SESSION['token']['login']))? $_SESSION['token']['login'] : false;
 		$page	=	(!empty($_SESSION['token']['nProcessor']['page']))? $_SESSION['token']['nProcessor']['page'] : false;
 
-		if(!$login) {
+		if(!$login)
 			$login	=	$nToken->getSetToken('login');
-		}
-		if(!$page) {
+		
+		if(!$page)
 			$page	=	$nToken->setMultiToken('nProcessor','page');
-		}
 
 		$isAjax	=	$this->isAjaxRequest();
 

@@ -301,7 +301,7 @@ class ArrayWorks extends \Nubersoft\Singleton
 		return (!empty($new))? $new : array();
 	}
 	
-	public	function filterByComparison($arrayKeys,&$array)
+	public	static	function filterByComparison($arrayKeys,&$array)
 	{	
 		$aCols			=	array_diff($arrayKeys,array_diff($arrayKeys,array_keys($array)));
 		$files			=	[];
