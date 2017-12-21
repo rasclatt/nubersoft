@@ -510,55 +510,23 @@ class	nFunctions extends \Nubersoft\Singleton
 	*/
 	public	function isDir($dir,$make = true,$chmod = 0755)
 	{
-		# Add printpre
-		if(!function_exists('printpre'))
-			$this->autoload('printpre');
-		# TEST
-		$strip	=	trim(strip_tags(printpre($dir)));
-		# 
-		if(!is_dir($strip) && (basename($strip) == '1'))
-			file_put_contents(NBR_CLIENT_DIR.DS.'settings'.DS.'create_dir_'.date('YmdHis').rand().'.txt',$strip);
-
-		try {
-			if(empty($dir))
-				trigger_error('Directory can not be empty',E_USER_WARNING);
-			else {
-				if(!is_dir($dir) && $make) {
-					if(!@mkdir($dir,$chmod,true))
-						throw new nException('Directory failed to be created');
-					else {
-						# Store the creation report
-						$repFile	=	NBR_CLIENT_DIR.DS.'settings'.DS.'reporting'.DS.'mkdir'.DS.'log.txt';
-						$repDir		=	pathinfo($repFile,PATHINFO_DIRNAME);
-						if(!is_dir($repDir)) {
-							@mkdir($repDir,0755,true);
-						}
-
-						if(is_dir($repDir)) {
-							$msg	=	"[time] ".date('Y-m-d H:i:s').PHP_EOL."[debug] ".str_replace(array("\t",")/"),array('',')'.PHP_EOL.'/'),trim(strip_tags(printpre(\Nubersoft\nApp::call()->stripRoot($dir))))).PHP_EOL."-------------------------------".PHP_EOL;
-							file_put_contents($repFile,$msg,FILE_APPEND);
-						}
-
-						chmod($dir,$chmod);
-					}
+		if(strlen($dir) > 4096)
+			return false;
+		
+		if(empty($dir))
+			trigger_error('Directory can not be empty',E_USER_WARNING);
+		else {
+			if(!is_dir($dir) && $make) {
+				if(!@mkdir($dir,$chmod,true)) {
+					trigger_error('Directory failed to be created',E_USER_WARNING);
+					return false;
 				}
+			}
 
-				return is_dir($dir);
-			}
+			return is_dir($dir);
 		}
-		catch(nException $e) {
-			$nApp	=	nApp::call();
-			if($nApp->isAdmin()) {
-				$this->autoload('printpre');
-				die($e->getMessage().printpre($dir,'{backtrace}'));
-			}
-			else {
-				$nApp->saveToLogFile(array(
-					'filename'=>'nException'.DS.__FUNCTION__,
-					'path'=>NBR_SETTINGS.DS.'exceptions'.DS
-				),$e->getMessage().strip_tags(printpre($dir,'{backtrace}')));
-			}
-		}
+		
+		return false;
 	}
 	/**
 	*	@description	This is part 1 of chained process to write to disk
