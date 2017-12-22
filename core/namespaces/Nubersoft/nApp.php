@@ -1825,6 +1825,13 @@ class	nApp extends \Nubersoft\nFunctions
 		return $data;
 	}
 	/**
+	*	@description	Return the $_FILES array
+	*/
+	public	function getFiles($raw=false)
+	{
+		return (!empty($raw))? $_FILES : $this->getDataNode('_FILES');
+	}
+	/**
 	*	@description	Used to decode html entities
 	*/
 	public	function decode($content)
