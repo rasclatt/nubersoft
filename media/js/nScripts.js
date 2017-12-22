@@ -571,7 +571,23 @@ nCountDown	=	function($)
 			}
 			else {
 				// Display the result in the element with id="demo"
-				$(elemId).html('<div class="cd-wrap"><div class="cd-large-num">'+(days.toString()).padStart(2,0)+"</div><div class=\"cd-small-num\">Days</div></div><div class=\"cd-wrap\"><div class=\"cd-large-num\">"+(hours.toString()).padStart(2,0)+"</div><div class=\"cd-small-num\">Hrs</div></div><div class=\"cd-wrap\"><div class=\"cd-large-num\">"+(minutes.toString()).padStart(2,0)+"</div><div class=\"cd-small-num\">Mins</div></div><div class=\"cd-wrap\"><div class=\"cd-large-num\">"+(seconds.toString()).padStart(2,0)+"<div><div class=\"cd-small-num\">Secs</div></div>");
+				$(elemId).html(
+					'<div class="cd-wrap">'+
+						'<div class="cd-large-num">'+(days.toString()).padStart(2,0)+"</div>"+
+						"<div class=\"cd-small-num\">Days</div>"+
+					"</div>"+
+					"<div class=\"cd-wrap\">"+
+						"<div class=\"cd-large-num\">"+(hours.toString()).padStart(2,0)+"</div>"+
+						"<div class=\"cd-small-num\">Hrs</div>"+
+					"</div>"+
+					"<div class=\"cd-wrap\">"+
+						"<div class=\"cd-large-num\">"+(minutes.toString()).padStart(2,0)+"</div>"+
+						"<div class=\"cd-small-num\">Mins</div>"+
+					"</div>"+
+					"<div class=\"cd-wrap\">"+
+						"<div class=\"cd-large-num\">"+(seconds.toString()).padStart(2,0)+"</div>"+
+						"<div class=\"cd-small-num\">Secs</div>"+
+					"</div>");
 			}
 			// If the count down is finished, write some text 
 			if (distance < 0) {
