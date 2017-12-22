@@ -531,6 +531,60 @@ function fetchAllTokens($)
 				});
 		}
 	}
+/**
+*	@desription	Creates a countdown timer
+*/
+nCountDown	=	function($)
+{
+	var self			=	this;
+	self.countDownDate	=	false;
+	self.setFutureDate	=	function(DateTime, locale, timezone)
+	{
+		locale		=	(typeof locale == "undefined")? 'en-US' : locale;
+		timezone	=	(typeof timezone == "undefined")? 'America/Los_Angeles' : timezone;
+		// Set the date we're counting down to
+		// DateTime needs to be formatted as Jan 2, 2018 16:47:58
+		self.countDownDate	=	new Date(new Date(DateTime).toLocaleString(locale, { timeZone: timezone }));
+		return self;
+	};
+	
+	self.createClock	=	function(elemId,doneMessage, locale, timezone)
+	{
+		locale		=	(typeof locale == "undefined")? 'en-US' : locale;
+		timezone	=	(typeof timezone == "undefined")? 'America/Los_Angeles' : timezone;
+		
+		// Update the count down every 1 second
+		var x = setInterval(function() {
+			var now	=	new Date(new Date().toLocaleString(locale, { timeZone: timezone }));
+			// Find the distance between now an the count down date
+			var distance = self.countDownDate - now;
+			// Time calculations for days, hours, minutes and seconds
+			var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+			var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+			//if(days >= <?php echo $User['days_to_complete'] ?>)
+			//   days	=	13;
+			if(typeof elemId == "function") {
+				elemId(x,self,days,hours,minutes,seconds);
+			}
+			else {
+				// Display the result in the element with id="demo"
+				$(elemId).html('<div>'+(days.toString()).padStart(2,0)+"<div>Days</div></div><div>"+(hours.toString()).padStart(2,0)+"<div>Hrs</div></div><div>"+(minutes.toString()).padStart(2,0)+"<div>Mins</div></div><div>"+(seconds.toString()).padStart(2,0)+"<div>Secs</div></div>");
+			}
+			// If the count down is finished, write some text 
+			if (distance < 0) {
+				clearInterval(x);
+				if(typeof doneMessage == "function")
+					doneMessage(self);
+				else
+					$(elemId).html(doneMessage).addClass('col-1 span-');
+			}
+		}, 1000);
+	};
+}
+
 /*
 **	@description	Required on an immediate effect. Checks if the event is a click, mouseover, etc
 */
@@ -1537,7 +1591,7 @@ var default_actionScope;
 // Create global ajax object
 var	AjaxEngine	=	new nAjax(njQuery);
 // When the document is ready
-njQuery(document).ready(function($) {
+jQuery(document).ready(function($) {
 	var	currClick;
 	var doc			=	$(this);
 	var	activeObj	=	{};

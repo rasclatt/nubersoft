@@ -4,7 +4,7 @@
 		</div>
 <?php $this->get3rdPartyHelper('\nPlugins\Nubersoft\JsLibrary')->nScroller(); ?>
 <script>
-njQuery(document).ready(function($) {
+jQuery(document).ready(function($) {
 	
 	function sizeFont(thisVal,minRange,maxRange)
 		{
