@@ -29,64 +29,13 @@ echo $this->getTemplateDoc('head.php','admintools');
 $this->getHelper('CoreMySQL')->saveDatabaseScheme(NBR_ROOT_DIR.DS.'installer'.DS.'sql');
 ?>
 <body class="nbr_admintools<?php if($this->isAdmin()) echo '_loggedin' ?>">
-	<!-- MODAL -->
-	<div id="loadspot_modal"></div>
-	<!-- CONTENT -->
-	<div id="content" class="nbr_wrapper">
-		<!-- ADMIN CONTENT -->
-		<div id="admincontent" class="col-count-3 offset">
-			<?php
-				if($this->isAdmin()) {
-			?>
-			
-			<!-- ADMIN TOOL BAR CONTENT -->
-			<div class="col-1 span-3 top-bar">
-				<?php echo $this->get3rdPartyHelper('\nPlugins\Nubersoft\InspectorPallet')->execute(array('ID'=>$this->getPage('ID'))) ?>
-			</div>
-			
-			<?php } ?>
-			
-			<div class="col-1 span-3 col-count-3 offset">
-				<?php
-				if($this->isAdmin()) {
-				?>
-				
-				<!-- ADMIN TOOLS PLUGIN BUTTONS -->
-				<div class="admintools-plugins span-3">
-					<?php echo $this->useTemplatePlugin('button_user_deck') ?>
-					
-					<div class="vert-divider"></div>
-					
-					<?php echo $this->useTemplatePlugin('admintool_user_buttons') ?>
-
-				</div>
-				<!-- END ADMIN TOOLS PLUGIN BUTTONS -->
-				<?php
-				}
-				?>
-				<div class="col-1 span-3">
-					<?php echo $this->useTemplatePlugin('admintool_layouts',"logged{$layout}.php") ?>
-				</div>
-			</div>
-		</div>
-		<!-- END ADMIN CONTENT -->
-		
-	</div>
-	<div>
-		<?php
-		if($this->isLoggedIn()) { ?>
-		<div id="foot_cache_block">
-		<?php } ?>
-			<div class="nbr_foot">
-				<?php echo $this->render(__DIR__.DS.'foot.php'); if($this->isAdmin()) echo 'My Ip: '.$this->getClientIp().'. Database: "'.$this->getDbName().'"' ?>
-			</div>
-		<?php
-		if($this->isLoggedIn()) { ?>
-		</div>
-		<?php } ?>
-	</div>
-	<?php if($this->isAdmin()) { ?>
-	<span class="nListener" data-instructions='{"action":"nbr_get_email_receipt_count"}'></span>
-	<?php } ?>
+<!-- MODAL -->
+<div id="loadspot_modal"></div>
+<!-- CONTENT -->
+<div id="content" class="nbr_wrapper">
+	<!-- ADMIN CONTENT -->
+	<?php echo $this->useTemplatePlugin('admintools',(($this->isAdmin())? DS.'logged_in.php' : DS.'logged_out.php')) ?>
+	<!-- END ADMIN CONTENT -->
+</div>
 </body>
 </html>
