@@ -18,6 +18,7 @@ if(\Nubersoft\Flags\Controller::hasFlag('maintenance')) {
 }
 # Try to run the application as usual
 try {
+	$nApp->setErrorMode();
 	# Load our backtracer and load printpre
 	$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
 		->getHelper('nFunctions')->autoload(array('printpre'));
