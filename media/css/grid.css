@@ -8,6 +8,27 @@
 .align-right	{
 	text-align: right;
 }
+
+div.gapped-1 > div {
+	padding: 0 1em;
+}
+div.gapped-1 > div:first-child {
+	padding: 0 1em 0 0;
+}
+div.gapped-1 > div:last-child {
+	padding: 0 0 0 1em;
+}
+div.gapped-2 > div {
+	padding: 0 2em;
+}
+div.gapped-2 > div:first-child {
+	padding: 0 2em 0 0;
+}
+div.gapped-2 > div:last-child {
+	padding: 0 0 0 2em;
+}
+
+
 .col-padding {
 	padding: 20px;
 }

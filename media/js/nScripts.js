@@ -8,13 +8,13 @@
 **					party libraries
 */
 // Set error reporting
-error_reporting		=	true;
+error_reporting		=	false;
 // Shows the path the automation takes
 path_reporting		=	false;
 // Show data packages at key points
-package_reporting	=	false;
+package_reporting	=	true;
 // Shows the ajax responses
-response_reporting	=	true;
+response_reporting	=	false;
 // Used to document realtime actions like rollovers
 realtime_reporting	=	false;
 /*
@@ -408,65 +408,70 @@ nExpire	=	function($)
 	};
 // Create a smooth scroller applet
 nScroll	=	function()
+{
+	var	thisObj		=	this;
+	var scrollClass	=	'.scroll-top';
+	var toggleClass	=	'add-scroll';
+	var startVal	=	100;
+	var useFunction	=	false;
+	thisObj.useData	=	{};
+
+	thisObj.init	=	function(data)
 	{
-		var	thisObj		=	this;
-		var scrollClass	=	'.scroll-top';
-		var toggleClass	=	'add-scroll';
-		var startVal	=	100;
-		var useFunction	=	false;
-		thisObj.useData	=	{};
-		
-		thisObj.init	=	function(data)
-			{
-				if(empty(data))
-					data	=	{};
-				
-				thisObj.scrollClass		=	(isset(data,'class') && !empty(data.class))? data.class : scrollClass;
-				thisObj.toggleClass		=	(isset(data,'toggle') && !empty(data.toggle))? data.toggle : toggleClass;
-				thisObj.startVal		=	(isset(data,'start') && !empty(data.start))? data.start : startVal;
-				thisObj.useData	=	(isset(data,'data') && !empty(data.data))? data.data : {};
-				
-				return this;
-			};
-		
-		thisObj.getData	=	function()
-			{
-				return thisObj.useData;
-			};
-			
-		thisObj.defAnimation	=	function(useFunction)
-			{
-				if(empty(useFunction)) {
-					// Scroll to top of page.
-					njQuery(window).scroll(function () {
-						if (njQuery(this).scrollTop() > startVal) {
-							njQuery(scrollClass).fadeIn('slow');
-							njQuery(scrollClass).addClass(toggleClass);
-						}
-						else {
-							njQuery(scrollClass).css({"display":"none"});
-							njQuery(scrollClass).removeClass(toggleClass);
-						}
-					});
+		if(empty(data))
+			data	=	{};
+
+		thisObj.scrollClass		=	(isset(data,'class') && !empty(data.class))? data.class : scrollClass;
+		thisObj.toggleClass		=	(isset(data,'toggle') && !empty(data.toggle))? data.toggle : toggleClass;
+		thisObj.startVal		=	(isset(data,'start') && !empty(data.start))? data.start : startVal;
+		thisObj.useData	=	(isset(data,'data') && !empty(data.data))? data.data : {};
+
+		return this;
+	};
+
+	thisObj.getData	=	function()
+	{
+		return thisObj.useData;
+	};
+
+	thisObj.defAnimation	=	function(useFunction)
+	{
+		if(empty(useFunction)) {
+			// Scroll to top of page.
+			njQuery(window).scroll(function () {
+				if (njQuery(this).scrollTop() > startVal) {
+					njQuery(scrollClass).fadeIn('slow');
+					njQuery(scrollClass).addClass(toggleClass);
 				}
 				else {
-					useFunction();
+					njQuery(scrollClass).css({"display":"none"});
+					njQuery(scrollClass).removeClass(toggleClass);
 				}
-				
-				return this;
-			};
-		
-		thisObj.clickScroller	=	function(obj,speed)
-			{
-				speed	=	(speed !== undefined)? speed : 'slow';
-				
-				// scroll-to-top animate
-				njQuery(obj).click(function (e) {
-					njQuery("html, body").animate({ scrollTop: 0 }, speed);
-					e.preventDefault();
-				});
-			};
+			});
+		}
+		else {
+			useFunction();
+		}
+
+		return this;
 	};
+
+	thisObj.clickScroller	=	function(obj,speed)
+	{
+		speed	=	(speed !== undefined)? speed : 'slow';
+
+		// scroll-to-top animate
+		njQuery(obj).click(function (e) {
+			njQuery("html, body").animate({ scrollTop: 0 }, speed);
+			e.preventDefault();
+		});
+	};
+	
+	thisObj.clickScroll	=	function(obj)
+	{
+		njQuery("html, body").animate({ scrollTop: $(obj).offset().top }, 'fast');
+	};
+};
 
 function fetchAllTokens($)
 	{
@@ -929,8 +934,7 @@ function subFxtor(subfX,thisObj,thisSpeed)
 				if(!isset(thisSubFx,'addClass'))
 					return false;
 				
-				$.each(thisSubFx.addClass.data,function(k,v) {
-					console.log(v);
+				$.each(thisSubFx.addClass,function(k,v) {
 					if(!thisObj.hasClass(v))
 						thisObj.addClass(v);
 				});
@@ -942,8 +946,7 @@ function subFxtor(subfX,thisObj,thisSpeed)
 				if(!isset(thisSubFx,'removeClass'))
 					return false;
 				
-				$.each(thisSubFx.addClass.data,function(k,v) {
-					console.log(v);
+				$.each(thisSubFx.removeClass,function(k,v) {
 					if(thisObj.hasClass(v))
 						thisObj.removeClass(v);
 				});
@@ -1310,7 +1313,7 @@ function doAutomation(activeBtn,activeObj,burn)
 					if(path_reporting)
 						console.log('HTML SET');
 
-					if(typeof nPacket.html === "string") {
+					if(typeof nPacket.html !== "function") {
 						if(path_reporting)
 							console.log('NOT APPEND');
 
@@ -1599,11 +1602,165 @@ var	QuickFx	=	function(jQuery)
 			};
 	};
 
+var	nAutomation	=	function($)
+{
+	var	self				=	this;
+	self.eventObj			=
+	self.AjaxObj			=
+	self.lastCloneElem		=
+	self.currentRollElem	=
+	self.activeClone		=
+	self.currClick			=
+	self.mouseAction		=
+	self.targetType			=
+	self.activeBtn			=
+	self.setInstr			=	false;
+	self.activeObj			=	{};
+	// This is a reporting setting. true will show the wrap up message if proper reporting on
+	self.wrapReport			=	true;
+	
+	self.getActiveButton	=	function()
+	{
+		return self.getAttr('active_button');
+	};
+	
+	self.getActiveObj	=	function()
+	{
+		return self.getAttr('active_object');
+	};
+	
+	self.getInstructions	=	function()
+	{
+		return self.getAttr('instructions');
+	};
+	
+	self.getAttr	=	function(obj)
+	{
+		switch(obj){
+			case('active_button'):
+				return self.activeBtn;
+			case('active_object'):
+				return self.activeObj;
+			case('instructions'):
+				return self.setInstr;
+			case('event_type'):
+				return self.targetType;
+			case('last_clone_element'):
+				return self.lastCloneElem;
+			case('current_rollover_element'):
+				return self.currentRollElem;
+			case('active_clone'):
+				return self.activeClone;
+			case('current_click'):
+				return self.currClick;
+			case('mouse_action'):
+				return self.mouseAction;
+			case('target_type'):
+				return self.targetType;
+		}
+		
+		return false;
+	};
+	
+	self.go	=	function(e,obj)
+	{
+		self.eventObj	=	e;
+		var	doc			=	$(document);
+		// Saves the event type (click,mouseout,mouseover,etc.)
+		self.targetType	=	self.eventObj.type;
+		// Check if target is annoying type
+		self.mouseAction	=	(self.targetType == 'mouseover' || self.targetType == 'mouseout');
+		if(self.targetType == 'click')
+			self.currClick	=	obj;
+		// Assign the current active button object
+		self.activeBtn	=	obj;
+		// Clone the current object
+		//!!-- SHOULD BE CONSIDERED ON WHEN AND HOW --!!
+		if(empty(self.activeClone)) {
+			// Clone current element
+			self.activeClone	=	self.activeBtn.clone(true);
+		}
+		// Parse instructions from the target
+		self.setInstr	=	self.activeBtn.data('instructions');
+		// Create Ajax element
+		self.AjaxObj	=	new nAjax();
+		// Save the current instance to data for Ajax
+		self.AjaxObj.useDataObj(self.setInstr);
+		// Create an event action here
+		setEventPoint('onload_event_before',self.targetType,self.setInstr,doc,$);
+		// If there is an FX, run that
+		runWorkflow_FX(self.activeBtn,self.targetType,self.setInstr,doc,$);
+		// If there is a DOM event, run that
+		runWorkflow_DOM(self.targetType,self.setInstr,doc,$);
+		// Do an automation
+		runWorkflow_HTML(self.activeBtn,self.targetType,self.setInstr);
+		// If there is a rollover element
+		if(self.activeBtn.hasClass('nRollOver')) {
+			// If there are notes
+			if(isset(self.setInstr,'note')) {
+				// Clone the current element
+				self.currentRollElem	=	$(self.activeBtn).clone();
+				// If mouse over
+				if(e.type == 'mouseover') {
+					var hasDivClass	=	(isset(self.setInstr,'note_class'))? ' class="'+self.setInstr.note_class+'"' : '';
+					// Create inner element from item
+					self.cloneRollElem	=	self.activeBtn.html()+'<div'+hasDivClass+'>'+self.setInstr.note+'</div>';
+					// Replace
+					$(self.activeBtn).html(self.cloneRollElem);
+					// Assign old for mouse out
+					self.lastCloneElem	=	self.currentRollElem;
+				}
+				else {
+					// Reset the element
+					$(self.activeBtn).replaceWith(self.lastCloneElem);
+				}
+			}
+			else {
+				if(self.targetType == 'mouseout') {
+					default_action(self.activeBtn,{"instructions":self.setInstr});
+				}
+	
+			}
+			
+			return self;
+		}
+		/*
+		**	@description	Create a click event
+		*/
+		setEventPoint('onload_event_after',self.targetType,self.setInstr,doc,$);
+	};
+	
+	self.doModal	=	function(func)
+	{
+		if(empty(self.setInstr))
+			return self;
+		if(isset(self.setInstr,'eventOpts')) {
+			if(isset(self.setInstr.eventOpts,'stop')) {
+				if(self.setInstr.eventOpts.stop === true)
+					self.eventObj.preventDefault();
+			}
+		}
+		if(typeof func === "function"){
+			func(self);
+		}
+		else {
+			if(isset(self.setInstr,'action')) {
+				if(self.setInstr.action == 'nbr_open_modal') {
+					var modal	=	$('#loadspot_modal');
+					modal.addClass('visible');
+				}
+			}
+		}
+	}
+};
+
 var setActiveObjScope;
 var sortActiveObjScope;
 var doActionScope;
 var doAutomationScope;
 var default_actionScope;
+// Create an automatore
+var	Automator	=	new nAutomation(njQuery);
 // Create global ajax object
 var	AjaxEngine	=	new nAjax(njQuery);
 // When the document is ready
@@ -1622,98 +1779,30 @@ jQuery(document).ready(function($) {
 			doAutomation(activeBtn,sortActiveObj(setInstr,nDispatch),true);
 		});
 	}
-	// When event happens
-	doc.on('click keyup change mouseover mouseout','.nTrigger,.nDom,.nListener,.nKeyUp,.nChange,.nRollOver',function(e) {
-		// Saves the event type (click,mouseout,mouseover,etc.)
-		var	targetType	=	e.type;
-		// This is a reporting setting. true will show the wrap up message if proper reporting on
-		var wrapReport	=	true;
-		// Check if target is annoying type
-		var mouseAction	=	(targetType == 'mouseover' || targetType == 'mouseout');
-		if(targetType == 'click')
-			currClick	=	$(this);
-		// If reporting is turned on, show
-		if(path_reporting) {
-			var pathErr	=	'***START ACTION LEVEL 1: '+e.type+'***';
-			if(mouseAction) {
-				if(realtime_reporting)
-					console.log(pathErr);
-				else
-					wrapReport	=	false;
-			}
-			else
-				console.log(pathErr);
-		}
-		// Assign the current active button object
-		activeBtn	=	$(this);
-		// Clone the current object
-		//!!-- SHOULD BE CONSIDERED ON WHEN AND HOW --!!
-		if(typeof activeClone === "undefined") {
-			if(path_reporting) {
-				console.log('CLONE OBJECT','doc.on');
-			}
-			// Clone current element
-			activeClone	=	activeBtn.clone(true);
-		}
-		// Parse instructions from the target
-		setInstr	=	activeBtn.data('instructions');
-		// Save the current instance to data for Ajax
-		AjaxEngine.useDataObj(setInstr);
-		// Create an event action here
-		setEventPoint('onload_event_before',targetType,setInstr,doc,$);
-		// If there is an FX, run that
-		runWorkflow_FX(activeBtn,targetType,setInstr,doc,$);
-		// If there is a DOM event, run that
-		runWorkflow_DOM(targetType,setInstr,doc,$);
-		// Do an automation
-		runWorkflow_HTML(activeBtn,targetType,setInstr);
-		// If there is a rollover element
-		if(activeBtn.hasClass('nRollOver')) {
-			// If there are notes
-			if(isset(setInstr,'note')) {
-				// Clone the current element
-				currentRollElem	=	$(activeBtn).clone();
-				// If mouse over
-				if(e.type == 'mouseover') {
-					if(path_reporting) {
-						if(realtime_reporting)
-							console.log('SHOW NOTE','doc.on');
-					}
-					var hasDivClass	=	(isset(setInstr,'note_class'))? ' class="'+setInstr.note_class+'"' : '';
-					// Create inner element from item
-					cloneRollElem	=	activeBtn.html()+'<div'+hasDivClass+'>'+setInstr.note+'</div>';
-					// Replace
-					$(activeBtn).html(cloneRollElem);
-					// Assign old for mouse out
-					lastCloneElem	=	currentRollElem;
-				}
-				else {
-					if(path_reporting) {
-						if(realtime_reporting)
-							console.log('HIDE NOTE','doc.on');
-					}
-					// Reset the element
-					$(activeBtn).replaceWith(lastCloneElem);
-				}
-			}
-			else {
-				if(targetType == 'mouseout') {
-								
-					if(path_reporting)
-						console.log('***START ROLLOVER ACTION: '+e.type+'***','doc.on');
-
-					default_action(activeBtn,{"instructions":setInstr});
-				}
-	
-			}
-		}
-		/*
-		**	@description	Create a click event
-		*/
-		setEventPoint('onload_event_after',targetType,setInstr,doc,$);
+	doc.on('click','.nScroll',function(){
+		var getInstr	=	$(this).data('instructions');
 		
-		if(path_reporting && wrapReport)
-			console.log('***WRAP UP: '+e.type+'***','doc.on');
+		if(!isset(getInstr,'scrollto'))
+			return false;
+		
+		var nScroller	=	new nScroll();
+		nScroller.clickScroll(getInstr.scrollto);
+	});
+	// When event happens
+	doc.on('click keyup change mouseover mouseout','.nTrigger,.nDom,.nListener,.nKeyUp,.nChange,.nRollOver,.imModal',function(e) {
+		// Create Base Automator
+		Automator.go(e,$(this));
+		// Fetch current clicker
+		if(Automator.getAttr('target_type') == 'click')
+			currClick	=	Automator.getAttr('current_click');
+		// Assign the current active button object
+		activeBtn	=	Automator.getActiveButton();
+		// Parse instructions from the target
+		setInstr	=	Automator.getInstructions();
+		// Do the modal action
+		if($(this).hasClass('nTrigger') && Automator.getAttr('target_type') == 'click') {
+			Automator.doModal();
+		}
 	});
 	
 	doc.on('click keyup change','.nTrigger,.nDom,.nListener,.nKeyUp,.nChange',function(e) {

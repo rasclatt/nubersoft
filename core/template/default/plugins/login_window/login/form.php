@@ -1,14 +1,17 @@
 <?php $prefs = $this->getDataNode() ?>
+<?php if(!$this->isAjaxRequest()): ?>
 <noscript>
 <style>
-	.login_container	{ display: none; }
-	.needJS				{ display: block; }
+	body {
+		display: none !important;
+	}
 </style>
 </noscript>
 <div class="needJS">
 <h2>Javascript Error!</h2>
 <p>You are required to have Javascript turned on.</p>
 </div>
+<?php endif ?>
 <div class="login_container">
 	<div class="login_bkg">
 		<?php echo $this->getPlugin('\nPlugins\Nubersoft\View')->renderSiteLogo(array("id"=>"nbr_login_logo")) ?>

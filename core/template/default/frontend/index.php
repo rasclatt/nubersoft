@@ -1,8 +1,6 @@
 <?php echo $this->getTemplateDoc('page.head.php') ?>
 <!-- Start of the content -->
 <body>
-	<!-- Modal window for basic returns -->
-	<div id="loadspot_modal"></div>
 	<!-- Content wrapper -->
 	<div id="nbr_page">
 <?php
@@ -22,5 +20,7 @@
 		?>
 		
 	</div>
+	<!-- Modal window for basic returns -->
+	<div id="loadspot_modal" data-subfx='{"removeClass":{"#loadspot_modal":"visible"},"addClass":{"#loadspot_modal":"visible"}}'></div>
 </body>
 </html>

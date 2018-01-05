@@ -9,7 +9,7 @@
 		<input type="text" id="forgot_email" name="email" placeholder="Your email address" />
 	</div>
 	<div class="nbr_contain">
-			<a href="#" class="nbr_button cancel nTrigger" data-instructions='<?php echo json_encode(array('html'=>array(' '),'sendto'=>array('#loadspot_modal'),'events'=>array('click'))) ?>'>CANCEL</a>
+			<a href="#" class="nbr_button cancel nTrigger" data-instructions='<?php echo json_encode(array('FX'=>['acton'=>['#loadspot_modal'],'fx'=>['removeClass'],'subfx'=>['visible']],'html'=>array(' '),'sendto'=>array('#loadspot_modal'),'events'=>array('click'))) ?>'>CANCEL</a>
 		<div class="nbr_button">
 			<input type="submit" value="SEND" name="submit" class="disabled-submit" disabled id="forgot_submit" />
 		</div>

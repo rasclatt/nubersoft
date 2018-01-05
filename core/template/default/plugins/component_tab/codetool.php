@@ -26,8 +26,10 @@ $isEditOn	=	$Component->getEditorStatus();
 $img_icn	=	($isEditOn)? 'view' : 'edit';
 # Adds the opposite link for toggling
 $toggle		=	($isEditOn)? 'off' : 'on';
+# Fetch the page if on it
+$currPage	=	$this->getPageURI('full_path');
 # Creates the link
-$aLink		=	$this->siteUrl($this->getSession('SCRIPT_URL')."?toggle_editor=".$toggle);
+$aLink		=	$this->localeUrl(((empty($currPage))? $this->getSession('SCRIPT_URL') : $currPage)."?toggle_editor=".$toggle);
 # Get the current components for this page. Checks if there is a component that is able to single-edit
 $comps		=	$this->nQuery()
 					->select(array("ID","component_type","content","page_live"))

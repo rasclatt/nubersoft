@@ -233,7 +233,7 @@ div.wrapper {
 .admin-login-wrap > div:nth-child(3),
 .admin-login-wrap > div:nth-child(4){
 	color: #888;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	font-size: 0.8em !important;
 }
 .admin-login-wrap > div:nth-child(3),
@@ -252,7 +252,7 @@ div.wrapper {
 }
 #admin-footer-block {
 	text-align: center;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	color: #666;
 	font-size: 0.8em;
 	line-height: 1.5em;

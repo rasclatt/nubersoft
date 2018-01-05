@@ -46,10 +46,12 @@ $nApp->ajaxResponse(array(
 		),$reseters['sendto']),
 		"acton"=>array(
 			"#loadspot_modal",
-			'body'
+			'body',
+			'#loadspot_modal'
 		),
 		"fx"=>array(
 			"slideDown",
-			'rOpacity'
+			'rOpacity',
+			'addClass'
 		)
 	));

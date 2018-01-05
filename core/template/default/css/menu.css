@@ -7,7 +7,8 @@
 	color: #EBEBEB;
 }
 #nbr-frontend-menu {
-	display: flex;
+	display: inline-flex;
+	flex-wrap: wrap;
 	margin: 0 auto;
 }
 #nbr-frontend-menu div a:link,
@@ -25,4 +26,32 @@
 #nbr-frontend-menu div a:hover {
 	background-color: #CCC;
 	color: #000;
+}
+
+@media all and (max-width: 900px) {
+	#nbr-frontend-menu div {
+		display: block !important;
+		clear: both;
+		float: left;
+	}
+	
+	#nbr-frontend-menu div a:link,
+	#nbr-frontend-menu div a:visited {
+		font-size: 0.8em;
+		text-transform: uppercase;
+	}
+}
+@media all and (max-width: 700px) {
+	#nbr-frontend-menu {
+		justify-content: center;
+	}
+	#nbr-frontend-menu div {
+		display: flex;
+		text-align: center;
+	}
+	
+	#nbr-frontend-menu div a:link,
+	#nbr-frontend-menu div a:visited {
+		font-size: 1.25em;
+	}
 }

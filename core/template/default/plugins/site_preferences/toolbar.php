@@ -12,7 +12,7 @@
 			<li class="nbr_reveal nTrigger" data-instructions='{"FX":{"acton":[".nbr_prefpanel_content","#nbr_foot_pane"],"fx":["hide","slideDown"]}}'>
 				<div>Footer Prefs</div>
 			</li>
-			<li class="nbr_closer_small nTrigger" data-instructions='{"FX":{"fx":["slideUp"],"acton":["#loadspot_modal"]}}'></li>
+			<li class="nbr_closer_small nTrigger" data-instructions='{"FX":{"fx":["slideUp","removeClass"],"acton":["#loadspot_modal","#loadspot_modal"]}}'></li>
 		</ul>
 	</li>
 </ul>

@@ -13,16 +13,16 @@ $refer	=	$POST->jumppage;
 ?>
 <span class="nbr_component_single_editor nbr_ux_element">
 	
-			<div style="display: inline-block; float: right;">
-				<?php echo $nForm->open(array('action'=>$refer)) ?>
-					<?php echo $nForm->fullhide(array('name'=>'action','value'=>'nbr_make_path_viewable')) ?>
-					<?php echo $nForm->fullhide(array('name'=>'ID','value'=>$ID)) ?>
-					<?php echo $nForm->fullhide(array('name'=>'table','value'=>$table)) ?>
-					<div class="nbr_button" style="margin: 0;">
-						<input type="submit" value="READABLE" style="font-size: 16px; padding: 5px; margin: 0;" />
-					</div>
-				<?php echo $nForm->close() ?>
+	<div style="display: inline-block; float: right;">
+		<?php echo $nForm->open(array('action'=>$refer)) ?>
+			<?php echo $nForm->fullhide(array('name'=>'action','value'=>'nbr_make_path_viewable')) ?>
+			<?php echo $nForm->fullhide(array('name'=>'ID','value'=>$ID)) ?>
+			<?php echo $nForm->fullhide(array('name'=>'table','value'=>$table)) ?>
+			<div class="nbr_button" style="margin: 0;">
+				<input type="submit" value="READABLE" style="font-size: 16px; padding: 5px; margin: 0;" />
 			</div>
+		<?php echo $nForm->close() ?>
+	</div>
 	<h1>Edit Attached Image</h1>
 	<div style="display: block; padding: 10px; text-align: left;">
 		<h3 style="margin: 0 0 10px 0;">Rename</h3>
@@ -52,7 +52,6 @@ $refer	=	$POST->jumppage;
 	</div>
 </span>
 <script>
-$('#loadspot_modal').fadeIn();
 $('#nbr_checkbox_set').on('click',function(){
 	var	formAction	=	$('#nbr_edit_comp_action');
 	var	instAct		=	['nbr_edit_component_filename','nbr_delete_component_filename'];

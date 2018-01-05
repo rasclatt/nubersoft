@@ -32,7 +32,15 @@ class Model extends \Nubersoft\Emailer
 								$this->ajaxResponse(array(
 									'alert'=>$registry['browser']['success'],
 									'html'=>array(' ','<div class="nbr_success">Password Sent Successfully</div>'),
-									'sendto'=>array('#loadspot_modal','.recover_password_request_msg')
+									'sendto'=>array('#loadspot_modal','.recover_password_request_msg'),
+									'FX'=> [
+										'acton'=> [
+											'#loadspot_modal'
+										],
+										'fx' => [
+											'addClass::visible'
+										]
+									]
 								));
 							}
 							else {
@@ -44,7 +52,15 @@ class Model extends \Nubersoft\Emailer
 								die(json_encode(array(
 									'alert'=>$registry['browser']['error'],
 									'html'=>array(' '),
-									'sendto'=>array('#loadspot_modal')
+									'sendto'=>array('#loadspot_modal'),
+									'FX'=> [
+										'acton'=> [
+											'#loadspot_modal'
+										],
+										'fx' => [
+											'addClass::visible'
+										]
+									]
 								)));
 							}
 							else {
@@ -58,7 +74,15 @@ class Model extends \Nubersoft\Emailer
 							die(json_encode(array(
 								'alert'=>$registry['browser']['fail'],
 								'html'=>array(' '),
-								'sendto'=>array('#loadspot_modal')
+								'sendto'=>array('#loadspot_modal'),
+								'FX'=> [
+										'acton'=> [
+											'#loadspot_modal'
+										],
+										'fx' => [
+											'addClass::visible'
+										]
+									]
 							)));
 						}
 						else {
@@ -73,7 +97,15 @@ class Model extends \Nubersoft\Emailer
 						die(json_encode(array(
 							'alert'=>$msg,
 							'html'=>array(' '),
-							'sendto'=>array('#loadspot_modal')
+							'sendto'=>array('#loadspot_modal'),
+							'FX'=> [
+										'acton'=> [
+											'#loadspot_modal'
+										],
+										'fx' => [
+											'addClass::visible'
+										]
+									]
 						)));
 					}
 					else {

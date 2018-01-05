@@ -7,6 +7,8 @@ if(!empty($argv[1])) {
 }
 # Configuration
 require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
+# Create instance for sharing
+$nApp	=	new \Nubersoft\nApp();
 # Check if maintenance flag is set
 if(\Nubersoft\Flags\Controller::hasFlag('maintenance')) {
 	# Render the offline page
@@ -16,9 +18,6 @@ if(\Nubersoft\Flags\Controller::hasFlag('maintenance')) {
 }
 # Try to run the application as usual
 try {
-	# Create instance for sharing
-	$nApp	=	new \Nubersoft\nApp();
-	$nApp->setErrorMode(true);
 	# Load our backtracer and load printpre
 	$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
 		->getHelper('nFunctions')->autoload(array('printpre'));
@@ -38,22 +37,22 @@ try {
 	}
 	# Try and run the default application
 	\Nubersoft\NuberEngine::init()->core($nAutomator);
-	
 	/*
 	if(\Nubersoft\nApp::call()->isAdmin())
 		echo printpre(\Nubersoft\nApp::call()->getDataNode('workflow_run'));
 	*/
 }
 catch (\Nubersoft\nException $e) {
-	$nApp	=	\Nubersoft\nApp::call();
 	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
 		echo $e->getMessage().printpre($e->getTrace());
-		die(printpre(__FILE__.' ('.__LINE__.')'));
+		echo printpre(__FILE__.' ('.__LINE__.')');
+		exit;
 	}
 	else {
 		$nApp->autoload('nLog');
 		nLog($e);
-		die($msg);
+		echo $e->getMessage();
+		exit;
 	}
 }
 catch (\Exception $e) {
@@ -99,8 +98,6 @@ catch (\Exception $e) {
 			else {
 				# If there is a caught Database exception
 				if($e instanceof \PDOException) {
-					# Fetch base app
-					$nApp	=	\Nubersoft\nApp::call();
 					# Set error
 					$nApp->setSession('app_error','Database error occurred.');
 					# Save the error to log file

@@ -10,10 +10,12 @@ $settings	=	array(
 		'#loadspot_modal'
 	),
 	'acton'=>array(
-		'body'
+		'body',
+		'#loadspot_modal'
 	),
 	'fx'=>array(
-		'rOpacity'
+		'rOpacity',
+		'addClass'
 	)
 );
 

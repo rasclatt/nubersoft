@@ -99,6 +99,6 @@ $(".form_removethis").click(function() {
 });
 
 $(".nbr_hidewrap").fadeIn("slow");
-$("#loadspot_modal").slideDown("slow");
+$("#loadspot_modal").slideDown("slow").addClass('visible');
 
 </script>

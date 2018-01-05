@@ -29,13 +29,13 @@ echo $this->getTemplateDoc('head.php','admintools');
 $this->getHelper('CoreMySQL')->saveDatabaseScheme(NBR_ROOT_DIR.DS.'installer'.DS.'sql');
 ?>
 <body class="nbr_admintools<?php if($this->isAdmin()) echo '_loggedin' ?>">
-<!-- MODAL -->
-<div id="loadspot_modal"></div>
 <!-- CONTENT -->
 <div id="content" class="nbr_wrapper">
 	<!-- ADMIN CONTENT -->
 	<?php echo $this->useTemplatePlugin('admintools',(($this->isAdmin())? DS.'logged_in.php' : DS.'logged_out.php')) ?>
 	<!-- END ADMIN CONTENT -->
 </div>
+<!-- MODAL -->
+<div id="loadspot_modal" data-subfx='{"removeClass":{"#loadspot_modal":"visible"},"addClass":{"#loadspot_modal":"visible"}}'></div>
 </body>
 </html>

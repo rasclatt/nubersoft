@@ -1931,5 +1931,44 @@ class	nApp extends \Nubersoft\nFunctions
 		if(stripos($name,'msg') !== false) {
 			return $this->doMessageService($name,$args);
 		}
+		else {
+			$errmsg['unknown']	=	'"'.$name.'" is invalid.';
+			$errmsg['func']		=	'You are accessing a function dynamically as a last resort. Don\'t do this!';
+			$errmsg['class']	=	'You are accessing a class dynamically as a last resort. It may be faster use ';
+			$errmsg['data']		=	'You are accessing data as a last resort. It may speed up the action by using ';
+			$revName	=	str_replace('_','\\',$name);
+			# If calling "$this->Namespace_Class_Name()" it will convert to PSR-4
+			if(class_exists($revName)) {
+				trigger_error($errmsg['class'].'"new \\'.$revName.'()".',E_USER_NOTICE);
+				return new $revName($args);
+			}
+			# Check if the class is exactly as requested: $this->className()
+			elseif(class_exists($name)) {
+				trigger_error($errmsg['class'].'"new \\'.$name.'()".',E_USER_NOTICE);
+				return new $name($args);
+			}
+			# This will try and call a base framewofk class: $this->nFileHandler() references new \Nubersoft\nFileHandler()
+			elseif(class_exists("\\Nubersoft\\{$name}")) {
+				trigger_error($errmsg['class'].'"new '."\\Nubersoft\\{$name}".'()".',E_USER_NOTICE);
+				$name	=	"\\Nubersoft\\{$name}";
+				return new $name($args);
+			}
+			else {
+				# Try and see if there is a data field with the called value $this->error_mode() same as $this->getDataNode('error_mode');
+				if(!empty($this->getDataNode($name))) {
+					trigger_error($errmsg['data'].'"$this->getDataNode(\''.$name.'\')".',E_USER_NOTICE);
+					return $this->getDataNode($name);
+				}
+				elseif(function_exists($name)) {
+					trigger_error($errmsg['func'],E_USER_WARNING);
+					return (!empty($args))? $name(...$args) : $name();
+				}
+				# If none of this works, last resort it to throw an error
+				else {
+					trigger_error($errmsg['unknown'],E_USER_NOTICE);
+					return false;	
+				}
+			}
+		}
 	}
 }

@@ -12,6 +12,6 @@
 
 $(document).keyup(function(e){
 	if (e.keyCode == 27)
-		$("#loadspot_modal").html('');
+		$("#loadspot_modal").html('').removeClass('visible');
 });
 </script>

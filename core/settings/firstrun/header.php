@@ -20,13 +20,15 @@
 <link type="text/css" rel="stylesheet" href="http://www.nubersoft.com/core/template/default/css/frontend/styles.css?v=161109104746" />
 <link type="text/css" rel="stylesheet" href="http://www.nubersoft.com/core/template/default/css/menu.css?v=161128113404" />
 <link type="text/css" rel="stylesheet" href="http://www.nubersoft.com/media/css/styles.css?v=161206050227" />
+<?php if(!$this->isAjaxRequest()): ?>
 <noscript>
 <style>
-body {
-	display: none !important;
-}
+	body {
+		display: none !important;
+	}
 </style>
 </noscript>
+<?php endif ?>
 </head><!-- START BODY -->
 <body class="nbr" style="background-color: #000;">
 <div id="loadspot_modal">

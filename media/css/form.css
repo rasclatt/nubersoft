@@ -48,6 +48,94 @@ select.nbr {
 	text-align: center;
 	box-shadow: 1px 1px 6px rgba(0,0,0,0.5);
 }
+a.nbr:link,
+a.nbr:visited,
+input[type=submit].nbr,
+button.nbr {
+	cursor: pointer;
+	align-content: center !important;
+	text-align: center;
+	background-color: #666;
+	color: #FFF;
+	display: block;
+	width: 100% !important;
+	margin-left: 0;
+	margin-right: 0;
+	max-width: none;
+	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	text-decoration: none;
+	-webkit-transition: background-color 0.5s; /* Safari */
+    transition: background-color 0.5s;
+	border-radius: 0.25em;
+	font-size: 1.5em;
+	line-height: normal;
+}
+
+input[type=submit].nbr {
+	appearance: button;
+	-webkit-appearance: button;
+}
+
+a.nbr:link,
+a.nbr:visited {
+	width: calc(100% - 2em);
+	padding: 0.5em 1em;
+}
+a.nbr:hover,
+input[type=submit].nbr:hover,
+button.nbr:hover {
+	background-color: #111;
+}
+.auto {
+	display: inline-flex !important;
+	width: auto !important;
+}
+a.green:link,
+a.green:visited,
+input[type=submit].green,
+button.green {
+	text-shadow: 1px 1px 3px rgba(0,0,0,0.0);
+	border: none;
+	background-color: rgba(80,169,19,1.00);
+	-webkit-transition: background-color 0.5s, text-shadow 0.5s; /* Safari */
+    transition: background-color 0.5s, text-shadow 0.5s;
+}
+a.green:hover,
+input[type=submit].green:hover,
+button.green:hover {
+	text-shadow: 1px 1px 3px rgba(0,0,0,1.0);
+	background-color: rgba(157,234,104,1.00);
+}
+a.red:link,
+a.red:visited,
+input[type=submit].red,
+button.red {
+	text-shadow: 1px 1px 3px rgba(0,0,0,0.0);
+	border: none;
+	background-color: rgba(186,20,0,1.00);
+	-webkit-transition: background-color 0.5s, text-shadow 0.5s; /* Safari */
+    transition: background-color 0.5s, text-shadow 0.5s;
+}
+
+a.red:hover,
+input[type=submit].red:hover,
+button.red:hover {
+	text-shadow: 1px 1px 3px rgba(0,0,0,1.0);
+	background-color: rgba(90,14,0,1.00);
+}
+
+.disabled,
+button:disabled,
+input:disabled {
+	cursor: not-allowed;
+}
+a.disabled:link,
+a.disabled:visited,
+button:disabled,
+input:disabled {
+	background-color: #EBEBEB !important;
+	color: #888  !important;
+}
 .nbr_login_window input[type='search'], .nbr_login_window input[type='text'], .nbr_login_window input[type='password'] {
 	font-size: 18px;
 	padding: 5px;

@@ -26,7 +26,7 @@ $(document).ready(function() {
 	$('.nbr_error_msg_block').fadeIn('slow').delay(5000).fadeOut();
 	$(this).keyup(function(e){
 		if (e.keyCode == 27)
-			$("#loadspot_modal").html('');
+			$("#loadspot_modal").html('').removeClass('visible');
 	});
 });
 <?php echo $this->useTemplatePlugin('login_window','login'.DS.'validation.php') ?>
