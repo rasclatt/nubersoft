@@ -1,5 +1,13 @@
 /* CSS Document */
-
+.quickjump-menu div {
+	margin-left: 1em;
+	position: relative;
+}
+.quickjump-menu > div div:nth-child(2)::before {
+	content: '\232A';
+	position: absolute;
+	top: 0.5em;
+}
 div.nbr_input_hidden {
 	display: inline-block;
 	width: auto;

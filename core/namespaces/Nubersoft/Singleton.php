@@ -58,4 +58,12 @@ abstract class	Singleton
 
 		return (is_object($var) || is_array($var))? json_decode(json_encode($var,JSON_FORCE_OBJECT)) : $var;
 	}
+	
+	public	function __($string,$matchkey=false,$func=false,$phrase=true)
+	{
+		$nTranslator	=	new nTranslator();
+		nTranslator::setType($phrase);
+		$string	=	$nTranslator->getStringEquivalent($string,$matchkey);
+		return (is_callable($func))? $func($string,$nTranslator) : $string;
+	}
 }

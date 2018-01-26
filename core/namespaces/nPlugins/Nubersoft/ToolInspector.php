@@ -58,17 +58,15 @@ class ToolInspector extends \nPlugins\Nubersoft\AdminToolsComponentEditor
 		{
 			if(!$this->siteValid())
 				return;
-
-			if($this->isAdmin()) {
-				$nubquery	=	$this->nQuery();
-				# Fetch dropdowns
-				$this->dropdowns	=	$this->inputFields("main_menus");
-
-				if(empty($ID) && !empty($this->getPost('deliver')->ID))
-					$ID	=	$this->getPost('deliver')->ID;
-
-				include(__DIR__.DS.'ToolInspector'.DS.'execute.php');	
-			} 
+			elseif(!$this->isAdmin())
+				return false;
+			$nubquery	=	$this->nQuery();
+			# Fetch dropdowns
+			$this->dropdowns	=	$this->inputFields("main_menus");
+			if(empty($ID) && !empty($this->getPost('deliver')->ID))
+				$ID	=	$this->getPost('deliver')->ID;
+			# Include the contents of the admintools bar
+			include($this->getBackEnd('side_tools_content.php'));
 		}
 		
 		protected	function inputFields($table = false, $display = false)

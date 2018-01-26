@@ -1,21 +1,9 @@
-html {
-	display: table-cell;
+html,
+body{
 	padding: 0 !important;
 	margin: 0 !important;
 	height: 100% !important;
 	width: 100% !important;
-}
-html {
-	overflow: hidden;
-}
-body {
-	display: grid;
-	grid-template-columns: 100%;
-	grid-template-rows: 0% 100%;
-	width: 100% !important;
-	margin: 0;
-	overflow: auto;
-	height: 100%;
 }
 body > div {
 	padding: 0;

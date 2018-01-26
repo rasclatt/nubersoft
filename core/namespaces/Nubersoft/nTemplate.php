@@ -137,4 +137,9 @@ class nTemplate extends \Nubersoft\nApp
 
 			$this->getPlugin('\nPlugins\Nubersoft\CoreDatabase')->addComponent($comp);
 		}
+	
+		public	static	function getFileFromDefaultTemplate($file)
+		{
+			return $this->toSingleDs(__DIR__.DS.'core'.DS.'template'.DS.'default'.DS.$file);
+		}
 	}

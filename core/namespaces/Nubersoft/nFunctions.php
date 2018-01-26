@@ -1223,4 +1223,18 @@ class	nFunctions extends \Nubersoft\Singleton
 	{
 		return ArrayWorks::{__FUNCTION__}($array,$key,$opts);
 	}
+	
+	public	function jsonFromFile($file)
+	{
+		return Conversion\Data::arrayFromFile($file);
+	}
+	
+	public	function getSystemFile($filename)
+	{
+		$client	=	$this->toSingleDs(NBR_CLIENT_SETTINGS.DS.$filename);
+		if(is_file($client))
+			return $client;
+		elseif(is_file($core = $this->toSingleDs(NBR_SETTINGS.DS.$filename)))
+			return $core;
+	}
 }

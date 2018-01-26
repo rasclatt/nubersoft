@@ -81,4 +81,15 @@ class Data extends \Nubersoft\Singleton
 
 		return $val;
 	}
+	/**
+	*	@description	Create an array from a file contents
+	*/
+	public	static	function arrayFromFile($file,$type='json')
+	{
+		if(!is_file($file)) {
+			trigger_error('File does not exist: '.$file,E_USER_NOTICE);
+			return [];
+		}
+		return ($type == 'json')? json_decode(file_get_contents($file),true) : file_get_contents($file);
+	}
 }

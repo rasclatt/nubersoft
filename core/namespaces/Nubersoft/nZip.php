@@ -87,7 +87,7 @@ class nZip extends \ZipArchive
 			throw new \Exception($msg);
 		}
 		# Get the contents of the root and create a zip file
-		$this->getFolderContents(NBR_ROOT_DIR)->createZipfile($zip);
+		$this->getFolderContents(NBR_ROOT_DIR)->createZipfile($zip,['php','xml','js','css','htaccess','jpg','png','jpeg','pdf']);
 		# If the file is created, download it
 		if(is_file($zip)) {
 			# Download the file

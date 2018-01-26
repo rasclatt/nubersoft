@@ -47,7 +47,9 @@ $page	=	$this->toArray($this->nQuery()
 					<div class="nbr_tool_panel">
 						<h3 class="toolBox nTrigger" data-instructions='<?php echo $instr ?>' id="sub_showMenuToggle">All Menus/Directories</h3>
 						<div id="sub_showMenu" class="nbr_tool_panel_opts">
-							<?php echo $this->menuTable(array('table'=>'main_menus','order'=>'menu_name'),false); ?>
+							<?php  $this->setErrorMode(1); echo $this->getHelper('View\Menus')->getHtml('div','div','quickjump-menu',function($row,$obj){
+								return '<a class="nbr button small green" href="'.$obj->localeUrl($row['full_path']).'">'.$row['menu_name'].'</a>';
+							}) ?>
 						</div>
 					</div>
 				</td>

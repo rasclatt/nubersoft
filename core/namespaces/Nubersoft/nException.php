@@ -5,6 +5,7 @@ class nException extends \Exception
 {
 	private	$opts,
 			$extractArr;
+	private	static	$path;
 	/**
 	*	@description	Alias of saveToLog()
 	*/
@@ -81,5 +82,18 @@ class nException extends \Exception
 			throw new \Exception('This error method requires two anon. functions.');
 		# Check if the error code has a 2*** based number
 		return (preg_match('/^2.*/',$this->getCode()))? $warning($this) : $error($this);
+	}
+	
+	public	static	function setPageLayout($path)
+	{
+		self::$path	=	$path;
+	}
+	
+	public	function getPageLayout()
+	{
+		if(empty(self::$path))
+			self::$path	=	NBR_DEFAULT_TEMPLATE.DS.'frontend'.DS.'static.error.php';
+		
+		return nApp::call()->render(self::$path,$this->getMessage());
 	}
 }
