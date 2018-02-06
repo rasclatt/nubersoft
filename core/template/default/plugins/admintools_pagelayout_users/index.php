@@ -8,9 +8,11 @@
 # /core/template/default/plugins/admintool_layouts/loggedin.php
 $this->saveIncidental('template_alert',array('msg'=>'This page is currently generated using a custom page layout. You can change and edit this table file (or others) by viewing this file: '.$this->stripRoot(__FILE__)));
 ?>
-<div style="margin: 0 auto;">
+<div style="margin: 0 auto; overflow: auto;">
 	<?php echo $this->useTemplatePlugin('admintools_body') ?>
 </div>
+<?php if($this->getHelper('UserEngine')->isAllowed(1)): ?>
 <div style="max-width: 1200px; margin: 0 auto;">
 	<?php echo $this->useTemplatePlugin('admintools_sql_master') ?>
 </div>
+<?php endif ?>

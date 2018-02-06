@@ -1,6 +1,9 @@
 <?php
 namespace Nubersoft;
 
+use \nPlugins\Nubersoft\ComponentTab;
+use \Nubersoft\UserEngine as User;
+
 # Not admin, stop
 if(!$this->isAdmin())
 	return;
@@ -18,9 +21,10 @@ if($request_set)
 //	echo $this->render($this->fetchTemplate()->getBackEnd('toolbar.php'));
 */
 # Fetch page helpers
+$User		=	new User();
 $nImage		=	new nImage();
 $nHtml		=	new nHtml();
-$Component	=	new \nPlugins\Nubersoft\ComponentTab($this);
+$Component	=	new ComponentTab($this);
 $isEditOn	=	$Component->getEditorStatus();
 # Sets the image icon
 $img_icn	=	($isEditOn)? 'view' : 'edit';
@@ -32,7 +36,7 @@ $currPage	=	$this->getPageURI('full_path');
 $aLink		=	$this->localeUrl(((empty($currPage))? $this->getSession('SCRIPT_URL') : $currPage)."?toggle_editor=".$toggle);
 # Get the current components for this page. Checks if there is a component that is able to single-edit
 $comps		=	$this->nQuery()
-					->select(array("ID","component_type","content","page_live"))
+					->select(array("ID","component_type","content","page_live","login_permission"))
 					->from("components")
 					->where(array("ref_page"=>$Component->getData()->getComponentTabData('unique_id')))
 					->fetch();
@@ -59,7 +63,10 @@ $aImg		=	$nImage->image(__DIR__.DS.'images'.DS."icn_{$img_icn}.png",array('style
 ?>
 	<ul>
 <?php		}
-
+			
+			if(!$User->isAllowed($link['login_permission']))
+				continue;
+			
 			$cont	=	(!empty($link['content']))? $link['content'] : 'Empty Content';
 			$href	=	$this->siteUrl('/?action=nbr_load_single_editor&cId='.$link['ID']);
 ?>

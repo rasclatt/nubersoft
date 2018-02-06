@@ -36,7 +36,7 @@ namespace nPlugins\Nubersoft\Component;
 
 class Model extends \nPlugins\Nubersoft\CoreTables
 {
-	public	function getComponent($array,$limitone=true)
+	public	function getComponent($array,$limitone=true,$node=true)
 	{
 		foreach($array as $key => $value) {
 			$sKey			=	":{$key}";
@@ -45,7 +45,8 @@ class Model extends \nPlugins\Nubersoft\CoreTables
 		}
 		$where	=	" WHERE ".implode(' AND ',$new);
 		$sql	=	"SELECT * FROM components {$where}";
-		return $this->nQuery()->query($sql,$bind)->toNode($limitone);
+		$query	=	$this->nQuery()->query($sql,$bind);
+		return ($node)? $query->toNode($limitone) : $query->getResults($limitone);
 	}
 
 	public	function getCodeComponentsFor($unique_id)

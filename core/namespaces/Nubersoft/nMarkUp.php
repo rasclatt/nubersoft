@@ -34,15 +34,29 @@ class nMarkUp extends \Nubersoft\nRender
 						$sub		=	false;
 						
 						if(preg_match('/\[/',$baseMatch)) {
+							/*
+							if($this->isAdmin()) {
+								preg_match('/^([a-z]+::)([a-z\_\-]+)([^\~]+)?$/i',$replaced,$match);
+								unset($match[0],$match[1]);
+								$raw	=	array_values($match);
+							}
+							else
+								$raw	=	explode('[',$baseMatch);
+							*/
+							
+							preg_match('/^([a-z]+::)([a-z\_\-]+)([^\~]+)?$/i',$replaced,$match);
+							unset($match[0],$match[1]);
+							$raw	=	array_values($match);
+							
 							$exp	=	array_map(function($v) use ($thisObj) {
-								$val	=	trim($thisObj->safe()->decode($v),']');	
+								$val	=	trim(trim($thisObj->safe()->decode($v),']'),'[');
 								
 								if(strpos($val,'/') !== false)
 									return	explode('/',$val);
 									
 								return $val;
 								
-							},explode('[',$baseMatch));
+							},$raw);
 							
 							$new	=	array();
 							foreach($exp as $instr) {

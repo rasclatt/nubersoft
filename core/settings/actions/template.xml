@@ -74,14 +74,6 @@
 				<name>\nPlugins\Nubersoft\ComponentWidget</name>
 				<method>renderComponent</method>
 			</class>
-			<!--
-			<function>
-				<name>ajax_admintools_component</name>
-				<echo>true</echo>
-				<include>~NBR_TEMPLATE_DIR~/default/plugins/site_preferences/helpers/functions/function.ajax_admintools_component.php</include>
-				<dependency>\Nubersoft\nApp</dependency>
-			</function>
-			-->
 		</object>
 	</action>
 	<action event="ajax_load_favicons">

@@ -1,8 +1,20 @@
 <?php
+use \Nubersoft\UserEngine as User;
+$User	=	new User();
 $Safe	=	$this->safe();
 $this->addHeadPrefAttr('title','Component Editor');
 echo $this->getHeader('frontend',array('link'=>realpath(__DIR__.DS.'..').DS.'getHeader'.DS.'index.php'));
-?>
+$usergroup	=	(!empty($this->useData['ID'][0]['login_permission']))? $this->useData['ID'][0]['login_permission'] : false;
+if(empty($usergroup) || !$User->isAllowed($usergroup)): ?>
+<div class="col-count-3 offset">
+	<div class="col-2" style="background-color: #FFF; padding: 30px;">
+		<h1>Error 403</h1>
+		<p>You are not allowed to edit this content.</p>
+	</div>
+</div>
+<?php 
+return false;
+endif ?>
 
 <body class="nbr nbr_ux_element">
 	<div id="nbr_maincontent">
