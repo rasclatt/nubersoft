@@ -163,7 +163,7 @@ class nRender extends \Nubersoft\nApp
 		if(empty($value))
 			return false;
 		# Try and convert data
-		return ArrayWorks::convertString($type);
+		return ArrayWorks::convertString($value);
 	}
 	/**
 	*	@description	Fetches the plugin from the current template folder
