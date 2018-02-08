@@ -144,13 +144,26 @@ class nRender extends \Nubersoft\nApp
 			return false;
 		# Filter
 		$pregd	=	array_filter($pluginNode);
+		# Remove the plugin content
+		$this->saveSetting('current_matched_plugin_content',false,true);
 		# Send back if key requested
 		if(!empty($key))
 			return (isset($pregd[$key]))? $pregd[$key] : false;
-		# Remove the plugin content
-		$this->saveSetting('current_matched_plugin_content',false,true);
 		# Return the fresh content
 		return array_values($pregd);
+	}
+	/**
+	*	@description	Fetches the current plugin data and tries to extract it to an array
+	*/
+	public	function getSortcodeData()
+	{
+		# Fetch data from the data node
+		$value	=	$this->getPluginShortCode(1);
+		# Stop if empty
+		if(empty($value))
+			return false;
+		# Try and convert data
+		return ArrayWorks::convertString($type);
 	}
 	/**
 	*	@description	Fetches the plugin from the current template folder

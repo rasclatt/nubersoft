@@ -92,4 +92,27 @@ class Data extends \Nubersoft\Singleton
 		}
 		return ($type == 'json')? json_decode(file_get_contents($file),true) : file_get_contents($file);
 	}
+	
+	public	static	function arrayFromString($string)
+	{
+		# First see that it's not simply a json string
+		$json	=	@json_decode($string,true);
+		if(is_array($json))
+			return $json;
+		# Create storage
+		$data	=	[];
+		# Split and extract
+		$arr	=	array_map(function($v){
+			# Explode the equals value
+			$exp	=	(stripos($v,'=>') !== false)? array_filter(explode("=>",trim($v))) : array_filter(explode("=",trim($v)));
+			# Return the array/keys
+			return [
+				trim($exp[0],'"') => trim($exp[1],'"')
+			];
+		},explode(",",$string));
+		# Loop each and merge
+		foreach($arr as $array)
+			$data	=	array_merge($array,$data);
+		return $data;
+	}
 }

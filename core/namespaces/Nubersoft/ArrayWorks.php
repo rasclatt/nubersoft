@@ -322,4 +322,14 @@ class ArrayWorks extends \Nubersoft\Singleton
 
 		return (!empty($array))? array_keys($array) : array();
 	}
+	/**
+	*	@description	Takes a string and tries to turn it to an array. This includes a json string and a string formated like:
+	*						"key1"="value1","key2"="value2"
+	*					also includes
+	*						"key1"=>"value1","key2"=>"value2"
+	*/
+	public	function convertString($string)
+	{
+		return Conversion\Data::arrayFromString($string);
+	}
 }
