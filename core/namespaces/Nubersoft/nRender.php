@@ -155,7 +155,7 @@ class nRender extends \Nubersoft\nApp
 	/**
 	*	@description	Fetches the current plugin data and tries to extract it to an array
 	*/
-	public	function getSortcodeData()
+	public	function getShortcodeData()
 	{
 		# Fetch data from the data node
 		$value	=	$this->getPluginShortCode(1);

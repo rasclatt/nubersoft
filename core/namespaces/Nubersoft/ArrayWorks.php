@@ -328,7 +328,7 @@ class ArrayWorks extends \Nubersoft\Singleton
 	*					also includes
 	*						"key1"=>"value1","key2"=>"value2"
 	*/
-	public	function convertString($string)
+	public	static	function convertString($string)
 	{
 		return Conversion\Data::arrayFromString($string);
 	}
