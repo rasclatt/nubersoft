@@ -93,7 +93,7 @@ class Data extends \Nubersoft\Singleton
 		return ($type == 'json')? json_decode(file_get_contents($file),true) : file_get_contents($file);
 	}
 	
-	public	static	function arrayFromString($string,$return=true)
+	public	static	function arrayFromString($string,$return=true,$decode=false)
 	{
 		# First see that it's not simply a json string
 		$json	=	@json_decode($string,true);
@@ -111,7 +111,7 @@ class Data extends \Nubersoft\Singleton
 			];
 		},explode(",",$string));
 		
-		if(is_array($arr)  && !empty($arr)) {
+		if(is_array($arr) && !empty($arr)) {
 			# Loop each and merge
 			foreach($arr as $array)
 				$data	=	array_merge($array,$data);

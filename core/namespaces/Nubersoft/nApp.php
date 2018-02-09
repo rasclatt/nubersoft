@@ -1971,4 +1971,36 @@ class	nApp extends \Nubersoft\nFunctions
 			}
 		}
 	}
+	/**
+	*	@description	Checks if a $_POST action equals input
+	*/
+	public	function postAction($action)
+	{
+		return $this->actionCompare($action);
+	}
+	/**
+	*	@description	Checks if a $_GET action equals input
+	*/
+	public	function getAction($action)
+	{
+		return $this->actionCompare($action,"getGet");
+	}
+	/**
+	*	@description	Checks if a $_REQUEST action equals input
+	*/
+	public	function requestAction($action)
+	{
+		return $this->actionCompare($action,"getRequest");
+	}
+	/**
+	*	@description	Checks if a $_REQUEST action equals input
+	*/
+	public	function compareAction($action,$type="getPost")
+	{
+		$val	=	$this->{$type}('action');
+		if(empty($val) || !is_string($val))
+			return false;
+		
+		return ($val == $action);
+	}
 }
