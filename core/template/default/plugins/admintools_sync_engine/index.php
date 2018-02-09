@@ -106,7 +106,10 @@ if($this->getPost('action') == 'nbr_sync_server') {
 	</div>
 	<?php
 	$msg	=	$this->msgAdminAlert();
-	echo printpre($msg);
+	if(!empty($msg)) {
+		foreach($msg as $message)
+			echo '<div class="nbr_error">'.$message.'</div>';
+	}
 	?>
 </div>
 <script>
