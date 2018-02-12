@@ -60,8 +60,20 @@ class 	cURL
 		return $this;
 	}
 
-	public	function connect($_url,$deJSON = true,$close = false,$return = true)
+	public	function connect()
 	{
+		$args	=	func_get_args();
+		$_url	=	(!empty($args[0]) && is_string($args[0]))? $args[0] : false;
+		$deJSON	=	(!empty($args[1]));
+		$close	=	(!empty($args[2]));
+		$return	=	(isset($args[3]) && is_bool($args[3]))? $args[3] : true;
+		
+		if(empty($_url))
+			$_url	=	$this->endpoint;
+			
+		if(empty($_url))
+			throw new nException('Endpoint can not be empty.');
+		
 		$this->setAttr(CURLOPT_URL, $_url)
 			->setAttr(CURLOPT_RETURNTRANSFER, 1);
 
