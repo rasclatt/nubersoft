@@ -6,7 +6,7 @@ class 	cURL
 	protected	$response,
 				$ch,
 				$sendHeader,
-				$PostFields,
+				$postFields,
 				$endpoint,
 				$errors,
 				$query;
@@ -82,7 +82,7 @@ class 	cURL
 				->setAttr(CURLOPT_SSL_VERIFYHOST,2);
 		}
 
-		if(!empty($this->PostFields['payload'])) {
+		if(!empty($this->postFields['payload'])) {
 			$this->setAttr(CURLOPT_POST, count($this->postFields['payload']))
 				->setAttr(CURLOPT_POSTFIELDS, $this->postFields['query']);
 		}
@@ -179,7 +179,7 @@ class 	cURL
 				->setAttr(CURLOPT_SSL_VERIFYHOST,2);
 		}
 
-		if(!empty($this->PostFields['payload'])) {
+		if(!empty($this->postFields['payload'])) {
 			$this->setAttr(CURLOPT_POST, count($this->postFields['payload']))
 				->setAttr(CURLOPT_POSTFIELDS, $this->postFields['query']);
 		}
