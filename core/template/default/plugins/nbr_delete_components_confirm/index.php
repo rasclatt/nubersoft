@@ -11,8 +11,8 @@ $page		=	$getComp['page'];
 
 if(!empty($comp['component_type']))
 	$type	=	$comp['component_type'];
-elseif(!empty($comp['ref_spot']))
-	$type	=	$this->colToTitle($comp['ref_spot']);
+elseif(!empty($comp['category_id']))
+	$type	=	$this->colToTitle($comp['category_id']);
 else
 	$type	=	'undefined';
 ?>

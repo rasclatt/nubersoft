@@ -95,7 +95,7 @@ tr.email_details:hover td {
 			</tr>
 			<tr>
 				<td colspan="2"><h2 style="display: inline-block;">Email Receipts</h2>
-				<?php $count = $this->nQuery()->query("select COUNT(*) as count from components where ref_spot = 'email_receipt' and `page_live` = 'off'")->getResults(true);
+				<?php $count = $this->nQuery()->query("select COUNT(*) as count from components where category_id = 'email_receipt' and `page_live` = 'off'")->getResults(true);
 				
 				if($count['count'] > 0) {
 				 ?>

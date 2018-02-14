@@ -15,7 +15,7 @@ if(!empty($this->getDataNode('connection')->health)):
 		->select()
 		->from("components")
 		->where(array("ref_page"=>$unique_id,"parent_id"=>$unique_id),"OR",false,true)
-		->addCustom("AND `ref_spot` = 'nbr_layout'")
+		->addCustom("AND `category_id` = 'nbr_layout'")
 		->orderBy(array("page_order"=>"ASC"))
 		->fetch();
 
@@ -65,7 +65,7 @@ if(!empty($this->getDataNode('connection')->health)):
 					"ref_page"=>$unique_id,
 					"parent_id"=>$unique_id
 				),"OR",false,true)
-				->addCustom("AND `ref_spot` = 'nbr_layout'")
+				->addCustom("AND `category_id` = 'nbr_layout'")
 				->addCustom($turnedOnEdit)
 				->fetch();
 

@@ -36,7 +36,7 @@ $currPage	=	$this->getPageURI('full_path');
 $aLink		=	$this->localeUrl(((empty($currPage))? $this->getSession('SCRIPT_URL') : $currPage)."?toggle_editor=".$toggle);
 # Get the current components for this page. Checks if there is a component that is able to single-edit
 $comps		=	$this->nQuery()
-					->select(array("ID","component_type","content","page_live","login_permission"))
+					->select(array("ID","component_type","content","page_live","usergroup"))
 					->from("components")
 					->where(array("ref_page"=>$Component->getData()->getComponentTabData('unique_id')))
 					->fetch();
@@ -64,7 +64,7 @@ $aImg		=	$nImage->image(__DIR__.DS.'images'.DS."icn_{$img_icn}.png",array('style
 	<ul>
 <?php		}
 			
-			if(!$User->isAllowed($link['login_permission']))
+			if(!$User->isAllowed($link['usergroup']))
 				continue;
 			
 			$cont	=	(!empty($link['content']))? $link['content'] : 'Empty Content';

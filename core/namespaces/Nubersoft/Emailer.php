@@ -114,7 +114,7 @@ class	Emailer extends \Nubersoft\nApp
 		$columns	=	array(
 			'unique_id',
 			'content',
-			'ref_spot',
+			'category_id',
 			'page_live',
 			'timestamp'
 		);

@@ -10,7 +10,7 @@ $bOpts		=	array(
 						'query_data'=>array(
 							'ID'=>((!empty($_payload->ID))? $_payload->ID : false),
 							'parent_id'=>$parent_id,
-							'ref_spot'=>'sub_menu'
+							'category_id'=>'sub_menu'
 						),
 						'send_back'=>'#comp_'.$this->_id
 					)

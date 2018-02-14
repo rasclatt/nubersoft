@@ -13,7 +13,7 @@ $rand	=	fetch_unique_id();
 <?php
 	if(!isset($get_dup_list)) {
 			autoload_function('organize');
-			$get_dup_list	=	organize($this->nubquery->select()->from("components")->where(array("ref_spot"=>"lib"))->orderBy(array("component_type"=>"DESC"))->getResults(), 'unique_id');
+			$get_dup_list	=	organize($this->nubquery->select()->from("components")->where(array("category_id"=>"lib"))->orderBy(array("component_type"=>"DESC"))->getResults(), 'unique_id');
 			$dup_list		=	(is_array($get_dup_list))? new ArrayObject($get_dup_list):(object) array();
 ?>
 				<div class="dup_wrap">

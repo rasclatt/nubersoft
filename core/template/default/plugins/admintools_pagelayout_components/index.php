@@ -14,8 +14,8 @@
 			<label>Component Types
 				<select name="types" class="nbr">
 					<option value="">Select</option>
-					<?php foreach($this->nQuery()->query("SELECT DISTINCT ref_spot FROM components WHERE ref_spot != ''")->getResults() as $type): ?>
-					<option value="<?php echo $type['ref_spot'] ?>"<?php if($this->getGet('view')==$type['ref_spot']) echo ' selected' ?>><?php echo $this->colToTitle($type['ref_spot']) ?></option>
+					<?php foreach($this->nQuery()->query("SELECT DISTINCT category_id FROM components WHERE category_id != ''")->getResults() as $type): ?>
+					<option value="<?php echo $type['category_id'] ?>"<?php if($this->getGet('view')==$type['category_id']) echo ' selected' ?>><?php echo $this->colToTitle($type['category_id']) ?></option>
 					<?php endforeach ?>
 				</select>
 			</label>
@@ -26,16 +26,16 @@
 				$usergroup	=	$this->getSession('usergroup');
 				$type		=	$this->getGet('view');
 				$Search		=	$this->getPlugin('nPlugins\Nubersoft\SearchEngine');
-				$query		=	$Search->fetch(['columns'=>['ref_spot','content']],
+				$query		=	$Search->fetch(['columns'=>['category_id','content']],
 					function() use ($type,$usergroup){
 						$args		=	func_get_args();
 						$nApp		=	$args[0];
 						$thisObj	=	$args[1];
-						$query	=	$nApp->nQuery()->query("SELECT COUNT(*) as count FROM components WHERE ref_spot=:0 AND `login_permission` <= :1",[$type,$usergroup])->getResults(1);
+						$query	=	$nApp->nQuery()->query("SELECT COUNT(*) as count FROM components WHERE category_id=:0 AND `usergroup` <= :1",[$type,$usergroup])->getResults(1);
 						return $query['count'];
 					},
 					function($req,$thisObj,$page,$limit,$orderB,$orderH) use ($type,$usergroup){
-						$query		=	$thisObj->nQuery()->query("SELECT * FROM components WHERE ref_spot=:0 AND `login_permission` <= :1 ORDER BY `{$orderB}` {$orderH} LIMIT ".$page.", ".$limit,[$type,$usergroup])->getResults();
+						$query		=	$thisObj->nQuery()->query("SELECT * FROM components WHERE category_id=:0 AND `usergroup` <= :1 ORDER BY `{$orderB}` {$orderH} LIMIT ".$page.", ".$limit,[$type,$usergroup])->getResults();
 						return $query;
 					});
 			

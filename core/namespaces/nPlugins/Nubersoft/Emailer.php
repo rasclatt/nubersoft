@@ -118,7 +118,7 @@ class Emailer extends \Nubersoft\Emailer
 						$REQUEST['user_agent']	=	$_SERVER['HTTP_USER_AGENT'];
 						$REQUEST['user_ip']		=	$_SERVER['REMOTE_ADDR'];
 						$nubquery	->insert("components")
-									->columnsValues(array("content","ref_spot"),array("content"=>json_encode($REQUEST),"ref_spot"=>"emailer"))
+									->columnsValues(array("content","category_id"),array("content"=>json_encode($REQUEST),"category_id"=>"emailer"))
 									->write();
 					}
 				

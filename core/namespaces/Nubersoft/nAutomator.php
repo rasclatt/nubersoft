@@ -1,7 +1,7 @@
 <?php
 namespace Nubersoft;
 
-class nAutomator extends \Nubersoft\nApp
+class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 {
 	const	START_RECORDING	=	false;
 
@@ -13,16 +13,41 @@ class nAutomator extends \Nubersoft\nApp
 			$orderBy,
 			$position;
 
-	private	static	$configs	=	array();
-
+	private	static	$configs	=	[];
+	
+	protected	static	$singleton;
 	protected	$combinedArr;
 
-	public	function __construct()
+	public	function __construct($timezone = 'America/Los_Angeles',$use_timezone = false)
 	{
-		date_default_timezone_set('America/Los_Angeles');
-		return parent::__construct();
+		if($use_timezone) {
+			if(!is_string($timezone))
+				$timezone = 'America/Los_Angeles';
+			# Set a default timezone just incase none is specified later 
+			date_default_timezone_set($timezone);
+		}
+		# Reuse itself instead of creating new instance
+		if(self::$singleton instanceof \Nubersoft\nAutomator)
+			return self::$singleton;
+		# Assign self
+		self::$singleton	=	$this;
+		# Return self
+		return self::$singleton;
 	}
-
+	
+	public	function listen()
+	{
+		$args		=	func_get_args();
+		# Required blockflow list
+		$flowsList	=	(!empty($args[0]))? $args[0] : [];
+		# This is the listen action name
+		$action		=	(!empty($args[1]))? $args[1] : 'action';
+		# Run through all the flows
+		foreach($flowsList as $flow)
+			# Add session observer
+			$this->setListenerName($action)->getInstructions($flow);
+	}
+	
 	public	function getApp()
 	{
 		return $this;
@@ -60,7 +85,7 @@ class nAutomator extends \Nubersoft\nApp
 
 		# Get the array and organize it
 		$runActions		=	$this->extractArray($array,$action,$orgKey); 
-		$actionsAvail	=	(is_array($runActions) && !empty($runActions))? array_keys($runActions) : array();
+		$actionsAvail	=	(is_array($runActions) && !empty($runActions))? array_keys($runActions) : [];
 
 		# Check if there is a plugin action associated with this request action
 		if(in_array($actionArr,$actionsAvail)) {
@@ -142,7 +167,7 @@ class nAutomator extends \Nubersoft\nApp
 	{
 		$time	=	$this->toArray($this->getDataNode('workflow_runtime'));	
 		if(empty($time))
-			$time	=	array();
+			$time	=	[];
 
 		$now	=	$this->getMicroTimeNow();
 
@@ -915,9 +940,9 @@ class nAutomator extends \Nubersoft\nApp
 	*/
 	protected	function reorderEvent($order,$before,$after)
 	{
-		$before	=	(empty($before))? array() : $before;
-		$after	=	(empty($after))? array() : $after;
-		$new	=	array();
+		$before	=	(empty($before))? [] : $before;
+		$after	=	(empty($after))? [] : $after;
+		$new	=	[];
 
 		foreach($before as $anchor => $find) {
 			$anchorRev	=	preg_replace('/[^a-zA-Z\_]/','',$anchor);
@@ -965,7 +990,7 @@ class nAutomator extends \Nubersoft\nApp
 	public	function orderArrayGen($array)
 	{
 		$placement	=
-		$new		=	array();
+		$new		=	[];
 
 		foreach($array as $key => $row) {
 			$kName	=	(isset($row['name']))? $row['name'] : $key;
@@ -987,7 +1012,7 @@ class nAutomator extends \Nubersoft\nApp
 			}
 		}
 
-		$holding	=	array();
+		$holding	=	[];
 		//$order		=	array_keys($new);
 		foreach($placement as $row) {
 			foreach($row as $before => $after) {
@@ -1019,7 +1044,7 @@ class nAutomator extends \Nubersoft\nApp
 
 
 		if(!empty($holding)) {
-			$final	=	array();
+			$final	=	[];
 			if(count($holding) != count(array_keys($new))) {
 				$holding	=	array_merge(array_diff(array_keys($new),$holding),$holding);
 			}

@@ -166,7 +166,7 @@ class ComponentWidget extends \Nubersoft\nRender
 		$sendTo				=	(isset($deliver->send_back))? $deliver->send_back : false;
 		$ID					=	(isset($qData->ID) && is_numeric($qData->ID))? $qData->ID : false;
 		$data				=	(!empty($comp_id) && !empty($ID))? $this->Component->getComponent(['ID'=>$ID],true,false) : 0;
-		$usergroup			=	(isset($data['login_permission']))? $data['login_permission'] : NBR_ADMIN;
+		$usergroup			=	(isset($data['usergroup']))? $data['usergroup'] : NBR_ADMIN;
 		
 		# Check that the user has enough admin permissions
 		$User	=	new User();

@@ -21,7 +21,7 @@ autoload_function("FetchUniqueId");
 	<form action="<?php echo $_SERVER['HTTP_REFERER']; ?>" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="token[nProcessor]" value="<?php echo $nProccessor; ?>">
 		<input type="hidden" name="requestTable" value="components">
-		<input type="hidden" name="ref_spot" value="lib">
+		<input type="hidden" name="category_id" value="lib">
 		<div style="max-height: 250px; overflow: auto;margin-bottom: 20px;" class="nbr_general_form">
 			<table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
 <?php

@@ -32,7 +32,7 @@ function graphic_menu_component(\Nubersoft\nApp $nApp)
 			$data	=	$nApp->nQuery()
 							->select()
 							->from("components")
-							->where(array("ID"=>$ID,'ref_spot'=>'sub_menu'))
+							->where(array("ID"=>$ID,'category_id'=>'sub_menu'))
 							->fetch();
 
 			if(isset($data[0])) {

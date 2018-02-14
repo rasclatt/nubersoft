@@ -4,7 +4,7 @@ $User	=	new User();
 $Safe	=	$this->safe();
 $this->addHeadPrefAttr('title','Component Editor');
 echo $this->getHeader('frontend',array('link'=>realpath(__DIR__.DS.'..').DS.'getHeader'.DS.'index.php'));
-$usergroup	=	(!empty($this->useData['ID'][0]['login_permission']))? $this->useData['ID'][0]['login_permission'] : false;
+$usergroup	=	(!empty($this->useData['ID'][0]['usergroup']))? $this->useData['ID'][0]['usergroup'] : false;
 if(!$User->isAllowed($usergroup)): ?>
 <div class="col-count-3 offset">
 	<div class="col-2" style="background-color: #FFF; padding: 30px;">

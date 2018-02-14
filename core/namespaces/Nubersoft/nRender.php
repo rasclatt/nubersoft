@@ -906,7 +906,7 @@ class nRender extends \Nubersoft\nApp
 	public	function getComponent()
 	{
 		$args	=	func_get_args();
-		$type	=	(!empty($args[1]) && !is_bool($args[1]))? $args[1] : 'ref_spot';
+		$type	=	(!empty($args[1]) && !is_bool($args[1]))? $args[1] : 'category_id';
 		$value	=	(!empty($args[0]) && is_array($args[0]))? $args[0] : [$type=>$args[0]];
 		foreach($args as $arg) {
 			if(isset($limit))

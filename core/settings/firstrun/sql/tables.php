@@ -30,7 +30,7 @@ $data['components']	=	"CREATE TABLE `components` (
   `ref_page` varchar(255) COLLATE utf8_bin DEFAULT '',
   `parent_id` varchar(100) COLLATE utf8_bin DEFAULT '',
   `ref_anchor` varchar(255) COLLATE utf8_bin DEFAULT '',
-  `ref_spot` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
+  `category_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
   `component_type` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
   `content` longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `css` longblob,
@@ -44,7 +44,7 @@ $data['components']	=	"CREATE TABLE `components` (
   `class` varchar(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
   `admin_notes` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `login_view` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
-  `login_permission` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
+  `usergroup` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
   `page_order` int(10) DEFAULT '1',
   `page_live` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
   `admin_lock` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT '',
@@ -129,7 +129,7 @@ $data['form_builder']	=	"CREATE TABLE `form_builder` (
   KEY `unique_id` (`unique_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-$data['image_bucket']	=	"CREATE TABLE `image_bucket` (
+$data['media']	=	"CREATE TABLE `media` (
   `ID` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
   `unique_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
   `usergroup` int(2) NOT NULL,

@@ -79,7 +79,7 @@ class Model extends \Nubersoft\nApp
 		if(is_array($config) && $pre_proc) {
 			$nApp	=	$this;
 			$config	=	$this->arrayWalkRecursive($config,function($value) use ($nApp) {
-				$v	=	$nApp->getHelper('nAutomator',$this)->matchFunction($nApp->getBoolVal($value));
+				$v	=	$nApp->getHelper('nAutomator')->matchFunction($nApp->getBoolVal($value));
 				return $v;
 			});
 		}

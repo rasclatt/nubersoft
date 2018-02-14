@@ -65,7 +65,7 @@ class Permission extends \Nubersoft\nApp
 				$sName		=	'nbr_'.implode('_',$searchArr);
 				$whitelist	=	$this->getConfigSetting($searchArr);
 				$dbList		=	$this->getPrefFile($sName,array('save'=>true),false,function($path,$nApp) use ($sName){
-					$ipList	=	$nApp->nQuery()->query("select `content` from `components` where `ref_spot` = :0 and `page_live` = 'on'",array($sName))->getResults();
+					$ipList	=	$nApp->nQuery()->query("select `content` from `components` where `category_id` = :0 and `page_live` = 'on'",array($sName))->getResults();
 					if($ipList != 0)
 						return array_keys($nApp->organizeByKey($ipList,'content',array('multi'=>true)));
 					

@@ -113,7 +113,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 								->getResults(true);
 				
 				$comp['ref_anchor']	=	date('Y-m-d H:i:s').' '.ucwords($comp['component_type']).' (copy)';
-				$comp['ref_spot']	=	'duplicate';
+				$comp['category_id']	=	'duplicate';
 				$comp['ID']			=
 				$comp['ref_page']	=
 				$comp['parent_id']	=
@@ -145,7 +145,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 								->getResults(true);
 				
 				$comp['page_live']	=	'off';
-				$comp['ref_spot']	=	'nbr_layout';
+				$comp['category_id']	=	'nbr_layout';
 				$comp['ref_page']	=	$POST['ref_page'];
 				$comp['ref_anchor']	=	
 				$comp['page_order']	=
@@ -454,7 +454,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 				}
 			
 				if($custDir == 0)
-					$custDir	=	$this->query("select * from upload_directory where `assoc_table` = 'image_bucket'")->getResults(true);
+					$custDir	=	$this->query("select * from upload_directory where `assoc_table` = 'media'")->getResults(true);
 				
 				$upPath		=	(!empty($custDir['file_path']))? NBR_ROOT_DIR.str_replace('/',DS,$custDir['file_path']) : NBR_CLIENT_DIR.DS.'images'.DS.$table.DS;
 				$upPath		=	$this->toSingleDs($upPath);

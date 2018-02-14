@@ -248,13 +248,13 @@ public	function setToken($name = false, $salt = false, $multiToken = false)
 		$Methodizer	=	$this->getHelper('Methodize');
 		$nQuery	=	$this->nQuery();
 		$sqlGet	=	"SELECT
-							`ID`,`ref_spot`,`content`
+							`ID`,`category_id`,`content`
 						FROM
 							components
 						WHERE
 							`component_type` = 'nonce'
 						AND
-							`ref_spot` = :0";
+							`category_id` = :0";
 		if($value == NULL) {
 			$nonce	=	$nQuery->query($sqlGet,array($name))->getResults(true);
 			if($nonce == 0)
@@ -273,13 +273,13 @@ public	function setToken($name = false, $salt = false, $multiToken = false)
 						WHERE
 							`component_type` = 'nonce'
 						AND
-							`ref_spot` = :0";
+							`category_id` = :0";
 
 			$query	=	$nQuery->query($sql,array($name))->getResults(true);
 
 			if($query['count'] == 0) {
 				$sql	=	"INSERT INTO components 
-								(`component_type`,`ref_spot`,`content`)
+								(`component_type`,`category_id`,`content`)
 							VALUES
 								('nonce', :0, :1)";
 
@@ -303,7 +303,7 @@ public	function setToken($name = false, $salt = false, $multiToken = false)
 					WHERE
 						`component_type` = 'nonce'
 					AND
-						`ref_spot` = :0";
+						`category_id` = :0";
 
 		$this->nQuery()->query($sql,array($key));
 		return $this;

@@ -23,6 +23,7 @@
 				<method>setDatabase</method>
 			</class>
 		</object>
+		<!--
 		<object event="nbr_sanitize_request">
 			<class>
 				<name>\Nubersoft\Submits</name>
@@ -30,7 +31,6 @@
 				<chain>sanitizeServer</chain>
 			</class>
 		</object>
-		<!--
 		<object event="nbr_sanitize_remove_superglobals">
 			<class>
 				<name>\Nubersoft\Submits</name>

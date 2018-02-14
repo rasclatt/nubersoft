@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 	<workflow>
+		<!--
 		<object event="nbr_nsessioner_construct">
 			<class>
 				<name>\Nubersoft\nSessioner</name>
@@ -19,6 +20,7 @@
 				<method>setSessionGlobal</method>
 			</class>
 		</object>
+		-->
 		<object event="nbr_nsessioner_save_action">
 			<class>
 				<name>\Nubersoft\nSessioner</name>

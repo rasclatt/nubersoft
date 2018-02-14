@@ -1,21 +1,17 @@
 <?php
 namespace Nubersoft;
 
-class	nSessioner extends \Nubersoft\nFunctions
+class	nSessioner extends \Nubersoft\nApp
 {
 	private	$opts,
 			$sp_chars;
 
 	const	SAFE	=	's';
-
-	private	$nApp;
-
 	/*
 	**	@param	[const] If value equals 's', the session values will save with htmlspecialchars etc.
 	*/
 	public	function __construct()
 	{
-		$this->nApp		=	nApp::call();
 		$this->sp_chars	=
 		$this->opts		=	false;
 
@@ -254,8 +250,8 @@ class	nSessioner extends \Nubersoft\nFunctions
 
 	public	function saveAction($actionName = 'action')
 	{
-		if(!empty($this->nApp->getPost($actionName))) {
-			$this->setSession($actionName,$this->nApp->getPost($actionName),true);
+		if(!empty($this->getPost($actionName))) {
+			$this->setSession($actionName,$this->getPost($actionName),true);
 		}
 	}
 }

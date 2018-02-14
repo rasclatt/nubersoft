@@ -65,7 +65,7 @@ a.base_button:visited	{
 						$nubquery	=	nquery();
 						$terms		=	$nubquery	->select()
 													->from("components")
-													->where(array("ref_spot"=>"terms","ref_anchor"=>$this->dlInfo->terms_id))
+													->where(array("category_id"=>"terms","ref_anchor"=>$this->dlInfo->terms_id))
 													->getResults();
 						if($terms != 0) { ?>
 						<?php echo Safe::decode($terms[0]['content']); ?>

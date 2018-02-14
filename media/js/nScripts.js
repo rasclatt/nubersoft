@@ -14,7 +14,7 @@ path_reporting		=	false;
 // Show data packages at key points
 package_reporting	=	true;
 // Shows the ajax responses
-response_reporting	=	false;
+response_reporting	=	true;
 // Used to document realtime actions like rollovers
 realtime_reporting	=	false;
 /*

@@ -21,7 +21,7 @@ $data		=	array(
 	'data'=>array(
 		'deliver'=>array(
 			'send_back'=>"#test_".$this->uId,
-			'query_data'=>array_merge(array('ID'=>$ID,'ref_spot'=>'nbr_layout'),$this->toArray($settings->sVars))
+			'query_data'=>array_merge(array('ID'=>$ID,'category_id'=>'nbr_layout'),$this->toArray($settings->sVars))
 			)
 		)
 	);

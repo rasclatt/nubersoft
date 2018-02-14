@@ -64,7 +64,7 @@ class CoreHelper extends \Nubersoft\nRender
 		$aNotes		=	(!empty($curr['admin_notes']));
 		$_is_img	=	$this->checkEmpty($curr,'component_type','image');
 		# Set usergroup allowed
-		$usergroup	=	(isset($curr['login_permission']))? $curr['login_permission'] : false;
+		$usergroup	=	(isset($curr['usergroup']))? $curr['usergroup'] : false;
 		$sVars		=	[
 			"unique_id"=>((isset($curr['unique_id']))? $curr['unique_id'] : false),
 			"ref_page"=>((isset($unique_id))? $unique_id:$curr['ref_page']),

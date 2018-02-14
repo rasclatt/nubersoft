@@ -131,7 +131,7 @@ class nTemplate extends \Nubersoft\nApp
 		{
 			$comp['ref_anchor']	=	$refanchor;
 			$comp['content']	=	$data;
-			$comp['ref_spot']	=	$type;
+			$comp['category_id']	=	$type;
 			$comp['ref_page']	=	(!empty($refpage))? $refpage : $this->getPageURI('unique_id');
 			$comp['parent_id']	=	(!empty($parent))? $parent : false;
 
@@ -140,6 +140,6 @@ class nTemplate extends \Nubersoft\nApp
 	
 		public	static	function getFileFromDefaultTemplate($file)
 		{
-			return $this->toSingleDs(__DIR__.DS.'core'.DS.'template'.DS.'default'.DS.$file);
+			return self::call()->toSingleDs(__DIR__.DS.'core'.DS.'template'.DS.'default'.DS.$file);
 		}
 	}

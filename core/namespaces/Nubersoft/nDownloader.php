@@ -7,7 +7,7 @@ class nDownloader extends \Nubersoft\nRender
 			{
 				# ID, not unique_id
 				$file_id	=	(!empty($settings['ID']))? $settings['ID'] : false;
-				# Table name, not ID (numeric): ie. "image_bucket"
+				# Table name, not ID (numeric): ie. "media"
 				$table_id	=	(!empty($settings['table']))? $settings['table'] : false;
 				
 				if(empty($file_id) || empty($table_id))

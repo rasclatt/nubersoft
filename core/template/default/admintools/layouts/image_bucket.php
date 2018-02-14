@@ -24,7 +24,7 @@ $nProcToken	=	self::call('nToken')->setMultiToken('nProcessor','imagebucket');
 ?>	<div style="padding: 30px; box-shadow: 1px 1px 10px rgba(0,0,0,0.6);">
 		<div style="display: inline-block; border: 1px solid #CCC; padding: 10px; margin: 5px; text-align: center;">
 			<form enctype="multipart/form-data" method="post">
-				<input type="hidden" name="requestTable" value="image_bucket" />
+				<input type="hidden" name="requestTable" value="media" />
 				<input type="hidden" name="token[nProcessor]" value="<?php echo $nProcToken; ?>" />
 				<input type="hidden" name="thumbnail" value="1" />
 				<?php DisplayFiles($values,$columns,$dropdowns,$nuber); ?>
@@ -56,7 +56,7 @@ $nProcToken	=	self::call('nToken')->setMultiToken('nProcessor','imagebucket');
 			$kind	=	get_file_extension($row['file_name']);
 						
 			if($kind == 'pdf' || $kind == 'psd') {
-				if(!is_file($mkthum = NBR_CLIENT_DIR."/thumbs/image_bucket/".$row['file_name']) && class_exists("Imagick")) {
+				if(!is_file($mkthum = NBR_CLIENT_DIR."/thumbs/media/".$row['file_name']) && class_exists("Imagick")) {
 					$imagick = new Imagick();
 					$imagick->readImage(NBR_ROOT_DIR.$row['file_path'].$row['file_name']);
 					$imagick->writeImage($mkthum);
@@ -66,8 +66,8 @@ $nProcToken	=	self::call('nToken')->setMultiToken('nProcessor','imagebucket');
 			if(is_file(NBR_ROOT_DIR.$file)) {
 					$default_img	=	$file;
 					
-					if(defined("NBR_THUMB_DIR") && is_file(NBR_THUMB_DIR."/image_bucket/".$row['file_name']))
-						$default_img	=	str_replace(NBR_ROOT_DIR,"",NBR_THUMB_DIR."/image_bucket/".$row['file_name']);
+					if(defined("NBR_THUMB_DIR") && is_file(NBR_THUMB_DIR."/media/".$row['file_name']))
+						$default_img	=	str_replace(NBR_ROOT_DIR,"",NBR_THUMB_DIR."/media/".$row['file_name']);
 						
 					if(preg_match('/.mp4|.mpeg4|.ogg/i',$row['file_name'],$ext)) { ?>
 					<video controls height="100">

@@ -109,7 +109,7 @@ class Controller extends \Nubersoft\nApp
 				$combineConf	=	function($array,&$new) use ($nFunc)
 					{
 						$zones	=	array_keys($array['loadzones']);
-						$nAuto	=	new \Nubersoft\nAutomator($this);
+						$nAuto	=	new \Nubersoft\nAutomator();
 						foreach($zones as $zone) {
 							$new[$zone]	=	$nFunc->getMatchedArray(array('loadzones',$zone),'_',$array);
 							foreach($new[$zone][$zone] as $val) {
@@ -180,7 +180,7 @@ class Controller extends \Nubersoft\nApp
 				# Fetch the paths of where configs can load from
 				$zones		=	$this->getLoadZones();
 				# Get the configs parser
-				$parser		=	new \Nubersoft\configFunctions(new \Nubersoft\nAutomator($this));
+				$parser		=	new \Nubersoft\configFunctions(new \Nubersoft\nAutomator());
 				# If there are pages to loop through
 				if(!empty($zones)) {
 					foreach($zones as $title => $zoneArr) {

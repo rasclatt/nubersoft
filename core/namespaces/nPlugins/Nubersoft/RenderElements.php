@@ -109,7 +109,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					}
 					else {
 						$file_check					=	$nubquery	->select(array("file","file_path"))
-																	->from("image_bucket")
+																	->from("media")
 																	->where(array("ref_page"=>$unique_id,"ID"=>$this->payload['ID']))
 																	->fetch();
 																	
@@ -187,7 +187,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					else {
 						$file_check	=	$this->nQuery()
 											->select(array("file", "file_path"))
-											->from("image_bucket")
+											->from("media")
 											->where(array("ref_page"=>$unique_id,"div_id"=>$this->payload['ID']))
 											->fetch();
 																	

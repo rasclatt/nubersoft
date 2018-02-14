@@ -27,7 +27,7 @@ if(!isset($get_dup_list)) {
 	$list	=	$query
 		->select()
 		->from("components")
-		->where(array("ref_spot"=>"duplicate"))
+		->where(array("category_id"=>"duplicate"))
 		->orderBy(array("component_type"=>"DESC"))
 		->fetch();
 	

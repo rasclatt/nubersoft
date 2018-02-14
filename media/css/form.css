@@ -86,6 +86,12 @@ input[type=submit].nbr:hover,
 button.nbr:hover {
 	background-color: #111;
 }
+a.small:link,
+a.small:hover {
+	font-size: 1em;
+	display: block;
+	width: auto !important;
+}
 .auto {
 	display: inline-flex !important;
 	width: auto !important;

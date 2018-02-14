@@ -28,7 +28,7 @@ $parent			=	(isset($this->data['component_type']) && in_array($this->data['compo
 				<?php echo $nForm->fullhide(array('name'=>"token[nProcessor]",'value'=>$nProccessor)) ?>
 				<?php echo $nForm->fullhide(array('name'=>'ID','value'=>'')) ?>
 				<?php echo $nForm->fullhide(array('name'=>'unique_id','value'=>'')) ?>
-				<?php echo $nForm->fullhide(array('name'=>'ref_spot','value'=>$getDefVal('ref_spot',$this))) ?>
+				<?php echo $nForm->fullhide(array('name'=>'category_id','value'=>$getDefVal('category_id',$this))) ?>
 				<?php echo $nForm->fullhide(array('name'=>'parent_id','value'=>((!empty($parent))? $this->data['unique_id'] : ''))) ?>
 				<input type="hidden" name="ref_page" value="<?php echo $pageid; ?>" />
 				<div class="nbr_component_add">

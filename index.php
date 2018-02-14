@@ -1,118 +1,37 @@
 <?php
+/**
+*	@Copyright	nUberSoft.com All Rights Reserved.
+*	@License	License available for review in license text document in root
+*/
+namespace Nubersoft;
+# Shortcut Flag Controller
+use \Nubersoft\Flags\Controller as Flag;
 #check if cron job set
 if(!empty($argv[1])) {
 	$_REQUEST	=	[];
 	parse_str($argv[1],$_REQUEST);
-
 }
-# Configuration
+# Configuration (includes defines)
 require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
-# Create instance for sharing
-$nApp	=	new \Nubersoft\nApp();
 # Check if maintenance flag is set
-if(\Nubersoft\Flags\Controller::hasFlag('maintenance')) {
+if(Flag::hasFlag('maintenance') && !$nApp->isAdmin() && !$nApp->isAdminPage() && !$nApp->isAjaxRequest()) {
+	# Check if there is a template set for the static page
+	$errorTemplate	=	nTemplate::getFileFromDefaultTemplate('frontend'.DS.'static.offline.php');
 	# Render the offline page
-	include(__DIR__.DS.'core'.DS.'template'.DS.'default'.DS.'frontend'.DS.'static.offline.php');
-	# Stop
-	exit;
+	die((is_file($errorTemplate))? $nApp->render($errorTemplate) : '<h1>'.$nApp->__('Site is offline for maintenance.').'</h1>');
 }
 # Try to run the application as usual
 try {
-	$nApp->setErrorMode();
-	# Load our backtracer and load printpre
-	$nApp->saveEngine('\Nubersoft\nFunctions', $nApp->getHelper('nHtml'), $nApp->getHelper('nImage'))
-		->getHelper('nFunctions')->autoload(array('printpre'));
-	# Create block instructions for header-based commands
-	$order	=	array(
-		'blockflow/session',
-		'blockflow/database',
-		'blockflow/preferences',
-		'blockflow/timezone'
-	);
-	# Get the automator
-	$nAutomator	=	$nApp->getHelper('nAutomator', $nApp);
-	# Run through all the flows
-	foreach($order as $flow) {
-		# Add session observer
-		$nAutomator->setListenerName('action')->getInstructions($flow);
-	}
-	# Try and run the default application
-	\Nubersoft\NuberEngine::init()->core($nAutomator);
-	/*
-	if(\Nubersoft\nApp::call()->isAdmin())
-		echo printpre(\Nubersoft\nApp::call()->getDataNode('workflow_run'));
-	*/
+	# First check if there is a client application to run
+	$index	=	NBR_CLIENT_SETTINGS.DS.'index.php';
+	# Include the valid application
+	include((is_file($index))? $index : NBR_SETTINGS.DS.'index.php');
 }
-catch (\Nubersoft\nException $e) {
-	if($nApp->isAdmin() || !is_file(__DIR__.DS.'.htaccess')) {
-		echo $e->getMessage().printpre($e->getTrace());
-		echo printpre(__FILE__.' ('.__LINE__.')');
-		exit;
-	}
-	else {
-		$nApp->autoload('nLog');
-		nLog($e);
-		echo $e->getMessage();
-		exit;
-	}
+catch (nException $e) {
+	$exception	=	NBR_CLIENT_SETTINGS.DS.'nexception.php';
+	include((is_file($exception))? $exception : NBR_SETTINGS.DS.'nexception.php');
 }
 catch (\Exception $e) {
-	if(!isset($_SESSION))
-		session_start();
-	
-	$is_admin	=	(isset($_SESSION['usergroup']) && $_SESSION['usergroup'] <= 2);
-	
-	if(!defined('DS'))
-		define('DS',DIRECTORY_SEPARATOR);
-	# Get the code for the base problem
-	$code	=	$e->getCode();
-	# Create some defines
-	if(!defined('NBR_CLIENT_DIR'))
-		define('NBR_CLIENT_DIR',__DIR__.DS.'client');
-	# Set different options for dealing with install/start-up issues
-	switch($code) {
-		# Missing registry file
-		case(404001):
-			$pathtoxml	=	'settings'.DS.'registry.xml';
-			# Fetch the remote default version
-			$getRemote	=	file_get_contents(__DIR__.DS.'core'.DS.$pathtoxml);
-			# Save it to default location
-			file_put_contents(NBR_CLIENT_DIR.DS.$pathtoxml,$getRemote);
-			# Inform user
-			die(\Nubersoft\nApp::getErrorLayout('noreg'));
-		default:
-			$reg = NBR_CLIENT_SETTINGS.DS.'registry.xml';
-			if(!is_file($reg)) {
-				if(!is_dir($regdir = NBR_CLIENT_SETTINGS))
-					mkdir($regdir,0755,true);
-				
-				copy(NBR_SETTINGS.DS.'registry.xml',$reg);
-				echo (is_file($reg))? 'Registry created!' : 'Registry could not be created.';
-				if(is_file($reg)) {
-					$_SESSION['first_run']	=	$_SERVER['HTTP_HOST'];
-					$xml	=	simplexml_load_file($reg);
-					$xml->ondefine->base_url	=	
-					$xml->ondefine->base_url	=	'http://'.$_SERVER['HTTP_HOST'];
-					$xml->asXml($reg);
-				}
-			}
-			else {
-				# If there is a caught Database exception
-				if($e instanceof \PDOException) {
-					# Set error
-					$nApp->setSession('app_error','Database error occurred.');
-					# Save the error to log file
-					$nApp->autoload('nLog');
-					nLog($e);
-					# Redirect back
-					header('Location: /?error=sql');
-					exit;
-				}
-				else {
-					$firstrun	=	(!empty($_SESSION['first_run']));
-					$msg		=	($is_admin || $firstrun)? $e->getMessage() : 'View log for details.';
-					echo '<p style="font-family: helvetica, sans-serif;">Unrecoverable Application Error. '.$msg.'</p>';
-				}
-			}
-	}
+	$exception	=	NBR_CLIENT_SETTINGS.DS.'exception.php';
+	include((is_file($exception))? $exception : NBR_SETTINGS.DS.'exception.php');
 }

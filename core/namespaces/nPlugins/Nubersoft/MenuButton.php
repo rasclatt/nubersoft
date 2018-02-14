@@ -48,7 +48,7 @@ class	MenuButton extends \nPlugins\Nubersoft\CoreHelper
 				$gsub	=	$this->organizeByKey($this->nQuery()
 					->select()
 					->from("components")
-					->where(array('ref_spot'=>'sub_menu'))
+					->where(array('category_id'=>'sub_menu'))
 					->fetch(),'ref_page',array('unset'=>false));
 				
 				$this->saveSetting('gsub',$gsub);
@@ -168,7 +168,7 @@ class	MenuButton extends \nPlugins\Nubersoft\CoreHelper
 								->select()
 								->from("components")
 								->where(array_merge($statementAdmin,array(
-									'ref_spot'=>'sub_menu',
+									'category_id'=>'sub_menu',
 									"parent_id"=>$this->getPageURI('unique_id')
 								)))
 								->fetch();

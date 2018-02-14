@@ -6,7 +6,7 @@
 	<input type="hidden" name="ID" value="<?php echo (!empty($useData['ID']))? $useData['ID'] : ""; ?>" />
 	<input type="hidden" name="unique_id" value="<?php echo (!empty($useData['unique_id']))? $useData['unique_id'] : ""; ?>" />
 	<input type="hidden" name="ref_page" value="<?php echo $this->ref_page; ?>" /><br />
-	<input type="hidden" name="ref_spot" value="<?php echo $this->ref_spot; ?>" />
+	<input type="hidden" name="category_id" value="<?php echo $this->category_id; ?>" />
 <?php
 	if(is_admin()) {
 ?>	<select name="page_live">

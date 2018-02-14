@@ -744,7 +744,7 @@ class	nFunctions extends \Nubersoft\Singleton
 	{
 		$nApp			=	nApp::call();
 		$extArr			=	(is_array($extArr))? $extArr : $nApp->getConfigs();
-		$configFuncs	=	new configFunctions(new nAutomator($nApp));
+		$configFuncs	=	new configFunctions(new nAutomator());
 		return $configFuncs	->useArray($extArr)
 							->getSettings($array);
 	}

@@ -13,18 +13,18 @@ class PostEngine extends \Nubersoft\nRender
 		private		$settings,
 					$bEngine,
 					$ref_page,
-					$ref_spot,
+					$category_id,
 					$allow_subs;
 		
 		const	DEFAULT_TABLE	= 'components';
 		
-		public	function __construct($ref_page,$ref_spot)
+		public	function __construct($ref_page,$category_id)
 			{
-				$this->ref_spot		=	$ref_spot;
+				$this->category_id		=	$category_id;
 				$this->ref_page		=	(!empty($ref_page))? $ref_page : $this->getPage('ID');
 				$this->allow_subs	=	false;
 				$this->bEngine		=	false;
-				$bSettings			=	($this->isAdmin())? array("ref_spot"=>$this->ref_spot,"ref_page"=>$this->ref_page) : array("page_live"=>"on","ref_spot"=>$this->ref_spot,"ref_page"=>$this->ref_page);//,"parent_id"=>""
+				$bSettings			=	($this->isAdmin())? array("category_id"=>$this->category_id,"ref_page"=>$this->ref_page) : array("page_live"=>"on","category_id"=>$this->category_id,"ref_page"=>$this->ref_page);//,"parent_id"=>""
 				$bCol				=	array("content","ID","unique_id","parent_id");
 				$this->settings		=	array("columns"=>$bCol,"constraints"=>$bSettings);
 				
@@ -89,13 +89,13 @@ class PostEngine extends \Nubersoft\nRender
 		
 		public	function fetchPosts($ids = false)
 			{
-				$vals['ref_spot']	=	$this->ref_spot;
+				$vals['category_id']	=	$this->category_id;
 				$query				=	$this->nQuery();
 				$get_posts			=	$query	->select(array("ID","unique_id","ref_page","parent_id","content"))
 												->from("components");
 
 				if(is_array($ids) && !empty($ids))
-					$get_posts->wherein("ID",$ids)->addCustom("and ref_spot = '".$vals['ref_spot']."'");
+					$get_posts->wherein("ID",$ids)->addCustom("and category_id = '".$vals['category_id']."'");
 				else
 					$get_posts->where($vals);
 				
@@ -113,7 +113,7 @@ class PostEngine extends \Nubersoft\nRender
 					return $this;
 				}
 				
-				$vals['ref_spot']	=	"blog";
+				$vals['category_id']	=	"blog";
 				$vals['ref_anchor']	=	$parent;
 				
 				$query			=	$this->nQuery();
