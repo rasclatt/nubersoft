@@ -36,23 +36,43 @@ namespace nPlugins\Nubersoft\Component;
 
 class Model extends \nPlugins\Nubersoft\CoreTables
 {
-	public	function getComponent($array,$limitone=true,$node=true)
+	public	function getComponent($array,$limitone=true,$node=true,$columns='*',$count=false,$orderby=false)
+	{
+		return $this->queryComponents($array,$columns,$count,$limitone,$node,$orderby);
+	}
+	
+	public	function queryComponents($array,$columns='*',$count=false,$limit=false,$node=false,$orderby=false)
 	{
 		foreach($array as $key => $value) {
 			$sKey			=	":{$key}";
 			$bind[$sKey]	=	$value;
 			$new[]			=	"`{$key}` = {$sKey}";
 		}
+		
+		if(is_array($columns))
+			$columns	=	implode(',',$columns);
+		
+		if(is_bool($count) && !empty($count))
+			$count	=	'count';
+		
+		$count	=	(!empty($count))? "COUNT({$columns}) as {$count}" : $columns;
 		$where	=	" WHERE ".implode(' AND ',$new);
-		$sql	=	"SELECT * FROM components {$where}";
+		$sql	=	"SELECT {$count} FROM components {$where} {$orderby}";
 		$query	=	$this->nQuery()->query($sql,$bind);
-		return ($node)? $query->toNode($limitone) : $query->getResults($limitone);
+		
+		return ($node)? $query->toNode($limit) : $query->getResults($limit);
 	}
 
-	public	function getCodeComponentsFor($unique_id)
+	public	function getCodeComponentsFor($unique_id,$columns=false)
 	{
+		if(empty($columns))
+			$columns	=	['ID','component_type', 'content', 'page_live'];
+		
+		if(is_array($columns))
+			$columns	=	implode(',',$columns);
+		
 		$sql	=	"SELECT
-						`ID`,`component_type`, `content`, `page_live`
+						{$columns}
 					FROM
 						`components`
 					WHERE

@@ -691,4 +691,36 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		}
 		return (!empty($new))? implode(" {$bind_with} ",$new) : '';
 	}
+	
+	public	function toBind($data)
+	{
+		if(!is_array($bind)) {
+			trigger_error('"$data" must be array.',E_USER_NOTICE);
+			return false;
+		}
+		
+		foreach($data as $key => $value) {
+			$qs[]			=	'?';
+			$bKey			=	":{$key}";
+			$bind[$bKey]	=	$value;
+			$update[]		=	"{$key} = {$bKey}";
+			$qUpdate[]		=	"{$key} = ?";
+		}
+		
+		$qInsert	=	implode(',',$qs);
+		$insert		=	implode(',',array_keys($bind));
+		
+		return [
+			'bind' => [
+				'array' => $bind,
+				'update' => $update,
+				'insert' => $insert
+			],
+			'anon' => [
+				'array' => array_values($data),
+				'update' => $qUpdate,
+				'insert' => $qInsert
+			]
+		];
+	}
 }
