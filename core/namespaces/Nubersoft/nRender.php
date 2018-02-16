@@ -901,13 +901,49 @@ class nRender extends \Nubersoft\nApp
 		return $Methodize->{$name}();
 	}
 	/**
-	*	@description	Fetches a component from database based on column
+	*	@description	Used to fetch the component model primarily
+	*/
+	public	function getModel($kind)
+	{
+		switch($kind) {
+			case('component'):
+				return $this->getPlugin('\nPlugins\Nubersoft\Component\Model');
+		}
+	}
+	/**
+	*	@description	Alias to Component Model version
+	*/
+	public	function deleteComponent($array)
+	{
+		if(!is_array($array)) {
+			trigger_error('$array must be an array.',E_USER_NOTICE);
+			return false;
+		}
+		
+		$this->getModel('component')->deleteComponent($array);
+	}
+	/**
+	*	@description	Alias to Component Model version
+	*/
+	public	function addComponent($array)
+	{
+		if(!is_array($array)) {
+			trigger_error('$array must be an array.',E_USER_NOTICE);
+			return false;
+		}
+		
+		$this->getModel('component')->addComponent($array);
+	}
+	/**
+	*	@description	Alias to Component Model version
 	*/
 	public	function getComponent()
 	{
 		$args	=	func_get_args();
 		$type	=	(!empty($args[1]) && !is_bool($args[1]))? $args[1] : 'category_id';
 		$value	=	(!empty($args[0]) && is_array($args[0]))? $args[0] : [$type=>$args[0]];
+		$return	=	(!empty($args[2]))? $args[2] : false;
+		
 		foreach($args as $arg) {
 			if(isset($limit))
 				continue;
@@ -919,8 +955,18 @@ class nRender extends \Nubersoft\nApp
 		if(!isset($limit))
 			$limit	=	false;
 		
-		$Component	=	$this->getPlugin('\nPlugins\Nubersoft\Component\Model');
-		return $Component->getComponent($value,$limit);
+		$data		=	$this->getModel('component')->getComponent($value,$limit);
+		
+		switch($return) {
+			case('array'):
+				return $data->toArray();
+			case('json'):
+				return $data->toJson();
+			case('xml'):
+				return $data->toXml();
+			default:
+				return $data;
+		}
 	}
 	/**
 	*	@description	Fetches the social media links

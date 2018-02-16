@@ -83,4 +83,35 @@ class Model extends \nPlugins\Nubersoft\CoreTables
 
 		return $this->nQuery()->query($sql,[$unique_id])->getResults();
 	}
+	/**
+	*	@description	Standard deletion of component
+	*/
+	public	function deleteComponent()
+	{
+		$args	=	func_get_args();
+		$array	=	(!empty($args[0]))? $args[0] : false;
+		
+		if(!is_array($array))
+			$array	=	['ID'=>$array];
+		
+		$this->delete()->from('components')->where($array)->write();
+	}
+	/**
+	*	@description	Standard deletion of component
+	*/
+	public	function addComponent($array,$filter=false)
+	{
+		if(!is_array($array)) {
+			trigger_error('Must be array.',E_USER_NOTICE);
+			return false;
+		}
+		
+		if(!isset($array['unique_id']))
+			$array['unique_id']	=	$this->fetchUniqueId();
+		
+		if(!isset($array['timestamp']))
+			$array['timestamp']	=	date('Y-m-d H:i:s');
+		
+		$this->useTicks(false)->insert("components")->columnsValues([$array],(!$filter))->write();
+	}
 }

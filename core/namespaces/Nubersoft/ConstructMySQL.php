@@ -64,8 +64,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 
 		if(!isset(self::$queries))
 			self::$queries	=	0;
-
-		$this->Safe				=	$this->getHelper('Safe');
+		
 		return parent::__construct();
 	}
 	/*
@@ -190,13 +189,8 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 
 	public	function standardBind($array)
 	{
-		foreach($array as $key => $value) {
-			$key			=	ltrim($key,':');
-			$sKey			=	":$key";
-			$bind[$sKey]	=	$value;
-		}
-
-		return $bind;
+		$array	=	$this->toBind($array,'bind');
+		return $array['array'];
 	}
 
 	public	function query($sql,$bind = false)
@@ -370,10 +364,19 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		return $this;
 	}
 
-	public	function where($columns_values, $operand = 'AND', $not = false,$isolate = false)
+	public	function where()
 	{
-		$this->sql[]		=	'WHERE';
-		$equals				=	($not == false || $not == 0)? "=":"!=";
+		$args			=	func_get_args();
+		$columns_values	=	$args[0];
+		$operand		=	(empty($args[1]))? 'AND' : $args[1];
+		$not			=	(isset($args[2]))? $args[2] : false;
+		$isolate		=	(isset($args[3]))? $args[3] : false;
+		$skipWhere		=	(isset($args[4]))? $args[4] : false;
+		
+		if(!$skipWhere)
+			$this->sql[]		=	'WHERE';
+
+		$equals				=	(empty($not))? "=":"!=";
 		if(is_array($columns_values)) {
 			$brackets['f']	=	($isolate)? '(' : '';
 			$brackets['e']	=	($isolate)? ')' : '';
@@ -388,7 +391,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		return $this;
 
 	}
-
+	
 	public	function useTicks($use = true)
 	{
 		$this->ticks	=	$use;
@@ -431,6 +434,13 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			$this->sql[]		=	$values;
 		}
 
+		return $this;
+	}
+	
+	public	function whereNot($columns_values, $operand = 'AND',$isolate = false,$skipWhere=false)
+	{
+		$this->where($columns_values,$operand,true,$isolate,$skipWhere);
+		
 		return $this;
 	}
 
@@ -553,26 +563,26 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 
 	public	function columnsValues($rows,$forceblank = true)
 	{
-		$cols	=	false;
+		$this->bind	=	[];
+		$cols		=	false;
 		foreach($rows as $key => $value) {
+			
+			if(!$forceblank)
+				$value	=	array_filter($value);
+			
 			if(!$cols) {
 				$this->sql[]	=	'('.$this->getTicks().implode($this->getTicks().', '.$this->getTicks(),array_keys($value)).$this->getTicks().')';
 				$this->sql[]	=	'VALUES';
 				$cols	=	true;
 			}
-
-			$this->setBind($value,'colsvals'.$key);
-			$setColsVals[]	=	'('.implode(', ',array_keys($this->getBind('colsvals'.$key))).')';
+			# Fetch bind
+			$getBind		=	$this->toBind($value,'bind',$key);
+			$this->bind		=	array_merge($this->bind,$getBind['array']);
+			# Store to string
+			$setColsVals[]	=	'('.implode(', ',$getBind['keys']).')';
 		}
-
-
 		$this->sql[]	=	implode(', ', $setColsVals);
 
-		/*
-		echo printpre($rows);
-		echo printpre($setColsVals);
-		echo printpre($this->sql);
-		*/
 		return $this;
 	}
 
@@ -622,7 +632,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			self::$bindArr[$type][$sKey]	=	$value;
 			$count++;
 		}
-
+		
 		return $this;
 	}
 
@@ -691,36 +701,41 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		}
 		return (!empty($new))? implode(" {$bind_with} ",$new) : '';
 	}
-	
-	public	function toBind($data)
+	/**
+	*	@description	Creates an anonymous or named bind array
+	*/
+	public	function toBind($data,$return='bind',$prefix=false)
 	{
-		if(!is_array($bind)) {
+		if(!is_array($data)) {
 			trigger_error('"$data" must be array.',E_USER_NOTICE);
 			return false;
 		}
 		
 		foreach($data as $key => $value) {
+			$key			=	ltrim($key,':');
 			$qs[]			=	'?';
-			$bKey			=	":{$key}";
+			$bKey			=	":{$prefix}".trim($key,'`');
 			$bind[$bKey]	=	$value;
 			$update[]		=	"{$key} = {$bKey}";
 			$qUpdate[]		=	"{$key} = ?";
 		}
 		
-		$qInsert	=	implode(',',$qs);
-		$insert		=	implode(',',array_keys($bind));
-		
-		return [
+		$data		=	[
 			'bind' => [
 				'array' => $bind,
-				'update' => $update,
-				'insert' => $insert
+				'keys' => array_keys($bind),
+				'strings' => $update
 			],
 			'anon' => [
-				'array' => array_values($data),
-				'update' => $qUpdate,
-				'insert' => $qInsert
+				'values' => array_values($data),
+				'marks' => $qs,
+				'strings' => $qUpdate
 			]
 		];
+
+		if(empty($return))
+			return $data;
+		else
+			return (isset($data[$return]))? $data[$return] : false;
 	}
 }
