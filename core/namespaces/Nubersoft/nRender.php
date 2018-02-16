@@ -969,6 +969,18 @@ class nRender extends \Nubersoft\nApp
 		}
 	}
 	/**
+	*	@description	Alias to Component Model version
+	*/
+	public	function updateComponent($array)
+	{
+		if(!is_array($array)) {
+			trigger_error('$array must be an array.',E_USER_NOTICE);
+			return false;
+		}
+		
+		$this->getModel('component')->addComponent($array);
+	}
+	/**
 	*	@description	Fetches the social media links
 	*/
 	public	function getSocialMedia($var = false, $not = array())

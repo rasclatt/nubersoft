@@ -102,6 +102,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			self::$storeQueries	=	array();
 		# Store query values
 		self::$storeQueries[]	=	$store;
+		$this->bind		=
 		# reset bind
 		self::$bindArr	=	false;
 		self::$queries	+=	1;
@@ -110,9 +111,9 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 	public	function sendQuery($sql)
 	{
 		try {
-			if(!empty($this->getBind())) {
+			if(!empty($this->getBind()) || !empty($this->bind)) {
 				# Get the general bind array
-				$bind	=	$this->getBind();
+				$bind	=	(!empty($this->getBind()))? $this->getBind() : $this->bind;
 				# Isolate the query bind array
 				$qBind	=	$this->getBind('query');
 				# Fetch the PDO connetion
@@ -141,6 +142,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			else {
 				$query			=	$this->getConnection()->query($sql);
 				$this->query	=	$query;
+				$this->bind		=
 				# reset bind
 				self::$bindArr	=	false;
 				self::$queries	+=	1;
@@ -278,6 +280,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			$statement	=	$this->getStatement();
 			$this->sendQuery($statement);
 		}
+		
 		# Reset the sql so the sql doesn't persist
 		$this->resetAttr();
 
@@ -290,7 +293,8 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		while($row = $this->getQuery()->fetch(\PDO::FETCH_ASSOC)) {
 			$result[]	=	$row;
 		}
-
+		
+		
 		$queryResults	=	(!empty($result))? $result : 0;
 		if(self::RESET_CONNECTION)
 			self::$con	=	NULL;
@@ -368,7 +372,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 	{
 		$args			=	func_get_args();
 		$columns_values	=	$args[0];
-		$operand		=	(empty($args[1]))? 'AND' : $args[1];
+		$operand		=	(empty($args[1]))? ' AND ' : ' '.$args[1].' ';
 		$not			=	(isset($args[2]))? $args[2] : false;
 		$isolate		=	(isset($args[3]))? $args[3] : false;
 		$skipWhere		=	(isset($args[4]))? $args[4] : false;
@@ -380,14 +384,20 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		if(is_array($columns_values)) {
 			$brackets['f']	=	($isolate)? '(' : '';
 			$brackets['e']	=	($isolate)? ')' : '';
-			# Create a bind "where" array
-			$this->setBind($columns_values, "where");
+			
+			$bindWhere	=	$this->toBind($columns_values,'bind','where');
+			
+			if(!is_array($this->bind))
+				$this->bind	=	[];
+			
+			$this->bind		=	array_merge($this->bind,$bindWhere['array']);
+			
 			# Create where string
-			$this->sql[]	=	$brackets['f'].$this->getEqualsFromBind(array_keys($columns_values),'where',$operand).$brackets['e'];
+			$this->sql[]	=	$brackets['f'].implode($operand,$bindWhere['strings']).$brackets['e'];
 		}
 		else
 			$this->sql[]	=	$brackets['f'].$columns_values.$brackets['e'];
-
+		
 		return $this;
 
 	}
@@ -538,13 +548,19 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		return $this;
 	}
 
-	public	function set($columns_values = "")
+	public	function set($columns_values = "",$prefix=false)
 	{
 		$this->sql[]	=	"SET";
 
 		if(is_array($columns_values)) {
-			$this->setBind($columns_values,'set');
-			$this->sql[]	=	$this->getUpdateFromBind($columns_values,', ');
+			
+			$setBind	=	$this->toBind($columns_values,'bind','set'.$prefix);
+			
+			if(!is_array($this->bind))
+				$this->bind	=	[];
+
+			$this->bind		=	array_merge($this->bind,$setBind['array']);
+			$this->sql[]	=	implode(',',$setBind['strings']);
 		}
 		else
 			$this->sql[]	=	$columns_values;

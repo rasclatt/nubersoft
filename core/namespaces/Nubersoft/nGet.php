@@ -289,7 +289,7 @@ class nGet extends \Nubersoft\nFunctions
 							->from("main_menus")
 							->where($homefind)
 							->fetch();
-
+		
 			if(isset($base[0]['page_options']))
 				$base[0]['page_options']	=	json_decode($this->safe()->decode($base[0]['page_options']));
 

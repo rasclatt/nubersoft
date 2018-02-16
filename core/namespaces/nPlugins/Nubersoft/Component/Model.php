@@ -34,7 +34,7 @@
 */
 namespace nPlugins\Nubersoft\Component;
 
-class Model extends \nPlugins\Nubersoft\CoreTables
+class Model extends \Nubersoft\ConstructMySQL
 {
 	public	function getComponent($array,$limitone=true,$node=true,$columns='*',$count=false,$orderby=false)
 	{
@@ -99,8 +99,12 @@ class Model extends \nPlugins\Nubersoft\CoreTables
 	/**
 	*	@description	Standard deletion of component
 	*/
-	public	function addComponent($array,$filter=false)
+	public	function addComponent()
 	{
+		$args	=	func_get_args();
+		$array	=	$args[0];
+		$filter	=	(isset($args[1]))? $args[1] : false;
+		
 		if(!is_array($array)) {
 			trigger_error('Must be array.',E_USER_NOTICE);
 			return false;
@@ -113,5 +117,19 @@ class Model extends \nPlugins\Nubersoft\CoreTables
 			$array['timestamp']	=	date('Y-m-d H:i:s');
 		
 		$this->useTicks(false)->insert("components")->columnsValues([$array],(!$filter))->write();
+	}
+	
+	public	function updateComponent()
+	{
+		$args	=	func_get_args();
+		$array	=	$args[0];
+		$where	=	(!empty($args[1]))? $args[1] : false;
+		
+		$this->useTicks(false)->update("components")->set($array);
+		
+		if($where)
+			$this->where($where);
+		
+		$this->write();
 	}
 }

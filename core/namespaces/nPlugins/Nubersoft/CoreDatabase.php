@@ -176,8 +176,20 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 	/*
 	**	@description	Takes a filterd post and updates in the database
 	*/
-	public	function updateComponent($UPDATE,$ID)
+	public	function updateComponent()
 	{
+		$args	=	func_get_args();
+		
+		$UPDATE	=	(!empty($args[0]))? $args[0] : false;
+		$ID		=	(!empty($args[1]))? $args[1] : false;
+		
+		if(empty($ID) || empty($UPDATE)) {
+			$mgs	=	'Values can not be empty.';
+			trigger_error($msg,E_USER_WARNING);
+			$this->toMsgAdmin($mgs);
+			return false;
+		}
+		
 		$sql	=	$this->update($this->getTable())
 						->createUpdate($UPDATE)
 						->where(array('ID'=>$ID))
@@ -256,8 +268,10 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 		}
 	}
 
-	public	function addComponent($POST)
+	public	function addComponent()
 	{
+		$args				=	func_get_args();
+		$POST				=	$args[0];
 		$POST['unique_id']	=	$this->fetchUniqueId();
 		$POST				=	array_filter($POST);
 		$ColsVals			=	$this->createInsertBind($POST);
@@ -301,7 +315,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 	{
 		return $this->bind;
 	}
-
+	/*
 	public	function where()
 	{
 
@@ -329,7 +343,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 
 		return $this;
 	}
-
+	*/
 	protected	function createUpdate($array)
 	{
 		$this->sql[]	=	'SET';
