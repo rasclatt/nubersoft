@@ -76,8 +76,8 @@ class nReflect
 			if($params) {
 				# Loop and assign as arguments
 				foreach($params as $param) {
-					$rDep	=	$param->getClass();
-					$auto_injectors[]	=	(!empty($rDep->name))? $this->reflectClassMethod($rDep->name,false) : $param;
+					$rDep				=	$param->getClass();
+					$auto_injectors[]	=	(!empty($rDep->name))? $this->reflectClassMethod($rDep->name,false) : $param->getDefaultValue();
 				}
 			}
 		}
