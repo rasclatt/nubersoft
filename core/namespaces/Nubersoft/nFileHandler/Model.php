@@ -83,7 +83,7 @@ class Model extends \Nubersoft\nApp
 				return $v;
 			});
 		}
-
+		
 		if($save && !$this->isAjaxRequest() && $Cache->allowCacheRead() && !empty($config)) {
 			$this->savePrefFile($pref_name,$config);
 		}

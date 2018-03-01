@@ -97,13 +97,20 @@ class CoreTables extends \nPlugins\Nubersoft\CoreDatabase
 				$POST['date_created']	=	date('Y-m-d H:i:s');
 			}
 		}
-
 		$table				=	$this->getTable();
+		$tableCols			=	array_keys($this->organizeByKey($this->describe($table)->getResults(),'Field'));
 		$POST				=	array_filter($POST);
 		$POST['unique_id']	=	$this->fetchUniqueId();
+		
+		foreach($POST as $key => $value) {
+			if(!in_array($key,$tableCols))
+				unset($POST[$key]);
+		}
+		
 		$columns			=	array_keys($POST);
 		$cols				=	'`'.implode('`, `',$columns).'`';
 		$vals				=	':'.implode(', :',$columns);
+
 		try {
 			$query	=	$this->getConnection()->prepare("INSERT INTO `{$table}` ({$cols}) VALUES({$vals})");
 			$query->execute($this->standardBind($POST));

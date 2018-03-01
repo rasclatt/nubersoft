@@ -1,7 +1,7 @@
 <?php
 namespace Nubersoft\Messaging;
 
-class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
+class Observer extends \Nubersoft\nApp
 {
 	public	function listen()
 	{

@@ -426,10 +426,40 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 			}
 		}
 	}
-
-	protected	function getAvailableColumns()
+	/**
+	*	@description	Gets table columns
+	*/
+	public	function getTableColumns($table=false)
 	{
-		return $this->organizeByKey($this->query("describe `".$this->getTable()."`")->getResults(),'Field');
+		$cols	=	$this->getAvailableColumns($table);
+		
+		if(empty($cols))
+			return $cols;
+		
+		return array_keys($cols);
+	}
+	/**
+	*	@description	Takes input array and removes key/values based on the table columns available
+	*/
+	public	function filterColumnsFromArray(&$array,$table=false)
+	{
+		
+		$columns	=	$this->getTableColumns($table);
+		
+		if(empty($columns))
+			return false;
+		
+		foreach($array as $col => $value) {
+			if(!in_array($col,$columns))
+				unset($array[$key]);
+		}
+	}
+	
+	protected	function getAvailableColumns($table=false)
+	{
+		$table	=	(!empty($table))? $table : $this->getTable();
+		
+		return $this->organizeByKey($this->describe($table)->getResults(),'Field');
 	}
 
 	public	function getCompById($ID, $table = 'components', $organize = 'ref_page')
@@ -464,13 +494,13 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 					'page'=>$page
 				);
 	}
-
+	
 	public	function uploadFile($table = 'components')
 	{
 		$table 		=	$this->getTable();
 		$files		=	$this->toArray($this->getDataNode('_FILES'));
-		$allowed	=	$this->query("select * from `file_types` where `page_live` = 'on'")->getResults();
-		$custDir	=	$this->query("select * from `upload_directory` where `assoc_table` = '{$table}' and `page_live` = 'on'")->getResults(true);
+		$allowed	=	$this->selectFrom("file_types",['page_live'=>'on']);
+		$custDir	=	$this->selectFrom("upload_directory",['assoc_table'=>$table,'page_live' => 'on'],'*',['assoc'=>1]);
 		$fileTypes	=	array();
 		if(!empty($allowed)) {
 			foreach($allowed as $row) {
@@ -479,7 +509,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 		}
 
 		if($custDir == 0)
-			$custDir	=	$this->query("select * from upload_directory where `assoc_table` = 'media'")->getResults(true);
+			$custDir	=	$this->selectFrom("upload_directory",['assoc_table' => 'media'],'*',['assoc'=>1]);
 
 		$upPath		=	(!empty($custDir['file_path']))? NBR_ROOT_DIR.str_replace('/',DS,$custDir['file_path']) : NBR_CLIENT_DIR.DS.'images'.DS.$table.DS;
 		$upPath		=	$this->toSingleDs($upPath);
@@ -524,24 +554,22 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 	public	function deleteComponentImage($ID = false)
 	{
 		$ID		=	(!empty($ID) && is_numeric($ID))? $ID : $this->getPost('ID');
-		$query	=	$this->nQuery()
-			->query("select CONCAT(`file_path`,`file_name`) as filename from `".$this->getTable()."` where `ID` = :0",array($ID))
-			->getResults(true);
+		$query	=	$this->selectFrom($this->getTable(),["ID"=>$ID],"CONCAT(`file_path`,`file_name`) as filename",['assoc'=>1]);
 
 		if(is_file($filename = $this->toSingleDs(NBR_ROOT_DIR.DS.$query['filename']))) {
 			$thumbDir	=	$this->toSingleDs(pathinfo($filename,PATHINFO_DIRNAME).DS.'thumbs'.DS.pathinfo($filename,PATHINFO_BASENAME));
 			if(is_file($thumbDir)) {
 				if(!unlink($thumbDir))
-					$this->saveIncidental($this->getRequest('action'),array('msg'=>'Could not delete thumbnail image'));
+					$this->toMsgErrorAdmin($this->getRequest('action'),array('msg'=>'Could not delete thumbnail image'));
 			}
 
 			if(!unlink($filename))
-				$this->saveIncidental($this->getRequest('action'),array('msg'=>'Could not delete image'));
+				$this->toMsgErrorAdmin($this->getRequest('action'),array('msg'=>'Could not delete image'));
 		}
-
-		if(!$this->getIncidental($this->getRequest('action'))) {
-			$this->nQuery()->query("UPDATE `".$this->getTable()."` set `file_name` = '', `file_path` = '', `file_size` = '' where ID = :0",array($ID));
-		}
+		
+		$this->query("UPDATE `".$this->getTable()."` set `file_name` = '', `file_path` = '', `file_size` = '' where ID = :0",array($ID));
+		
+		return $this;
 	}
 
 	public	function updateComponentImage($ID = false,$table = false, $filename = false)

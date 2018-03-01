@@ -39,7 +39,8 @@ class	nFunctions extends \Nubersoft\Singleton
 					$filedata;
 
 	protected	static	$objectObj;
-	protected	$obj;
+	protected	$obj,
+				$namespace;
 
 	private	$rootDir,
 			$keyList,
@@ -88,25 +89,35 @@ class	nFunctions extends \Nubersoft\Singleton
 	/**
 	*	@description	Gets/sets a non-Nubersoft class from the stored array
 	*/
-	public	function get3rdPartyHelper($type,$dependency = false)
+	public	function get3rdPartyHelper()
 	{
-		if(is_object($type))
-			$type	=	get_class($type);
+		$args		=	func_get_args();
+		$class		=	$args[0];
+		array_shift($args);
+		$dependency	=	$args;
+		
+		if(is_object($class))
+			$class	=	get_class($class);
 
-		if($this->helperIsSet($type,"")) {
-			return self::$nHelpers[$type];
-		}
+		if($this->helperIsSet($class,""))
+			return self::$nHelpers[$class];
 		else {
-			$this->setHelper($type,$dependency,"");
-			return (isset(self::$nHelpers[$type]))? self::$nHelpers[$type] : false;
+			$this->setNameSpacePath('');
+			
+			if(is_array($dependency))
+				$this->setHelper($class,...$dependency);
+			else
+				$this->setHelper($class,$dependency);
+			
+			return (isset(self::$nHelpers[$class]))? self::$nHelpers[$class] : false;
 		}
 	}
 	/**
 	*	@description	Wrapper for $this->get3rdPartyHelper()
 	*/
-	public	function getPlugin($type,$dependency = false)
+	public	function getPlugin()
 	{
-		return $this->get3rdPartyHelper($type,$dependency);
+		return	$this->get3rdPartyHelper(...func_get_args());
 	}
 	/**
 	*	@description	Gets/sets a class from the stored array
@@ -125,6 +136,13 @@ class	nFunctions extends \Nubersoft\Singleton
 			return (isset(self::$nHelpers[$type]))? self::$nHelpers[$type] : false;
 		}
 	}
+	
+	public	function setNameSpacePath($namespace)
+	{
+		$this->namespace	=	$namespace;
+		return $this;
+	}
+	
 	/**
 	*	@description	Fetches a Nubersoft-based class
 	*/
@@ -138,7 +156,15 @@ class	nFunctions extends \Nubersoft\Singleton
 		else {
 			unset($args[0]);
 			$args	=	(count($args) >= 1)? $args : false;
-			$this->setHelper($type,$args);
+			
+		//	if(!isset($this->namespace))
+	//			$this->setNameSpacePath('\Nubersoft\\');
+			
+			if(is_array($args))
+				$this->setHelper($type,...$args);
+			else
+				$this->setHelper($type,$args);
+				
 			$obj	=	 (isset(self::$nHelpers[$type]))? self::$nHelpers[$type] : false;
 			# Unset the value (stops caching them)
 			//unset(self::$nHelpers[$type]);
@@ -165,25 +191,33 @@ class	nFunctions extends \Nubersoft\Singleton
 	/**
 	*	@description	This will try and set a helper into static memory
 	*/
-	public	function setHelper($type,$inject = false,$namespace = '\Nubersoft\\')
+	public	function setHelper()
 	{
+		$args				=	func_get_args();
+		$type				=	array_shift($args);
+		$inject				=	$args;
+		$namespace			=	(!isset($this->namespace))? '\Nubersoft\\' : $this->namespace;
+		if(isset($this->namespace))
+			unset($this->namespace);
+
 		if($this->helperIsSet($type,$namespace))
-			return;
+			return false;
 
 		if(is_object($type))
 			$type	=	get_class($type);
 
-		$class	=	"{$namespace}{$type}";
-
+		$class	=	str_replace('\\\\','\\',"{$namespace}{$type}");
+		
 		try {
-			self::$nHelpers[$type]	=	(is_array($inject))? new $class(...$inject) :  new $class($inject);
+			
+			self::$nHelpers[$type]	=	(is_array($inject))? nReflect::instantiate($class,...$inject) : nReflect::instantiate($class,$inject);
+			//self::$nHelpers[$type]	=	(is_array($inject))? new $class(...$inject) :  new $class($inject);
 		}
 		catch (\Exception $e) {
 			if($this->isAdmin()) {
 				die($e->getMessage());
 			}
 		}
-
 		return $this;
 	}
 	/**

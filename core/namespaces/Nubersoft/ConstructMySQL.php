@@ -609,7 +609,7 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		$this->query("DESCRIBE ".$this->getTicks().$table.$this->getTicks());
 		return $this;
 	}
-
+	
 	public	function addCustom($value = false,$reset = false)
 	{
 		if($reset)
@@ -753,5 +753,77 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			return $data;
 		else
 			return (isset($data[$return]))? $data[$return] : false;
+	}
+	/**
+	*	@description	Select from table
+	*/
+	public	function selectFrom($table,$where=false,$columns=false,$settings=false)
+	{
+		$sort		=	(!empty($settings['sort']))? $settings['sort'] : false;
+		$operand	=	(!empty($settings['operand']))? $settings['operand'] : 'AND';
+		$statement	=	(!empty($settings['statement']));
+		$assoc		=	(!empty($settings['assoc']));
+		
+		$columns	=	(is_array($columns))? implode(',',$columns) : $columns;
+		if(empty($columns))
+			$columns	=	'*';
+		$operand	=	(empty($operand))? 'AND' : $operand;
+		$orderby	=
+		$whereSQL	=
+		$bind		=	false;
+		
+		if(!empty($sort)) {
+			$orderby['start']	= ' ORDER BY ';
+			if(is_array($sort)) {
+				foreach($sort as $col => $ord) {
+					$orderby['attr'][]	=	"$col $ord";
+				}
+				
+				$orderby['attr']	=	implode(', ',$orderby['attr']);
+			}
+			else
+				$orderby['attr']	=	$sort;
+			
+			$orderby	=	implode(' ',$orderby);
+		}
+		
+		if(!empty($where)) {
+			$whereSQL	=	" WHERE ";
+			if(is_array($where)) {
+				if(isset($where['NOTEQUAL'])) {
+					$data		=	$this->toBind($where['NOTEQUAL'],'bind','wherenotequal');
+					$bind		=	(!empty($data['array']))? $data['array'] : false;
+					if(!empty($data['strings']))
+						$whereSQL	.=	implode(" {$operand} ",str_replace(' = ',' != ',$data['strings']));
+					
+					if(isset($where['EQUALS'])) {
+						$data		=	$this->toBind($where['EQUALS'],'bind','where');
+						if(!empty($data['array'])) {
+							if(!empty($bind))
+								$bind	=	array_merge($bind,$data['array']);
+							else
+								$bind	=	$data['array'];
+						}
+						
+						if(!empty($data['strings']))
+							$whereSQL	.=	implode(" {$operand} ",$data['strings']);
+					}
+				}
+				else {
+					$data		=	$this->toBind($where,'bind','where');
+					$bind		=	(!empty($data['array']))? $data['array'] : false;
+				
+					if(!empty($data['strings']))
+						$whereSQL	.=	implode(" {$operand} ",$data['strings']);
+				}
+			}
+			else {
+				$whereSQL	.=	' '.$where;
+			}
+		}
+		
+		$sql	=	"SELECT {$columns} FROM {$table}{$whereSQL}{$orderby}";
+		
+		return ($statement)? [ 'statement'=>$sql,'bind'=>$bind ] : $this->query($sql,$bind)->getResults($assoc);
 	}
 }

@@ -203,27 +203,29 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		}
 
 		$func	=	function($class,$typeOpts = false,$inject = false)
-			{
-				if(!class_exists($class)) {
-					if(empty($typeOpts['foundin']))
-						return false;
-					else {
-						echo
-						$foundIn	=	$this->matchFunction($typeOpts['foundin']);
-						if(is_file($foundIn))
-							require_once($foundIn);
-					}	
-				}
-
-				$initClass	=	new $class();
-				if(!empty($initClass) && !empty($typeOpts['method'])) {
-					$method	=	$typeOpts['method'];
-					if(!empty($inject))
-						$initClass->{$method}($inject);
-					else
-						$initClass->{$method}();
+		{
+			if(!class_exists($class)) {
+				if(empty($typeOpts['foundin']))
+					return false;
+				else {
+					echo
+					$foundIn	=	$this->matchFunction($typeOpts['foundin']);
+					if(is_file($foundIn))
+						require_once($foundIn);
 				}	
-			};
+			}
+			
+			//return ($inject)? nReflect::instantiate($class,$inject) : nReflect::instantiate($class);
+			
+			$initClass	=	new $class();
+			if(!empty($initClass) && !empty($typeOpts['method'])) {
+				$method	=	$typeOpts['method'];
+				if(!empty($inject))
+					$initClass->{$method}($inject);
+				else
+					$initClass->{$method}();
+			}	
+		};
 
 		$class	=	(!empty($typeOpts['class']))? $typeOpts['class'] : false;
 
@@ -638,9 +640,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 						}
 						else {
 							if($constr_dependency)
-								$instance	=	$this->getPlugin($func,$this->getPlugin($constr_dependency))->{$method}();
-							else
-								$instance	=	$this->getPlugin($func)->{$method}();
+								# Make sure to check that methods are being injected automatically
+								# Can be explicitly set in xml but can be auto-set
+								$instance	=	$this->autoInjector($this->getPlugin($func,$this->getPlugin($constr_dependency)),$method);
+							else {
+								# Auto Inject to method
+								$instance	=	$this->autoInjector($func,$method);
+							}
 						}
 					}
 				}
@@ -662,7 +668,16 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 				echo $instance;
 		}
 	}
-
+	/**
+	*	@description	Method will fetch the class then check for auto-injected classes into a method
+	*/
+	public	function autoInjector($func,$method)
+	{
+		return $this->getHelper('nReflect')->reflectClassMethod($func,$method);
+	}
+	/**
+	*	@description	Creates a method chaining set-up
+	*/
 	public	function doClassChaining($obj,$func,$inject,$method = false,$dependency = false,$dependency_arr = false,$constr_dependency = false)
 	{
 		$instance	=	($constr_dependency)? $this->getPlugin($func,$this->getPlugin($constr_dependency)) : $this->getPlugin($func);
