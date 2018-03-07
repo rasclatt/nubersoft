@@ -310,12 +310,15 @@ define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 		}
 		# If not successful run the error page
 		if(!$success) {
-			$script	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$this->getDataNode('_SERVER')->SCRIPT_URL);
-
+			$SERVER	=	$this->toArray($this->getDataNode('_SERVER'));
+			$SCR	=	(!empty($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : 'core'.DS.'template'.DS.'default'.DS.'frontend'.DS.'error404.php';
+			$script	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$SCR);
 			if(!is_file($script) && !is_dir($script)) {
-				$this->getHelper('nObserverTemplate')->offline($nRender);
+				$this->getHelper('nObserverTemplate')->offline($script);
 				exit;
 			}
+			
+			die($this->render($script));
 		}
 	}
 

@@ -76,9 +76,9 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 			self::$con	=	$this->getHelper('DatabaseConfig')->connect();
 
 		if(empty(self::$con)) {
-			throw new \Exception("Database configuration invalid.");
-			die();
+			die($this->__("Database configuration invalid."));
 		}
+
 
 		return self::$con;
 	}

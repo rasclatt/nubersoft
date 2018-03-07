@@ -74,23 +74,25 @@ class HeadProcessor extends \Nubersoft\nApp
 		});
 		# Loop through protected directories and save permissions
 		foreach($config['protect'] as $dir) {
-			$dir	=	DS.trim($dir,'/').DS.'.htaccess';
-			if(is_file($dir))
-				continue;
-
-			$this->isDir(pathinfo($dir,PATHINFO_DIRNAME));
-
-			if(file_put_contents($dir,$deny))
-				$this->toMsgAdminCoreAlert('Protection of directory set: '.$this->stripRoot($dir));
+			$this->saveToDirectory($dir,$deny,'set');
 		}
 		# Loop through the unprotected and add the allow script
 		foreach($config['allow'] as $dir) {
-			$dir	=	DS.trim($dir,'/').DS.'.htaccess';
-			if(is_file($dir))
-				continue;
+			$this->saveToDirectory($dir,$deny,'removed');
+		}
+	}
+	
+	private function saveToDirectory($dir,$deny,$type='set')
+	{
+		$htaccess	=	$this->stripRoot(DS.trim($dir,'/').DS.'.htaccess');
+		$path_dir	=	$this->toSingleDs(NBR_ROOT_DIR.DS.$htaccess);
+		
+		if(is_file($path_dir))
+			return true;
 
-			if(file_put_contents($dir,$allow))
-				$this->toMsgAdminCoreAlert('Protection removal of directory: '.$this->stripRoot($dir));
+		if($this->isDir(pathinfo($path_dir,PATHINFO_DIRNAME))) {
+			if(file_put_contents($path_dir,$deny))
+				$this->toMsgAdminCoreAlert('Protection of directory '.$type.': '.$this->stripRoot($path_dir));
 		}
 	}
 

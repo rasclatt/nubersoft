@@ -52,7 +52,19 @@ switch($code) {
 			}
 			else {
 				$firstrun	=	(!empty($_SESSION['first_run']));
+				# Set default display message
 				$msg		=	($is_admin || $firstrun)? $e->getMessage() : 'View log for details.';
+				# If the user not admin
+				if(!($is_admin || $firstrun)) {
+					# Set report path
+					$report	=	NBR_ROOT_DIR.DS.'client'.DS.'settings'.DS.'reporting'.DS.'application'.DS.'error.log';
+					# Save dir
+					if(!is_dir(pathinfo($report,PATHINFO_DIRNAME)))
+						mkdir(pathinfo($report,PATHINFO_DIRNAME),0755,true);
+					# Save to log
+					file_put_contents($report,$e->getMessage(),FILE_APPEND);
+					
+				}
 				echo '<p style="font-family: helvetica, sans-serif;">Unrecoverable Application Error. '.$msg.'</p>';
 			}
 		}

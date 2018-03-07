@@ -8,7 +8,7 @@ class nZip extends \ZipArchive
 				$nApp,
 				$zFile;
 
-	public	function __construct($nApp)
+	public	function __construct(\Nubersoft\nApp $nApp)
 	{
 		$this->nApp	=	$nApp;
 	}

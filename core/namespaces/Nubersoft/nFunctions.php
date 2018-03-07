@@ -209,9 +209,8 @@ class	nFunctions extends \Nubersoft\Singleton
 		$class	=	str_replace('\\\\','\\',"{$namespace}{$type}");
 		
 		try {
-			
-			self::$nHelpers[$type]	=	(is_array($inject))? nReflect::instantiate($class,...$inject) : nReflect::instantiate($class,$inject);
-			//self::$nHelpers[$type]	=	(is_array($inject))? new $class(...$inject) :  new $class($inject);
+			if(!isset(self::$nHelpers[$type]))
+				self::$nHelpers[$type]	=	(is_array($inject))? nReflect::instantiate($class,...$inject) : nReflect::instantiate($class,$inject);
 		}
 		catch (\Exception $e) {
 			if($this->isAdmin()) {
