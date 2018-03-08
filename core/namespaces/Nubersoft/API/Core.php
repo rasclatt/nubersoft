@@ -21,10 +21,10 @@ class Core extends \Nubersoft\cURL
 		$query	=	(!empty($args[0]))? $args[0] : false;
 		$deJSON	=	(!empty($args[1]));
 		$isPost	=	(!empty($args[2]));
-		$_url	=	$this->endpoint;
+		$_url	=	$this->getEndpoint();
 		
 		if(empty($_url))
-			throw new nException('Endpoint can not be empty.');
+			throw new \Nubersoft\nException('Endpoint can not be empty.');
 		
 		if(!empty($query)) {
 			if($isPost) {

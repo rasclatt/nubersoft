@@ -167,6 +167,11 @@ class 	cURL
 		return $this;
 	}
 
+	public	function getEndpoint()
+	{
+		return $this->endpoint;
+	}
+
 	public	function send($return = true)
 	{
 		$this->setAttr(CURLOPT_URL, $this->endpoint);
