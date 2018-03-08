@@ -214,9 +214,15 @@ class	nFunctions extends \Nubersoft\Singleton
 		}
 		catch (\Exception $e) {
 			if($this->isAdmin()) {
-				die($e->getMessage());
+				echo '<pre><h3 style="margin: 0;">CLASS WARNING: '.$e->getMessage()."</h3>".implode(PHP_EOL,array_map(function($array){
+					return '<span style="color: '.((strpos($array['file'],DS.'client'.DS) !== false)? 'red':'#888').';">'.((isset($array['class']))? '<strong>'.$array['class'].'::</strong>' : '').((isset($array['function']))? '<strong>'.$array['function'].'() - </strong>' : '').str_replace(NBR_ROOT_DIR,'',$array['file']).' <strong>(Line '.$array['line'].')</strong></span>';
+				},debug_backtrace())).'</pre>';
+				
 			}
+			else
+				$this->toErrorMsg("ERROR:".$e->getMessage());
 		}
+		
 		return $this;
 	}
 	/**
