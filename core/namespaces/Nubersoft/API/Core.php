@@ -3,15 +3,12 @@ namespace Nubersoft\API;
 
 class Core extends \Nubersoft\cURL
 {
+	protected $statement;
+	
 	public	function __construct($query = false)
 	{
 		$this->sendHeader	=	false;
 		$this->query		=	$query;
-	}
-	
-	public	static	function fetch()
-	{
-		return (new Core())->remote(...func_get_args());
 	}
 	
 	public	function remote()
@@ -31,13 +28,12 @@ class Core extends \Nubersoft\cURL
 				foreach($query as $key=>$value)
 					$this->sendPost([$key=>$value]);
 			}
-			else {
-				if(is_array($query)) {
-					$query	=	http_build_query($query);
-				}
-			}
+			
+			$query	=	(is_array($query))? http_build_query($query) : $query;
 			$_url	.=	'?'.$query;
 		}
+		
+		$this->statement	=	$_url;
 		
 		$this->setAttr(CURLOPT_URL, $_url)
 			->setAttr(CURLOPT_RETURNTRANSFER, 1);
@@ -60,5 +56,10 @@ class Core extends \Nubersoft\cURL
 		$error			=	curl_error($this->ch);
 		$this->close();
 		return $this;
+	}
+	
+	public	function getStatement()
+	{
+		return $this->statement;
 	}
 }
