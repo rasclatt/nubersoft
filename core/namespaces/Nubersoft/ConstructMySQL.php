@@ -75,11 +75,9 @@ class ConstructMySQL extends \Nubersoft\nApp implements \Nubersoft\QueryEngine
 		if(!(self::$con instanceof \PDO))
 			self::$con	=	$this->getHelper('DatabaseConfig')->connect();
 
-		if(empty(self::$con)) {
-			die($this->__("Database configuration invalid."));
-		}
-
-
+		if(empty(self::$con))
+			throw new \Exception($this->__("Database configuration invalid."),89523);
+		
 		return self::$con;
 	}
 
