@@ -557,7 +557,7 @@ class	nFunctions extends \Nubersoft\Singleton
 		else {
 			if(!is_dir($dir) && $make) {
 				if(!@mkdir($dir,$chmod,true)) {
-					trigger_error('Directory failed to be created',E_USER_WARNING);
+					trigger_error('Directory: ('.$this->encode($dir).') failed to be created',E_USER_WARNING);
 					return false;
 				}
 			}

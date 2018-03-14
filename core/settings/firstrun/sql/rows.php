@@ -1,7 +1,7 @@
 <?php
 $data['component_builder']	=	"INSERT INTO `component_builder` (`ID`, `unique_id`, `component_name`, `assoc_table`, `component_value`, `variable_type`, `map_input`, `page_order`, `page_live`, `core_setting`) VALUES
 (1, '20150109162254800000', 'component', 'components', '_id', 'display', '', 2, 'on', 1),
-(2, '20150109162248200000', 'image_bucket', 'image_bucket', 'notes', 'display', '', 0, 'on', 1),
+(2, '20150109162248200000', 'media', 'media', 'notes', 'display', '', 0, 'on', 1),
 (3, '20150109162241100000', 'component', 'components', 'admin_tag', 'Permissions', '', 3, 'on', 1),
 (4, '20150109162239100000', 'main_menus', 'main_menus', 'auto_cache', 'Caching', '', 11, 'on', 1),
 (5, '20150109172129800000', 'menu_display', 'menu_display', 'content', '~NULL~', 'textarea', 1, 'on', 1),
@@ -58,12 +58,12 @@ $data['component_builder']	=	"INSERT INTO `component_builder` (`ID`, `unique_id`
 (56, '20150109162321400000', 'component', 'components', 'a_href', 'email/button', '', 2, 'on', 1),
 (57, '2015010916232090000', 'component', 'components', 'component_type', 'data', '', 0, 'on', 1),
 (58, '20150109162319400000', 'component', 'components', 'css[padding]', 'css', '', 1, 'on', 1),
-(59, '2015010916231770000', 'image_bucket', 'image_bucket', 'file_name', 'file', '', 2, 'on', 1),
-(60, '20150109162314400000', 'image_bucket', 'image_bucket', 'css[background-color]', 'css', '', 0, 'on', 1),
-(61, '2015010916231290000', 'image_bucket', 'image_bucket', 'file_size', 'file', '', 3, 'on', 1),
+(59, '2015010916231770000', 'media', 'media', 'file_name', 'file', '', 2, 'on', 1),
+(60, '20150109162314400000', 'media', 'media', 'css[background-color]', 'css', '', 0, 'on', 1),
+(61, '2015010916231290000', 'media', 'media', 'file_size', 'file', '', 3, 'on', 1),
 (62, '2015010916231140000', 'component', 'components', 'class', 'display', '', 1, 'on', 1),
-(63, '20150109162309900000', 'image_bucket', 'image_bucket', 'file', 'file', '', 0, 'on', 1),
-(64, '2015010916230710000', 'image_bucket', 'image_bucket', 'file_path', 'file', '', 1, 'on', 1),
+(63, '20150109162309900000', 'media', 'media', 'file', 'file', '', 0, 'on', 1),
+(64, '2015010916230710000', 'media', 'media', 'file_path', 'file', '', 1, 'on', 1),
 (65, '201503301739532884551929400', 'component', 'components', 'css[max-width]', 'css', '', 3, 'on', 0),
 (66, '201509251529381669560529227', 'main_menus', 'main_menus', 'page_options[meta][Description]', 'options', 'textarea', 0, 'on', 0),
 (67, '2015092515330964835605571', 'main_menus', 'main_menus', 'page_options[meta][Author]', 'options', 'textarea', 0, 'on', 0),
@@ -325,5 +325,5 @@ $data['system_settings']	=	"INSERT INTO `system_settings` (`ID`, `unique_id`, `p
 (3, '20150505141339305549085333', 'settings_head', 'settings', '', '{&quot;html&quot;:{&quot;value&quot;:&quot;&quot;,&quot;toggle&quot;:&quot;off&quot;}}', 0, NULL, 'on');";
 
 $data['upload_directory']	=	"INSERT INTO `upload_directory` (`ID`, `unique_id`, `usergroup`, `terms_id`, `file_path`, `assoc_table`, `assoc_action`, `page_live`, `directory_protection`, `types_allowed`) VALUES
-(1, '2016120713331058485566628', 0, '', '/client/media/images/default/', 'image_bucket', '', 'on', 'browser_rw', '[&quot;jpg&quot;,&quot;jpeg&quot;,&quot;gif&quot;,&quot;png&quot;]'),
+(1, '2016120713331058485566628', 0, '', '/client/media/images/default/', 'media', '', 'on', 'browser_rw', '[&quot;jpg&quot;,&quot;jpeg&quot;,&quot;gif&quot;,&quot;png&quot;]'),
 (2, '2016120713294358485517934', 0, '', '/client/media/images/profile/', 'users', '', 'on', 'browser_rw', '[&quot;jpg&quot;,&quot;jpeg&quot;,&quot;gif&quot;,&quot;png&quot;]');";

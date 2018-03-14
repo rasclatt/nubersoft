@@ -123,7 +123,7 @@ class	Emailer extends \Nubersoft\nApp
 			"'".$this->fetchUniqueId()."'",
 			':0',"'email_receipt'",
 			"'on'",
-			$this->getHelper('nLocale')->getTimeZone()
+			"'".$this->encode($this->getHelper('nLocale')->getTimeZone())."'"
 		);
 
 		$args		=	func_get_args();
