@@ -242,6 +242,83 @@ class nForm extends \Nubersoft\nApp
 		# Renders the form element
 		return $this->{$type}($opts);
 	}
+	/**
+	*	@description	This method will take a full array of data that make up an entire form and use it
+	*					to build single inputs
+	*	@param	$settings [array{forced}] This is all the required settings to build a form input
+	*/
+	public	function multiForm(array $settings)
+	{
+		if(empty($settings)) {
+			throw self::getClass('nException','Settings can not be empty.');
+			return false;
+		}
+		# Type will attempt a dynamic method call
+		$type			=	(!empty($settings['type']))? $settings['type'] : 'text';
+		$values			=	(!empty($settings['value']))? $settings['value'] : false;
+		$name			=	(!empty($settings['name']))? $settings['name'] : 'name';
+		$size			=	(!empty($settings['size']))? $settings['size'] : false;
+		$dropdowns 		=	(!empty($settings['options']))? $settings['options'] : array();
+		$placeholder	=	(!empty($settings['placeholder']))? $settings['placeholder'] : false;
+		$label			=	(!empty($settings['label']))? $settings['label'] : false;
+		$other			=	(!empty($settings['other']))? $settings['other'] : false;
+		$class			=	(!empty($settings['class']))? $settings['class'] : false;
+		$wrap_class		=	(!empty($settings['wrap_class']))? $settings['wrap_class'] : false;
+		$style			=	(!empty($settings['style']))? $settings['style'] : false;
+
+		if(is_array($values)) {
+			$values	=	$this->toArray($values);
+		}
+
+		if(strpos($name,'[') !== false) {
+			$sColumn	=	explode('[',$name);
+			$sColumn	=	array_map(function($v) {
+				return str_replace(']','',$v);
+			},$sColumn);
+			$new			=	array();
+			$findArr		=	$this->getMatchedArray($sColumn,'',$values);
+			$curr			=	end($sColumn);
+			$values[$name]	=	(isset($findArr[$curr][0]))? $findArr[$curr][0] : false;
+		}
+		$column	=	$name;
+		# Set form input options
+		$opts	=	array(
+						'value'=>((!empty($values[$name]))? $values[$name] : $values),
+						'name'=>$name,
+						'options'=>((!empty($dropdowns))? $dropdowns : false),
+						'placeholder'=>$placeholder,
+						'label'=>$label,
+						'size'=>$size,
+						'other'=>$other,
+						'class'=>$class,
+						'wrap_class'=>$wrap_class,
+						'style'=>$style
+					);
+
+		# If this is a select
+		if($type == 'select' || $type == 'radio') {
+			$hasSelect	=	false;
+			
+			# Loop through the options and replace keys
+			foreach($opts['options'] as $key => $row) {
+				
+				if(empty($row['value']) && $type == 'select')
+					$hasSelect	=	true;
+				
+				if($opts['value'] == $row['value']) {
+					$opts['options'][$key]['selected']	=	true;
+				}
+			}
+
+			if(!$hasSelect && $type == 'select') {
+				$opts['options']	=	array_merge([['name'=>'Select','value'=>'']],$opts['options']);
+			}
+			
+		}
+		
+		# Renders the form element
+		return $this->{$type}($opts);
+	}
 
 	public	function open($settings = false,$quotes = false)
 	{

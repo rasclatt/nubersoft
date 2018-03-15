@@ -943,6 +943,7 @@ class nRender extends \Nubersoft\nApp
 		$type	=	(!empty($args[1]) && !is_bool($args[1]))? $args[1] : 'category_id';
 		$value	=	(!empty($args[0]) && is_array($args[0]))? $args[0] : [$type=>$args[0]];
 		$return	=	(!empty($args[2]))? $args[2] : false;
+		$cols	=	(!empty($args[3]))? $args[3] : '*';
 		
 		foreach($args as $arg) {
 			if(isset($limit))
@@ -955,7 +956,7 @@ class nRender extends \Nubersoft\nApp
 		if(!isset($limit))
 			$limit	=	false;
 		
-		$data		=	$this->getModel('component')->getComponent($value,$limit);
+		$data		=	$this->getModel('component')->getComponent($value,$limit,true,$cols);
 		
 		switch($return) {
 			case('array'):

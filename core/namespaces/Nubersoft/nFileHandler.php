@@ -361,10 +361,20 @@ class nFileHandler extends \Nubersoft\nFunctions
 		$dir	=	$fInfo['dirname'];
 		# Create folder if not exists
 		$write	=	$this->isDir($dir,true,0755);
+		# Set error path
+		$pathinfo	=	realpath($this->nApp->getCacheFolder().DS.'..').DS.'reporting'.DS.'errorlogs';
 		# If all is good, write file
 		if(!$write) {
-			# Directory could not be made
-			throw new \Exception('Directory failed to be created: '.$dir);
+			$errmsg		=	'['.date('Y-m-d H:i:s').'] Directory failed to be created: '.$dir;
+			if(!is_dir($pathinfo))
+				@mkdir($pathinfo,0755,true);
+			
+			file_put_contents($pathinfo.DS.'dir_errors.log',$errmsg.PHP_EOL,FILE_APPEND);
+			
+			if($this->nApp->isAdmin()) 
+				# Directory could not be made
+				throw new \Exception($errmsg);
+			
 			return false;
 		}
 		# If the folder is supposed to be secured
@@ -378,7 +388,16 @@ class nFileHandler extends \Nubersoft\nFunctions
 			# Throw exception
 			if(!is_file($htaccess)) {
 				$this->autoload('printpre');
-				throw new \Exception(printpre('Can not write error to log. Security is not enabled on directory: '.$this->nApp->stripRoot($dir),'{backtrace}','{whitelist}'));
+				$errmsg		=	'Can not write error to log. Security is not enabled on directory: '.$this->nApp->stripRoot($dir);
+				if(!is_dir($pathinfo))
+					@mkdir($pathinfo,0755,true);
+
+				file_put_contents($pathinfo.DS.'dir_errors.log',$errmsg.PHP_EOL,FILE_APPEND);
+
+				if($this->nApp->isAdmin()) 
+					# Directory could not be made
+					throw new \Exception(printpre($errmsg,'{backtrace}','{whitelist}'));
+
 				return false;
 			}
 		}
@@ -388,16 +407,21 @@ class nFileHandler extends \Nubersoft\nFunctions
 		fclose($fh);
 		# See if file succeeded to be created
 		if(!is_file($settings['save_to'])) {
-			throw new nException('Failed to create: '.$settings['save_to'],10002);
+			if(!is_dir($pathinfo))
+				@mkdir($pathinfo,0755,true);
+			file_put_contents($pathinfo.DS.'dir_errors.log',$errmsg.PHP_EOL,FILE_APPEND);
+			if($this->nApp->isAdmin())
+				throw new nException('Failed to create: '.$settings['save_to'],10002);
+			
 			return false;
 		}
 
 		return true;
 	}
-	/*
-	**	@description	Will delete a folder (and all it's contents) or a file
-	**	@param	$filename	[string | array]	Filename or folder to be removed
-	**	@param	$timeout	[int]	Amount of seconds to force the script to run
+	/**
+	*	@description	Will delete a folder (and all it's contents) or a file
+	*	@param	$filename	[string | array]	Filename or folder to be removed
+	*	@param	$timeout	[int]	Amount of seconds to force the script to run
 	*/	
 	public	function deleteContents($filename, $timeout = 30)
 	{
@@ -409,8 +433,8 @@ class nFileHandler extends \Nubersoft\nFunctions
 
 		return	$this->deleteAll($timeout);
 	}
-	/*
-	**	@description	Alias of deleteContents() method
+	/**
+	*	@description	Alias of deleteContents() method
 	*/
 	public	function remove($filename, $timeout = 30)
 	{
@@ -460,9 +484,9 @@ class nFileHandler extends \Nubersoft\nFunctions
 
 		return (!empty($removed))? $removed : false;
 	}
-	/*
-	**	@description	Add a file or folder slated to be deleted
-	**	@param	$path	[string]	Path of the file/folder
+	/**
+	*	@description	Add a file or folder slated to be deleted
+	*	@param	$path	[string]	Path of the file/folder
 	*/
 	public	function addTarget($path = false)
 	{

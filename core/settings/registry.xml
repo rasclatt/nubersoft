@@ -2,7 +2,6 @@
 <register>
 	<protectflush>true</protectflush>
 	<protectdirectory>
-		<var>~NBR_ROOT_DIR~/ajax/</var>
 		<var>~NBR_ROOT_DIR~/core/</var>
 		<var>~NBR_CLIENT_DIR~/installer/</var>
 		<var>~NBR_CLIENT_DIR~/</var>

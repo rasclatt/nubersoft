@@ -131,6 +131,10 @@ class Submits extends \Nubersoft\nApp
 		$this->saveSetting("_SERVER_REQUEST",array('_RAW_POST'=>$_POST));
 
 		$array	=	(!empty($_GET))? $this->recurseArray($_GET) : false;
+		
+		if(!empty($array))
+			array_shift($array);
+		
 		$this->saveSetting("_GET",$array);
 		$this->saveSetting("_SERVER_REQUEST",array('_GET'=>$array));
 

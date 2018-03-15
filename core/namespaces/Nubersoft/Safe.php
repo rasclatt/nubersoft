@@ -38,11 +38,11 @@ class Safe extends \Nubersoft\nFunctions
 		
 		public	function decodeFormFunc($_payload)
 			{
-				if(!is_string($_payload) && !is_bool($_payload) && !is_numeric($_payload)) {
+				if(is_object($_payload) || is_array($_payload)) {
 					throw new \Exception('Input can not be an object or array'.printpre($_payload));
 				}
 				
-				$_payload	=	html_entity_decode($_payload);
+				$_payload	=	(is_callable($_payload))? html_entity_decode($_payload()) : html_entity_decode($_payload);
 				$decoded	=	htmlspecialchars_decode($_payload);
 				return $decoded;
 			}

@@ -1173,7 +1173,33 @@ class	nApp extends \Nubersoft\nFunctions
 
 		return $this->nGet()->getFormBuilder();
 	}
-
+	/**
+	*	@desctription	Returns an array of fields and options (if any) for columns to create a form table
+	*/
+	public	function getFormElementsFromTable($table)
+	{
+		$cols	=	$this->getFormBuilder(['assoc_table'=>$table]);
+		$opts	=	$this->getDropDowns($table);
+		$avail	=	array_keys($this->organizeByKey($this->nQuery()->describe($table)->getResults(),'Field'));
+		if(!empty($cols)) {
+			foreach($cols as $colname => $row) {
+				
+				if(!in_array($colname,$avail)) {
+					unset($cols[$colname]);
+					continue;
+				}
+				
+				if(!empty($opts[$colname]))
+					$cols[$colname]['options']	=	$opts[$colname];
+			}
+		}
+		
+		if(is_array($cols))
+			ksort($cols);
+		
+		return $cols;
+	}
+	
 	public	function getAllMenus()
 	{
 		$set	=	$this->issetDataNode('all_menus');

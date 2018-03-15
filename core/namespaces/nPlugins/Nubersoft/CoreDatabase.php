@@ -515,7 +515,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 		$upPath		=	$this->toSingleDs($upPath);
 		$usergroup	=	(!empty($custDir['usergroup']))? $this->convertUserGroup($custDir['usergroup']) : NBR_WEB;
 		$active		=	(!empty($custDir['page_live']))? $custDir['page_live'] : 'off';
-
+		
 		if($active == 'off')
 			return;
 		elseif(!$this->getHelper('UserEngine')->allowIf($usergroup))
@@ -526,7 +526,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 			return;
 		elseif(empty($files))
 			return;
-
+		
 		foreach($files as $name => $rows) {
 			$i = 0;
 			foreach($rows as $payload) {

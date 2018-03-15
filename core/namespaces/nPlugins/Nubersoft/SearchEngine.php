@@ -229,6 +229,7 @@ class SearchEngine extends \Nubersoft\nApp
 			# the offset of the list, based on current page 
 			$page 		=	($this->currentpage - 1) * $this->limit;
 			
+			
 			if(is_callable($query_func)) {
 				$searched	=	$query_func($req,$this,$page,$this->limit,$orderB,$orderH);
 			}

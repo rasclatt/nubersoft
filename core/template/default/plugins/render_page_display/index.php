@@ -27,9 +27,10 @@ switch($this->payload['component_type']) {
 		if(!empty($this->payload['file_path']))
 			$filePath	=	$this->payload['file_path'].$this->payload['file_name'];
 		else {
+			$unique_id		=	(!empty(\Nubersoft\Singleton::$settings->page_prefs->unique_id))? \Nubersoft\Singleton::$settings->page_prefs->unique_id : false;
 			$file_check_res	=	$query->select(array("file","file_path"))
 									->from("media")
-									->where (array("ref_page"=>\Nubersoft\Singleton::$settings->page_prefs->unique_id,"ID"=>$this->payload['ID']))
+									->where (array("ref_page"=>$unique_id,"ID"=>$this->payload['ID']))
 									->fetch();
 			$file_check_dir	=	($file_check_res != 0)? str_replace(NBR_ROOT_DIR, "", $file_check_res[0]['file_path']): '/client/images/default/';
 			$filePath		=	$file_check_dir.$file_check_res[0]['file'];
