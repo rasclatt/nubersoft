@@ -27,8 +27,6 @@ div.gapped-2 > div:first-child {
 div.gapped-2 > div:last-child {
 	padding: 0 0 0 2em;
 }
-
-
 .col-padding {
 	padding: 20px;
 }
@@ -182,6 +180,9 @@ div.gapped-2 > div:last-child {
 }
 .span-12 {
 	grid-column-end: span 12 !important;
+}
+.last-col {
+	grid-column-end: -1 !important;
 }
 @media all and (max-width: 1038px) {
 	.lrg-1 {

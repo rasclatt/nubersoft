@@ -24,7 +24,19 @@ p {
 .nbr_ux_element,
 .nbr_ux_element label,
 .nbr_ux_element input,
-.nbr_ux_element select {
+.nbr_ux_element select,
+#nbr_sizer,
+.nbr_origin_item,
+.standard-table,
+.nbr_closer,
+table.nbr_base th,
+table.nbr_base tr td,
+.nbr_success,
+.nbr_warning,
+.nbr_warnings,
+.nbr_error,
+.nbr_errors,
+.side-by-side{
 	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 }
 .allblocks {
@@ -283,7 +295,6 @@ img.nbr_thumb.standard {
 .nbr_warnings,
 .nbr_error,
 .nbr_errors {
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	background-color: #FC6;
 	color: #63402A;
 	text-shadow: 1px 1px 3px #FFF;
@@ -479,13 +490,11 @@ table.nbr_base th {
 	color: #FFF;
 	text-shadow: 1px 1px 3px #000;
 	font-size: 20px;
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	padding: 5px;
 }
 table.nbr_base tr td {
 	font-size: 16px;
 	line-height: 22px;
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	padding: 10px 15px;
 	border-bottom: 1px solid #CCC;
 }
@@ -552,7 +561,6 @@ table.nbr_order_itemlist tr.nbr_order_items_total td:last-child {
 	padding: 20px;
 	background-color: #95867F;
 	color: #FFF;
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 }
 .nbr_closer:hover {
 	background-color: #756358;
@@ -629,6 +637,7 @@ div.allblocks.mxi_main_body_attr ul > li a.nbr_button:link,
 div.allblocks.mxi_main_body_attr ul > li a.nbr_button:visited {
 	margin: 10px 20px;
 }
+
 #nbr_sizer {
 	z-index: 1000000000;
 	top: 0;
@@ -639,7 +648,6 @@ div.allblocks.mxi_main_body_attr ul > li a.nbr_button:visited {
 	margin: 10px 10px 10px 15px;
 	padding: 10px;
 	display: none;
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	font-size: 30px !important;
 	font-weight: bold;
 	opacity: 0.4;
@@ -651,7 +659,58 @@ div.allblocks.mxi_main_body_attr ul > li a.nbr_button:visited {
 	font-size: 15px;
 	padding: 3px 6px;
 	font-weight: bold;
-	font-family: "Helvetica Neue", Helvetica, Arial, "sans-serif";
+}
+.standard-table {
+	margin-top: 2em;
+}
+.header-row {
+	background-color: #666;
+	color: #FFF;
+	padding: 0.5em 1em;
+	text-transform: uppercase;
+}
+.standard-table div:not(.header-row){
+	padding: 1em;
+	font-size: 0.85em;
+	line-height: 1.25em;
+}
+.standard-table div.table-row:nth-child(2n+0){
+	background-color: #CCC;
+}
+.standard-table div.table-row,
+.standard-table div.table-row div {
+	transition: background-color 0.5s;
+}
+.standard-table div.table-row:hover,
+.standard-table div.table-row:hover div {
+	cursor: pointer;
+	background-color: #EBEBEB;
+}
+.side-by-side div {
+	padding: 1em;
+}
+.side-by-side input,
+.side-by-side textarea,
+.side-by-side select {
+	margin: 0;
+}
+.side-by-side:nth-child(2n+0) {
+	background-color: #EBEBEB;
+}
+.side-by-side > div:first-child {
+	align-content: center;
+	align-items: center;
+	align-self: center;
+	text-transform: uppercase;
+	font-size: 0.75em;
+	line-height: 1.1em;
+}
+.rule.below {
+	border-bottom: 1px solid #CCC;
+}
+input.code,
+textarea.code {
+	font-family: Courier;
 }
 @media all and (max-width: 600px) {
 	.hide_mobile,

@@ -1936,4 +1936,9 @@ jQuery(document).ready(function($) {
 			}
 		}
 	});
+	
+	$('textarea.tabber').on('click',function(){ 
+		var countRows	=	($(this).val()).split("\n");
+		$(this).attr('rows',countRows.length);
+	});
 });
