@@ -50,7 +50,7 @@ class RenderPageElements extends \nPlugins\Nubersoft\RenderElements
 		# If the element is live
 		$_settings['live']		=	($this->checkEmpty($this->payload,'page_live','on'));
 		# If the element requires login
-		$_settings['login']		=	($this->checkEmpty($this->payload,'login_view','on'));
+		$_settings['login']		=	(!empty($this->payload['usergroup']));
 		# If the track editor is on
 		$_settings['track']		=	($this->getPlugin('\nPlugins\Nubersoft\core')->getEditStatus());
 		# If the element requires a usergroup

@@ -17,7 +17,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 		private	$style;
 			
 		// Array required
-		public function generateStyles($pref_table_array, $_filter	=	array('ID','unique_id','parent_id','ref_anchor','ref_page','component_type','content','_id','a_href','login_view','usergroup','page_order','page_live','admin_tag','admin_notes','email_id','class','file_path','file_name','file_size','file','admin_lock'))
+		public function generateStyles($pref_table_array, $_filter	=	array('ID','unique_id','parent_id','ref_anchor','ref_page','component_type','content','_id','a_href','usergroup','page_order','page_live','admin_tag','admin_notes','email_id','class','file_path','file_name','file_size','file','admin_lock'))
 			{
 				$this->pref_table_array	=	(is_array($pref_table_array))? $pref_table_array:array();
 				$this->styles			=	array(0=>'');
@@ -127,7 +127,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					$this->returnFinal[0]		=	'<div '.$this->payload['class'].' style="'.$this->finalStyle.'">'.$this->simpleEmailer().'</div>';
 				}
 				
-				if(isset($this->payload['component_type']) && (!$this->checkEmpty($this->payload,'login_view','on') || !isset($this->payload['login_view']))) {
+				if(isset($this->payload['component_type']) && empty($this->payload['usergroup'])) {
 					$renderSet		=	true;
 					$setStage		=	'1';
 				}
@@ -205,7 +205,7 @@ class RenderElements extends \nPlugins\Nubersoft\CoreHelper
 					$this->returnFinal[0]		=	'<div '.$this->payload['class'].' style="'.$this->style.'">'.$this->simpleEmailer().'</div>';
 				}
 				
-				if(isset($this->payload->component_type) && $this->payload->login_view !== 'on') {
+				if(isset($this->payload->component_type) && empty($this->payload->usergroup)) {
 					$renderSet		=	true;
 					$setStage		=	'1';
 				}

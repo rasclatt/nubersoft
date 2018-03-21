@@ -117,7 +117,7 @@ $data['form_builder']	=	"CREATE TABLE `form_builder` (
 $data['media']	=	"CREATE TABLE `media` (
   `ID` bigint(50) UNSIGNED NOT NULL,
   `unique_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
-  `usergroup` int(2) NOT NULL,
+  `usergroup` int(4) NOT NULL,
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   `file` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `file_path` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -125,7 +125,6 @@ $data['media']	=	"CREATE TABLE `media` (
   `file_size` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `content` longtext COLLATE utf8_unicode_ci,
   `terms_id` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `login_view` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   `page_order` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   `page_live` varchar(3) COLLATE utf8_unicode_ci DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";

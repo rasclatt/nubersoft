@@ -91,11 +91,11 @@ class CoreHelper extends \Nubersoft\nRender
 		if(($usergroup !== false) && is_numeric($this->getUsergroup($usergroup))) {
 			$userInc	=	$this->getUsergroup($usergroup);
 		}
-		elseif($this->checkEmpty($curr,'login_view','on') && $usergroup === '') {
+		elseif(empty($usergroup)) {
 			$userInc	=	(defined("NBR_WEB"))? NBR_WEB : 3;
 		}
 
-		$loginReq	=	($this->checkEmpty($curr,'login_view','on'))? '':'opacity: 0; ';
+		$loginReq	=	(!empty($curr['usergroup']))? '' : 'opacity: 0; ';
 		$attr[]		=	(!empty($curr['admin_notes']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_edit.png',array('style'=>'max-height: 22px;', 'class'=>"nbr_notes")) :"";
 		$attr[]		=	(!empty($curr['file_path']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_image.png',array('style'=>"max-height: 22px;")) :"";
 		$attr[]		=	(!empty($curr['content']))? $nImage->image(NBR_MEDIA_IMAGES.DS.'core'.DS.'icn_cont.png', array('style'=>'max-height: 22px;')) :"";
