@@ -13,15 +13,41 @@ class	UserEngine extends \Nubersoft\nFunctions
 		return parent::__construct();
 	}
 
-	public	function loginUser($array = array())
+	public	function loginUser($array = array(), $encode = false, $filtered = false)
 	{
+		$filter[]	=	'password';
+		$filter[]	=	'page_live';
+		$filter[]	=	'core_setting';
+		$filter[]	=	'page_order';
+		
+		if(!empty($filtered))
+			$filter	=	array_merge($filter,$filtered);
+		
 		$username	=	(!empty($array['username']))? $array['username'] : 'guest'.mt_rand().date('YmdHis');
 		$usergroup	=	(!empty($array['usergroup']))? $this->nApp->convertUserGroup($array['usergroup']) : NBR_WEB;
 		$fName		=	(!empty($array['first_name']))? $array['first_name'] : 'Guest';
 		$lName		=	(!empty($array['last_name']))? $array['last_name'] : 'User';
 
 		foreach($array as $key => $value) {
-			$settings[$key]	=	$value;
+			if(!in_array($key,$filter)) {
+				if($key == 'usergroup') {
+					$groupNumeric				=	$usergroup;
+					$settings[$key]				=	$groupNumeric;
+					$settings['usergroup_data']	=	array(
+						'numeric' => $groupNumeric,
+						'name' => $value
+						);
+				}
+				else {
+					$settings[$key]	=	($encode)? $this->nApp->encode($value) : $value;
+				}
+			}
+			
+			# Legacy includes
+			if($key == 'ID') {
+				$settings['client_id']	=	($encode)? $this->nApp->encode($value) : $value;
+				$settings['user_id']	=	($encode)? $this->nApp->encode($value) : $value;
+			}
 		}
 
 		$settings['usergroup']	=	$usergroup;
@@ -64,7 +90,7 @@ class	UserEngine extends \Nubersoft\nFunctions
 			return 0;
 
 		return $this->nApp->nQuery()
-				->query("select * from `users` where `username` = :0".((!$all)? " AND `user_status` = 'on'":''),array($username))
+				->query("SELECT * FROM `users` WHERE `username` = :0".((!$all)? " AND `user_status` = 'on'":''),array($username))
 				->getResults(true);
 	}
 	/**

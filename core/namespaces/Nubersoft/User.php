@@ -125,4 +125,9 @@ class User extends \Nubersoft\UserEngine
 
 		return $this->nApp->isLoggedIn();
 	}
+	
+	public	function resetTempPassword($username)
+	{
+		nApp::call()->nQuery()->query("UPDATE users SET reset_password = '', timestamp = '' WHERE username = :0",[$username]);
+	}
 }

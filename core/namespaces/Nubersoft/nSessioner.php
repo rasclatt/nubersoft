@@ -142,10 +142,10 @@ class	nSessioner extends \Nubersoft\nApp
 	/*
 	**	@action	Resets the session id number
 	*/
-	public	function newId($remove_old = true)
+	public	function newId($remove = true)
 	{
 		if(isset($_SESSION))
-			session_regenerate_id($remove_old);
+			session_regenerate_id($remove);
 	}
 	/*
 	**	@action	starts the session
