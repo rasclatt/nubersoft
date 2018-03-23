@@ -712,6 +712,21 @@ input.code,
 textarea.code {
 	font-family: Courier;
 }
+.clickable {
+	cursor: pointer;
+}
+.pad-top.ten {
+	padding-top: 10px;
+}
+.pad-top.twenty {
+	padding-top: 20px;
+}
+.pad-top.one-em {
+	padding-top: 1em;
+}
+.pad-top.two-em {
+	padding-top: 2em;
+}
 @media all and (max-width: 600px) {
 	.hide_mobile,
 	.nbr_hide.mobile {
