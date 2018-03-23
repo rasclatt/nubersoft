@@ -134,8 +134,11 @@ class Submits extends \Nubersoft\nApp
 		
 		if(!empty($array)) {
 			if(!empty($_SERVER['SCRIPT_URL'])) {
-				if($_SERVER['SCRIPT_URL'] != '/')
-					array_shift($array);
+				if($_SERVER['SCRIPT_URL'] != '/') {
+					
+					if(strpos(key($array),'/') !== false)
+						array_shift($array);	
+				}
 			}
 		}
 		
