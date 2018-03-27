@@ -184,7 +184,7 @@ class CoreDatabase extends \Nubersoft\ConstructMySQL
 		$ID		=	(!empty($args[1]))? $args[1] : false;
 		
 		if(empty($ID) || empty($UPDATE)) {
-			$mgs	=	'Values can not be empty.';
+			$msg	=	'Values can not be empty.';
 			trigger_error($msg,E_USER_WARNING);
 			$this->toMsgAdmin($mgs);
 			return false;

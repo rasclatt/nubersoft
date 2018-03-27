@@ -101,8 +101,9 @@
 				}
 			}
 		});
-		
+		/*
 		$.validator.addMethod('password', function (value) { 
     		return /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(value); 
 		}, "Must be: <br />1) At least 8 characters<br /> 2) include a symbol: #?!@$%^&*-<br />3) At least one number<br />4) At least one uppercase<br />5) At least one lowercase");
+		*/
 	});

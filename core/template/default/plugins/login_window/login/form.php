@@ -1,29 +1,13 @@
 <?php $prefs = $this->getDataNode() ?>
-<?php if(!$this->isAjaxRequest()): ?>
-<noscript>
-<style>
-	body {
-		display: none !important;
-	}
-</style>
-</noscript>
-<div class="needJS">
-<h2>Javascript Error!</h2>
-<p>You are required to have Javascript turned on.</p>
-</div>
-<?php endif ?>
-<div class="login_container">
-	<div class="login_bkg">
-		<?php echo $this->getPlugin('\nPlugins\Nubersoft\View')->renderSiteLogo(array("id"=>"nbr_login_logo")) ?>
+<div class="login_container col-count-3">
+	<div class="login_bkg col-2 push-col-3 medium">
 		<div id="login">
 			<form method="post" action="#" enctype="application/x-www-form-urlencoded" id="loginForm">
-				<div class="login_fields"><input type="text"  id="username" name="username" autocomplete="off" required placeholder="Username" /></div>
-				<div class="login_fields"><input type="password" id="password" name="password" autocomplete="off" required placeholder="Password" /></div>
+				<input type="text"  id="username" name="username" autocomplete="off" required placeholder="Username" class="nbr" />
+				<input type="password" id="password" name="password" autocomplete="off" required placeholder="Password" class="nbr" />
 				<input type="hidden" id="action" name="action" value="login" />
 				<input type="hidden" name="token[login]" />
-				<div class="nbr_contain">
-						<div class="nbr_button"><input disabled="disabled" type="submit" name="login" value="Login" id="loginsubmit" class="disabled-submit" /></div>
-				</div>
+				<input disabled="disabled" type="submit" name="login" value="Login" id="loginsubmit" class="disabled-submit nbr button" />
 			</form>
 				<?php
 				if($this->siteValid())
