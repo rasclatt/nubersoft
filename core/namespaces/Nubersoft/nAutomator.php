@@ -18,14 +18,8 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 	protected	static	$singleton;
 	protected	$combinedArr;
 
-	public	function __construct($timezone = 'America/Los_Angeles',$use_timezone = false)
+	public	function __construct()
 	{
-		if($use_timezone) {
-			if(!is_string($timezone))
-				$timezone = 'America/Los_Angeles';
-			# Set a default timezone just incase none is specified later 
-			date_default_timezone_set($timezone);
-		}
 		# Reuse itself instead of creating new instance
 		if(self::$singleton instanceof \Nubersoft\nAutomator)
 			return self::$singleton;
@@ -196,12 +190,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	private	function automateByClass($typeOpts,$inject = false)
 	{
+		/*
 		if($this->isActiveRecording()) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
-
+		*/
 		$func	=	function($class,$typeOpts = false,$inject = false)
 		{
 			if(!class_exists($class)) {
@@ -237,12 +232,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	private	function automateByFunction($typeOpts,$inject = false)
 	{
+		/*
 		if($this->isActiveRecording()) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$typeOpts,$inject));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
-
+		*/
 		$func	=	(!empty($typeOpts['name']))? $typeOpts['name'] : false;
 
 		if(empty($func))
@@ -308,7 +304,6 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 	*/
 	public	function matchFunction($str)
 	{
-
 		if(is_string($str)) {
 			$str	=	trim($str);
 
@@ -572,11 +567,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	public	function doClassWorkflow($obj, $inject = false, $dependency = false)
 	{
-		if($this->isActiveRecording()) {
+		/*
+		if($User) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
+		*/
 		# Get the name of the class
 		$func				=	(isset($obj['name']))? $obj['name'] : false;
 
@@ -654,12 +651,8 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 			else {
 				if($inject)
 					$instance	=	$this->getPlugin($func,$this->injector($inject));
-				else {
-					if($dependency)
-						$instance	=	$this->getPlugin($func,$this->getPlugin($dependency));
-					else
-						$instance	=	$this->getPlugin($func);
-				}
+				else
+					$instance	=	($dependency)? $this->getPlugin($func,$this->getPlugin($dependency)) : $this->getPlugin($func);
 			}
 
 			if($return)
@@ -687,12 +680,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	public	function chain($obj,$instance,$method,$inject = false,$dependency=false,$dependency_arr=false)
 	{
+		/*
 		if($this->isActiveRecording()) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$method,$inject,$dependency));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
-
+		*/
 		if(!is_array($obj['chain']))
 			$obj['chain']	=	array($method,$obj['chain']);
 		else
@@ -740,12 +734,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	public	function doClassInject($obj,$func,$inject,$method = false,$dependency = false,$dependency_arr = false,$constr_dependency = false)
 	{
+		/*
 		if($this->isActiveRecording()) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$func,$method,$inject,$dependency,$constr_dependency));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
-
+		*/
 		if($dependency)
 			$instance	=	$this->getPlugin($func,$this->getPlugin($dependency))->{$method}($this->injector($inject));
 		else {
@@ -760,12 +755,13 @@ class nAutomator extends \Nubersoft\nApp implements \Nubersoft\nObserver
 
 	public	function doFunctionWorkflow($obj,$inject = false,$dependency = false)
 	{
+		/*
 		if($this->isActiveRecording()) {
 			$rec	=	array_filter(array('*********'.__FUNCTION__.'*********',$obj,$inject,$dependency));
 			$this->getTimeCast($this->getTimeCastLast(),$rec);
 			$this->saveSetting('workflow_run',$rec);
 		}
-
+		*/
 		$func	=	$obj['name'];
 		if(!function_exists($func)) {
 			if(isset($obj['include'])) {

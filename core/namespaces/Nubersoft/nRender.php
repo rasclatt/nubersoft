@@ -1060,11 +1060,18 @@ class nRender extends \Nubersoft\nApp
 	protected	function renderFoot()
 	{
 		$foot	=	$this->getFootPrefs();
-		if(empty($foot['html']['value']))
+		if(empty($foot['content']['html']['value']))
 			return false;
 		
-		return ($foot['html']['toggle'] == 'on')? $this->safe()->decode($foot['html']['value']) : false;
+		return ($foot['content']['html']['toggle'] == 'on')? $this->safe()->decode($foot['content']['html']['value']) : false;
 			
+	}
+	/**
+	*	@description	Alias for renderFoot()
+	*/
+	protected function getFooterHtml()
+	{
+		return $this->getHelper('nMarkUp')->useMarkUp($this->decode($this->renderFoot()));
 	}
 	
 	public	static	function simpleRender($file, $dataArray = false)

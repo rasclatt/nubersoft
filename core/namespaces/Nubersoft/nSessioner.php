@@ -7,8 +7,8 @@ class	nSessioner extends \Nubersoft\nApp
 			$sp_chars;
 
 	const	SAFE	=	's';
-	/*
-	**	@param	[const] If value equals 's', the session values will save with htmlspecialchars etc.
+	/**
+	*	@param	[const] If value equals 's', the session values will save with htmlspecialchars etc.
 	*/
 	public	function __construct()
 	{
@@ -24,8 +24,8 @@ class	nSessioner extends \Nubersoft\nApp
 
 		return parent::__construct();
 	}
-	/*
-	**	@description	Toggles sessions on or off
+	/**
+	*	@description	Toggles sessions on or off
 	*/
 	public	function observer()
 	{
@@ -51,10 +51,10 @@ class	nSessioner extends \Nubersoft\nApp
 			}
 		}
 	}
-	/*
-	**	@param	$array	[array]			Requires the associate data array
-	**	@param	$filter	[bool | array]	If array, check that data array key(s) are in filter array. Set if not
-	**	@param	$sName	[bool | string]	If string, will save a sub-array using this value
+	/**
+	*	@param	$array	[array]			Requires the associate data array
+	*	@param	$filter	[bool | array]	If array, check that data array key(s) are in filter array. Set if not
+	*	@param	$sName	[bool | string]	If string, will save a sub-array using this value
 	*/
 	public	function makeSession($array,$filter = false,$sName = false)
 	{
@@ -67,10 +67,10 @@ class	nSessioner extends \Nubersoft\nApp
 				$this->saveToKeyed($key,$value,$sName);
 		}
 	}
-	/*
-	**	@param	$key	[string]		data array key
-	**	@param	$value	[bool | any]	If what will be assigned to session value
-	**	@param	$sName	[bool | string]	If string, will save a sub-array using this value
+	/**
+	*	@param	$key	[string]		data array key
+	*	@param	$value	[bool | any]	If what will be assigned to session value
+	*	@param	$sName	[bool | string]	If string, will save a sub-array using this value
 	*/
 	private	function saveToKeyed($key,$value = false,$sName = false)
 	{
@@ -78,7 +78,7 @@ class	nSessioner extends \Nubersoft\nApp
 
 		if($sName) {
 			$_SESSION[$sName][$key]	=	$value;
-			nApp::call()->saveSetting('_SESSION',array($sName=>array($key=>$value)));
+			$this->saveSetting('_SESSION',array($sName=>array($key=>$value)));
 		}
 		else
 			$this->setSession($key,$value);
@@ -97,8 +97,7 @@ class	nSessioner extends \Nubersoft\nApp
 
 	public	function setSession($var,$value,$reset = true)
 	{
-		$nApp		=	nApp::call();
-		$SESSION	=	$this->toArray($nApp->getSession());
+		$SESSION	=	$this->toArray($this->getSession());
 
 		if(is_array($var)) {
 			$shift				=	array_shift($var);
@@ -107,7 +106,7 @@ class	nSessioner extends \Nubersoft\nApp
 			if(isset($_SESSION))
 				$_SESSION	=	$SESSION;
 
-			$nApp->saveSetting('_SESSION',$SESSION,$reset);
+			$this->saveSetting('_SESSION',$SESSION,$reset);
 		}
 		else {
 			# If the session value isn't set already OR isset but needs to be overwritten
@@ -136,19 +135,25 @@ class	nSessioner extends \Nubersoft\nApp
 			if(isset($_SESSION))
 				$_SESSION	=	$SESSION;
 
-			$nApp->saveSetting('_SESSION',$SESSION,$reset);
+			$this->saveSetting('_SESSION',$SESSION,$reset);
 		}
 	}
-	/*
-	**	@action	Resets the session id number
+	
+	public	function regenerate()
+	{
+		session_write_close();
+		session_regenerate_id(true);
+	}
+	/**
+	*	@action	Resets the session id number
 	*/
 	public	function newId($remove = true)
 	{
 		if(isset($_SESSION))
 			session_regenerate_id($remove);
 	}
-	/*
-	**	@action	starts the session
+	/**
+	*	@action	starts the session
 	*/
 	public	function start()
 	{
@@ -175,15 +180,13 @@ class	nSessioner extends \Nubersoft\nApp
 		if(isset($new))
 			return $new;
 	}
-	/*
-	**	@action	destroys the session
+	/**
+	*	@action	destroys the session
 	*/
 	public	function destroy($key = false,$recurse=false)
 	{
-		$nApp		=	nApp::call();
-
 		if(!empty($key)) {
-			$SESSION	=	$nApp->toArray($nApp->getSession());
+			$SESSION	=	$this->toArray($this->getSession());
 
 			if($recurse) {
 				if(!is_array($key))
@@ -197,29 +200,31 @@ class	nSessioner extends \Nubersoft\nApp
 			if(isset($_SESSION))
 				$_SESSION	=	(empty($SESSION))? [] : $SESSION;
 
-			$nApp->saveSetting('_SESSION',$SESSION,true);
+			$this->saveSetting('_SESSION',$SESSION,true);
 		}
 		else {
 			if(isset($_SESSION)) {
-				$nApp->saveSetting('_SESSION',array(),true);
+				$this->saveSetting('_SESSION',array(),true);
+				session_unset();
 				session_destroy();
+				$this->regenerate();
 			}
 		}
 	}
-	/*
-	**	@action	stops the session from writing anymore to it
+	/**
+	*	@action	stops the session from writing anymore to it
 	*/
 	public	function lock()
 	{
 		if(isset($_SESSION))
 			session_write_close();
 
-		nApp::call()->saveError('session',array('writeable'=>false));
+		$this->saveError('session',array('writeable'=>false));
 	}
 
 	public	function isExpired($expireTime)
 	{
-		$active	=	nApp::call()->getSession('LAST_ACTIVITY');
+		$active	=	$this->getSession('LAST_ACTIVITY');
 		return (!empty($active) && (time() - $active > $expireTime));
 	}
 
@@ -235,10 +240,9 @@ class	nSessioner extends \Nubersoft\nApp
 
 	public	function toEmpty()
 	{
-		$nApp		=	nApp::call();
-		$nApp->getHelper('NubeData')->destroy('settings','_SESSION');
+		$this->getHelper('NubeData')->destroy('settings','_SESSION');
 		$_SESSION	=	array();
-		$nApp->saveSetting('_SESSION',array());
+		$this->saveSetting('_SESSION',array());
 
 		return $this;
 	}

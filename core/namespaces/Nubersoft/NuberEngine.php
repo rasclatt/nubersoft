@@ -1,11 +1,11 @@
 <?php
 namespace Nubersoft;
 
-class	NuberEngine
+class NuberEngine
+{
+	public	static	final function init()	
 	{
-		public	static	final function init()	
-			{
-				// Create base core engine
-				return new Nuberizer();
-			}
+		// Create base core engine
+		return new Nuberizer();
 	}
+}

@@ -224,4 +224,11 @@ class	UserEngine extends \Nubersoft\nFunctions
 
 		return $this->user['active'];
 	}
+	/**
+	*	@description	Checks if there are any users in the system
+	*/
+	public	function systemHasUsers()
+	{
+		return $this->nApp->nQuery()->query("SELECT COUNT(*) as count FROM users")->getResults(1)['count'];
+	}
 }

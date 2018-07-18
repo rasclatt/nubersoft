@@ -84,4 +84,20 @@ class nReflect
 		# Send back the injected class with injected classes into methods
 		return (!empty($auto_injectors))? $Class->{$method}(...$auto_injectors) : $Class->{$method}();
 	}
+	/**
+	*	@description	Creates auto-injected functions
+	*/
+	public	function reflectFunction($func)
+	{
+		$Reflector	=	new \ReflectionFunction($func);
+		$params		=	$Reflector->getParameters();
+		
+		foreach($params as $parameter) {
+			$class				=	$parameter->getClass();
+			$auto_injectors[]	=	(!empty($class->name))? $this->reflectClassMethod($class->name,false) : $param->getDefaultValue();
+		}
+		
+		# Send back the injected class with injected classes into methods
+		return (!empty($auto_injectors))? $func(...$auto_injectors) : $func();
+	}
 }

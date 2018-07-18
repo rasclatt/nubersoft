@@ -431,6 +431,17 @@ class	nApp extends \Nubersoft\nFunctions
 	{
 		return $this->getGlobalArr('get',$key);
 	}
+	
+	public	function getServer($key=false)
+	{
+		$SERVER	=	(!empty($this->getDataNode('__SERVER')))? $this->toArray($this->getDataNode('__SERVER')) : $_SERVER;
+		
+		if(!empty($key))
+			return (isset($SERVER[$key]))? $SERVER[$key] : false;
+		
+		return $SEVER;
+	}
+	
 	/**
 	*	@description	Node version of getSession()
 	*/
@@ -1489,7 +1500,7 @@ class	nApp extends \Nubersoft\nFunctions
 	public	function savePrefFile($name,$content,$type = 'json')
 	{
 		$path		=	$this->getPrefFilePath("{$name}.{$type}");
-		$path		=	$this->toSingleDs($path);
+		$path		=	DS.ltrim($this->toSingleDs($path),DS);
 		$content	=	($type == 'json')? json_encode($content) : $content;
 		$this->saveFile($content,$path);
 	}
@@ -1729,8 +1740,11 @@ class	nApp extends \Nubersoft\nFunctions
 	/**
 	*	@description	Alias to fetch the Cart Object
 	*/
-	public	function getCart($type = '\Model')
+	public	function getCart()
 	{
+		$args	=	func_get_args();
+		$type	=	(empty($args[0]))? '\Model' : $args[0];
+		
 		if(is_array($type))
 			$type	=	'\\'.implode('\\',$type);
 
@@ -1802,6 +1816,12 @@ class	nApp extends \Nubersoft\nFunctions
 			$args	=	$args[0];
 		# Try and return the class
 		return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
+	}
+	
+	public	static	function createContainer($func)
+	{
+		$Reflect	=	new nReflect();
+		return $Reflect->reflectFunction($func);
 	}
 	/**
 	*	@description	Wrapper/Alias for getting the current error mode
