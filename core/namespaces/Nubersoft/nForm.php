@@ -364,8 +364,8 @@ class nForm extends \Nubersoft\nApp
 		$kind['text']		=	'mod';
 		$kind['password']	=	'mod';
 		$mod				=	(isset($kind[$name]))? $kind[$name] : 'std';
-
-		return $this->useLayout($args[0],$name,$mod);
+		$arg				=	(isset($args[0]))? $args[0] : false;
+		return $this->useLayout($arg,$name,$mod);
 	}
 	
 	public	static	function __callStatic($name,$args = false)
