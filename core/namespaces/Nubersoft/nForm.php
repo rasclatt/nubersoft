@@ -368,7 +368,7 @@ class nForm extends \Nubersoft\nApp
 		return $this->useLayout($args[0],$name,$mod);
 	}
 	
-	public	function __callStatic($name,$args = false)
+	public	static	function __callStatic($name,$args = false)
 	{
 		$method	=	str_replace('get','',strtolower($name));
 		$args	=	(is_array($args))? $args : [$args];
