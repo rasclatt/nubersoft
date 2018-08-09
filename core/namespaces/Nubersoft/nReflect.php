@@ -35,17 +35,27 @@ class nReflect
 		}
 		
  		$params		=	$constr->getParameters();
- 		$injects	=	$this->getParams($params);
+ 		$injects	=	$this->getParams($params,array_values($args));
 		
  		return $Class->newInstanceArgs($injects);
 	}
 	
-	public function getParams($params)
+	public function getParams($params,$args)
 	{
-		foreach($params as $param) {
+		foreach($params as $key => $param) {
 			$dependency		=	$param->getClass();
-			if(!empty($dependency->name))
+			
+			if(!empty($dependency->name)) {
 				$injectors[]	=	$this->execute($dependency->name);
+			}
+			else {
+				if(class_exists('\Nubersoft\\'.$param->name))
+					$injectors[]	=	$this->execute('\Nubersoft\\'.$param->name);
+				else {
+					$arg			=	(isset($args[$key]))? $args[$key] : false;
+					$injectors[]	=	($param->isCallable())? $this->reflectFunction($param) : $arg;
+				}
+			}
 		}
 		
 		return (!empty($injectors))? $injectors : [];
