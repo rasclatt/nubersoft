@@ -3,6 +3,7 @@ namespace Nubersoft;
 
 class configFunctions extends \Nubersoft\nFunctions
 {
+	private	static	$dirStore	=	[];
 	private	static	$configs	=	[];
 	private	$has,
 			$altArray;
@@ -21,8 +22,16 @@ class configFunctions extends \Nubersoft\nFunctions
 	*/
 	public	function addLocation($dir)
 	{
-		# Parse the files inside this directory
-		$lConfigs		=	nApp::call('nRegister')->parseRegFile($dir);
+		# Create a commonkey
+		$storekey	=	md5($dir);
+		# See if this location has already been searched in
+		if(!isset(self::$dirStore[$storekey])) {
+			# Store for ref
+			self::$dirStore[$storekey]	=	$dir;
+			# Parse the files inside this directory
+			$lConfigs		=	nApp::call('nRegister')->parseRegFile($dir);
+		}
+		# Fetch the saved configs
 		self::$configs	=	$this->toArray(nApp::call()->getDataNode('configs'));
 		# Return for method chaining
 		return $this;
@@ -31,9 +40,9 @@ class configFunctions extends \Nubersoft\nFunctions
 	**	@description	Simply returns the private configs array
 	*/
 	public	function getConfigsArr()
-		{
-			return self::$configs;
-		}
+	{
+		return self::$configs;
+	}
 	/*
 	**	@description	Recursively search through array for specific key order
 	**	@param	$val [bool,array,string]	FALSE returns config array, array designates search order, string splits to array

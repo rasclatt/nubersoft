@@ -12,15 +12,10 @@ class	nDebug extends \Nubersoft\nApp
 				$line		=	(!empty($settings['line']))? $settings['line'] : '';
 				
 				if($backtrace) {
-					$debugBlock	=	implode('</p><p style="margin: 0 0 5px 0;">',array_filter(array_map(function($v){
-								$place	=	(!empty($v['file']))? str_replace(NBR_ROOT_DIR,'',$v['file']) : false;
-								
-								if(strpos($place,'printpre.php') === false) {
-									if(isset($v['file']))
-										return str_replace(NBR_ROOT_DIR,'',$v['file']).' <b>('.$v['line'].')</b>';
-								}
-							
-							},debug_backtrace())));
+					$debugBlock	=	implode('<br />'.PHP_EOL,array_map(function($v){
+			$class	=	(!empty($v['class']))? $v['class'].'::' : '';
+			return (!empty($v['file']))? '<b>'.$class.$v['function'].'()</b> – '.$v['file'].' ('.$v['line'].')' : '<b>'.$v['function'].'('.implode(', ',$v['args']).')</b>';
+		},debug_backtrace()));
 				}
 				
 				if(empty($print))

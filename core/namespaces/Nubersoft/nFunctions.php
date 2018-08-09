@@ -336,8 +336,10 @@ class	nFunctions extends \Nubersoft\Singleton
 	/**
 	*	@description	Fetches all directories/files from a directory recursively into an array
 	*/
-	public	function getDirList($settings = false,$return = false)
+	public	function getDirList($settings = false, $return = false)
 	{
+		ini_set('max_execution_time',300000000);
+		
 		if(is_string($settings))
 			$directory	=	$settings;
 		else
@@ -349,7 +351,7 @@ class	nFunctions extends \Nubersoft\Singleton
 			$recursive	=	true;
 		else
 			$recursive	=	$settings['recursive'];
-		$addpreg		=	($filetype != false)? "\.".implode("|\.",$filetype) : "\.php|\.csv|\.txt|\.htm|\.css|\.htm|\.js";
+		$addpreg		=	($filetype != false)? array_map(function($v){return strtolower(trim($v,'.'));},$filetype) : ["php","csv","txt","htm","css","htm","js"];
 		$array			=
 		$array['dirs']	=
 		$array['host']	=
@@ -365,25 +367,27 @@ class	nFunctions extends \Nubersoft\Singleton
 						new \RecursiveDirectoryIterator($directory),
 						\RecursiveIteratorIterator::CHILD_FIRST
 					);
-
+		
+		$searched	=	[];
 		# Loop through directories
 		while($dir->valid()) {
 			# If there is a specific value to return
 			$render	=	($filetype == false);
 			try {
-				$file = $dir->current();
-
-				ob_start();
-				echo $file;
-				$data	=	ob_get_contents();
-				ob_end_clean();
-
-				$data	=	trim($data);
+				$file	=	$dir->current();
+				$data	=	trim($file->__toString());
+				
+				if(!is_file($data)){
+					$dir->next();
+					continue;
+				}
+				
+				$ext	=	strtolower(pathinfo($data,PATHINFO_EXTENSION));
 				# Search for files and folders
-				if(preg_match('/'.$addpreg.'$/',basename($data),$ext)) {
+				if(in_array($ext,$addpreg)) {
 					# If there is an array to return for file type and a match is found
-					if($filetype != false && isset($ext[0]))
-						$render	=	(in_array(ltrim($ext[0],"."),$filetype));
+					if($filetype != false && isset($ext))
+						$render	=	(in_array(ltrim($ext,"."),$filetype));
 
 					if($render)
 						$array['list'][]	=	($encode)? urlencode(Safe::encode(base64_encode($data))):$data;
@@ -398,9 +402,7 @@ class	nFunctions extends \Nubersoft\Singleton
 						}
 					}
 				}
-
-				unset($data);
-
+				
 				$dir->next();
 			}
 			catch (UnexpectedValueException $e) {
@@ -412,8 +414,7 @@ class	nFunctions extends \Nubersoft\Singleton
 			return (!empty($array) && isset($array[$return]))? $array[$return] : false;
 
 		return (isset($array))? $array:false;
-	}
-	/**
+	}	/**
 	*	@description	Includes all files inside a destination folder
 	*/
 	public	function autoloadContents($dir,$type='include_once')
