@@ -169,20 +169,22 @@ class GetSitePrefs extends \Nubersoft\nApp
 						continue;
 				}
 
-				if(strtolower($value) == 'true')
-					$value	=	true;
-				elseif(strtolower($value) == 'false')
-					$value	=	false;
-
-				if(!is_bool($value) && !is_numeric($value))
-					$value	=	'"'.$value.'"';
-				else {
-					if(is_bool($value))
-						$value	=	($value == true)? 'true' : 'false';
+				if(is_array($value) || is_object($value)) {
+					$value	=	json_encode($value);
 				}
+				else {
+					if(strtolower($value) == 'true')
+						$value	=	true;
+					elseif(strtolower($value) == 'false')
+						$value	=	false;
 
-				if(is_array($value))
-					die(printpre($value));
+					if(!is_bool($value) && !is_numeric($value))
+						$value	=	'"'.$value.'"';
+					else {
+						if(is_bool($value))
+							$value	=	($value == true)? 'true' : 'false';
+					}
+				}
 
 				$defines[]	=	'if(!defined("'.$const.'"))
 define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
