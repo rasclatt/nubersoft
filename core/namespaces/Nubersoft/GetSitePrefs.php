@@ -190,7 +190,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 				}
 
 				$defines[]	=	'if(!defined("'.$const.'"))
-define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
+    define("'.$const.'"'.','.$nAutomator->matchFunction($value).');';
 			}
 			return $defines;
 		}
