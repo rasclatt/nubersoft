@@ -1,4 +1,6 @@
-
+<?php
+$sms	=	$this->toArray($this->getDataNode('plugin_data_settings_admindeny')->data);
+?>
 <body class="nbr">
 <style>
 ul,li { list-style: none; }
@@ -39,7 +41,7 @@ ul.nbr_error_temp_top li:last-child {
 		<div style=" background-color: red; padding: 20px; border-radius: 3px;">
 			<ul class="nbr_error_temp_top">
 				<li><?php echo $this->getMedia('image','logo'.DS.'u.png',array('style'=>'max-width: 40px; margin: 0 auto;')) ?></li>
-				<li><?php echo $msg ?></li>
+				<li><?php echo $this->getDataNode('plugin_data_settings_admindeny')->msg ?></li>
 			</ul>
 		</div>
 		<?php
@@ -49,11 +51,11 @@ ul.nbr_error_temp_top li:last-child {
 		<?php } ?>
 		<div class="nbr_general_form">
 			<?php 
-			if(!empty($codeArr)) {
+			if(!empty($this->getDataNode('plugin_data_settings_admindeny')->codearr)) {
 				echo '<p class="nbr_ux_element" style="font-size: 22px;color: #FFF;">You have submitted a request already. Add code here or send another below.</p>'.PHP_EOL.$this->render($this->getBackEnd('code.form.php')).'<hr />';
 			}
 			?>
-			<form action="" method="post" id="nbr_check_code" class="nbr_ajax_form" data-instructions='{"action":"nbr_check_admin_code"}'>
+			<form action="" method="post" id="nbr_check_code" class="nbr_ajax_form" data-instructions='{"action":"nbr_check_admin_code","data":{"ajax_disp":"<?php echo str_replace($this->localeUrl(),'',$this->getServer('SCRIPT_URI')) ?>"}}'>
 				<input type="hidden" name="action" value="nbr_request_admin_access" />
 				<p class="nbr_ux_element" style="font-size: 22px;color: #FFF;">Select a carrier to send a text to yourself to gain accesss.</p>
 				<table class="nbr_code_retrieve" id="codespot">
@@ -61,13 +63,9 @@ ul.nbr_error_temp_top li:last-child {
 						<td colspan="2">
 						<select name="carriers">
 							<option value="">Select Carrier</option>
-							<?php
-							foreach($sms['sms_carrier'] as $carrier) {
-							?>
+							<?php foreach($sms['sms_carrier'] as $carrier): ?>
 							<option value="<?php echo $carrier['sms_domain'] ?>"><?php echo $carrier['sms_name'] ?></option>
-							<?php
-							}
-							?>
+							<?php endforeach ?>
 						</select>
 						<input type="hidden" name="token[nProcessor]" />
 						</td>

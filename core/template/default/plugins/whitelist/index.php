@@ -22,9 +22,9 @@ if(!$this->onWhiteList($remote)) {
 		if(!empty($sms['sms_carrier'])) {
 			if(!isset($sms['sms_carrier'][0]))
 				$sms['sms_carrier']	=	array($sms['sms_carrier']);
-			
-			echo $this->setDefaultRenderTemplate(false,'head','admintools',true);
-			include(__DIR__.DS.'view.php');
+			$this->saveSetting('plugin_data_settings_admindeny',['data'=>$sms,'msg'=>$msg,'codearr'=>$codeArr]);
+			echo $this->setDefaultRenderTemplate(false,'head','admintools',true).
+				$this->useTemplatePlugin('whitelist','view.php');
 		}
 		else
 			echo $msg;
