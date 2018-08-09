@@ -173,7 +173,7 @@ class GetSitePrefs extends \Nubersoft\nApp
 					if($const == 'COMMENT')
 						continue;
 					
-					$value	=	json_encode($value);
+					$value	=	"'".json_encode($value)."'";
 				}
 				else {
 					if(strtolower($value) == 'true')
