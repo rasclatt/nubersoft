@@ -114,9 +114,11 @@ class nLogger extends \Nubersoft\nApp
 		if($writeType) {
 			# Data to json encode
 			$encode		=	array(
-								'debug'=>debug_backtrace(),
-								'message'=>$message
-							);
+				'message'=>$message,
+				'debug'=>array_map(function($arr){
+					return $arr['file'].' ('.$arr['line'].')'.PHP_EOL;
+				},debug_backtrace())
+			);
 		}
 
 		$message	=	(!$writeType && is_array($message))? implode(". ",$message) : $message;
