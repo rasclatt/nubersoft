@@ -16,7 +16,7 @@ class	nDebug extends \Nubersoft\nApp
 				array_shift($debug);
 				$debugBlock	=	implode('<br />'.PHP_EOL,array_map(function($v){
 					$class	=	(!empty($v['class']))? $v['class'].'::' : '';
-					return (!empty($v['file']))? '<b style="margin: 0 0 5px 0; color: blue;">'.$class.$v['function'].'()</b> – '.$v['file'].' <span  style="color: red;">('.$v['line'].')</span>' : '<b style="margin: 0 0 5px 0; color: #666;">'.$v['function'].'('.implode(', ',$v['args']).')</b>';
+					return (!empty($v['file']))? '<b style="margin: 0 0 5px 0; color: blue;">'.$class.$v['function'].'()</b> <span style="color: #666;">– '.$v['file'].'</span> <span  style="color: red;">('.$v['line'].')</span>' : '<b style="margin: 0 0 5px 0; color: #666;">'.$v['function'].'('.implode(', ',$v['args']).')</b>';
 				},$debug));
 			}
 
