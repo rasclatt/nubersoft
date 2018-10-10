@@ -1812,7 +1812,7 @@ class	nApp extends \Nubersoft\nFunctions
 		# Set the default name 
 		$uName	=	(isset($dynamic))? '\\'.$dynamic : '\Nubersoft\\'.$name;
 		# This is for a 1-inject object class
-		if(count($args) == 1)
+		if((is_object($args) || is_array($args)) && count($args) == 1)
 			$args	=	$args[0];
 		# Try and return the class
 		return (!empty($args))? self::getClass($uName,$args) : self::getClass($uName);
