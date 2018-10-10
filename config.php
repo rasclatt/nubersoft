@@ -21,6 +21,9 @@ else {
 	# Create class autoloader
 	spl_autoload_register('nloader');
 }
+# Check for composer autoloader
+if(is_file($composer = NBR_ROOT_DIR.DS.'vendor'.DS.'autoloader.php'))
+	include_once($composer);
 # Create instance of nApp AND run session items
 $nApp	=	nApp::createContainer(function(nApp $nApp, Submits $Submits){
 	# Check for error flag and turn errors on if found
