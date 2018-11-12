@@ -1,45 +1,22 @@
 <?php
-/**
-*	@Copyright	nUberSoft.com All Rights Reserved.
-*	@License	License available for review in license text document in root
-*/
-namespace Nubersoft;
-# Shortform flags class
-use \Nubersoft\Flags\Controller as Flags;
-# Include defines
-require_once(__DIR__.DIRECTORY_SEPARATOR.'defines.php');
-# Add the base class
-require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'Singleton.php');
-# Add the base function class
-require_once(NBR_NAMESPACE_CORE.DS.'Nubersoft'.DS.'nFunctions.php');
-# Look for custom autoloader
-if(is_file($autoload = NBR_CLIENT_SETTINGS.DS.'autoload.php'))
-	include_once($autoload);
-else {
-	# Add the function autoloader
-	require_once(NBR_FUNCTIONS.DS.'nloader.php');
-	# Create class autoloader
-	spl_autoload_register('nloader');
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+# Includes application defaults
+require(__DIR__.DIRECTORY_SEPARATOR.'defines.php');
+# Include client defines
+if(is_file($client_defines = NBR_CLIENT_DIR.DS.'defines.php')) {
+	include_once($client_defines);
 }
-# Check for composer autoloader
-if(is_file($composer = NBR_ROOT_DIR.DS.'vendor'.DS.'autoloader.php'))
-	include_once($composer);
-# Create instance of nApp AND run session items
-$nApp	=	nApp::createContainer(function(nApp $nApp, Submits $Submits){
-	# Check for error flag and turn errors on if found
-	$nApp->setErrorMode((Flags::hasFlag('errors') || Flags::hasFlag('devmode')));
-	# Create session from the start
-	$nApp->getHelper('nSessioner','s')->observer();
-	# Commit page to data
-	$nApp->getPageURI();
-	# Sanitize data
-	$Submits
-		# Save all REQUEST/GET/POST
-		->sanitize()
-		# Save SESSION
-		->setSessionGlobal()
-		# SAVE SERVER / USER AGENT
-		->sanitizeServer();
-	# Send back the main app
-	return $nApp;
+# Include composer if set
+if(is_file($vendor = NBR_CLIENT_DIR.DS.'vendor'.DS.'autoloader.php')) {
+	include_once($vendor);
+}
+# Create localized autoloader
+spl_autoload_register(function($class){
+	# Find in vendor
+	$class	=	str_replace(DS.DS, DS, NBR_ROOT_DIR.DS.'vendor'.DS.str_replace('\\', DS, $class).'.php');
+	# Include if found
+	if(is_file($class)) {
+		include_once($class);
+	}
 });

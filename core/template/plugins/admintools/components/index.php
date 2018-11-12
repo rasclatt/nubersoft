@@ -1,0 +1,1 @@
+<?php echo $this->getPlugin('admintools', DS.'users'.DS.'interface.php') ?>

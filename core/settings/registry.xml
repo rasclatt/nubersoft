@@ -2,58 +2,25 @@
 <register>
 	<protectflush>true</protectflush>
 	<protectdirectory>
-		<var>~NBR_ROOT_DIR~/core/</var>
-		<var>~NBR_CLIENT_DIR~/installer/</var>
+		<var>~NBR_CORE~</var>
 		<var>~NBR_CLIENT_DIR~/</var>
 	</protectdirectory>
 	<unprotectset>
-		<var>~NBR_ROOT_DIR~/core/template/default/css/</var>
-		<var>~NBR_ROOT_DIR~/media/</var>
+		<var>~NBR_CORE~/template/default/media/</var>
 	</unprotectset>
-	<workflows>
-		<application>
-			<name>default</name>
-			<include>~NBR_ROOT_DIR~/core/workflows/default.xml</include>
-		</application>
-		<application>
-			<name>offline</name>
-			<include>~NBR_ROOT_DIR~/core/workflows/offline.xml</include>
-		</application>
-		<application>
-			<name>template</name>
-			<include>~NBR_ROOT_DIR~/core/workflows/template.xml</include>
-		</application>
-	</workflows>
-	<onload>
-		<!-- Toggle this to force the site to allow case-sensitive urls -->
-		<strict>
-			<url>false</url>
-		</strict>
-	</onload>
-	<admintoolsmenu>
-		<menu>
-			<name>PAGE EDITOR</name>
-			<url>~app::site_url~~app::fetch_admin_link~?page_editor=true</url>
-		</menu>
-		<menu>
-			<name>HOME PAGE</name>
-			<url>~app::site_url~/</url>
-		</menu>
-	</admintoolsmenu>
 	<ondefine>
-		<dbengine>MYSQL</dbengine>
-		<webmaster>no-reply@iwantcreative.com</webmaster>
+		<webmaster>no-reply@~FUNC::getHost~</webmaster>
 		<session_on>true</session_on>
 		<allow_eval>true</allow_eval>
 		<f_access>true</f_access>
 		<file_salt>~FUNC::randomFileSalt~</file_salt>
-		<max_up_files>2000</max_up_files>
+		<max_up_files>200000</max_up_files>
 		<base_url>{domain}</base_url>
 		<base_url_ssl>{domain}</base_url_ssl>
 		<force_url_ssl>false</force_url_ssl>
-		<session_expire_time>3200</session_expire_time>
+		<session_expire_time>1600</session_expire_time>
 		<temp_dir>/client/settings/tempfiles/</temp_dir>
-		<cache_dir>/client/settings/cachefiles/</cache_dir>
+		<cache_dir>/client/settings/cache/</cache_dir>
 		<sys_prefs_temp>false</sys_prefs_temp>
 		<openssl_salt>~FUNC::randomCryptIv~</openssl_salt>
 		<openssl_iv>~FUNC::randomCryptKey~</openssl_iv>
@@ -62,15 +29,8 @@
 		<nbr_web>3</nbr_web>
 		<open_admin>false</open_admin>
 		<error_mode>E_ALL</error_mode>
-		<server_mode>developer</server_mode>
+		<server_mode>live</server_mode>
 		<force_mode>true</force_mode>
-		<ftp_remote_active>false</ftp_remote_active>
-		<ftp_remote_host>remote.host.com</ftp_remote_host>
-		<ftp_remote_dir>httpdocs/</ftp_remote_dir>
-		<ftp_remote_username>myusername</ftp_remote_username>
-		<ftp_remote_remote_path>/httpdocs/</ftp_remote_remote_path>
-		<ftp_remote_local_path>~NBR_ROOT_DIR~</ftp_remote_local_path>
-		<ftp_remote_port>21</ftp_remote_port>
 	</ondefine>
 	<logging>
 		<db_read>
@@ -95,28 +55,6 @@
 			<write_type>string</write_type>
 		</login>
 	</logging>
-	<messaging>
-		<forbid_access>You must be an administrator to view this page</forbid_access>
-		<error404>
-		<title>Error 404&lt;br \&gt;Page not found.</title>
-		<body>Sorry, we have searched everywhere and can not find this page...believe me when I tell you, it's lost.</body>
-		</error404>
-		<login>
-			<client>
-				<fail>
-					<admin>You must log in using admin page.</admin>
-				</fail>
-			</client>
-		</login>
-	</messaging>
-	<whitelist>
-		<admintools>
-			<ip>123.123.123.123</ip>
-		</admintools>
-		<printpre>
-			<ip>123.123.123.123</ip>
-		</printpre>
-	</whitelist>
 	<sms_options>
 		<sms_carrier>
 			<sms_name>AT&amp;amp;T</sms_name>
@@ -134,7 +72,4 @@
 			<sms_digits>10</sms_digits>
 		</sms_carrier>
 	</sms_options>
-	<cart_options>
-		<active>true</active>
-	</cart_options>
 </register>

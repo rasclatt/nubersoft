@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<object event="nbr_log_error_layout">
+		<class>
+			<name>\Nubersoft\Log</name>
+			<method>listen</method>
+		</class>
+	</object>
+</config>

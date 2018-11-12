@@ -1,0 +1,66 @@
+/* CSS Document */
+@import url('https://fonts.googleapis.com/css?family=Cairo:300,400,700');
+
+#admin-menubar {
+	display: block;
+	background-color: #000;
+	color: #FFF;
+	font-family: 'Cairo', sans-serif;
+	font-weight: 400;
+	font-size: 0.85em;
+	text-align: center;
+	height: 36px;
+}
+#admin-menubar > div {
+	display: inline-flex;
+	flex-direction: row;
+	justify-content: center;
+	align-content: center;
+	margin: 0 auto;
+}
+.admin-menu {
+	position: relative;
+}
+.admin-submenu {
+	display: none;
+	position: absolute;
+	flex-direction: column;
+	cursor: pointer;
+	background-color: #222;
+	z-index: 1;
+	top: 35px;
+}
+.admin-menu:hover .admin-submenu,
+.admin-submenu:hover {
+	display: flex;
+}
+.admin-menu,
+#admin-menubar a:link,
+#admin-menubar a:visited {
+	color: #FFF;
+	transition: background-color 0.5s;
+	text-decoration: none;
+	padding: 0.35em 0.75em;
+	align-self: stretch;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+.admin-menu:hover,
+#admin-menubar a:hover {
+	background-color: red;
+	cursor: pointer;
+}
+.admin-submenu img {
+	display: inline !important;
+	margin: 0;
+}
+.divider.vertical.light {
+	width: 1px;
+	background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1))
+}
+.left-align {
+	text-align: left;
+}

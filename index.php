@@ -1,37 +1,77 @@
 <?php
-/**
-*	@Copyright	nUberSoft.com All Rights Reserved.
-*	@License	License available for review in license text document in root
-*/
 namespace Nubersoft;
-# Shortcut Flag Controller
-use \Nubersoft\Flags\Controller as Flag;
 #check if cron job set
 if(!empty($argv[1])) {
+	# Set the request manually
 	$_REQUEST	=	[];
-	parse_str($argv[1],$_REQUEST);
+	parse_str($argv[1], $_REQUEST);
 }
-# Configuration (includes defines)
+# Add our application config
 require(__DIR__.DIRECTORY_SEPARATOR.'config.php');
-# Check if maintenance flag is set
-if(Flag::hasFlag('maintenance') && !$nApp->isAdmin() && !$nApp->isAdminPage() && !$nApp->isAjaxRequest()) {
-	# Check if there is a template set for the static page
-	$errorTemplate	=	nTemplate::getFileFromDefaultTemplate('frontend'.DS.'static.offline.php');
-	# Render the offline page
-	die((is_file($errorTemplate))? $nApp->render($errorTemplate) : '<h1>'.$nApp->__('Site is offline for maintenance.').'</h1>');
-}
-# Try to run the application as usual
+# Create instance of the main class
+$Application	=	nApp::call();
+
 try {
-	# First check if there is a client application to run
-	$index	=	NBR_CLIENT_SETTINGS.DS.'index.php';
-	# Include the valid application
-	include((is_file($index))? $index : NBR_SETTINGS.DS.'index.php');
+	# Start buffering
+	ob_start();
+	# Create a container application
+	$Application->createContainer(function(
+		nApp $nApp,
+		nSession $Session,
+		nGlobal\Observer $nGlobal,
+		nAutomator\Controller $AutomatorController,
+		nRouter $Router
+	){
+		if(is_file($flag = NBR_CORE.DS.'installer'.DS.'firstrun.flag')) {
+			$Router->redirect(str_replace(NBR_ROOT_DIR, '', pathinfo($flag, PATHINFO_DIRNAME).DS.'index.php'));
+		}
+		# Load our hand print_r substitute
+		$nApp->autoload('printpre');
+		# Start the session
+		$Session->start();
+		# Convert all request forms to data node(s)
+		$nGlobal->listen();
+		# Start our program
+		$AutomatorController->createWorkflow('default');
+	});
+	# Get the normal buffer
+	$data	=	ob_get_contents();
+	# Stop the normal buffer
+	ob_end_clean();
+	# Write the normal buffer
+	echo $data;
 }
-catch (nException $e) {
-	$exception	=	NBR_CLIENT_SETTINGS.DS.'nexception.php';
-	include((is_file($exception))? $exception : NBR_SETTINGS.DS.'nexception.php');
-}
-catch (\Exception $e) {
-	$exception	=	NBR_CLIENT_SETTINGS.DS.'exception.php';
-	include((is_file($exception))? $exception : NBR_SETTINGS.DS.'exception.php');
+catch(HttpException $e) {
+	# Stop the normal buffer (don't output)
+	ob_end_clean();
+	# Start our automator
+	$Automator	=	$Application->getHelper('nAutomator\Observer');
+	# Get our data obj
+	$Node		=	$Application->getHelper('DataNode');
+	# Save the message to data node
+	$Node->addNode('_MESSAGES',[
+		'msg'=>$e->getMessage(),
+		'code'=>$e->getCode()
+	]);
+	# Set the default layout workflow to create
+	switch($e->getCode()) {
+		case(101):
+			$layout	=	'offline';
+			break;
+		case(102):
+			$layout	=	'maintenance';
+			break;
+		case(103):
+			$layout	=	'installer';
+			break;
+		default:
+			$layout	=	'error';
+	}
+	# Start our program
+	$Automator
+		->setWorkflow($layout)
+		# Listen for the "action" key
+		->setActionKey((defined('NBR_ACTION_KEY')? NBR_ACTION_KEY : 'action'))
+		# Run the automator
+		->listen();
 }

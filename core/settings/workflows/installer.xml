@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<object event="nbr_establish_settings">
+		<class>
+			<name>\Nubersoft\Settings\Page\Installer\Observer</name>
+			<method>listen</method>
+		</class>
+	</object>
+	<!--
+	<object event="nbr_establish_settings">
+		<class>
+			<name>\Nubersoft\Settings\Page\Installer\View</name>
+			<method>render</method>
+		</class>
+	</object>
+	-->
+</config>

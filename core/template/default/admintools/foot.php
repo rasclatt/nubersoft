@@ -1,2 +1,0 @@
-
-	Copyright &reg;<?php echo date("Y"); ?> <a href="http://www.nubersoft.com/" target="_blank">nUbersoft</a>. <?php if($this->isAdmin()) echo 'My Ip: '.$this->getClientIp().'. Database: "'.$this->getDbName().'"' ?>

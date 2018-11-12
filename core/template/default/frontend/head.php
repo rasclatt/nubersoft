@@ -1,32 +1,12 @@
-<!DOCTYPE html>
-<html>
-<title><?php echo $this->getHtml('title') ?></title>
 <head profile="http://www.w3.org/2005/10/profile">
-<?php if(is_file(NBR_ROOT_DIR.DS.'pinlogo.svg')) { ?>
-<link rel="mask-icon" href="/pinlogo.svg" color="red">
-<?php } ?>
-<?php if(is_file(NBR_ROOT_DIR.DS.'favicon.ico')) { ?>
-<link rel="shortcut icon" href="/favicon.ico">
-<?php } ?>
-<?php if(is_file(NBR_ROOT_DIR.DS.'favicon.png')) { ?>
-<link rel="apple-touch-icon image_src" href="/favicon.png">
-<?php } ?>
-<?php echo $this->getHtml('meta') ?>
-<?php echo $this->getViewPort() ?>
-<?php echo $this->getMediaSrc('javascript') ?>
-<?php echo $this->getMediaSrc('stylesheet');
-if(!empty($this->getHtml('javascript'))) {
-?>
-<script>
-<?php echo $this->getHtml('javascript') ?>
-</script>
-<?php
-}
-?>
-<?php echo $this->getTemplateDoc('noscript.php').PHP_EOL; ?>
-<?php if(!empty($this->getHtml('inline_css'))) { ?>
-<style>
-<?php echo $this->getHtml('inline_css') ?>
-</style>
-<?php } ?>
+<?php echo $this->getTitle($this->siteUrl($this->getPage('full_path'))) ?>
+<?php echo $this->getMeta(['viewport' => 'width=device-width', 'Author' => 'Rasclatt']) ?>
+<?php echo $this->Html->createMeta('charset', 'utf-8', true) ?>
+<?php echo $this->styleSheets() ?>
+<?php echo $this->headerStyleSheets() ?>
+<?php echo $this->Html->createScript('https://code.jquery.com/jquery-3.3.1.min.js',null,null,null,'integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"') ?>
+<?php echo $this->Html->createScript('https://code.jquery.com/ui/1.12.1/jquery-ui.min.js',null,null,null,'integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"') ?>
+<?php echo $this->javaScript() ?>
+<?php echo $this->headerJavaScript() ?>
+<?php echo $this->getHeader() ?>
 </head>
