@@ -58,7 +58,9 @@ $Markup	=	$this->getHelper('nMarkUp');
 <body>
 	<div class="col-count-3 offset pad-bottom">
 		<div class="col-2 pad-top pad-bottom">
-			<img src="/core/template/default/media/images/logo/nubersoft.png" style="max-width: 300px;" />
+			<a href="/" class="pointer">
+				<img src="/core/template/default/media/images/logo/nubersoft.png" style="max-width: 300px;" />
+			</a>
 			<?php include(__DIR__.DS.$action.'.php') ?>
 		</div>
 	</div>	

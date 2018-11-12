@@ -1,5 +1,5 @@
 # Deny access to file extensions
-<FilesMatch "\.(htaccess|htpasswd|ini|flag|log|sh|pref|json|txt|html|xml|zip)$">
+<FilesMatch "\.(htaccess|htpasswd|ini|flag|log|sh|pref|json|txt|html|xml|zip|sql)$">
 Order Allow,Deny
 Deny from all
 </FilesMatch>

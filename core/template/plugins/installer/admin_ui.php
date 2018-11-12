@@ -1,0 +1,1 @@
+<a href="/core/installer/">Update Core Software</a>
