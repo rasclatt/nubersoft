@@ -60,7 +60,7 @@ if($response === true && $Archive->numFiles > 0) {
 	
 	echo '<a href="'.$this->getHelper('nRouter')->getPage(1, 'is_admin')['full_path'].'?action=clear_cache" class="medi-btn green">Back to Admin</a>';
 	
-	if(is_file($flag = NBR_ROOT_DIR.DS.'firstrun.flag'))
+	if(is_file($flag = NBR_CORE.DS.'installer'.DS.'firstrun.flag'))
 		unlink($flag);
 }
 else
