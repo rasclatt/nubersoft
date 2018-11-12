@@ -176,7 +176,7 @@ class nFunctions
 			if(BASE_URL == '{domain}')
 				$domain	=	$proto.$this->toSingleSlash($this->getServer('HTTP_HOST').'/'.$path);
 			else
-				$domain	=	$this->toSingleSlash(BASE_URL.'/'.$path);
+				$domain	=	BASE_URL.$this->toSingleSlash('/'.$path);
 		}
 		else {
 			$domain	=	$proto.$this->toSingleSlash($this->getServer('HTTP_HOST').'/'.$path);

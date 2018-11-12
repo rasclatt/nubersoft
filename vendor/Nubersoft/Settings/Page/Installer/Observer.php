@@ -19,7 +19,6 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		else
 			include_once($file);
 		
-		
 		if(!$this->isAdmin()) {
 			if(is_file($dbcreds) && is_file($registry)) {
 				if(filesize($dbcreds) > 0) {
