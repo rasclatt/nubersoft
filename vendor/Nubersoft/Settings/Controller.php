@@ -152,4 +152,45 @@ class Controller extends \Nubersoft\Settings\Model
 		
 		return $this->getHelper('ArrayWorks')->organizeByKey($inputs, 'column_name');
 	}
+	
+	public	function createDefines($registry)
+	{
+		$registry	=	$this->toArray(simplexml_load_file($registry));
+
+		if(!empty($registry['ondefine'])) {
+			$nMarkup	=	$this->getHelper('nMarkUp');
+			$def[]		=	'<?php'.PHP_EOL;
+			foreach($registry['ondefine'] as $key => $value) {
+				if(is_array($value) || is_object($value))
+					continue;
+				$arg	=	$nMarkup->useMarkUp($value);
+				if(is_string($arg)) {
+					switch(true){
+						case($arg == 'true'):
+							$arg	=	'true';
+							break;
+						case($arg == 'false'):
+							$arg	=	'false';
+							break;
+						case(is_numeric($arg)):
+							$arg	=	$arg;
+							break;
+						default:
+							$arg	=	"'{$arg}'";
+					}
+				}
+				$def[]	=	'if(!defined(\''.strtoupper($key).'\'))'.PHP_EOL."\t".'define(\''.strtoupper($key).'\', '.$arg.');';
+			}
+				
+			if($this->isDir(pathinfo($this->getClientDefines(), PATHINFO_DIRNAME), true))
+				file_put_contents($this->getClientDefines(), implode(PHP_EOL, $def));
+			
+			return is_file($this->getClientDefines());
+		}
+	}
+	
+	protected	function getClientDefines()
+	{
+		return NBR_CLIENT_CACHE.DS.'defines.php';
+	}
 }

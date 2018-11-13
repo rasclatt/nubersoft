@@ -16,6 +16,9 @@ class nQuery extends \Nubersoft\nApp
 		
 		include_once(NBR_DATABASE_CREDS);
 		
+		if(!defined('DB_HOST'))
+			throw new \Exception('Required database info not set', 9090);
+		
 		try {
 			$Db	=	new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_CHARSET);
 			self::$con	=	$Db->getConnection();

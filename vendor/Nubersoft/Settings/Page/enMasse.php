@@ -5,6 +5,11 @@ namespace Nubersoft\Settings\Page;
  */
 trait enMasse
 {
+	public	function siteLogoActive()
+	{
+		return $this->getHelper('Settings\Page\Controller')->{__FUNCTION__}();
+	}
+	
 	public	function getSiteLogo($alt = false, $html = true)
 	{
 		$path	=	$this->getHelper('Settings\Page\Controller')->{__FUNCTION__}();
@@ -25,9 +30,14 @@ trait enMasse
 	{
 		$args	=	(!is_array($args))? [] : $args;
 		$class	=	$this->getHelper('Settings\Page\Controller');
-		if(!method_exists($class, $method))
-			return (new \Nubersoft\nDynamics)->__call($method, ...$args);
-		else
-			return $class->{$method}(...$args);
+		try {
+			if(method_exists($class, $method))
+				return (new \Nubersoft\nDynamics)->__call($method, ...$args);
+			else
+				return $class->{$method}(...$args);
+		}
+		catch (\Exception $e) {
+			trigger_error('Class/Method does not exist: '.$class.'::'.$method);
+		}
 	}
 }

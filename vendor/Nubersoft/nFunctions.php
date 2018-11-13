@@ -204,7 +204,10 @@ class nFunctions
 		}
 		
 		return is_dir($dir);
-		
-		
+	}
+	
+	public	function __($string)
+	{
+		return $string;
 	}
 }

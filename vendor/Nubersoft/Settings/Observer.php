@@ -9,9 +9,10 @@ class Observer extends Controller implements \Nubersoft\nObserver
 		$DataNode	=	$this->getHelper('DataNode');
 		$Token		=	$this->getHelper('nToken');
 		$SERVER		=	$this->getServer();
-		$path		=	(strpos(strtolower($SERVER['SCRIPT_URL']), '.') !== false)? str_replace('//', '/', '/'.implode('/',array_filter(array_map(function($v){
+		$scrurl		=	(isset($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : parse_url($SERVER['REQUEST_URI'])['path'];
+		$path		=	(strpos(strtolower($scrurl), '.') !== false)? str_replace('//', '/', '/'.implode('/',array_filter(array_map(function($v){
 			return (strpos(strtolower($v), '.') !== false)? false : $v;
-		},explode('/',$SERVER['SCRIPT_URL'])))).'/') : $SERVER['SCRIPT_URL'];
+		},explode('/',$scrurl)))).'/') : $scrurl;
 		$query		=	(empty($path) || $path == '/')? $Router->getPage('2', 'is_admin') : $Router->getPage($path);
 		$settings	=	$this->getSettings(false, 'system');
 		$DataNode->setNode('cache_folder', (!defined('CLIENT_CACHE'))? NBR_CLIENT_CACHE : CLIENT_CACHE);
@@ -44,11 +45,6 @@ class Observer extends Controller implements \Nubersoft\nObserver
 		return $this;
 	}
 	
-	protected	function getClientDefines()
-	{
-		return NBR_CLIENT_CACHE.DS.'defines.php';
-	}
-	
 	public	function checkUserSettings()
 	{
 		$registry	=	NBR_CLIENT_SETTINGS.DS.'registry.xml';
@@ -62,35 +58,11 @@ class Observer extends Controller implements \Nubersoft\nObserver
 			if(!is_file($registry))
 				throw new \Nubersoft\HttpException('Registry file to create important settings is missing. Reinstall required.', 100);
 			
-			$registry	=	$this->toArray(simplexml_load_file($registry));
-			
-			if(!empty($registry['ondefine'])) {
-				$nMarkup	=	$this->getHelper('nMarkUp');
-				$def[]		=	'<?php'.PHP_EOL;
-				foreach($registry['ondefine'] as $key => $value) {
-					$arg	=	$nMarkup->useMarkUp($value);
-					if(is_string($arg)) {
-						switch(true){
-							case($arg == 'true'):
-								$arg	=	'true';
-								break;
-							case($arg == 'false'):
-								$arg	=	'false';
-								break;
-							case(is_numeric($arg)):
-								$arg	=	$arg;
-								break;
-							default:
-								$arg	=	"'{$arg}'";
-						}
-					}
-					$def[]	=	'if(!defined(\''.strtoupper($key).'\'))'.PHP_EOL."\t".'define(\''.strtoupper($key).'\', '.$arg.');';
-				}
-				
-				file_put_contents($this->getClientDefines(), implode(PHP_EOL, $def));
+			if($this->createDefines($registry)) {
 				$msg	=	($this->isAdmin())? "?msg=".urlencode('Cache has been removed.') : '';
 				$this->getHelper('nRouter')->redirect($this->getPage('full_path'));
 			}
+			
 		}
 		
 		return $this;

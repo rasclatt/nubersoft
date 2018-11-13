@@ -14,19 +14,28 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		$dbcreds	=	NBR_CLIENT_SETTINGS.DS.'dbcreds.php';
 		$registry	=	NBR_CLIENT_SETTINGS.DS.'registry.xml';
 		
-		if(!is_file($file = NBR_CLIENT_CACHE.DS.'defines.php')) 
+		if(!is_file($file = NBR_CLIENT_CACHE.DS.'defines.php')) {
 			$this->getHelper("DataNode")->addNode('update_error', 'You need to reset your cache to get get client defines.');
-		else
+			if($this->getHelper('Settings\Controller')->createDefines($registry))
+				include_once($file);
+		}
+		else {
 			include_once($file);
+		}
 		
-		$nQuery		=	$this->getHelper('nQuery');
-		$hasTables	=	$nQuery->query("show tables")->getResults();
-		try {
-			$hasAdmin	=	(!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
+		if(is_file($dbcreds)) {
+			$nQuery		=	$this->getHelper('nQuery');
+			$hasTables	=	$nQuery->query("show tables")->getResults();
+
+			try {
+				$hasAdmin	=	(!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
+			}
+			catch (\PDOExeception $e) {
+				$hasAdmin	=	0;
+			}
 		}
-		catch (\PDOExeception $e) {
+		else
 			$hasAdmin	=	0;
-		}
 		
 		if(!$this->isAdmin()) {
 			
