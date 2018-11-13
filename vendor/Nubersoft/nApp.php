@@ -21,6 +21,16 @@ class nApp extends \Nubersoft\nFunctions
 		return self::$singleton;
 	}
 	
+	public	function userGet($key = false)
+	{
+		$SESS	=	(!empty($this->getSession('user')))? $this->getSession('user') : [];
+		
+		if(!empty($key))
+			return (isset($SESS[$key]))? $SESS[$key] : false;
+		
+		return $SESS;
+	}
+	
 	public	function fetchUniqueId($other = false, $sub = 20)
 	{
 		return substr(date('YmdHis').rand(1000000, 9999999).$other, 0, $sub);

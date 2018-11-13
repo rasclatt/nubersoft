@@ -10,13 +10,23 @@ class nRender extends \Nubersoft\nQuery
 		Settings\Page\enMasse;
 	
 	protected	$Html,
-				$User;
+				$User,
+				$sUser;
 	
 	public	function __construct()
 	{
-		$this->Html	=	$this->getHelper('Html');
-		$this->User	=	$this->getHelper('nUser');
+		$this->sUser	=	(!empty($this->getSession('user')))? $this->getSession('user') : [];
+		$this->Html		=	$this->getHelper('Html');
+		$this->User		=	$this->getHelper('nUser');
 		return parent::__construct();
+	}
+	
+	public	function userGet($key = false)
+	{
+		if(!empty($key))
+			return (isset($this->sUser[$key]))? $this->sUser[$key] : false;
+		
+		return $this->sUser;
 	}
 	
 	public	function getHeader()
