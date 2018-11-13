@@ -120,6 +120,9 @@ class Controller extends \Nubersoft\Settings\Model
 				
 				$config	=	$DataNode->addNode('templates', $configs, 'config');
 			}
+			
+			if(!empty($configs))
+				break;
 		}
 		
 		if(empty($frontend))
