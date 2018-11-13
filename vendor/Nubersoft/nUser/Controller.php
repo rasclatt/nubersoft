@@ -7,18 +7,23 @@ class Controller extends \Nubersoft\nUser
 	
 	public	function isLoggedIn()
 	{
-		return (!empty($this->getDataNode('_SESSION')['username']));
+		return (!empty($this->getDataNode('_SESSION')['user']['username']));
 	}
 	
 	public	function isAdmin()
 	{
 		$SESS	=	$this->getDataNode('_SESSION');
-		if(empty($SESS['usergroup']))
+		$user	=	(!empty($SESS['user']))? $SESS['user'] : false;
+		
+		//echo printpre($user);
+		
+		if(empty($user['username']))
 			return false;
 		
-		if(!is_numeric($SESS['usergroup']))
-			$SESS['usergroup']	=	constant($SESS['usergroup']);
+		if(!is_numeric($user['usergroup'])) {
+			$user['usergroup']	=	constant($user['usergroup']);
+		}
 		
-		return ($SESS['usergroup'] <= NBR_ADMIN);
+		return ($user['usergroup'] <= NBR_ADMIN);
 	}
 }

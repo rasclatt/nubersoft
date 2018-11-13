@@ -53,6 +53,11 @@ $Markup	=	$this->getHelper('nMarkUp');
 		content: '* ';
 		color: red;
 	}
+	a.medi-btn.green:link,
+	a.medi-btn.green:visited {
+		color: #FFF;
+		border: none;
+	}
 </style>
 </head>
 <body>

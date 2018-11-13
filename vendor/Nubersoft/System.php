@@ -44,7 +44,7 @@ class System extends nSession\Controller
 			return $allowed;
 		
 		if(!is_numeric($user['usergroup']))
-			$user['usergroup']	=	constant($user['usergroup']);
+			$user['usergroup']	=	(int) constant($user['usergroup']);
 		
 		return [
 			'valid' => $valid,
@@ -67,13 +67,6 @@ class System extends nSession\Controller
 	public	function toUserSession($user)
 	{
 		$this->set('user', $user);
-		
-		foreach($user as $key => $value) {
-			if($key == 'usergroup')
-				$this->set($key, (is_string($value))? constant($value) : $value);
-			else
-				$this->set($key, $value);
-		}
 	}
 	
 	public	function downloadFile($file)

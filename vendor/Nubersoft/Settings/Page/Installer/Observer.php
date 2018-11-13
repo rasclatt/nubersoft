@@ -19,13 +19,25 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		else
 			include_once($file);
 		
+		$nQuery		=	$this->getHelper('nQuery');
+		$hasTables	=	$nQuery->query("show tables")->getResults();
+		try {
+			$hasAdmin	=	(!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
+		}
+		catch (\PDOExeception $e) {
+			$hasAdmin	=	0;
+		}
+		
 		if(!$this->isAdmin()) {
-			if(is_file($dbcreds) && is_file($registry)) {
-				if(filesize($dbcreds) > 0) {
-					if(is_file($flag = NBR_CORE.DS.'installer'.DS.'firstrun.flag'))
-						unlink($flag);
+			
+			if($hasAdmin > 0) {
+				if(is_file($dbcreds) && is_file($registry)) {
+					if(filesize($dbcreds) > 0) {
+						if(is_file($flag = NBR_CORE.DS.'installer'.DS.'firstrun.flag'))
+							unlink($flag);
 
-					$this->redirect('/');
+						$this->redirect('/');
+					}
 				}
 			}
 		}
@@ -34,6 +46,32 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 			$default	=	$this->toArray(simplexml_load_file(NBR_SETTINGS.DS.'registry.xml'));
 		
 		switch($this->getPost('action')){
+			case('create_admin_user'):
+				$username	=	$this->getPost('username', false);
+				$password	=	$this->getPost('password', false);
+				if(!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+					$this->getHelper('DataNode')->addNode('table_error', 'Username must be an email address.');
+					break;
+				}
+				
+				$User	=	$this->getHelper("nUser");
+				
+				$User->create([
+					'username' => $username,
+					'password' => $password,
+					'first_name' => 'Super',
+					'last_name' => 'User',
+					'user_status' => 'on',
+					'usergroup' => 'NBR_SUPERUSER',
+					'email' => $username
+				]);
+				
+				if(!$User->userExists($username)) {
+					$this->getHelper('DataNode')->addNode('table_error', 'Failed to create user.');
+					break;
+				}
+				
+				break;
 			case('save_registry_doc'):
 				$def	=	$this->getPost();
 				unset($def['action']);
@@ -82,6 +120,14 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		
 		if(!is_file($dbcreds)) 
 			$this->setLayout('create_database', false);
+		
+		if(empty($hasTables) || ($hasAdmin == 0)) { 
+			
+			$this->setLayout('create_tables', [
+				'tables' => $hasTables,
+				'user' => $hasAdmin
+			]);
+		}
 		
 		$this->setLayout('update_software', false);
 	}

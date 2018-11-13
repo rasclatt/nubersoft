@@ -86,6 +86,8 @@ class nRender extends \Nubersoft\nQuery
 				}
 			}
 		}
+			
+			 
 		# If the page requires admin access
 		if($page['is_admin'] == 1 && !$this->isAdmin()) {
 			# If not admin, redirect to home page

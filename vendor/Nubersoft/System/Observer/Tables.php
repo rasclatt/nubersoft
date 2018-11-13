@@ -300,7 +300,8 @@ class Tables extends \Nubersoft\System\Observer
 	
 	protected	function addNewRecord($POST)
 	{
-		$type	=	(!empty($POST['parent_type']))? $POST['parent_type'] : 'code';
+		$type		=	(!empty($POST['parent_type']))? $POST['parent_type'] : 'code';
+		$refpage	=	(!empty($POST['ref_page']))? $POST['ref_page'] : $this->getPage('unique_id');
 		
 		unset($POST['parent_type']);
 		
@@ -308,7 +309,7 @@ class Tables extends \Nubersoft\System\Observer
 			->insert('components')
 			->columns(['unique_id', 'ref_page', 'component_type', 'title', 'page_live'])
 			->values([
-				[$this->fetchUniqueId(), $POST['ref_page'], 'code', 'Untitled ('.date('Y-m-d H:i:s').')', 'off']
+				[$this->fetchUniqueId(), $refpage, 'code', 'Untitled ('.date('Y-m-d H:i:s').')', 'off']
 			])
 			->write();
 			$this->toSuccess("Component added");
