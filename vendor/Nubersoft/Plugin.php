@@ -5,6 +5,7 @@ class Plugin extends nRender
 {
 	use nMarkup\enMasse;
 	use System\enMasse;
+	use Conversion\enMasse;
 	use nDynamics;
 		
 	protected	static	$plugin_content	=	[];
