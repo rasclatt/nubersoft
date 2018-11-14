@@ -249,6 +249,10 @@ class Tables extends \Nubersoft\System\Observer
 				if(!empty($POST['password'])) {
 					$POST['password']	=	$this->getHelper('nUser')->hashPassword($this->getPost('password', false));
 				}
+				else {
+					unset($POST['password']);
+				}
+				
 				if(count($required) < 6) {
 					$this->toError('All required fields must be filled out, or a field is not filled correctly.');
 					return $this;

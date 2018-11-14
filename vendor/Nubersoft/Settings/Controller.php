@@ -53,7 +53,8 @@ class Controller extends \Nubersoft\Settings\Model
 	{
 		$page	=	$this->getPage('template');
 		return array_unique([
-			'page' => (!empty($page))? $this->toSingleDs(NBR_CLIENT_TEMPLATES.DS.$page.DS.'plugins') : false,
+			'root' => (!empty($page))? $this->toSingleDs(NBR_CLIENT_TEMPLATES.DS.$page.DS.'plugins') : false,
+			'page' => (!empty($page))? $this->toSingleDs(NBR_ROOT_DIR.DS.$page.DS.'plugins') : false,
 			'site' =>  $this->toSingleDs(NBR_CLIENT_TEMPLATES.DS.'plugins'),
 			'default' => NBR_TEMPLATE_DIR.DS.'plugins'
 		]);

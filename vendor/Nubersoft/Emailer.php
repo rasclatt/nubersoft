@@ -82,8 +82,8 @@ class	Emailer extends \Nubersoft\nApp
 	{
 		if(!empty($layout)) {
 			$html		=	str_replace(array('~message~'),array($message),$this->getLayout($layout));
-			$nAutomator	=	$this->getHelper('nAutomator',$this);
-			$this->sending['message']	=	$nAutomator->matchFunction($html);
+			$nAutomator	=	$this->getHelper('nMarkUp');
+			$this->sending['message']	=	$nAutomator->useMarkUp($html);
 		}
 		else
 			$this->sending['message']	=	$message;

@@ -65,22 +65,23 @@ class nRender extends \Nubersoft\nQuery
 		}
 		# Get the layout
 		$layout		=	(!empty($this->getDataNode('templates')[$temp]))? $this->getDataNode('templates')[$temp] : 'false';
-		
 		# Redirect
 		if(!empty($page['auto_fwd']) && !$this->isAdmin()) {
 			$page['auto_fwd']	=	trim($page['auto_fwd']);
 			$Router		=	$this->getHelper('nRouter');
 			$external	=	preg_match('/^http/i', $page['auto_fwd']);
 			$redirect	=	(!$external)? $this->localeUrl($page['auto_fwd']) : $page['auto_fwd'];
-			if(!empty($page['auto_fwd_post'])) {
+			
+			if($page['auto_fwd_post'] == 'off') {
+				$Router->redirect($redirect);
+			}
+			else {
 				if($page['auto_fwd_post'] == 'on') {
 					if($this->isLoggedIn()) {
 						$Router->redirect($redirect);
 					}
 				}
-			}
-			else
-				$Router->redirect($redirect);
+			}	
 		}
 		# Check for page permissions
 		if($page['session_status'] == 'on') {
@@ -96,8 +97,6 @@ class nRender extends \Nubersoft\nQuery
 				}
 			}
 		}
-			
-			 
 		# If the page requires admin access
 		if($page['is_admin'] == 1 && !$this->isAdmin()) {
 			# If not admin, redirect to home page
