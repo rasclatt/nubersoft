@@ -1,6 +1,8 @@
 <?php
 namespace Nubersoft;
 
+use \Nubersoft\nApp;
+
 class Currency extends \Nubersoft\cURL
 	{
 		protected	$endpoint,
@@ -73,14 +75,9 @@ class Currency extends \Nubersoft\cURL
 			
 		public	function getLocaleList()
 			{
-				$nApp	=	\Nubersoft\nApp::call();
-				
-				return $nApp->getPrefFile('locale_currency',array('save'=>true),false,function($path,$nApp) {
-					$config	=	$nApp->getHelper('nRegister')->parseXmlFile(__DIR__.DS.'Currency'.DS.'Core'.DS.'settings'.DS.'locale_list.xml');
-				
-					return $nApp->organizeByKey($config['locale'],'abbr3',array('unset'=>false));
-				});
-				
+				$path	=	__DIR__.DS.'Currency'.DS.'Core'.DS.'settings'.DS.'locale_list.xml';
+				$reg	=	nApp::call()->toArray(simplexml_load_file($path));
+				return ArrayWorks::organizeByKey($reg['locale'], 'abbr3', ['unset' => false]);
 			}
 			
 		public	function getFormatList()
