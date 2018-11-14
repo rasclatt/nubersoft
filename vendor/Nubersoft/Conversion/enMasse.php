@@ -12,4 +12,9 @@ trait enMasse
 	{
 		return (new \Nubersoft\Conversion())->{__FUNCTION__}($value, $uc);
 	}
+	
+	public	function toDollar()
+	{
+		return (new \Nubersoft\Conversion\Money())->{__FUNCTION__}(...func_get_args());
+	}
 }
