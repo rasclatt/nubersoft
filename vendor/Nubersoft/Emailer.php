@@ -3,6 +3,8 @@ namespace Nubersoft;
 
 class	Emailer extends \Nubersoft\nApp
 {
+	use \Nubersoft\nDynamics;
+	
 	public		$sent,
 				$response,
 				$sending;
@@ -22,12 +24,12 @@ class	Emailer extends \Nubersoft\nApp
 
 	public	function getAllLayouts()
 	{
-		return $this->nQuery()->query("select * from `components` where `email_id` != ''")->getResults();
+		return @$this->nQuery()->query("select * from `components` where `email_id` != ''")->getResults();
 	}
 
 	public	function getLayout($name = 'default')
 	{
-		$content	=	$this->nQuery()->query("select `content` from `emailer` where `email_id` = :0",array($name))->getResults();
+		$content	=	@$this->nQuery()->query("select `content` from `emailer` where `email_id` = ?",[$name])->getResults();
 
 		if(isset($content[0]['content']))
 			$html	=	$this->safe()->decode($content[0]['content']);
@@ -121,7 +123,7 @@ class	Emailer extends \Nubersoft\nApp
 		
 		$values		=	array(
 			"'".$this->fetchUniqueId()."'",
-			':0',"'email_receipt'",
+			'?',"'email_receipt'",
 			"'on'",
 			"'".$this->encode($this->getHelper('nLocale')->getTimeZone())."'"
 		);
@@ -137,12 +139,12 @@ class	Emailer extends \Nubersoft\nApp
 						`components` (`".implode('`,`',$columns)."`)
 					VALUES (".implode(", ",$values).")";
 
-		$this->nQuery()->query($sql,array(json_encode($this->sending)));
+		@$this->nQuery()->query($sql,array(json_encode($this->sending)));
 	}
 
 	public	function getReceiptMessage($layout)
 	{
-		$arr	=	$this->nQuery()->query("select `return_response` from `emailer` where `email_id` = :0",array($layout))->getResults(true);
+		$arr	=	@$this->nQuery()->query("select `return_response` from `emailer` where `email_id` = ?",[$layout])->getResults(true);
 
 		return (!empty($arr['return_response']))? $arr['return_response'] : false;
 	}
