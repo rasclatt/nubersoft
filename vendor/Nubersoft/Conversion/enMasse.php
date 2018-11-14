@@ -5,6 +5,11 @@ trait enMasse
 {
 	public	function colToTitle($value, $uc = true)
 	{
-		return (new \Nubersoft\Conversion())->columnToTitle($value, $uc);
+		return $this->columnToTitle($value, $uc);
+	}
+	
+	public	function columnToTitle($value, $uc = true)
+	{
+		return (new \Nubersoft\Conversion())->{__FUNCTION__}($value, $uc);
 	}
 }
