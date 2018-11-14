@@ -60,44 +60,58 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 			'site' => (!empty($templates['paths']['site']))? str_replace(DS.DS,DS,$templates['paths']['site'].DS.$dir.DS.$file) : false,
 			'default' => NBR_SETTINGS.DS.'blockflows'.DS.$file
 		];
-		
+
+		$actionSets['object']	=
 		$actionStore['object']	=
 		$storage['object']	=	[];
 		
 		$templates	=	array_filter($templates);
 		
 		if(!empty($this->getRequest($this->actionName))) {
+			
 			$actions	=	array_filter(array_unique([
+				'default' => str_replace(DS.DS, DS, NBR_CORE.DS.$actdir.DS.$file),
 				'site' => (!empty($templates['paths']['site']))? str_replace(DS.DS,DS,$templates['paths']['site'].DS.'core'.DS.$actdir.DS.$file) : false,
 				'client' => NBR_CLIENT_SETTINGS.DS.'actions'.DS.$file,
-				'page' => (!empty($templates['paths']['page']))? str_replace(DS.DS,DS,$templates['paths']['page'].DS.$actdir.DS.$file) : false,
-				'default' => str_replace(DS.DS, DS, NBR_CORE.DS.$actdir.DS.$file)
+				'page' => (!empty($templates['paths']['page']))? str_replace(DS.DS,DS,$templates['paths']['page'].DS.$actdir.DS.$file) : false
 			]));
 			
 			foreach($actions as $actObj) {
 				if(empty($actObj))
 					continue;
-			
-				if(is_file($actObj))
-					$actionStore	=	$this->normalizeWorkflowArray(array_merge($actionStore['object'],$this->toArray(simplexml_load_file($actObj))));
+				
+				if(!is_file($actObj))
+					continue;
+				
+				$actionStore	=	$this->normalizeWorkflowArray(array_merge($actionStore['object'],$this->toArray(simplexml_load_file($actObj))));
 				
 				if(!empty($actionStore['object'])){
+		
 					foreach($actionStore['object'] as $acevent => $actobj) {
 						if(strpos($acevent, ',') !== false) {
 							$events_exp	=	array_filter(array_map('trim',explode(',',$acevent)));
-							if(!in_array($this->getRequest($this->actionName), $events_exp)) {
+							
+							if(!in_array($this->getPost($this->actionName), $events_exp) && !in_array($this->getGet($this->actionName), $events_exp)) {
 								unset($actionStore['object'][$acevent]);
 							}
 						}
 						else {
-							if($acevent != $this->getRequest($this->actionName)) {
+							if(($acevent != $this->getGet($this->actionName)) && ($acevent != $this->getPost($this->actionName))) {
 								unset($actionStore['object'][$acevent]);
 							}
 						}
 					}
 				}
+				# Merge from different spots
+				if(!empty($actionStore['object']))
+					$actionSets['object']	=	array_merge($actionSets['object'], $actionStore['object']);
 			}
 		}
+		
+		# If actions, reassign to base
+		if(!empty($actionSets['object']))
+			$actionStore['object']	=	$actionSets['object'];
+		
 		$blocks	=	array_filter(array_unique($blocks));
 		foreach($blocks as $config) {
 			if(empty($config))

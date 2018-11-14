@@ -163,7 +163,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 		$this->login($this->getPost('username', false), $this->getPost('password', false));
 
 		if($this->isLoggedIn()){
-			$Token->set('login');
+			$Token->set('login', true);
 			$this->Router->redirect($this->getPage('full_path'));
 		}
 	}
