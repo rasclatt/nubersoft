@@ -67,7 +67,12 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 		
 		$templates	=	array_filter($templates);
 		
-		if(!empty($this->getRequest($this->actionName))) {
+		$allowReq	=	[
+			'get' => $this->getGet($this->actionName),
+			'post' => $this->getPost($this->actionName)
+		];
+		
+		if(!empty($allowReq)) {
 			
 			$actions	=	array_filter(array_unique([
 				'default' => str_replace(DS.DS, DS, NBR_CORE.DS.$actdir.DS.$file),
@@ -87,6 +92,7 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 				
 				if(!empty($actionStore['object'])){
 		
+					
 					foreach($actionStore['object'] as $acevent => $actobj) {
 						if(strpos($acevent, ',') !== false) {
 							$events_exp	=	array_filter(array_map('trim',explode(',',$acevent)));
@@ -95,8 +101,8 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 								unset($actionStore['object'][$acevent]);
 							}
 						}
-						else {
-							if(($acevent != $this->getGet($this->actionName)) && ($acevent != $this->getPost($this->actionName))) {
+						else {	
+							if(!in_array($acevent, $allowReq)) {
 								unset($actionStore['object'][$acevent]);
 							}
 						}
@@ -107,7 +113,6 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 					$actionSets['object']	=	array_merge($actionSets['object'], $actionStore['object']);
 			}
 		}
-		
 		# If actions, reassign to base
 		if(!empty($actionSets['object']))
 			$actionStore['object']	=	$actionSets['object'];
