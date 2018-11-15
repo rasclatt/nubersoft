@@ -36,7 +36,7 @@
 		</class>
 	</object>
 	
-	<object event="edit_user_details,edit_component,update_page,create_new_page,update_admin_url" after="nbr_set_headers" request="post" is_admin="true">
+	<object event="edit_user_details,edit_component,update_page,create_new_page,update_admin_url,edit_table_rows_details" after="nbr_set_headers" request="post" is_admin="true">
 		<class>
 			<name>\Nubersoft\System\Observer\Tables</name>
 			<method>listen</method>

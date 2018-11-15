@@ -2,7 +2,8 @@
 if(!$this->isAdmin())
 	return false;
 $table	=	$this->getRequest('table');
-$layout	=	$this->getPlugin('admintools', DS.$table.DS.'index.php');
+$use	=	($this->getGet('subaction') == 'interface')? "admintools" : "table_view";
+$layout	=	$this->getPlugin($use, ($this->getGet('subaction') == 'interface')? DS.$table.DS.'index.php' : '');
 
 if($layout):
 	echo $layout;

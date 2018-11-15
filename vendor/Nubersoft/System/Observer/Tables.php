@@ -38,6 +38,9 @@ class Tables extends \Nubersoft\System\Observer
 			unset($POST['token']);
 		#
 		switch($action) {
+			case('edit_table_rows_details'):
+				$this->editTable($POST, $this->getRequest('table'), $token, $Token);
+				return $this;
 			case('edit_user_details'):
 				$this->updateUserData($POST, $token, $Token, $this->getRequest('table'), $this->getRequest('ID'));
 				return $this;
@@ -170,23 +173,8 @@ class Tables extends \Nubersoft\System\Observer
 			$this->toError((!empty($err))? $err : "Nothing saved.");
 			return false;
 		}
-		
-		$FILES	=	$this->getDataNode('_FILES');
-		
-		if(!empty($FILES[0])) {
-			if($FILES[0]['error'] == 0) {
-				$this->removeCurrentFilePath($ID);
-				$POST['file_name']	=	$FILES[0]['name'];
-				$POST['file_path']	=	pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
-				$POST['file_size']	=	$FILES[0]['size'];
-				if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_ROOT_DIR.DS.$POST['file_path'].DS.$POST['file_name']))) {
-					unset($POST['file_name'], $POST['file_path'], $POST['file_size']);
-					$this->toError('File failed to upload. Check permissions.');
-				}
-			}
-			else
-				$this->toError('File failed to upload. Check permissions.');
-		}
+		# Process file and the fields associated with the file
+		$this->setFileData($POST, $ID);
 		
 		foreach($POST as $keys => $values) {
 			$bind[]	=	$values;
@@ -444,5 +432,85 @@ class Tables extends \Nubersoft\System\Observer
 				$this->Router->redirect($newPage['full_path']);
 			}
 		}
+	}
+	
+	public	function editTable($POST, $table, $token, $Token, $msg = 'Row saved')
+	{
+		if($table == 'users') {
+			$this->updateUserData($POST, $token, $Token, $table, $this->getRequest('ID'));
+			return false;
+		}
+		
+		if(empty($token) || !$Token->match('page', $token)) {
+			$this->toError('Invalid request.');
+			return false;
+		}
+		
+		if(!empty($POST['ID']) && is_numeric($POST['ID'])) {
+			if(!empty($POST['delete'])) {
+				$this->deleteFrom($table, $POST['ID']);
+				$this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row deleted");
+			}
+			else
+				$this->updateData($POST, $table, $msg);
+		}
+		else {
+			if(empty($POST['ID'])) {
+				$POST['timestamp']	=	date('Y-m-d H:i:s');
+				$POST['unique_id']	=	$this->fetchUniqueId();
+				$POST	=	$this->getRowsInTable($table, $POST);
+				$this->setFileData($POST);
+				$sql	=	"INSERT INTO `".$table."` (`".implode('`, `', array_keys($POST))."`) VALUES(".implode(',',array_fill(0, count($POST), '?')).")";
+				@$this->nQuery()->query($sql, array_values($POST));
+				$this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row added");
+			}
+			else {
+				$this->toError("Invalid request.");
+			}
+		}
+	}
+	
+	public function	getRowsInTable($table, $array = false)
+	{
+		$columns	=	array_map(function($v){
+			return $v['Field'];
+		}, $this->getHelper('nQuery')->query("describe ".$table)->getResults());
+		
+		if(is_bool($array))
+			return $columns;
+		
+		foreach($array as $key => $value){
+			if(!in_array($key, $columns)){
+				unset($array[$key]);
+			}
+		}
+		
+		return $array;
+	}
+	
+	protected	function setFileData(&$POST, $ID = false)
+	{
+		$FILES	=	$this->getDataNode('_FILES');
+		
+		if(!empty($FILES[0])) {
+			if($FILES[0]['error'] == 0) {
+				if(is_numeric($ID))
+					$this->removeCurrentFilePath($ID);
+				$POST['file_name']	=	$FILES[0]['name'];
+				$POST['file_path']	=	pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
+				$POST['file_size']	=	$FILES[0]['size'];
+				if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_ROOT_DIR.DS.$POST['file_path'].DS.$POST['file_name']))) {
+					unset($POST['file_name'], $POST['file_path'], $POST['file_size']);
+					$this->toError('File failed to upload. Check permissions.');
+				}
+			}
+			else
+				$this->toError('File failed to upload. Check permissions.');
+		}
+	}
+	
+	public	function deleteFrom($table, $value, $col = "ID")
+	{
+		@$this->nQuery()->query("DELETE FROM {$table} WHERE {$col} = ?", $value);
 	}
 }
