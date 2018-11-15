@@ -2,11 +2,9 @@
 if(!$this->isAdmin())
 	return false;
 $table	=	$this->getRequest('table');
-$use	=	($this->getGet('subaction') == 'interface')? "admintools" : "table_view";
-$layout	=	$this->getPlugin($use, ($this->getGet('subaction') == 'interface')? DS.$table.DS.'index.php' : '');
-
-if($layout):
-	echo $layout;
+if(!empty($table)):
+	$use	=	($this->getGet('subaction') == 'interface')? "admintools" : "table_view";
+	echo $this->getPlugin($use, ($this->getGet('subaction') == 'interface')? DS.$table.DS.'index.php' : '');
 else: ?>
 
 <h2>Dashboard</h2>

@@ -1,4 +1,8 @@
 <?php
+$table	=	$this->getRequest('table');
+if(empty($table))
+	return false;
+
 $fields	=	$this->query("describe ".$this->getRequest('table'))->getResults();
 
 $this->setNode('table_data', array_combine(
