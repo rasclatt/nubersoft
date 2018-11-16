@@ -62,7 +62,7 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 			'site' => (!empty($templates['paths']['site']))? str_replace(DS.DS,DS,$templates['paths']['site'].DS.$dir.DS.$file) : false,
 			'default' => NBR_SETTINGS.DS.'blockflows'.DS.$file
 		];
-
+		
 		$actionSets['object']	=
 		$actionStore['object']	=
 		$storage['object']	=	[];
@@ -125,7 +125,15 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 				continue;
 			
 			if(is_file($config)) {
-				$storage	=	$this->normalizeWorkflowArray(array_merge($storage['object'], $this->toArray(simplexml_load_file($config))));
+				# Get the config data
+				$bArr	=	$this->normalizeWorkflowArray(array_merge($storage['object'], $this->toArray(simplexml_load_file($config))));
+				# If there is already a stored file
+				if(!empty($storage['object']))
+					# combine with new
+					$storage['object']	=	array_merge($storage['object'], $bArr['object']);
+				else
+					# Assign
+					$storage	=	$bArr;
 			}
 		}
 		
