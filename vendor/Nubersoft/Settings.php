@@ -121,6 +121,9 @@ class Settings extends \Nubersoft\nQuery
 	
 	public	function getSystemOption($name, $substitute = false)
 	{
+		if(!empty($this->getDataNode('settings')['system'][$name]['option_attribute']))
+			return $this->getDataNode('settings')['system'][$name]['option_attribute'];
+		
 		$option	=	$this->getOption($name, 'system');
 		if(empty($option))
 			return $substitute;
