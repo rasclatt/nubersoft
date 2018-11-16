@@ -149,7 +149,7 @@ class Settings extends \Nubersoft\nQuery
 			$where[]	=	"{$key} {$op} ?";
 		}
 		
-		return $this->query($sql.implode($glue, $where), array_values($args))->getResults();
+		return $this->query($sql.implode(' '.$glue.PHP_EOL, $where), array_values($args))->getResults();
 	}
 	/**
 	 *	@description	Clears all the ref_page fields to remove all components from a page.
