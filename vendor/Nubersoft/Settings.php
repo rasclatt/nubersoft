@@ -139,6 +139,19 @@ class Settings extends \Nubersoft\nQuery
 		return $this->query("SELECT * FROM components WHERE {$where} = ?{$sql}",[$ID])->getResults(1);
 	}
 	/**
+	 *	@description	Retrieves a component by multiple arguments
+	 */
+	public	function getComponentBy($args, $op = "=", $glue = "AND")
+	{
+		$sql	=	"SELECT * FROM components WHERE ";
+		
+		foreach($args as $key => $value) {
+			$where[]	=	"{$key} {$op} ?";
+		}
+		
+		return $this->query($sql.implode($glue, $where), array_values($args))->getResults();
+	}
+	/**
 	 *	@description	Clears all the ref_page fields to remove all components from a page.
 	 *					Doesn't delete them, however
 	 *	@param $page_ID [int]	The column ID
