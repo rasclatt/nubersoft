@@ -32,7 +32,7 @@ class	Emailer extends \Nubersoft\nApp
 		$content	=	@$this->nQuery()->query("select `content` from `emailer` where `email_id` = ?",[$name])->getResults();
 
 		if(isset($content[0]['content']))
-			$html	=	$this->safe()->decode($content[0]['content']);
+			$html	=	$this->dec($content[0]['content']);
 		elseif(is_file($layout = NBR_CORE.DS.'settings'.DS.'default'.DS.'messaging'.DS.'email'.DS.$name.'.txt'))
 			$html	=	file_get_contents($layout);
 
