@@ -58,6 +58,13 @@ $Markup	=	$this->getHelper('nMarkUp');
 		color: #FFF;
 		border: none;
 	}
+	#update-log {
+		background-color: #C2C8CD;
+		max-height: 500px;
+		margin-top: 2em;
+		padding: 1em;
+		overflow: auto;
+	}
 </style>
 </head>
 <body>

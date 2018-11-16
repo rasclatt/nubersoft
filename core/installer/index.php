@@ -1,10 +1,11 @@
 <?php
 namespace Nubersoft;
+# Quick
+$DS	=	DIRECTORY_SEPARATOR;
 # Add our application config
-require(realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR.'config.php');
+require(realpath(__DIR__.$DS.'..'.$DS.'..').$DS.'config.php');
 # Create instance of the main class
 $Application	=	nApp::call();
-
 try {
 	# Start buffering
 	ob_start();
