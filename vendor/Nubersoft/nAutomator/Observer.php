@@ -18,13 +18,15 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 	
 	public	function setFlow($value, $type = 'work')
 	{
-		$method	=	ucfirst($type);
-		
+		$method			=	ucfirst($type);
 		$this->config	=	$this->{"getClient{$method}flow"}($value);
-		
 		if(empty($this->config)) {
 			$this->config	=	$this->{"getSystem{$method}flow"}($value);
 		}
+		else {
+			$this->config	=	array_merge($this->{"getSystem{$method}flow"}($value), $this->config);
+		}
+		
 		return $this;
 	}
 	
