@@ -309,6 +309,16 @@ class nRender extends \Nubersoft\nQuery
 		return false;
 	}
 	
+	public	function getFrontEndFrom($file = 'index.php', $path)
+	{
+		parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file);
+	}
+	
+	public	function getBackEndFrom($file = 'index.php', $path)
+	{
+		parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file);
+	}
+	
 	public	function getFrontEnd($file = 'index.php', $path = false)
 	{
 		return $this->getTemplateFile($file, 'frontend', $path);

@@ -104,22 +104,7 @@ class Controller extends \Nubersoft\Settings\Model
 			}
 			
 			if(!isset($config) && is_file($conf = $dir.DS.'settings'.DS.'config.xml')) {
-				$configs	=	$this->getHelper('ArrayWorks')
-					->arrayWalkRecursive($this->getHelper('Conversion\Data')
-						->xmlToArray($conf), function($v) use ($thisObj) {
-							return $thisObj->useMarkUp($v);
-					});
-				
-				if(isset($configs['stylesheet'])) {
-					if(!isset($configs['stylesheet']['include'][0]))
-						$configs['stylesheet']['include']	=	[$configs['stylesheet']['include']];
-				}
-				if(isset($configs['javascript']['include'])) {
-					if(!isset($configs['javascript']['include'][0]))
-						$configs['javascript']['include']	=	[$configs['javascript']['include']];
-				}
-				
-				$config	=	$DataNode->addNode('templates', $configs, 'config');
+				$configs	=	$this->setTemplateConfig($conf, $DataNode);
 			}
 			
 			if(!empty($configs))
@@ -134,6 +119,29 @@ class Controller extends \Nubersoft\Settings\Model
 		
 		if(empty($error))
 			$DataNode->addNode('templates', '', 'errors');
+	}
+	
+	public	function setTemplateConfig($template, \Nubersoft\DataNode $DataNode)
+	{
+		$thisObj	=	$this;
+		$configs	=	$this->getHelper('ArrayWorks')
+			->arrayWalkRecursive($this->getHelper('Conversion\Data')
+				->xmlToArray($template), function($v) use ($thisObj) {
+					return $thisObj->useMarkUp($v);
+			});
+
+		if(isset($configs['stylesheet'])) {
+			if(!isset($configs['stylesheet']['include'][0]))
+				$configs['stylesheet']['include']	=	[$configs['stylesheet']['include']];
+		}
+		if(isset($configs['javascript']['include'])) {
+			if(!isset($configs['javascript']['include'][0]))
+				$configs['javascript']['include']	=	[$configs['javascript']['include']];
+		}
+
+		$DataNode->addNode('templates', $configs, 'config');
+		
+		return $configs;
 	}
 	
 	public	function getFormAttr($table)
