@@ -32,7 +32,7 @@ trait enMasse
 		$class	=	$this->getHelper('Settings\Page\Controller');
 		try {
 			if(method_exists($class, $method))
-				return (new \Nubersoft\nDynamics)->__call($method, ...$args);
+				return (new $class)->$method(...$args);
 			else
 				return $class->{$method}(...$args);
 		}
