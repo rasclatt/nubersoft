@@ -150,4 +150,9 @@ class nApp extends \Nubersoft\nFunctions
 	{
 		$this->getHelper('DataNode')->addNode($key, $value);
 	}
+	
+	public	function getFiles()
+	{
+		return $this->getDataNode('_FILES');
+	}
 }
