@@ -115,7 +115,9 @@ class nQuery extends \Nubersoft\nApp
 	
 	public	function where($where, $bind = false)
 	{
-		$this->bind		=	[];
+		if(empty($this->bind))
+			$this->bind		=	[];
+		
 		$this->sql[]	=	'WHERE';
 		if(!is_array($where)) {
 			$this->sql[]	=	$where;
