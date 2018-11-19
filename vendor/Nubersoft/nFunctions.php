@@ -114,6 +114,8 @@ class nFunctions
 	{
 		$args		=	func_get_args();
 		$include	=	(!empty($args[0]))? $args[0] : false;
+		$useData	=	(!empty($args[1]))? $args[1] : false;
+		
 		if(isset($args[0]))
 			unset($args[0]);
 		
@@ -121,8 +123,13 @@ class nFunctions
 		
 		if(!is_file($include))
 			return null;
-
+		
+		ob_start();
 		include($include);
+		$data	=	ob_get_contents();
+		ob_end_clean();
+		
+		return $data;
 	}
 	
 	public	function toError($msg, $code = false, $log = true)
