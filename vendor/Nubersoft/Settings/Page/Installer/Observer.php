@@ -145,6 +145,6 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 	protected	function setLayout($action, $data)
 	{
 		$this->getHelper('DataNode')->addNode('data', ['action' => $action, 'data' => $data]);
-		$this->render(NBR_CORE.DS.'installer'.DS.'html'.DS.'index.php');
+		return $this->render(NBR_CORE.DS.'installer'.DS.'html'.DS.'index.php');
 	}
 }
