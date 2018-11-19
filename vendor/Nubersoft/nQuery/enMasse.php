@@ -3,7 +3,7 @@ namespace Nubersoft\nQuery;
 
 trait enMasse
 {
-	protected static	$nQuery;
+	protected static $nQuery;
 	
 	public	function query($sql,$bind = null)
 	{

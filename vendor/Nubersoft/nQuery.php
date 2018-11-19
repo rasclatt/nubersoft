@@ -200,6 +200,14 @@ class nQuery extends \Nubersoft\nApp
 		}, $this->describe($table, $ticks));
 	}
 	
+	public	function delete($table, $ticks = '`')
+	{
+		$this->sql		=	[];
+		$this->sql[]	=	"DELETE FROM {$ticks}{$table}{$ticks}";
+		
+		return $this;
+	}
+	
 	public	function fetch($one = false)
 	{
 		$sql	=	implode(PHP_EOL, $this->sql);
