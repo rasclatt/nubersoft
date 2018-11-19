@@ -87,6 +87,10 @@ class nQuery extends \Nubersoft\nApp
 	public	function write()
 	{
 		$this->stmt	=	implode(PHP_EOL, $this->sql);
+		echo printpre([
+			$this->stmt,
+			$this->bind
+		]);
 		$this->query($this->stmt, $this->bind);
 	}
 	
@@ -117,7 +121,6 @@ class nQuery extends \Nubersoft\nApp
 	{
 		if(empty($this->bind))
 			$this->bind		=	[];
-		
 		$this->sql[]	=	'WHERE';
 		if(!is_array($where)) {
 			$this->sql[]	=	$where;
@@ -172,13 +175,13 @@ class nQuery extends \Nubersoft\nApp
 		return $this;
 	}
 	
-	public	function set($array, $key = "`")
+	public	function set($array, $tick = "`")
 	{
 		$set			=	[];
 		$this->sql[]	=	"SET";
 		foreach($array as $key => $value) {
 			$this->bind[]	=	$value;
-			$set[]	=	"{$key}{$key}{$key} = ?";
+			$set[]	=	"{$tick}{$key}{$tick} = ?";
 		}
 		$this->sql[]	=	implode(', ', $set);
 		return $this;
