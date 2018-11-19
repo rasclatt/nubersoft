@@ -161,6 +161,45 @@ class nQuery extends \Nubersoft\nApp
 		return $this;
 	}
 	
+	public	function update($table)
+	{
+		$this->bind		=
+		$this->sql		=	[];
+		$this->sql[]	=	"UDATE {$table}";
+
+		return $this;
+	}
+	
+	public	function set($array, $key = "`")
+	{
+		$this->sql[]	=	"SET";
+		foreach($array as $key => $value) {
+			$this->bind[]	=	$value;
+			$this->sql[]	=	"set {$key}{$key}{$key} = ?";
+		}
+		
+		return $this;
+	}
+	
+	public	function getTables()
+	{
+		return array_map(function($v){
+			return $v['Tables_in_'.DB_NAME];
+		},$this->query("show tables")->getResults());
+	}
+	
+	public	function describe($table, $tick = '`')
+	{
+		return $this->query("describe {$tick}{$table}{$tick}")->getResults();
+	}
+	
+	public	function getColumnsInTable($table, $ticks = '`')
+	{
+		return array_map(function($v){
+			return $v['Field'];
+		}, $this->describe($table, $ticks));
+	}
+	
 	public	function fetch($one = false)
 	{
 		$sql	=	implode(PHP_EOL, $this->sql);

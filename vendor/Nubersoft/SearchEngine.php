@@ -45,9 +45,7 @@ class SearchEngine extends \Nubersoft\nApp
 	
 	private	function getColumns($table)
 	{
-		array_map(function($v){
-			return $v['Field'];
-		},$this->query("describe ".$table)->getResults());
+		return $this->getColumnsInTable($table);
 	}
 	
 	public	function getDefaultTable()

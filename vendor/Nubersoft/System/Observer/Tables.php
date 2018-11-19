@@ -472,9 +472,7 @@ class Tables extends \Nubersoft\System\Observer
 	
 	public function	getRowsInTable($table, $array = false)
 	{
-		$columns	=	array_map(function($v){
-			return $v['Field'];
-		}, $this->getHelper('nQuery')->query("describe ".$table)->getResults());
+		$columns	=	$this->getColumnsInTable($table);
 		
 		if(is_bool($array))
 			return $columns;

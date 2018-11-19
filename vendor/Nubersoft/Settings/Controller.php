@@ -147,9 +147,7 @@ class Controller extends \Nubersoft\Settings\Model
 	public	function getFormAttr($table)
 	{
 		
-		$cols	=	array_map(function($v){
-			return $v['Field'];
-		}, $this->getHelper('nQuery')->query("describe ".$table)->getResults());
+		$cols	=	$this->getColumnsInTable($table);
 
 		$inputs	=	$this->query("SELECT `column_type`, `column_name` FROM form_builder WHERE `column_name` IN ('".implode("', '", $cols)."') AND page_live = 'on'")->getResults();
 		
