@@ -172,12 +172,13 @@ class nQuery extends \Nubersoft\nApp
 	
 	public	function set($array, $key = "`")
 	{
+		$set			=	[];
 		$this->sql[]	=	"SET";
 		foreach($array as $key => $value) {
 			$this->bind[]	=	$value;
-			$this->sql[]	=	"{$key}{$key}{$key} = ?";
+			$set[]	=	"{$key}{$key}{$key} = ?";
 		}
-		
+		$this->sql[]	=	implode(', ', $set);
 		return $this;
 	}
 	
