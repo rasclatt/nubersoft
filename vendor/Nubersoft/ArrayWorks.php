@@ -310,9 +310,9 @@ class ArrayWorks extends \Nubersoft\nApp
 		return (!empty($new))? $new : array();
 	}
 	
-	public	static	function filterByComparison($arrayKeys,&$array)
+	public	static	function filterByComparison($arrayKeys, &$array)
 	{	
-		$aCols			=	array_diff($arrayKeys,array_diff($arrayKeys,array_keys($array)));
+		$aCols			=	array_diff($arrayKeys, array_diff($arrayKeys, array_keys($array)));
 		$files			=	[];
 		foreach($aCols as $key) {
 			if(isset($array[$key]))

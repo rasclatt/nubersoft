@@ -208,6 +208,11 @@ class nQuery extends \Nubersoft\nApp
 		return $this;
 	}
 	
+	public	function filterArrayByColumns($table, &$array, $ticks = '`')
+	{
+		ArrayWorks::filterByComparison($this->getColumnsInTable($table, $ticks), $array);
+	}
+	
 	public	function fetch($one = false)
 	{
 		$sql	=	implode(PHP_EOL, $this->sql);
