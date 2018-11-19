@@ -138,13 +138,13 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 			]);
 		}
 		
-		$this->setLayout('update_software', false);
+		echo $this->setLayout('update_software', false);
+		exit;
 	}
 	
 	protected	function setLayout($action, $data)
 	{
 		$this->getHelper('DataNode')->addNode('data', ['action' => $action, 'data' => $data]);
 		$this->render(NBR_CORE.DS.'installer'.DS.'html'.DS.'index.php');
-		exit;
 	}
 }

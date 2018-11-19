@@ -159,7 +159,7 @@ class nAutomator extends \Nubersoft\nApp
 				foreach($array['object'][$key]['include'] as $incl) {
 					$incl	=	$this->useMarkUp($incl);
 					if(is_file($incl))
-						$this->render($incl, new nRender());
+						echo $this->render($incl, new nRender());
 				}
 			}
 		}

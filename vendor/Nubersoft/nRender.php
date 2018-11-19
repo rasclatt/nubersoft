@@ -91,7 +91,7 @@ class nRender extends \Nubersoft\nQuery
 					
 					if(is_file($login = str_replace(DS.DS,DS,$path.DS.$temp.DS.'login.php'))) {
 						# Render layout
-						parent::render($login, $this);
+						echo parent::render($login, $this);
 						exit;
 					}
 				}
@@ -129,13 +129,13 @@ class nRender extends \Nubersoft\nQuery
 				$Cache	=	$this->getHelper('nCache');
 				$Cache->start($destination);
 				if(!$Cache->isCached()) {
-					parent::render($layout, $this);
+					echo parent::render($layout, $this);
 				}
 				echo $Cache->render();
 			}
 			else
 				# Render layout
-				parent::render($layout, $this);
+				echo parent::render($layout, $this);
 		}
 	}
 	
@@ -311,12 +311,12 @@ class nRender extends \Nubersoft\nQuery
 	
 	public	function getFrontEndFrom($file = 'index.php', $path)
 	{
-		parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file);
+		return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file);
 	}
 	
 	public	function getBackEndFrom($file = 'index.php', $path)
 	{
-		parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file);
+		return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file);
 	}
 	
 	public	function getFrontEnd($file = 'index.php', $path = false)
