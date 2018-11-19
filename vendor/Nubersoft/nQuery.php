@@ -165,7 +165,7 @@ class nQuery extends \Nubersoft\nApp
 	{
 		$this->bind		=
 		$this->sql		=	[];
-		$this->sql[]	=	"UDATE {$table}";
+		$this->sql[]	=	"UPDATE {$table}";
 
 		return $this;
 	}
@@ -175,7 +175,7 @@ class nQuery extends \Nubersoft\nApp
 		$this->sql[]	=	"SET";
 		foreach($array as $key => $value) {
 			$this->bind[]	=	$value;
-			$this->sql[]	=	"set {$key}{$key}{$key} = ?";
+			$this->sql[]	=	"{$key}{$key}{$key} = ?";
 		}
 		
 		return $this;
