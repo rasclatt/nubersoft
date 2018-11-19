@@ -7,12 +7,12 @@ trait enMasse
 	
 	public	function query($sql,$bind = null)
 	{
-		return $this->getDbModel()->query($sql,$bind);
+		return $this->nQuery()->query($sql,$bind);
 	}
 	
 	public	function getColumnsInTable($table,$ticks = '`')
 	{
-		return $this->getDbModel()->{__FUNCTION__}($table, $ticks);
+		return $this->nQuery()->{__FUNCTION__}($table, $ticks);
 	}
 	
 	public	function nQuery()
