@@ -87,10 +87,7 @@ class nQuery extends \Nubersoft\nApp
 	public	function write()
 	{
 		$this->stmt	=	implode(PHP_EOL, $this->sql);
-		echo printpre([
-			$this->stmt,
-			$this->bind
-		]);
+		
 		$this->query($this->stmt, $this->bind);
 	}
 	
