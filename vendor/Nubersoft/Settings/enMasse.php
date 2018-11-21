@@ -53,4 +53,9 @@ trait enMasse
 	{
 		return $this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
 	}
+	
+	public	function addComponent()
+	{
+		return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+	}
 }
