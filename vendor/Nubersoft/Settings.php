@@ -136,7 +136,7 @@ class Settings extends \Nubersoft\nQuery
 		$params	=	func_get_args();
 		
 		if(is_array($params[0])) {
-			$args	=	$params;
+			$args	=	$params[0];
 		}
 		else {
 			$args	=	[
