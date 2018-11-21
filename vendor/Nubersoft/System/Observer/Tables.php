@@ -509,6 +509,6 @@ class Tables extends \Nubersoft\System\Observer
 	
 	public	function deleteFrom($table, $value, $col = "ID")
 	{
-		@$this->nQuery()->query("DELETE FROM {$table} WHERE {$col} = ?", $value);
+		@$this->nQuery()->query("DELETE FROM {$table} WHERE {$col} = ?", [$value]);
 	}
 }

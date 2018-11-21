@@ -100,17 +100,19 @@ class Observer extends Controller implements \Nubersoft\nObserver
 		if(empty($FILES))
 			return $this;
 		
+		
 		$this->isDir(NBR_CLIENT_DIR.DS.'media'.DS.'images', true);
 		
 		$files	=	[];
 		$Conversion	=	$this->getHelper('Conversion\Data');
+		
 		foreach($FILES as $keyname => $rows) {
 			foreach($rows as $key => $value) {
 
 				foreach($value as $i => $val) {
 					# Stop if there is nothing uploaded
 					if($key == 'name' && empty($val)) {
-						return false;
+						continue;
 					}
 					$files[$i][$key]	=	$val;
 					if($key == 'size') {

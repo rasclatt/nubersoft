@@ -23,7 +23,7 @@ class nFileHandler extends \Nubersoft\nApp
 			$this->addTarget($path);
 		
 		foreach($this->target as $target) {
-			
+			$this->recurseDelete($target);
 		}
 	}
 	/**
@@ -31,10 +31,17 @@ class nFileHandler extends \Nubersoft\nApp
 	 */
 	public	function recurseDelete($path)
 	{
-		$recurse	=	new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::KEY_AS_FILENAME | RecursiveDirectoryIterator::SKIP_DOTS));
+		if(!is_dir($path) && !is_file($path))
+			return false;
+		
+		$isDir		=	is_dir($path);
+		$recurse	=	new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::KEY_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
 		
 		foreach($recurse as $filepath => $it) {
-			unlink($filepath);
+			
+			if(is_file($filepath))
+				unlink($filepath);
+			
 			$dir	=	pathinfo($filepath, PATHINFO_DIRNAME);
 			if(is_dir($dir)) {
 				if(count(scandir($dir)) == 2) {
@@ -42,5 +49,8 @@ class nFileHandler extends \Nubersoft\nApp
 				}
 			}
 		}
+		
+		if($isDir)
+			$this->isDir($path, 1);
 	}
 }
