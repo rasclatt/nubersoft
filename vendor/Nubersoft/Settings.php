@@ -130,6 +130,22 @@ class Settings extends \Nubersoft\nQuery
 		
 		return $option[$name]['option_attribute'];
 	}
+
+	public	function addComponent($value, $category_id = 'client')
+	{
+		$args	=	[
+			'unique_id' => $this->fetchUniqueId(),
+			'category_id'=> $category_id,
+			'content' => (is_object($value) || is_array($value))? json_encode($value) : $value,
+			'page_live' => 'on'
+		];
+		
+		$this->insert("components")
+			->columns(array_keys($args))
+			->values([array_values($args)])
+			->write();
+	}
+	
 	/**
 	 *	@description	Retrieves a component
 	 */
