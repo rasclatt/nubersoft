@@ -24,14 +24,13 @@ trait enMasse
 	{
 		return $this->deleteOption($name, 'system');
 	}
-	
 	/**
 	 *	@description	
 	 */
 	public	function getOption($name, $substitute = false, $option_group_name = 'client')
 	{
 		$option	=	$this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
-		return (!empty($option))? $option : $substitute;
+		return (!empty($option[$name]['option_attribute']))? $option[$name]['option_attribute'] : $substitute;
 	}
 	
 	public	function setOption($name, $value, $option_group_name = 'client')
