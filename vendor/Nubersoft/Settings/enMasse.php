@@ -67,4 +67,19 @@ trait enMasse
 	{
 		return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
 	}
+	
+	public	function deleteComponent()
+	{
+		return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+	}
+	
+	public	function deleteComponentBy()
+	{
+		return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+	}
+	
+	public	function componentExists()
+	{
+		return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+	}
 }

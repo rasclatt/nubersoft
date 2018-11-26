@@ -156,7 +156,6 @@ class Settings extends \Nubersoft\nQuery
 			->values([array_values($args)])
 			->write();
 	}
-	
 	/**
 	 *	@description	Retrieves a component
 	 */
@@ -168,15 +167,48 @@ class Settings extends \Nubersoft\nQuery
 	/**
 	 *	@description	Retrieves a component by multiple arguments
 	 */
-	public	function getComponentBy($args, $op = "=", $glue = "AND")
+	public	function getComponentBy($args, $op = "=", $glue = "AND", $select = '*')
 	{
-		$sql	=	"SELECT * FROM components WHERE ";
+		$sql	=	"SELECT ".((is_array($select))? implode(', ', $select) : $select)." FROM components WHERE ";
 		
 		foreach($args as $key => $value) {
 			$where[]	=	"{$key} {$op} ?";
 		}
 		
 		return $this->query($sql.implode(' '.$glue.PHP_EOL, $where), array_values($args))->getResults();
+	}
+	/**
+	 *	@description	Retrieves a component
+	 */
+	public	function deleteComponent($ID, $where = 'ID')
+	{
+		return $this->query("DELETE FROM components WHERE {$where} = ?",[$ID])->getResults(1);
+	}
+	/**
+	 *	@description	Retrieves a component by multiple arguments
+	 */
+	public	function deleteComponentBy($args, $op = "=", $glue = "AND")
+	{
+		$sql	=	"DELETE FROM components WHERE ";
+		
+		foreach($args as $key => $value) {
+			$where[]	=	"{$key} {$op} ?";
+		}
+		
+		return $this->query($sql.implode(' '.$glue.PHP_EOL, $where), array_values($args));
+	}
+	/**
+	 *	@description	
+	 */
+	public	function componentExists()
+	{
+		$params	=	func_get_args();
+		$args	=	(!empty($params[0]))? $params[0] : [];
+		$op		=	(!empty($params[1]))? $params[1] : "=";
+		$glue	=	(!empty($params[2]))? $params[2] : "AND";
+		$select =	'COUNT(*) as count';
+		
+		($this->getComponentBy($args, $op, $glue, $select)[0]['count'] == 1);
 	}
 	/**
 	 *	@description	Clears all the ref_page fields to remove all components from a page.
