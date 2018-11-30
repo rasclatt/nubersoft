@@ -93,6 +93,7 @@ class nQuery extends \Nubersoft\nApp
 	
 	public	function select($columns = '*')
 	{
+		$this->bind		=
 		$this->sql		=	[];
 		$this->sql[]	=	"SELECT";
 		
