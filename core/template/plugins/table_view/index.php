@@ -132,7 +132,9 @@ elseif(is_numeric($this->getRequest('edit'))):
 	</script>
 <?php else: ?>
 <?php
-$cols	=	array_map(function($v){ return \Nubersoft\nApp::call()->getHelper('nRender')->colToTitle($v['Field']); }, @$this->nQuery()->query("describe ".$this->getRequest('table'))->getResults());
+$cols	=	array_map(function($v){
+	return \Nubersoft\nApp::call()->getHelper('nRender')->colToTitle($v['Field']);
+}, @$this->nQuery()->describe($this->getRequest('table')));
 
 ?>
 	<div style="overflow: auto;">

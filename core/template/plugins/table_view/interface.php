@@ -3,14 +3,9 @@ $table	=	$this->getRequest('table');
 if(empty($table))
 	return false;
 
-$fields	=	$this->query("describe ".$this->getRequest('table'))->getResults();
+$fields	=	$this->getColumnsInTable($this->getRequest('table'));
 
-$this->setNode('table_data', array_combine(
-	array_filter(
-		array_map(function($v){
-			return $v['Field'];
-		},$fields)
-	), array_fill(0,count($fields),''))
+$this->setNode('table_data', array_combine($fields, array_fill(0,count($fields),''))
 );
 ?>
 <div class="col-count-6 gapped lrg-5 med-3 sml-1">
