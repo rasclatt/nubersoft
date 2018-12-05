@@ -16,6 +16,24 @@ class nForm extends \Nubersoft\nApp
 
 		return parent::__construct();
 	}
+	
+	public	function createForm($array, $openAttr = false){
+		
+		echo $this->open($openAttr);
+		foreach($array as $attr) {
+			if(!isset($attr['html'])) {
+				$type	=	(!empty($attr['type']))? $attr['type'] : 'text';
+				if(isset($attr['type']))
+					unset($attr['type']);
+
+				echo $this->{$type}($attr);
+			}
+			else {
+				echo $attr['html'];
+			}
+		}
+		echo $this->close();
+	}
 
 	public	function labelPos($val = true)
 	{
