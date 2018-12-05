@@ -19,14 +19,7 @@ class Plugin extends nRender
 		ob_start();
 		try {
 			# Get the path for the plugin
-			$plugin	=	$this->pluginExists($name, $file);
-			if(!empty($plugin)) {
-				# If path exists
-				if($path)
-					echo $plugin;
-				else
-					include($plugin);
-			}
+			$this->renderer($this->pluginExists($name, $file));
 		}
 		catch(HttpException $e) {
 			$data	=	$e->getMessage();
@@ -38,6 +31,19 @@ class Plugin extends nRender
 		ob_end_clean();
 		
 		return $data;
+	}
+	/**
+	 *	@description	Used to wrap the include so that $data does not become a reserved word
+	 */
+	protected	function renderer($plugin)
+	{
+		if(!empty($plugin)) {
+			# If path exists
+			if($path)
+				echo $plugin;
+			else
+				include($plugin);
+		}
 	}
 	
 	public	function pluginExists($name, $file = false)
