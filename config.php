@@ -8,7 +8,7 @@ if(is_file($client_defines = NBR_CLIENT_DIR.DS.'defines.php')) {
 	include_once($client_defines);
 }
 # Include composer if set
-if(is_file($vendor = NBR_ROOT_DIR.DS.'vendor'.DS.'autoloader.php')) {
+if(is_file($vendor = NBR_ROOT_DIR.DS.'vendor'.DS.'autoload.php')) {
 	include_once($vendor);
 }
 # Create localized autoloader
