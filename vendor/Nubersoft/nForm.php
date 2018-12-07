@@ -26,7 +26,7 @@ class nForm extends \Nubersoft\nApp
 				if(isset($attr['type']))
 					unset($attr['type']);
 
-				echo $this->{$type}($attr);
+				echo $this->{$type}($attr).PHP_EOL;
 			}
 			else {
 				echo $attr['html'];
