@@ -169,11 +169,15 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 
 			if(!empty($a['@attributes']['after']) || !empty($b['@attributes']['after'])) {
 				
-				if(!empty($a['@attributes']['after']))
+				if(!empty($a['@attributes']['after']) && is_array($b['name']))
 					return	(in_array($a['@attributes']['after'], $b['name']))? 1 : -1;
+				elseif(!empty($a['@attributes']['after']) && is_string($b['name']))
+					return	($a['@attributes']['after'] == $b['name'])? 1 : -1;
 
-				if(!empty($b['@attributes']['after']))
+				if(!empty($b['@attributes']['after']) && is_array($a['name']))
 					return	(in_array($b['@attributes']['after'], $a['name']))? 1 : -1;
+				elseif(!empty($b['@attributes']['after']) && is_string($a['name']))
+					return	($b['@attributes']['after'] == $a['name'])? 1 : -1;
 			}
 			else {
 				if(!empty($a['@attributes']['before']))
