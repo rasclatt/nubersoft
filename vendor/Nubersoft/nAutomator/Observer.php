@@ -118,8 +118,9 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 		# If actions, reassign to base
 		if(!empty($actionSets['object']))
 			$actionStore['object']	=	$actionSets['object'];
+		# Remove empty config paths then reverse to set the priority of the events
+		$blocks	=	array_reverse(array_filter(array_unique($blocks)));
 		
-		$blocks	=	array_filter(array_unique($blocks));
 		foreach($blocks as $config) {
 			if(empty($config))
 				continue;
