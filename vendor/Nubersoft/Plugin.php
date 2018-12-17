@@ -16,10 +16,20 @@ class Plugin extends nRender
 		if(empty($file))
 			$file	=	'index.php';
 		
+		$file	=	$this->pluginExists($name, $file);
+		
 		ob_start();
+		
+		
+		if(($this->getSystemOption('fileid') == 'on')) {
+			$dev	=	($this->getSystemOption('devmode') == 'dev');
+			if(!$this->isAjaxRequest() && $this->getPage('is_admin') != 1 && $dev)
+				echo '<div class="file-id-backtrace">'.$file.'<div>';
+		}
+		
 		try {
 			# Get the path for the plugin
-			$this->renderer($this->pluginExists($name, $file), $path);
+			$this->renderer($file, $path);
 		}
 		catch(HttpException $e) {
 			$data	=	$e->getMessage();

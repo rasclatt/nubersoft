@@ -24,6 +24,9 @@ class Controller extends \Nubersoft\nUser
 			$user['usergroup']	=	constant($user['usergroup']);
 		}
 		
-		return ($user['usergroup'] <= NBR_ADMIN);
+		if(!defined('NBR_ADMIN'))
+			return false;
+		else
+			return ($user['usergroup'] <= NBR_ADMIN);
 	}
 }

@@ -41,4 +41,4 @@ class nToken extends nSession
         
         return $match;
     }
-}
+} 
