@@ -8,7 +8,9 @@ $defaultVars	=	extract([
 	'timezone' => [],
 	'htaccess' => [],
 	'two_factor_auth' => [],
-	'webmaster' => []
+	'webmaster' => [],
+	'fileid' => [],
+	'devmode' => []
 ]);
 
 $system_settings	=	$this->getDataNode('settings')['system'];
@@ -139,6 +141,50 @@ $defaults			=	[
 		'class' => 'nbr tabber code required',
 		'other' => ['required="required"'],
 		'style' => 'height: 300px;'
+	],
+	[
+		'label' => 'Show File Inclusions',
+		'name' => 'setting[fileid]',
+		'type' => 'select',
+		'options' => array_map(function($v) use ($fileid) {
+			if(!empty($fileid['option_attribute']) && $fileid['option_attribute'] == $v['value'])
+				$v['selected']	=	true;
+				
+			return $v;
+		}, [
+			[
+				'name' => 'Off',
+				'value' => 'off'
+			],
+			[
+				'name' => 'On',
+				'value' => 'on'
+			]
+		]),
+		'class' => 'nbr required',
+		'other' => ['required="required"']
+	],
+	[
+		'label' => 'Production Mode',
+		'name' => 'setting[devmode]',
+		'type' => 'select',
+		'options' => array_map(function($v) use ($devmode) {
+			if(!empty($devmode['option_attribute']) && $devmode['option_attribute'] == $v['value'])
+				$v['selected']	=	true;
+				
+			return $v;
+		}, [
+			[
+				'name' => 'Production Mode',
+				'value' => 'live'
+			],
+			[
+				'name' => 'Developer Mode',
+				'value' => 'dev'
+			]
+		]),
+		'class' => 'nbr required',
+		'other' => ['required="required"']
 	]
 ];
 ?>
