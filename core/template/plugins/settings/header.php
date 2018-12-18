@@ -1,5 +1,5 @@
 <?php
-$Settings	=	extract($this->getDataNode('settings')['system']);
+$Settings	=	extract(\Nubersoft\ArrayWorks::organizeByKey($this->getDataNode('settings')['system'],'category_id'));
 if(empty($header_html))
 	$header_html	=	[];
 if(empty($header_html_toggle))

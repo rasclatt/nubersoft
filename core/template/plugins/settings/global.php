@@ -13,7 +13,7 @@ $defaultVars	=	extract([
 	'devmode' => []
 ]);
 
-$system_settings	=	$this->getDataNode('settings')['system'];
+$system_settings	=	\Nubersoft\ArrayWorks::organizeByKey($this->getDataNode('settings')['system'],'category_id');
 $Settings			=	extract($system_settings);
 $defaults			=	[
 	[
