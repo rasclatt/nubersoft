@@ -39,9 +39,7 @@ class Settings extends \Nubersoft\nQuery
 			}
 		}
 		
-		$final	=	$this->getHelper('ArrayWorks')->organizeByKey($query, 'category_id');
-		
-		return $final;
+		return (count($query) > 1)? $query : $this->getHelper('ArrayWorks')->organizeByKey($query, 'category_id');
 	}
 	
 	public	function getSettingsByAction($action)
