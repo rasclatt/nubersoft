@@ -30,7 +30,13 @@ trait enMasse
 	public	function getOption($name, $substitute = false, $option_group_name = 'client')
 	{
 		$option	=	$this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
-		return (!empty($option[$name]['option_attribute']))? $option[$name]['option_attribute'] : $substitute;
+		
+		if(empty($option))
+			return $substitute;
+		
+		return (isset($option[$name]))? $option[$name]['option_attribute'] : array_map(function($v){
+			return (isset($v['option_attribute']))? $v['option_attribute'] : false;
+		}, $option);
 	}
 	
 	public	function setOption($name, $value, $option_group_name = 'client')
