@@ -68,6 +68,11 @@ class nApp extends \Nubersoft\nFunctions
 		}
 	}
 	
+	public	function getHelperClass()
+	{
+		return $this->getHelper(...func_get_args(), 1);
+	}
+	
 	public	static function call($class = false, $plugin= false)
 	{
 		return (!empty($class))? (new nApp())->getHelper($class, $plugin) : new nApp();
