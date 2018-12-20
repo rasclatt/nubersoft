@@ -24,7 +24,7 @@ class Plugin extends nRender
 		if(($this->getSystemOption('fileid') == 'on')) {
 			$dev	=	($this->getSystemOption('devmode') == 'dev');
 			if(!$this->isAjaxRequest() && $this->getPage('is_admin') != 1 && $dev)
-				echo '<div class="file-id-backtrace">'.$file.'<div>';
+				echo '<div class="file-id-backtrace">'.$file.'</div>';
 		}
 		
 		try {
