@@ -75,7 +75,7 @@ class Currency extends \Nubersoft\cURL
 
 	public	function getLocaleList($key = 'abbr3')
 	{
-		$path	=	__DIR__.DS.'Currency'.DS.'Core'.DS.'settings'.DS.'locale_list.xml';
+		$path	=	NBR_SETTINGS.DS.'locale'.DS.'locale_list.xml';
 		$reg	=	nApp::call()->toArray(simplexml_load_file($path));
 		return ArrayWorks::organizeByKey($reg['locale'], $key, ['unset' => false]);
 	}
