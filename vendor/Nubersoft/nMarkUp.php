@@ -85,7 +85,7 @@ class nMarkUp extends \Nubersoft\nRender
 							$new[]	=	$instr;
 					}
 					
-					$this->saveSetting('current_matched_plugin_content',$new,true);
+					$this->saveSetting('current_matched_plugin_content', $new, true);
 
 					if(empty($file)) {
 						$file	=	$new[0];
