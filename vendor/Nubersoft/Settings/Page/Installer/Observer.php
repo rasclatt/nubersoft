@@ -13,6 +13,8 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		# Check if database and/or registry file is created
 		$dbcreds	=	NBR_CLIENT_SETTINGS.DS.'dbcreds.php';
 		$registry	=	NBR_CLIENT_SETTINGS.DS.'registry.xml';
+		$hasAdmin	=
+		$hasTables	=	false;
 		
 		if(!is_file($file = NBR_CLIENT_CACHE.DS.'defines.php')) {
 			$this->getHelper("DataNode")->addNode('update_error', 'You need to reset your cache to get get client defines.');
@@ -86,6 +88,12 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 				unset($def['action']);
 				$def	=	array_combine(array_keys($def), array_map(function($v){ return \Nubersoft\nApp::call()->dec($v); },$def));
 				$default['ondefine']	=	$def;
+				# Fetch the setting folder dir
+				$dir	=	pathinfo($registry, PATHINFO_DIRNAME);
+				# Create the settings folder
+				if(!is_dir($dir))
+					mkdir($dir, true, 0755);
+				# Save settings
 				file_put_contents($registry, \Nubersoft\ArrayWorks::toXml($default, 'register'));
 				break;
 			case('save_dbcreds'):

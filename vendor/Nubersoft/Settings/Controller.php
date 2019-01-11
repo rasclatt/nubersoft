@@ -165,7 +165,7 @@ class Controller extends \Nubersoft\Settings\Model
 	
 	public	function createDefines($registry)
 	{
-		$registry	=	$this->toArray(simplexml_load_file($registry));
+		$registry	=	$this->toArray(@simplexml_load_file($registry));
 
 		if(!empty($registry['ondefine'])) {
 			$nMarkup	=	$this->getHelper('nMarkUp');
