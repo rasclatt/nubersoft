@@ -115,4 +115,9 @@ class Plugin extends nRender
 		
 		return self::$plugin_content;
 	}
+	
+	public	function getShortCode()
+	{
+		return $this->getDataNode('current_matched_plugin_content');
+	}
 }

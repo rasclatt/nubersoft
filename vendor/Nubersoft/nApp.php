@@ -151,9 +151,14 @@ class nApp extends \Nubersoft\nFunctions
 		$this->getHelper('Settings\Admin')->{__FUNCTION__}();
 	}
 	
-	public	function saveSetting($key, $value)
+	public	function saveSetting($key, $value, $clear = false)
 	{
-		$this->getHelper('DataNode')->addNode($key, $value);
+		$DataNode	=	$this->getHelper('DataNode');
+		
+		if($clear)
+			$DataNode->removeNode($key);
+		
+		$DataNode->addNode($key, $value);
 	}
 	
 	public	function getFiles()
