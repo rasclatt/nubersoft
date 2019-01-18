@@ -39,5 +39,8 @@
 		<include is_local="true" is_admin="true" is_frontend="true" is_backend="true">
 			<path>~CONSTANT::NBR_DEFAULT_TEMPLATE~/media/js/nConfirm.js</path>
 		</include>	
+		<include is_local="false" is_frontend="true" is_backend="true">
+			<path>//cdn.jsdelivr.net/npm/jquery-validation@1.19.0/dist/jquery.validate.min.js</path>
+		</include>
 	</javascript>
 </config>
