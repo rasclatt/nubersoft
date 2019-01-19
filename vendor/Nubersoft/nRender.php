@@ -333,9 +333,20 @@ class nRender extends \Nubersoft\nQuery
 	{
 		$prefs	=	$this->getHelper('Settings\Controller')->getSettingContent('system');
 		
-		if(!empty($key))
-			return (!empty($prefs[$key]['option_attribute']))? $prefs[$key]['option_attribute'] : false;
-		
+		if(!empty($key)) {
+			if(!is_array($prefs))
+				return false;
+			
+			$val	=	array_values(array_filter(array_map(function($v) use ($key){
+				if($v['category_id'] != $key)
+					return false;
+				else
+					return $v['option_attribute'];
+					
+			}, $prefs)));
+			
+			return (!empty($val[0]))? $val[0] : false;
+		}
 		return $prefs;
 	}
 	
