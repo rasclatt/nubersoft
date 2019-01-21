@@ -62,11 +62,22 @@ class Controller extends \Nubersoft\Settings\Model
 	
 	public	function getFooterPrefs()
 	{
-		if(empty($this->getDataNode('settings')['system']['footer_html_toggle']))
+		$settings	=	$this->getDataNode('settings');
+		$system		=	(!empty($settings['system']))? $settings['system'] : false;
+		
+		if(empty($system))
 			return false;
 		
-		if($this->getDataNode('settings')['system']['footer_html_toggle']['option_attribute'] == 'on')
-			return $this->getDataNode('settings')['system']['footer_html']['option_attribute'];
+		$toggle	=	'off';
+		$attr	=	'';
+		foreach($system as $option) {
+			if($option['category_id'] == 'footer_html')
+				$attr	=	$option['option_attribute'];
+			elseif($option['category_id'] == 'footer_html_toggle')
+				$toggle	=	$option['option_attribute'];
+		}
+		
+		return ($toggle == 'on')? $attr : false;
 	}
 	
 	public	function getHeaderPrefs($key = false)
