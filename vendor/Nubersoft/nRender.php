@@ -39,11 +39,7 @@ class nRender extends \Nubersoft\nQuery
 	
 	public	function getFooter()
 	{
-		$data	=	$this->getHelper('Settings\Controller')->getFooterPrefs('html');
-		
-		if(!empty($data)) {
-			return $this->getHelper('nMarkUp')->useMarkUp($this->dec($data)).PHP_EOL;
-		}
+		return $this->getHelper('Settings\Controller')->getFooterPrefs();
 	}
 	
 	public	function render()
