@@ -5,6 +5,7 @@
     "keywords": ["Nubersoft","PHP","framework","cms"],
     "homepage": "https://github.com/rasclatt/nubersoft",
     "license": "MIT",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Ryan Rayner",
