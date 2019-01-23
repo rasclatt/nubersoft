@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Class Library For the SoundConcepts API",
     "keywords": ["Nubersoft","PHP","framework","cms"],
-    "homepage": "https://github.com/rasclatt/nUberSoft-Framework",
+    "homepage": "https://github.com/rasclatt/nubersoft",
     "license": "MIT",
     "authors": [
         {
