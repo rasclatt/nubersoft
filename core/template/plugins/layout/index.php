@@ -1,1 +1,0 @@
-<?php echo @$this->Settings_Page_View()->create($this->getPage('unique_id'), 'layout') ?>
