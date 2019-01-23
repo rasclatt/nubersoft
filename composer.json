@@ -1,7 +1,7 @@
 {
     "name": "rasclatt/nubersoft",
     "type": "library",
-    "description": "Class Library For the SoundConcepts API",
+    "description": "Mini framework and class library for PHP.",
     "keywords": ["Nubersoft","PHP","framework","cms"],
     "homepage": "https://github.com/rasclatt/nubersoft",
     "license": "MIT",
