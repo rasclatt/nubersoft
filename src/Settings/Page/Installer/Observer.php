@@ -90,11 +90,17 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 				$default['ondefine']	=	$def;
 				# Fetch the setting folder dir
 				$dir	=	pathinfo($registry, PATHINFO_DIRNAME);
+				$errmsg	=	"Check permissions on the client folder. If no folder exists, create one and make sure it has proper permissions.";
 				# Create the settings folder
-				if(!is_dir($dir))
-					mkdir($dir, true, 0755);
+				if(!is_dir($dir)) {
+					if(!mkdir($dir, true, 0755)) {
+						echo "An error occurred creating the client folder. ".$errmsg;
+					}
+				}
 				# Save settings
-				file_put_contents($registry, \Nubersoft\ArrayWorks::toXml($default, 'register'));
+				if(!file_put_contents($registry, \Nubersoft\ArrayWorks::toXml($default, 'register'))) {
+						echo "An error occurred creating registration file. ".$errmsg;
+				}
 				break;
 			case('save_dbcreds'):
 				$POST	=	$this->getPost();
