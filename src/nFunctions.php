@@ -87,7 +87,7 @@ class nFunctions
 	public	function autoload($func, $path = false)
 	{
 		if(empty($path))
-			$path	=	NBR_FUNCTIONS;
+			$path	=	__DIR__.DS.'functions';
 			
 		$func	=	(!is_array($func))? [$func] : $func;
 		
