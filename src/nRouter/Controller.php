@@ -35,11 +35,25 @@ class Controller extends \Nubersoft\nRouter
 			return (strtolower($this->getServer('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest');
 	}
 	
-	public	function ajaxResponse($item)
+	public	function ajaxResponse($item, $modal = false)
 	{
-		if(is_array($item) || is_object($item))
-			die(json_encode($item));
-		else
-			die($item);
+		if($modal) {
+			if(!empty($item['html'][0])) {
+				$item['html'][0]	=	\Nubersoft\nApp::createContainer(function(\Nubersoft\Plugin $Plugin) use ($item) {
+					return $Plugin->setPluginContent('modal', [
+						'html' => $item['html'][0],
+						'title' => (!empty($item['title']))? $item['title'] : ""
+					])->getPlugin('modal_window');
+				});
+				
+				die(json_encode($item));
+			}
+		}
+		else {
+			if(is_array($item) || is_object($item))
+				die(json_encode($item));
+			else
+				die($item);
+		}
 	}
 }

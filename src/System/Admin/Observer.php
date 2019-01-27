@@ -12,8 +12,9 @@ class Observer extends \Nubersoft\System\Observer
 	 */
 	public	function listen()
 	{
-		$layout		=	$this->getSettingsLayout($this->getPost('deliver')['subaction']);
-		
+		$subaction	=	$this->getPost('deliver')['subaction'];
+		$layout		=	$this->getSettingsLayout($subaction);
+		$modal		=	(!empty($this->getPost('deliver')['modal']));
 		
 		if(empty($layout)) {
 			$this->ajaxResponse([
@@ -24,36 +25,48 @@ class Observer extends \Nubersoft\System\Observer
 			'html' => [
 				$layout
 			],
+			'title' => 'Editing '.ucwords($subaction).' Settings.',
 			'sendto' => [
-				'#admin-content'
+				(!empty($this->getPost('deliver')['sendto']))? $this->getPost('deliver')['sendto'] : '#admin-content'
 			]
 		];
 		
-		$this->ajaxResponse($response);
+		$this->ajaxResponse($response, $modal);
 	}
 	
 	private function getSettingsLayout($type)
 	{
 		return $this->getPlugin('settings', DS.$type.'.php');
 	}
-	
+	/**
+	 *	@description	Saves settings from the admin area(s)
+	 */
 	public	function saveSettings()
 	{
+		# Go throught the post
 		foreach($this->getPost('setting') as $name => $value) {
+			# If the value is an array, save the array to json
 			if(is_array($value))
 				$value	=	json_encode($value);
-			
+			# Create the htaccess by default
 			if($name == 'htaccess') {
 				file_put_contents(NBR_ROOT_DIR.DS.'.htaccess', $this->dec($value));
 			}
-			
+			# Remove the option so it can be resaved
 			$this->deleteSystemOption($name);
+			# Resave
 			$this->setSystemOption($name, $value);
 		}
-		
+		# After saving the prerences, reload them to the data node so they are updated.
+		$this->getHelper('DataNode')->setNode('settings', [
+			'system' => $this->getHelper('Settings\Controller')->getSettings(false, 'system')
+		]);
+		# Create a success message
 		$this->toSuccess("Options Saved.");
 	}
-	
+	/**
+	 *	@description	Saves the site logo from admin settings
+	 */
 	public	function saveSiteLogo()
 	{
 		$FILES	=	(!empty($this->getDataNode('_FILES')[0]['name']))? $this->getDataNode('_FILES')[0] : false;

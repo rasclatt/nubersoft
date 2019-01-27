@@ -8,9 +8,9 @@ trait enMasse
 		return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}();
 	}
 	
-	public	function ajaxResponse($arg)
+	public	function ajaxResponse($arg, $modal = false)
 	{
-		return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}($arg);
+		return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}($arg, $modal);
 	}
 	
 	public	function getPage($arg)
