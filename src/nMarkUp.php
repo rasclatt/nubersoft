@@ -203,4 +203,44 @@ class nMarkUp extends \Nubersoft\nRender
 			return preg_replace_callback('/([a-z0-9]{1,})::([a-z0-9\/\.\_\-\>\[\]\s\:\,]{1,})/i','apply_submarkup',$replaced);
 		}
 	}
+	
+	public	function parseMarkdown($html)
+	{
+		return nl2br(preg_replace_callback('/&quot;[\w\s]+&quot;/', function($v){
+			return '<span class="quote-tag">'.$v[0].'</span>';
+		}, preg_replace_callback('/```[.*]+```[^\r\n]|<span|<\/span>|<div|class="[^"]+"| data-[^=]+="[^"]"| data-[^=]+=\'[^\']+\'|<\/div>|id=|<\?php|\?>|\$[^\s]+->|\$[\w\-\_]+|>|\#[^\r\n]+|[\w\_\(\)]+/', function($v){
+			
+			if(stripos($v[0], "```") !== false) {
+				return preg_replace('/^(```)([.*]+)(```)([^\r\n])$/', '<code class="code-block">$2</code>$4', $v[0]);
+			}
+			elseif(stripos($v[0], "div") !== false || $v[0] == '>')
+				return '<span class="html-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif(stripos($v[0], "span") !== false)
+				return '<span class="html-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif(stripos($v[0], "class") !== false)
+				return '<span class="attr-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif(stripos($v[0], "id") !== false)
+				return '<span class="id-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif(stripos($v[0], "data-") !== false)
+				return '<span class="data-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif(stripos($v[0], "->") !== false || stripos($v[0], "::") !== false)
+				return str_replace('-&gt;', '<span class="objop-tag">-&gt;</span>','<span class="obj-tag">'.htmlspecialchars( $v[0]).'</span>');
+			elseif(stripos($v[0], "<?php") !== false || stripos($v[0], "?>") !== false)
+				return '<span class="lang-tag">'.htmlspecialchars($v[0]).'</span>';
+			elseif($v[0] == '"')
+				return '<span class="quote-tag">'.$v[0].'</span>';
+			elseif(stripos($v[0], "#") !== false)
+				return '<span class="comment-tag">'.$v[0].'</span>';
+			elseif(stripos($v[0], "(") !== false || stripos($v[0], ")") !== false)
+				return '<span class="method-tag">'.$v[0].'</span>';
+			elseif(stripos($v[0], '$') !== false)
+				return '<span class="variable-tag">'.$v[0].'</span>';
+			else {
+				if(stripos($v[0], 'echo') !== false)
+					return '<span class="write-tag">'.$v[0].'</span>';
+				else
+					return $v[0];
+			}
+		}, $html)));
+	}
 }
