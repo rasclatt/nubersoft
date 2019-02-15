@@ -53,4 +53,37 @@ class nFileHandler extends \Nubersoft\nApp
 		if($isDir)
 			$this->isDir($path, 1);
 	}
+	
+	public	function recurseClone($from, $to, $skip = ['composer.json'], $preflight = false)
+	{
+		# Recursively loop extracted zip folder
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($from, \RecursiveDirectoryIterator::KEY_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS)) as $key => $value) {
+			# Get file/folder info so things can be put in their rightful spots
+			$path		=	pathinfo($key);
+			$copy_from	=	$key;
+			# Strip extract path, append to local directory path
+			$copy_to	=	$this->toSingleDs($to.DS.str_replace($from, '', $path['dirname']));
+			# If this folder is not created, do so
+			if(!$preflight)
+				$this->isDir($copy_to, true);
+			# Append the file name
+			$copy_dest	=	str_replace(DS.DS, DS, $copy_to.DS.$path['basename']);
+			# Copy from the extraction to the destination
+			if(empty($skip) || (!empty($skip) && !in_array(basename($copy_from), $skip))) {
+				
+				if($preflight) {
+					$err[]	=	[
+						'from' => $copy_from,
+						'to' => $copy_dest
+					];
+				}
+				else {
+					if(!copy($copy_from, $copy_dest))
+						$err[]	=	$copy_dest;
+				}
+			}
+		}
+		# Return errors
+		return (!empty($err))? $err : false;
+	}
 }

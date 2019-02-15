@@ -143,9 +143,10 @@ class Cart extends nSession
 		elseif(!isset($cart[$sku]))
 			return 0;
 		
-		if(isset($cart[$sku]['qty']) && isset($cart[$sku]['price']))
-		   return $cart[$sku]['price'] * $cart[$sku]['qty'];
-		
+		if(isset($cart[$sku]['qty']) && isset($cart[$sku]['price'])) {
+			if(is_numeric($cart[$sku]['price']) && is_numeric($cart[$sku]['qty']))
+			   return $cart[$sku]['price'] * $cart[$sku]['qty'];
+		}
 		return 0;
 	}
 	

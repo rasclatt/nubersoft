@@ -4,6 +4,7 @@ namespace Nubersoft\nAutomator;
 class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 {
 	use \Nubersoft\nUser\enMasse;
+	use \Nubersoft\Settings\enMasse;
 	
 	protected	$config;
 	protected	$actionName	=	'action';
@@ -48,6 +49,23 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 		return $this;
 	}
 	
+	protected	function getFlowFromDb($kind)
+	{
+		$flow	=	$this->getComponentBy(['component_type' => 'plugin_'.$kind, 'page_live' => 'on'],'=','AND','content');
+		if(!empty($flow)) {
+			$flow	=	trim(implode(array_map(function($v){
+				return \Nubersoft\nApp::call()->dec($v['content']);
+			}, $flow), ''));
+		}
+		
+		return (!empty($flow) && is_string($flow))? $flow : false;
+	}
+	
+	protected	function determineXmlType($xml, $kind)
+	{
+		return ($kind == 'db')? $this->toArray(simplexml_load_string('<?xml version="1.0" encoding="UTF-8"?><config>'.$xml.'</config>')) : $this->toArray(simplexml_load_file($xml));
+	}
+	
 	public	function runBlockflow()
 	{
 		$templates	=	$this->getDataNode('templates');
@@ -60,41 +78,40 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 			'page' => (!empty($templates['paths']['page']) && $pgpath)? str_replace(DS.DS,DS,$templates['paths']['page'].DS.$dir.DS.$file)  : false,
 			'client' => NBR_CLIENT_SETTINGS.DS.'blockflows'.DS.$file,
 			'site' => (!empty($templates['paths']['site']))? str_replace(DS.DS,DS,$templates['paths']['site'].DS.$dir.DS.$file) : false,
-			'default' => NBR_SETTINGS.DS.'blockflows'.DS.$file
+			'default' => NBR_SETTINGS.DS.'blockflows'.DS.$file,
+			'db' => $this->getFlowFromDb('blockflows')
 		];
-		
 		$actionSets['object']	=
 		$actionStore['object']	=
 		$storage['object']	=	[];
-		
 		$templates	=	array_filter($templates);
-		
-		$allowReq	=	[
+		$allowReq	=	array_filter([
 			'get' => $this->getGet($this->actionName),
 			'post' => $this->getPost($this->actionName)
-		];
-		
+		]);
 		if(!empty($allowReq)) {
 			
 			$actions	=	array_filter(array_unique([
 				'default' => str_replace(DS.DS, DS, NBR_CORE.DS.$actdir.DS.$file),
 				'site' => (!empty($templates['paths']['site']))? str_replace(DS.DS,DS,$templates['paths']['site'].DS.'core'.DS.$actdir.DS.$file) : false,
 				'client' => NBR_CLIENT_SETTINGS.DS.'actions'.DS.$file,
-				'page' => (!empty($templates['paths']['page']))? str_replace(DS.DS,DS,$templates['paths']['page'].DS.$actdir.DS.$file) : false
+				'page' => (!empty($templates['paths']['page']))? str_replace(DS.DS,DS,$templates['paths']['page'].DS.$actdir.DS.$file) : false,
+				'db' => $this->getFlowFromDb('action')
 			]));
 			
-			foreach($actions as $actObj) {
+			foreach($actions as $kind => $actObj) {
+				# Stop if nothing set
 				if(empty($actObj))
 					continue;
-				
-				if(!is_file($actObj))
+				# Stop if invalid
+				if($kind != 'db' && !is_file($actObj))
 					continue;
-				
-				$actionStore	=	$this->normalizeWorkflowArray(array_merge($actionStore['object'],$this->toArray(simplexml_load_file($actObj))));
-				
+				# Convert to xml from either from a file or string
+				$arr			=	$this->determineXmlType($actObj, $kind);
+				# Re-jigger the xml array
+				$actionStore	=	$this->normalizeWorkflowArray(array_merge($actionStore['object'],$arr));
+				# If there are objects to processes, do so
 				if(!empty($actionStore['object'])){
-		
-					
 					foreach($actionStore['object'] as $acevent => $actobj) {
 						if(strpos($acevent, ',') !== false) {
 							$events_exp	=	array_filter(array_map('trim',explode(',',$acevent)));
@@ -120,22 +137,25 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
 			$actionStore['object']	=	$actionSets['object'];
 		# Remove empty config paths then reverse to set the priority of the events
 		$blocks	=	array_reverse(array_filter(array_unique($blocks)));
-		
-		foreach($blocks as $config) {
+		# Loop block flows
+		foreach($blocks as $kind => $config) {
+			# Stop if empty (shouldn't be empty at this point)
 			if(empty($config))
 				continue;
-			
-			if(is_file($config)) {
-				# Get the config data
-				$bArr	=	$this->normalizeWorkflowArray(array_merge($storage['object'], $this->toArray(simplexml_load_file($config))));
-				# If there is already a stored file
-				if(!empty($storage['object']))
-					# combine with new
-					$storage['object']	=	array_merge($storage['object'], $bArr['object']);
-				else
-					# Assign
-					$storage	=	$bArr;
-			}
+			# Stop if invalid
+			if($kind != 'db' && !is_file($config))
+				continue;
+			# Convert to xml from either from a file or string
+			$arr	=	$this->determineXmlType($config, $kind);
+			# Get the config data
+			$bArr	=	$this->normalizeWorkflowArray(array_merge($storage['object'], $arr));
+			# If there is already a stored file
+			if(!empty($storage['object']))
+				# combine with new
+				$storage['object']	=	array_merge($storage['object'], $bArr['object']);
+			else
+				# Assign
+				$storage	=	$bArr;
 		}
 		
 		$obj	=	(!empty($actionStore['object']))? array_merge($actionStore['object'], $storage['object']) : $storage['object'];

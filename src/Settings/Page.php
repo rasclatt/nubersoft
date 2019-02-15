@@ -5,6 +5,28 @@ namespace Nubersoft\Settings;
  */
 class Page extends \Nubersoft\Settings\Admin
 {
+	use \Nubersoft\nQuery\enMasse;
+	/**
+	 *	@description	
+	 */
+	public	function createPage($data)
+	{
+		if(empty($data['unique_id']))
+			$data['unique_id']	=	$this->fetchUniqueId();
+		
+		$data['full_path']	=	'/'.trim($data['full_path'],'/').'/';
+		
+		if(empty($data['link']))
+			$data['link']	=	pathinfo($data['full_path'], PATHINFO_BASENAME);
+			
+		$columns	=	array_keys($data);
+		$values		=	array_values($data);
+		
+		$this->insert("main_menus")
+			->columns($columns)
+			->values([$values])
+			->write();
+	}
 	/**
 	 *	@description	
 	 */
