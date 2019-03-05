@@ -133,4 +133,11 @@ class System extends nSession\Controller
 		
 		return $thumb;
 	}
+	
+	public	function createReWrite($content, $path, $ext = '.htaccess')
+	{
+		$file	=	$path.DS.$ext;
+		file_put_contents($file, $content);
+		return is_file($file);
+	}
 }

@@ -92,7 +92,7 @@ class Settings extends \Nubersoft\nQuery
 			$this->setOption($name, $value, $option_group_name);
 		}
 		else {
-			$this->deleteOption($name, $option_group_name)->setOption($name, $value);
+			$this->deleteOption($name, $option_group_name)->setOption($name, $value, $option_group_name);
 		}
 		
 		return $this;

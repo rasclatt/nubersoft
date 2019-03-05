@@ -380,7 +380,7 @@ class ArrayWorks extends \Nubersoft\nApp
 	/**
 	*	@description	Companion method to toXml(). Recursively iterates the array and adds to the xml obj
 	*/
-	protected	static	function &arrayToXml($array, $xml)
+	protected	static	function arrayToXml($array, $xml)
 	{
 		foreach($array as $key => $value) {
 			if(is_numeric($key) || is_bool($key))
