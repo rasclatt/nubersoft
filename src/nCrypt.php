@@ -19,25 +19,25 @@ class nCrypt extends \Nubersoft\nApp
 	/**
 	 *	@description
 	 */
-	public	function encOpenSSL($value, $enctype = false)
+	public	function encOpenSSL($value, $enctype = false, $iv = false, $salt = false)
 	{
 		if(!empty($enctype))
 			$this->enctype	=	$enctype;
-		
-		$salt	=	
-		$iv		=	false;
-		$this->getKeys($iv, $salt);
+
+		if(empty($iv) && empty($salt))
+			$this->getKeys($iv, $salt);
+			
 		return openssl_encrypt(base64_encode($value), $this->enctype, $salt, 0, $iv); //OPENSSL_RAW_DATA
 	}
 
-	public	function decOpenSSL($value, $enctype = false)
+	public	function decOpenSSL($value, $enctype = false, $iv = false, $salt = false)
 	{
 		if(!empty($enctype))
 			$this->enctype	=	$enctype;
 		
-		$salt	=	
-		$iv		=	false;
-		$this->getKeys($iv, $salt);
+		if(empty($iv) && empty($salt))
+			$this->getKeys($iv, $salt);
+			
 		return base64_decode(openssl_decrypt($value, $this->enctype, $salt, 0, $iv)); //OPENSSL_RAW_DATA
 	}
 		
