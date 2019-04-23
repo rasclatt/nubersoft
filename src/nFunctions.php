@@ -165,14 +165,14 @@ class nFunctions
 		
 		return self::$msg;
 	}
-	
+	/**
+	 *	@description	Alias of siteUrl(). This used to contain country abbr but it deemed unecessary.
+	 *	@deprecation	Under review for removal
+	 */
 	public	function localeUrl($path = '/')
 	{
-		$country	=	$this->getHelper('nSession')->get('locale');
-		if(!empty($country))
-			$country	=	'/'.$country;
-		
-		return $this->siteUrl($country.$path);
+		//$this->getHelper('nSession')->get('locale');
+		return $this->siteUrl($path);
 	}
 	
 	public	function siteUrl($path = false)
