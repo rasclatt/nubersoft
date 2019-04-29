@@ -103,6 +103,7 @@ class Widget extends \Nubersoft\Plugin
 	
 	public	function deactivate()
 	{
+		$this->query("DELETE FROM main_menus WHERE parent_id = ?", ['widget_'.$this->getSlug()]);
 		$this->deleteOption('widget_'.$this->getSlug());
 		$this->deleteComponentBy(['category_id' => 'widget_'.$this->getSlug(),'component_type' => 'receipt']);
 	}

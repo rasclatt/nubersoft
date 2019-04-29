@@ -74,8 +74,10 @@ class Observer extends \Nubersoft\System\Observer
 	 */
 	private	function installWidget(\Nubersoft\Widget $Widget, $preflight = false)
 	{
-		$actions		=	str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getActions()->default->asXML(), '<default>'), '</default>'));
-		$blockflows		=	str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getBlockflows()->default->asXML(), '<default>'), '</default>'));
+		$act			=	$Widget->getActions();
+		$blf			=	$Widget->getBlockflows();
+		$actions		=	(!empty($act))? str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($act->default->asXML(), '<default>'), '</default>')) : false;
+		$blockflows		=	(!empty($blf))? str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getBlockflows()->default->asXML(), '<default>'), '</default>')) : false;
 		
 		$path			=	NBR_CLIENT_DIR;
 		$plugin_name	=	$Widget->getSlug();
@@ -111,7 +113,7 @@ class Observer extends \Nubersoft\System\Observer
 			if(!$preflight)
 				$this->createRouters($widget);
 		}
-		if(!empty($widget['vendor'])) {
+		if(!empty($widget['vendor'])) { 
 			if(isset($widget['vendor']['name'])) {
 				if(!is_array($widget['vendor']['name'][0]))
 					$widget['vendor']['name']	=	[$widget['vendor']['name']];
@@ -120,6 +122,10 @@ class Observer extends \Nubersoft\System\Observer
 				$from	=	$base.DS.'vendor';
 				$Files	=	$this->getHelper('nFileHandler');
 				foreach($widget['vendor']['name'] as $vendor) {
+					
+					$this->isDir($to.DS.$vendor, 1);
+					$this->isDir($from.DS.$vendor, 1);
+					
 					$Files->recurseClone($from.DS.$vendor, $to.DS.$vendor, ['composer.json'], $preflight);
 				}
 			}
@@ -164,8 +170,10 @@ class Observer extends \Nubersoft\System\Observer
 	 */
 	private	function deleteWidget(\Nubersoft\Widget $Widget, $preflight = false)
 	{
-		$actions		=	str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getActions()->default->asXML(), '<default>'), '</default>'));
-		$blockflows		=	str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getBlockflows()->default->asXML(), '<default>'), '</default>'));
+		$act			=	$Widget->getActions();
+		$blf			=	$Widget->getBlockflows();
+		$actions		=	(!empty($act))? str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($act->default->asXML(), '<default>'), '</default>')) : false;
+		$blockflows		=	(!empty($blf))? str_replace(["\t",PHP_EOL],["",""],rtrim(ltrim($Widget->getBlockflows()->default->asXML(), '<default>'), '</default>')) : false;
 		
 		$path			=	NBR_CLIENT_DIR;
 		$plugin_name	=	$Widget->getSlug();
