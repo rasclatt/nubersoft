@@ -13,6 +13,15 @@ class Observer extends \Nubersoft\nGlobal implements \Nubersoft\nObserver
 					$_FILES	=	null;
 			}
 			
+			if(!empty($_SESSION))
+				ksort($_SESSION);
+				
+			if(!empty($_POST))
+				ksort($_POST);
+				
+			if(!empty($_SERVER))
+				ksort($_SERVER);
+			
 			foreach([
 				'_ENV' => $_ENV,
 				'_GET' => $_GET,

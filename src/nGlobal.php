@@ -22,8 +22,6 @@ class nGlobal extends \Nubersoft\nApp
 			$value[$key]	=	$this->sanitize($subval);
 		}
 		
-		ksort($value);
-		
 		return $value;
 	}
 }
