@@ -138,6 +138,9 @@ class nApp extends \Nubersoft\nFunctions
 		if($key)
 			return (!empty($SESS[$key]))? $SESS[$key] : false;
 		
+		if(is_array($SESS))
+			ksort($SESS);
+		
 		return $SESS;
 	}
 	
