@@ -44,7 +44,7 @@ class Settings extends \Nubersoft\nQuery
 	
 	public	function getSettingsByAction($action)
 	{
-		$query	=	$this->query("SELECT * FROM `system_settings` WHERE `action` = ? AND `page_live` = 'on'",[$action])->getResults();
+		$query	=	$this->query("SELECT * FROM `system_settings` WHERE `action_slug` = ? AND `page_live` = 'on'",[$action])->getResults();
 		
 		if(empty($query))
 			return $query;
