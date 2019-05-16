@@ -20,11 +20,6 @@ $required	=	(!empty($this->nform_settings['other']) && (stripos($this->nform_set
 				$selected	=	'';
 				if(!empty($row['selected']))
 					$selected	=	' selected';
-				else {
-					if($hasSelect) {
-						$selected	=	($OptValue == $defSelect)? ' selected' : '';
-					}
-				}
 				
 ?>					<option value="<?php echo $OptValue ?>"<?php echo $selected.$isDisabled ?>><?php echo $OptName ?></option>
 <?php		}
