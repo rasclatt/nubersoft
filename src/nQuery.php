@@ -29,9 +29,9 @@ class nQuery extends \Nubersoft\nApp
 		}
 	}
 	
-	public	function query($sql, $bind = false)
+	public	function query($sql, $bind = false, $conn = false)
 	{
-		$con	=	$this->getConnection();
+		$con	=	($conn instanceof \PDO)? $conn : $this->getConnection();
 		
 		if($bind) {
 			$bArr			=	array_values($bind);
