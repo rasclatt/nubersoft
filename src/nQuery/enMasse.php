@@ -5,9 +5,9 @@ trait enMasse
 {
 	protected static $nQuery;
 	
-	public	function query($sql,$bind = null)
+	public	function query($sql, $bind = false, $conn = false)
 	{
-		return $this->nQuery()->query($sql,$bind=null,$conn=null);
+		return $this->nQuery()->query($sql, $bind, $conn);
 	}
 	
 	public	function getColumnsInTable($table,$ticks = '`')
