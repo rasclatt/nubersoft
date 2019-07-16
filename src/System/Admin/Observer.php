@@ -306,7 +306,7 @@ class Observer extends \Nubersoft\System\Observer
 			return false;
 		}
 		
-		$destination	=	NBR_CLIENT_DIR.DS.'media'.DS.'images'.DS.'default'.DS.'company_logo.'.pathinfo($FILES['name'], PATHINFO_EXTENSION);
+		$destination	=	NBR_DOMAIN_CLIENT_DIR.DS.'media'.DS.'images'.DS.'default'.DS.'company_logo.'.pathinfo($FILES['name'], PATHINFO_EXTENSION);
 		
 		$this->isDir(pathinfo($destination, PATHINFO_DIRNAME), true);
 		

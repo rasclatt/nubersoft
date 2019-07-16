@@ -101,7 +101,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
 			return $this;
 		
 		
-		$this->isDir(NBR_CLIENT_DIR.DS.'media'.DS.'images', true);
+		$this->isDir(NBR_DOMAIN_CLIENT_DIR.DS.'media'.DS.'images', true);
 		
 		$files	=	[];
 		$Conversion	=	$this->getHelper('Conversion\Data');

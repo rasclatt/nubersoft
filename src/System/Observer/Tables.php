@@ -497,7 +497,7 @@ class Tables extends \Nubersoft\System\Observer
 				$POST['file_name']	=	$FILES[0]['name'];
 				$POST['file_path']	=	pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
 				$POST['file_size']	=	$FILES[0]['size'];
-				if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_ROOT_DIR.DS.$POST['file_path'].DS.$POST['file_name']))) {
+				if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_DOMAIN_ROOT.DS.$POST['file_path'].DS.$POST['file_name']))) {
 					unset($POST['file_name'], $POST['file_path'], $POST['file_size']);
 					$this->toError('File failed to upload. Check permissions.');
 				}
