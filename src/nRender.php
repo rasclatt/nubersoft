@@ -199,7 +199,7 @@ class nRender extends \Nubersoft\nQuery
 			$page_id		=	(!empty($attr['page_id']) && $attr['page_id'] == $this->getPage('ID'));
 			$page_path		=	(!empty($attr['page_path']) && (strtolower($attr['page_path']) == strtolower($this->getPage('full_path'))));
 			$is_loggedin	=	(!empty($attr['logged_in']) && $attr['logged_in'] == 'true');
-			$path			=	str_replace(str_replace(DS,'/', NBR_ROOT_DIR),'', $include['path']);
+			$path			=	str_replace(str_replace(DS,'/', NBR_DOMAIN_ROOT),'', $include['path']);
 			
 			if(empty($attr))
 				$allow	=	true;
