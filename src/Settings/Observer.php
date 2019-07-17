@@ -71,7 +71,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
 	public	function setReWrite($content = false)
 	{
 		$system	=	(defined('NBR_SERVER_TYPE'))? NBR_SERVER_TYPE : 'linux';
-		$file	=	NBR_ROOT_DIR.DS.(($system == 'linux')? '.htaccess' : 'web.config');
+		$file	=	NBR_DOMAIN_ROOT.DS.(($system == 'linux')? '.htaccess' : 'web.config');
 		
 		if(is_file($file))
 			return false;

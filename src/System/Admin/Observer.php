@@ -273,7 +273,7 @@ class Observer extends \Nubersoft\System\Observer
 				$value	=	json_encode($value);
 			# Create the htaccess by default
 			if($name == 'htaccess') {
-				file_put_contents(NBR_ROOT_DIR.DS.'.htaccess', $this->dec($value));
+				file_put_contents(NBR_DOMAIN_ROOT.DS.'.htaccess', $this->dec($value));
 			}
 			# Remove the option so it can be resaved
 			$this->deleteSystemOption($name);
