@@ -17,7 +17,7 @@ class Html extends nApp
 			$id	=	' id="'.$id.'"';
 		
 		if($local)
-			$src	.=	'?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_CLIENT_DIR.DS.str_replace('/', DS, $src)));
+			$src	.=	'?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_ROOT.DS.str_replace('/', DS, $src)));
 		
 		return '<script type="'.$type.'" src="'.$src.'"'.$id.' '.$attr.'></script>'.PHP_EOL;
 	}
@@ -34,7 +34,7 @@ class Html extends nApp
 			$id	=	' id="'.$id.'"';
 		
 		if($local)
-			$src	.=	'?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_CLIENT_DIR.DS.str_replace('/', DS, $src)));
+			$src	.=	'?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_ROOT.DS.str_replace('/', DS, $src)));
 		
 		return '<link type="'.$type.'" rel="'.$rel.'" href="'.$src.'" />'.PHP_EOL;
 	}
