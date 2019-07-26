@@ -140,7 +140,7 @@ class nRender extends \Nubersoft\nQuery
 					$pagegroup	=	constant($pagegroup);
 				# Check if usergroup good enough
 				if($pagegroup < $usergroup) {
-					$this->setHeaderCode(403, DS.$temp.DS.'errors'.DS.'permission.php', "Permission Denied.");
+					$this->setHeaderCode(403, DS.'errors'.DS.'permission.php', "Permission Denied.");
 				}
 			}
 		}
