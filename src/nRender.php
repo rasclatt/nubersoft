@@ -20,7 +20,9 @@ class nRender extends \Nubersoft\nQuery
 		$this->User		=	$this->getHelper('nUser');
 		return parent::__construct();
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function userGet($key = false)
 	{
 		if(!empty($key))
@@ -28,7 +30,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return $this->sUser;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getHeader()
 	{
 		$data	=	$this->getHelper('Settings\Controller')->getHeaderPrefs('html');
@@ -36,18 +40,46 @@ class nRender extends \Nubersoft\nQuery
 			return $this->getHelper('nMarkUp')->useMarkUp($this->dec($data['value'])).PHP_EOL;
 		}
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getFooter()
 	{
 		return $this->getHelper('nMarkUp')->useMarkUp($this->dec($this->getHelper('Settings\Controller')->getFooterPrefs()));
 	}
-	
+	/**
+	 *	@description	
+	 */
+	protected	function setHeaderCode($code, $path = false, $msg = false)
+	{
+		# Stop if no page is set in permissions
+		http_response_code($code);
+		# If no path or message, don't die
+		if(empty($path)) {
+			if(empty($msg))
+				return false;
+		}
+		if(!empty($path)) {
+			# Loop through templates and render denied page
+			foreach($this->getDataNode('templates')['paths'] as $page_path) {
+				if(is_file($login = str_replace(DS.DS,DS,$page_path.DS.$path))) {
+					# Render layout
+					echo parent::render($login, $this);
+					exit;
+				}
+			}
+		}
+		die($msg);
+	}
+	/**
+	 *	@description	
+	 */
 	public	function render()
 	{
 		$page	=	$this->getPage();
 		$code	=	(!empty($this->getDataNode('header')['header_response_code']))? $this->getDataNode('header')['header_response_code'] : 200;
 		# Set the response code here
-		http_response_code($code);
+		$this->setHeaderCode($code);
 		# If not admin, set to frontend template
 		if(empty($this->getDataNode('routing')) || ($page['page_live'] != 'on' && !$this->isAdmin())) {
 			$code	=	404;
@@ -92,6 +124,25 @@ class nRender extends \Nubersoft\nQuery
 					}
 				}
 			}
+			else {
+				# Fetch the user's permission level
+				$usergroup	=	$this->userGet('usergroup');
+				# Make sure it's numeric
+				if(!is_numeric($usergroup))
+					$usergroup	=	constant($usergroup);
+				# Fetch the page group
+				$pagegroup	=	$page['usergroup'];
+				# If not set, then defu
+				if(empty($pagegroup))
+					$pagegroup	=	NBR_WEB;
+				# Convert to numeric if not already
+				if(!is_numeric($pagegroup))
+					$pagegroup	=	constant($pagegroup);
+				# Check if usergroup good enough
+				if($pagegroup < $usergroup) {
+					$this->setHeaderCode(403, DS.$temp.DS.'errors'.DS.'permission.php', "Permission Denied.");
+				}
+			}
 		}
 		# If the page requires admin access
 		if($page['is_admin'] == 1 && !$this->isAdmin()) {
@@ -116,6 +167,9 @@ class nRender extends \Nubersoft\nQuery
 			if($page['auto_cache'] == 'on' && !$this->isAdmin()) {
 				# See if the user is logged in and set name
 				$usergroup		=	(!empty($this->getSession('user')['usergroup']))? $this->getSession('user')['usergroup'] : 'loggedout';
+				# Convert a string to numeric
+				if(!is_numeric($usergroup))
+					$usergroup	=	constant($usergroup);
 				# See if locale is set
 				$locale			=	(!empty($this->getSession('site')['locale']))? $this->getSession('site')['locale'] : 'USA';
 				# Create the cache destination
@@ -134,7 +188,9 @@ class nRender extends \Nubersoft\nQuery
 				echo parent::render($layout, $this);
 		}
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getContent()
 	{
 		$unique_id	=	(!empty($this->getDataNode('routing')['unique_id']))? $this->getDataNode('routing')['unique_id'] : false;
@@ -147,7 +203,9 @@ class nRender extends \Nubersoft\nQuery
 			['c' => 'page_live', 'v' => 'on']
 		])->fetch();
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getTitle($default = false, $tags = true)
 	{
 		$title	=	(!empty($this->getDataNode('routing')['menu_name']))? $this->getDataNode('routing')['menu_name'] : false;
@@ -160,7 +218,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return (!$tags)? trim(strip_tags($title)) : $title;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getMeta($add = false)
 	{
 		$meta	=	(!empty($this->getDataNode('routing')['page_options']['meta']))? $this->getDataNode('routing')['page_options']['meta'] : $this->getSitePreferences('header_meta');
@@ -176,7 +236,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return $this->dec($meta).PHP_EOL.implode('', $storage);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	protected	function allowedAsset($type, $func)
 	{
 		if(!is_callable($func)) {
@@ -231,7 +293,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return (!empty($storage))? implode('', $storage) : false;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function headerJavaScript()
 	{
 		$html	=	$this->dec($this->getSitePreferences('header_javascript'));
@@ -243,21 +307,27 @@ class nRender extends \Nubersoft\nQuery
 		$html	=	$this->dec($this->getSitePreferences('header_styles'));
 		return	(!empty($html))? '<style>'.PHP_EOL.$html.PHP_EOL.'</style>'.PHP_EOL : false;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function javaScript()
 	{
 		return $this->allowedAsset('javascript', function($Html, $path, $is_local){			
 			return $Html->createScript($path, $is_local);
 		});
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function styleSheets()
 	{
 		return $this->allowedAsset('stylesheet', function($Html, $path, $is_local){			
 			return $Html->createLinkRel($path, $is_local);
 		});
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getMastHead()
 	{
 		$html	=	$this->dec($this->getSitePreferences('header_html'));
@@ -266,7 +336,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return ($this->getSitePreferences('header_html_toggle') == 'on')? $html : '';
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function isFrontEnd()
 	{
 		$route		=	$this->getDataNode('routing');
@@ -276,12 +348,16 @@ class nRender extends \Nubersoft\nQuery
 		
 		return ($page_type !== 1);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function isBackEnd()
 	{
 		return (empty($this->isFrontEnd()));
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getPage($key = false)
 	{
 		$data	=	$this->getDataNode('routing');
@@ -294,7 +370,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return $data;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getTemplateFile($file = 'index.php', $type = 'frontend', $path = false)
 	{
 		foreach($this->getDataNode('templates')['paths'] as $dir) {
@@ -304,27 +382,37 @@ class nRender extends \Nubersoft\nQuery
 		
 		return false;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getFrontEndFrom($file = 'index.php', $path)
 	{
 		return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getBackEndFrom($file = 'index.php', $path)
 	{
 		return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getFrontEnd($file = 'index.php', $path = false)
 	{
 		return $this->getTemplateFile($file, 'frontend', $path);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getBackEnd($file = 'index.php', $path = false)
 	{
 		return $this->getTemplateFile($file, 'backend', $path);
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function getSitePreferences($key = false)
 	{
 		$prefs	=	$this->getHelper('Settings\Controller')->getSettingContent('system');
@@ -345,12 +433,16 @@ class nRender extends \Nubersoft\nQuery
 		}
 		return $prefs;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function signUpAllowed()
 	{
 		return ($this->getSitePreferences('sign_up') == 'on');
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function user($key = false)
 	{
 		$SESSION	=	$this->getDataNode('_SESSION');
@@ -365,7 +457,9 @@ class nRender extends \Nubersoft\nQuery
 		
 		return $user;
 	}
-	
+	/**
+	 *	@description	
+	 */
 	public	function useAuth2()
 	{
 		$auth2		=	false;
