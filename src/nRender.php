@@ -261,6 +261,9 @@ class nRender extends \Nubersoft\nQuery
 			$page_id		=	(!empty($attr['page_id']) && $attr['page_id'] == $this->getPage('ID'));
 			$page_path		=	(!empty($attr['page_path']) && (strtolower($attr['page_path']) == strtolower($this->getPage('full_path'))));
 			$is_loggedin	=	(!empty($attr['logged_in']) && $attr['logged_in'] == 'true');
+			$get_key		=	(!empty($attr['get_key']) && !empty($this->getGet($attr['get_key'])));
+			$post_key		=	(!empty($attr['post_key']) && !empty($this->getPost($attr['post_key'])));
+			
 			$path			=	str_replace(str_replace(DS,'/', NBR_DOMAIN_ROOT),'', $include['path']);
 			
 			if(empty($attr))
@@ -285,6 +288,22 @@ class nRender extends \Nubersoft\nQuery
 				if($is_admin){
 					# ONLY MODE – No back end, no front end, only editor view
 					$allow	=	((empty($is_frontend) && empty($is_backend)) && !$this->isAdmin())? false : true;
+				}
+				
+				if($get_key) {
+					if(isset($attr['get_value'])) {
+						$allow	=	($attr['get_value'] == $this->getGet($attr['get_key']));
+					}
+					else
+						$allow	=	true;
+				}
+				
+				if($post_key) {
+					if(isset($attr['post_value'])) {
+						$allow	=	($attr['post_value'] == $this->getPost($attr['post_key']));
+					}
+					else
+						$allow	=	true;
 				}
 			}
 			if($allow)
