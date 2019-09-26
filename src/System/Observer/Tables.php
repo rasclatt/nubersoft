@@ -324,7 +324,7 @@ class Tables extends \Nubersoft\System\Observer
 		$duplicate['unique_id']	=	$this->fetchUniqueId();
 
 		if(!empty($duplicate['file_path'])) {
-			$from	=	NBR_ROOT_DIR.$duplicate['file_path'].$duplicate['file_name'];
+			$from	=	NBR_DOMAIN_ROOT.$duplicate['file_path'].$duplicate['file_name'];
 			$finfo	=	pathinfo($from);
 			$fname	=	$finfo['filename'].date('YmdHis').'.'.$finfo['extension'];
 			$to		=	$finfo['dirname'].DS.$fname;
@@ -333,7 +333,7 @@ class Tables extends \Nubersoft\System\Observer
 				$duplicate['file_name']	=	'';
 			}
 			else {
-				$duplicate['file_path']	=	str_replace(NBR_ROOT_DIR, '', $finfo['dirname'].DS);
+				$duplicate['file_path']	=	str_replace(NBR_DOMAIN_ROOT, '', $finfo['dirname'].DS);
 				$duplicate['file_name']	=	$fname;
 			}
 		}
@@ -388,9 +388,9 @@ class Tables extends \Nubersoft\System\Observer
 						$newFnm	=	trim(preg_replace('/[^A-Z0-9\-\_]/i','',pathinfo($POST['file_name'], PATHINFO_FILENAME)));
 
 						if(!empty($newFnm)) {
-							$old	=	NBR_ROOT_DIR.$POST['file_path'].$fname;
-							$new	=	NBR_ROOT_DIR.$POST['file_path'].$newFnm.'.'.$ext;
-							$thumb	=	NBR_ROOT_DIR.$POST['file_path'].'thumbs'.DS.$fname.'.'.$ext;
+							$old	=	NBR_DOMAIN_ROOT.$POST['file_path'].$fname;
+							$new	=	NBR_DOMAIN_ROOT.$POST['file_path'].$newFnm.'.'.$ext;
+							$thumb	=	NBR_DOMAIN_ROOT.$POST['file_path'].'thumbs'.DS.$fname.'.'.$ext;
 
 							if(is_file($thumb))
 								unlink($thumb);
