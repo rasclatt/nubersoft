@@ -27,16 +27,22 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
 				# Notify the user (request dependent)
 				if(!$this->isAjaxRequest())
 					$this->redirect($this->localeUrl($this->getPage('full_path')));
-				else
+				else {
+					# Fetch the uri of the current page
+					$current	=	$this->getHelper('nCookie')->get('nbr_current_page');
+					# Redirect path
+					$path		=	(!empty($current['request']))? $current['request'] : '/';
+					# Respond
 					$this->ajaxResponse([
 						'alert' => 'Your session has expired.',
 						'html' => [
-							'<script>window.location = "'.$this->getPage('full_path').'?action=logout";</script>'
+							'<script>window.location = "'.$path.'?action=logout";</script>'
 						],
 						'sendto' => [
 							'#loadspot-modal'
 						]
 					]);
+				}
 			}
 		}
 	}

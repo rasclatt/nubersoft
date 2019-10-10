@@ -151,11 +151,15 @@ class nRender extends \Nubersoft\nQuery
 		}
 		# Stop processing if ajax.
 		if($this->isAjaxRequest()) {
+			# Fetch the uri of the current page
+			$current	=	$this->getHelper('nCookie')->get('nbr_current_page');
+			# Redirect path
+			$path		=	(!empty($current['request']))? $current['request'] : '/';
 			# If nothing has happened by now, it's not going to
 			$this->ajaxResponse([
 				"alert" => "No actions to take, you may have been logged out.",
 				"html" => [
-					"<script>window.location='/';</script>"
+					"<script>window.location='".$path."';</script>"
 				],
 				"sendto" => [
 					"body"
