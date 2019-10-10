@@ -261,8 +261,8 @@ class nRender extends \Nubersoft\nQuery
 			$page_id		=	(!empty($attr['page_id']) && $attr['page_id'] == $this->getPage('ID'));
 			$page_path		=	(!empty($attr['page_path']) && (strtolower($attr['page_path']) == strtolower($this->getPage('full_path'))));
 			$is_loggedin	=	(!empty($attr['logged_in']) && $attr['logged_in'] == 'true');
-			$get_key		=	(!empty($attr['get_key']) && isset($this->getDataNode('__GET')[$attr['get_key']]));
-			$post_key		=	(!empty($attr['post_key']) && isset($this->getDataNode('__POST')[$attr['post_key']]));
+			$get_key		=	(!empty($attr['get_key']) && isset($this->getDataNode('_GET')[$attr['get_key']]));
+			$post_key		=	(!empty($attr['post_key']) && isset($this->getDataNode('_POST')[$attr['post_key']]));
 			
 			$path			=	str_replace(str_replace(DS,'/', NBR_DOMAIN_ROOT),'', $include['path']);
 			
