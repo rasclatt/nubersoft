@@ -10,8 +10,11 @@ class Controller extends \Nubersoft\Settings\Model
 		return $this->getSettingContent('system', 'htaccess');
 	}
 	
-	public	function getTimezone()
+	public	function getTimezone($db = false)
 	{
+		if($db)
+			return $this->getOption('timezone', 'system');
+			
 		$timezone	=	(defined('SYSTEM_TIMEZONE'))? SYSTEM_TIMEZONE : 'America/Los_Angeles';
 		return $this->getSettingContent('system', 'timezone', $timezone);
 	}

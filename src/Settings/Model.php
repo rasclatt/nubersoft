@@ -24,6 +24,10 @@ class Model extends \Nubersoft\Settings
 	{
 		# Get data node
 		$data		=	$this->getDataNode();
+		
+		if(!empty($data['settings'][$type]))
+			$data['settings'][$type]	=	\Nubersoft\ArrayWorks::organizeByKey($data['settings'][$type], 'category_id', ['unset' => false]);
+		
 		# Fetch main
 		$core		=	(!empty($data['settings'][$type]))? $data['settings'][$type] : $default;
 		# Send back empty
