@@ -168,4 +168,14 @@ class nApp extends \Nubersoft\nFunctions
 	{
 		return $this->getDataNode('_FILES');
 	}
+	
+	public	function reportErrors($rep = true)
+	{	
+		ini_set('display_errors', $rep);
+	
+		if($rep)
+			error_reporting(E_ALL);
+		
+		return $this;
+	}
 }
