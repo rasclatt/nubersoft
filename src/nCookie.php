@@ -20,7 +20,7 @@ class nCookie extends nSession
 	/**
 	 *	@description	
 	 */
-	public	function get($key, $real = true)
+	public	function get($key)
 	{
 		if(!$real) {
 			$SESS			=	$this->getDataNode('_COOKIE');
