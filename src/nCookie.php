@@ -5,6 +5,7 @@ namespace Nubersoft;
  */
 class nCookie extends nSession
 {
+	protected	$real = true;
 	/**
 	 *	@description	
 	 */
@@ -20,13 +21,21 @@ class nCookie extends nSession
 	/**
 	 *	@description	
 	 */
-	public	function get($key)
+	public	function get($key = false)
 	{
-		if(!$real) {
+		if(empty($this->real)) {
 			$SESS			=	$this->getDataNode('_COOKIE');
 			return (isset($SESS[$key]))? $this->decoder($SESS[$key]) : false;
 		}
 		return (isset($_COOKIE[$key]))? $this->decoder($_COOKIE[$key]) : false;
+	}
+	/**
+	 *	@description	
+	 */
+	public	function pullFromNode()
+	{
+		$this->real	=	false;
+		return $this;
 	}
 	/**
 	 *	@description	
