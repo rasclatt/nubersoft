@@ -108,12 +108,26 @@ class Plugin extends nRender
 		return $this;
 	}
 	
-	public	function getPluginContent($name = false)
+	public	function getPluginContent($name = false, $clear = true)
 	{
-		if($name)
-			return (!empty(self::$plugin_content[$name]))? self::$plugin_content[$name] : false;
+		if($name) {
+			$data = (!empty(self::$plugin_content[$name]))? self::$plugin_content[$name] : false;
+			if(!empty($data)) {
+				if($clear)
+					unset(self::$plugin_content[$name]);
+				
+				return $data;
+			}
+
+			return false;
+		}
 		
-		return self::$plugin_content;
+		$data	=	self::$plugin_content;
+		
+		if($clear)
+			self::$plugin_content	=	null;
+		
+		return $data;
 	}
 	
 	public	function getShortCode($decode = false)
