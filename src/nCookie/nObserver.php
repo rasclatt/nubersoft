@@ -30,9 +30,11 @@ class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
 			$domain		=	(isset($args[0][2]))? $args[0][2] : $domain;
 			
 		}
-		else
+		else {
 			$duration	=	$args[0];
+		}
 		
+		# Set default incase referrer is not set
 		$referrer	=	(!empty($_SERVER['HTTP_REFERER']))? $_SERVER['HTTP_REFERER'] : $this->siteUrl();
 		
 		$this->set('nbr_current_page', [
