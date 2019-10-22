@@ -33,7 +33,14 @@ class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
 		else
 			$duration	=	$args[0];
 		
-		$this->set('nbr_current_page', ['self' => $_SERVER['PHP_SELF'], 'request' => $_SERVER['REQUEST_URI'], 'referrer' => $_SERVER['HTTP_REFERER']], $duration, $path, $domain);
+		$referrer	=	(!empty($_SERVER['HTTP_REFERER']))? $_SERVER['HTTP_REFERER'] : $this->siteUrl();
+		
+		$this->set('nbr_current_page', [
+			'self' => $_SERVER['PHP_SELF'],
+			'request' => $_SERVER['REQUEST_URI'],
+			'referrer' => $referrer
+		], $duration, $path, $domain);
+		
 		return $this;
 	}
 }
