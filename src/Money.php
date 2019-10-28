@@ -5,6 +5,8 @@ namespace Nubersoft;
  */
 class Money extends \Nubersoft\nApp
 {
+	protected static $data;
+	
 	public	static	function toDollar($value, $lang_CO = 'en_US')
 	{
 		setlocale(LC_MONETARY, $lang_CO.'.UTF-8');
@@ -13,33 +15,59 @@ class Money extends \Nubersoft\nApp
 	/**
 	 *	@description	
 	 */
-	public	static	function getLocaleAbbr($abbr, $lang = 'en')
+	public	static	function getLocaleAbbr($abbr, $lang = false)
 	{
-		$data	=	self::getLocaleList();
-		$key	=	implode('_', array_filter([$lang,$abbr]));
-		return (isset($data[$key]))? $key : 'en_US';
+		$key	=	(!empty($lang))? implode('_', array_filter([$lang, $abbr])) : self::getLocaleList($abbr);
+		
+		if(!is_string($key)) {
+			if(count($key) > 1) {
+				$msg	=	'Warning: this locale has multiple languages.';
+				
+				if(isset($key['en_'.$abbr])) {
+					$key	=	'en_'.$abbr;
+					$msg	.=	"{$key} being used.";
+				}
+				else
+					$key	=	key($key);
+				
+				trigger_error($msg);
+			}
+			else
+				$key	=	key($key);
+		}
+		
+		return $key;
 	}
 	/**
 	 *	@description	
 	 */
-	public	static	function getLocaleList($country = false)
+	public	static	function getLocaleList($cou = false, $country = false)
 	{
-		$data	=	json_decode(file_get_contents(NBR_SETTINGS.DS.'locale'.DS.'locales.json'), 1);
-		
-		if($country) {
+		if(empty(self::$data))
+			self::$data	=	json_decode(file_get_contents(NBR_SETTINGS.DS.'locale'.DS.'locales.json'), 1);
+
+		if($country || $cou) {
 			$new	=	[];
-			foreach($data as $locale => $name) {
-				if(stripos($name, $country) !== false)
-					$new[$locale]	=	$name;
+			foreach(self::$data as $locale => $name) {
+				if($cou) {
+					foreach(self::$data as $key => $value) {
+						if(strpos($key, $cou) !== false)
+							$new[$key]	=	$cou;
+					}	
+				}
+				else {
+					if(stripos($name, $country) !== false)
+						$new[$locale]	=	$name;
+				}
 			}
 			return $new;
 		}
-		return $data;
+		return self::$data;
 	}
 	/**
 	 *	@description	
 	 */
-	public	static	function toCurrency($value, $country = 'US', $lang = 'en')
+	public	static	function toCurrency($value, $country = 'US', $lang = false)
 	{
 		return self::toDollar($value, self::getLocaleAbbr($country, $lang));
 	}
