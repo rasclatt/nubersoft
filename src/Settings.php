@@ -173,7 +173,7 @@ class Settings extends \Nubersoft\nQuery
 			$where[]	=	"{$key} {$op} ?";
 		}
 		
-		$sql	.=	$sql.implode(' '.$glue.PHP_EOL, $where);
+		$sql	.=	implode(' '.$glue.PHP_EOL, $where);
 		
 		if(!empty($orderby))
 			$sql	.=	' ORDER BY '.$orderby;
