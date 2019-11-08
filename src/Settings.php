@@ -165,13 +165,16 @@ class Settings extends \Nubersoft\nQuery
 	/**
 	 *	@description	Retrieves a component by multiple arguments
 	 */
-	public	function getComponentBy($args, $op = "=", $glue = "AND", $select = '*')
+	public	function getComponentBy($args, $op = "=", $glue = "AND", $select = '*', $orderby = false)
 	{
 		$sql	=	"SELECT ".((is_array($select))? implode(', ', $select) : $select)." FROM components WHERE ";
 		
 		foreach($args as $key => $value) {
 			$where[]	=	"{$key} {$op} ?";
 		}
+		
+		if(!empty($orderby))
+			$sql	.=	' ORDER BY '.$orderby;
 		
 		return $this->query($sql.implode(' '.$glue.PHP_EOL, $where), array_values($args))->getResults();
 	}
