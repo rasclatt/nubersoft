@@ -15,10 +15,7 @@ class Observer extends \Nubersoft\nGlobal implements \Nubersoft\nObserver
 			
 			if(!empty($_SESSION))
 				ksort($_SESSION);
-				
-			if(!empty($_POST))
-				ksort($_POST);
-				
+			
 			if(!empty($_SERVER))
 				ksort($_SERVER);
 			
