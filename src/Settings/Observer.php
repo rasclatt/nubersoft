@@ -9,10 +9,17 @@ class Observer extends Controller implements \Nubersoft\nObserver
 		$DataNode	=	$this->getHelper('DataNode');
 		$Token		=	$this->getHelper('nToken');
 		$SERVER		=	$this->getServer();
-		$scrurl		=	(isset($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : parse_url($SERVER['REQUEST_URI'])['path'];
+		
+		if(!isset($SERVER['SCRIPT_URL']) && !isset($SERVER['REQUEST_URI']))
+			$scrurl	=	'/';
+		else {
+			$scrurl		=	(isset($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : parse_url($SERVER['REQUEST_URI'])['path'];
+		}
+		
 		$path		=	(strpos(strtolower($scrurl), '.') !== false)? str_replace('//', '/', '/'.implode('/',array_filter(array_map(function($v){
 			return (strpos(strtolower($v), '.') !== false)? false : $v;
 		},explode('/',$scrurl)))).'/') : $scrurl;
+		
 		$query		=	(empty($path) || $path == '/')? $Router->getPage('2', 'is_admin') : $Router->getPage($path);
 		$settings	=	$this->getSettings(false, 'system');
 		$DataNode->setNode('cache_folder', (!defined('CLIENT_CACHE'))? NBR_CLIENT_CACHE : CLIENT_CACHE);
