@@ -22,6 +22,20 @@ class Controller extends \Nubersoft\nRouter
 	
 	public	function redirect($location)
 	{
+		$arr	=	parse_url($location);
+				
+		if(!empty($arr['query'])) {
+			parse_str($arr['query'], $arr['query']);
+			if(isset($arr['query']['msg'])) {
+				$arr['query']['msg']	=	urlencode($this->getHelper('nCrypt')->encOpenSSL($arr['query']['msg']));
+
+				$arr['query']	=	'?'.http_build_query($arr['query']);
+				$arr['scheme']	.=	':';
+		
+				$location	=	implode('',$arr);
+			}
+		}
+		
 		$this->setHeader('Location: '.$location, true);
 	}
 	
