@@ -41,7 +41,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 				}
 				
 				if(!empty($dec['table'])) {
-					$image	= $this->query("SELECT CONCAT('".NBR_ROOT_DIR."', `file_path`, `file_name`) as `file` FROM {$dec['table']} WHERE ID = ?", [$dec['ID']])->getResults(1);
+					$image	= $this->query("SELECT CONCAT('".NBR_DOMAIN_ROOT."', `file_path`, `file_name`) as `file` FROM {$dec['table']} WHERE ID = ?", [$dec['ID']])->getResults(1);
 					$msg	=	'No image found.';
 					if(empty($image['file'])) {
 						$this->toError($msg);
@@ -84,7 +84,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 				}
 					
 				if(!empty($dec['table'])) {
-					$image	= $this->query("SELECT CONCAT('".NBR_ROOT_DIR."', `file_path`, `file_name`) as `file` FROM {$dec['table']} WHERE ID = ?", [$dec['ID']])->getResults(1);
+					$image	= $this->query("SELECT CONCAT('".NBR_DOMAIN_ROOT."', `file_path`, `file_name`) as `file` FROM {$dec['table']} WHERE ID = ?", [$dec['ID']])->getResults(1);
 					
 					$this->deleteFile($image['file'], $dec['ID'], $dec['table']);
 				}
