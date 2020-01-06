@@ -5,12 +5,28 @@ class Settings extends \Nubersoft\nQuery
 {
 	use nRouter\enMasse;
 	
+	protected	$def_component	=	'components';
+	protected	$def_system		=	'system_settings';
+	
+	/**
+	 *	@description	
+	 */
+	public	function setDefaultTable($table, $replace = 'components')
+	{
+		if($replace == 'components')
+			$this->def_component	=	$table;
+		else
+			$this->def_system	=	$table;
+		
+		return $this;
+	}
+	
 	public	function getSettings($name = false, $option_group_name = 'client')
 	{
 		if(empty($option_group_name))
 			$option_group_name	=	'client';
 		
-		$sql	=	'SELECT * FROM `system_settings`';
+		$sql	=	'SELECT * FROM `'.$this->def_system.'`';
 		
 		if($name)
 			$bind[]	=	$name;
@@ -44,7 +60,7 @@ class Settings extends \Nubersoft\nQuery
 	
 	public	function getSettingsByAction($action)
 	{
-		$query	=	$this->query("SELECT * FROM `system_settings` WHERE `action_slug` = ? AND `page_live` = 'on'",[$action])->getResults();
+		$query	=	$this->query("SELECT * FROM `{$this->def_system}` WHERE `action_slug` = ? AND `page_live` = 'on'",[$action])->getResults();
 		
 		if(empty($query))
 			return $query;
@@ -71,7 +87,7 @@ class Settings extends \Nubersoft\nQuery
 		if(is_array($value) || is_object($value))
 			$value	=	json_encode($value);
 		
-		$this->insert('system_settings')
+		$this->insert($this->def_system)
 			->columns([
 				'category_id',
 				'option_attribute',
@@ -100,14 +116,14 @@ class Settings extends \Nubersoft\nQuery
 	
 	public	function deleteOption($name, $option_group_name = 'client')
 	{
-		$this->query("DELETE FROM `system_settings` WHERE `category_id` = ? AND `option_group_name` = ?", [$name, $option_group_name]);
+		$this->query("DELETE FROM `{$this->def_system}` WHERE `category_id` = ? AND `option_group_name` = ?", [$name, $option_group_name]);
 
 		return $this;
 	}
 	
 	public	function optionExists($name, $option_group_name = 'client')
 	{
-		$count	=	$this->query("SELECT COUNT(*) as count FROM `system_settings` WHERE `category_id` = ? AND `option_group_name` = ?",[$name, $option_group_name])->getResults(1);
+		$count	=	$this->query("SELECT COUNT(*) as count FROM `{$this->def_system}` WHERE `category_id` = ? AND `option_group_name` = ?",[$name, $option_group_name])->getResults(1);
 		
 		return	($count['count'] > 0)? $count['count'] : false;
 	}
