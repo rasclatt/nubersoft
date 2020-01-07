@@ -6,12 +6,26 @@ class	nCache extends \Nubersoft\nApp
 	protected	$destination,
 				$has_layout,
 				$layout;
+	private		$refresh	=	false;
+	
+	public	function delete()
+	{
+		$this->refresh	=	true;
+		return $this;
+	}
 	
 	public	function start($path_to_file)
 	{
 		$this->destination	=	$path_to_file;
 		$this->has_layout	=	false;
-		if(is_file($this->destination)) {
+		$exists				=	is_file($this->destination);
+		
+		if($this->refresh && $exists) {
+			unlink($this->destination);
+			$exists	=	is_file($this->destination);
+		}
+		
+		if($exists) {
 			$this->has_layout	=	true;
 		}
 		
