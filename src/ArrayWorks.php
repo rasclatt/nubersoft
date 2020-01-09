@@ -285,8 +285,9 @@ class ArrayWorks extends \Nubersoft\nApp
 	*							"multi" - forces the organized arrays into numbered arrays. Without multi, if there are more than one
 	*									  arrays with the same key/value, it may mix up data
 	*/
-	public	static	function organizeByKey($array, $key = false, $opts = array('unset'=>true,'multi'=>false))
+	public	static	function organizeByKey($array, $key = false, $opts = false, $func = false)
 	{
+		$opts	=	(empty($opts))? ['unset' => true, 'multi' => false] : $opts;
 		$unset	=	(!isset($opts['unset']) || !empty($opts['unset']));
 		$multi	=	(!empty($opts['multi']));
 
@@ -301,9 +302,9 @@ class ArrayWorks extends \Nubersoft\nApp
 					unset($value[$key]);
 
 				if($multi)
-					$new[$newKey][]	=	$value;
+					$new[$newKey][]	=	(is_callable($func))? $func($value) : $value;
 				else
-					$new[$newKey]	=	$value;
+					$new[$newKey]	=	(is_callable($func))? $func($value) : $value;
 			}
 		}
 
