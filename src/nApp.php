@@ -91,7 +91,7 @@ class nApp extends \Nubersoft\nFunctions
 			return $data;
 		}
 		else
-			$Reflect->reflectFunction($func);
+			return $Reflect->reflectFunction($func);
 	}
 	
 	public	function getReflector()
