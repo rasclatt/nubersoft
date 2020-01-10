@@ -78,10 +78,20 @@ class nApp extends \Nubersoft\nFunctions
 		return (!empty($class))? (new nApp())->getHelper($class, $plugin) : new nApp();
 	}
 	
-	public	static	function createContainer($func)
+	public	static	function createContainer($func, $cache=false)
 	{
 		$Reflect	=	(new nApp())->getReflector();
-		return $Reflect->reflectFunction($func);
+		
+		if($cache) {
+			ob_start();
+			$Reflect->reflectFunction($func);
+			$data	=	ob_get_contents();
+			ob_end_clean();
+			
+			return $data;
+		}
+		else
+			$Reflect->reflectFunction($func);
 	}
 	
 	public	function getReflector()
