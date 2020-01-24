@@ -131,4 +131,12 @@ class nFtp extends \Nubersoft\nFunctions
 
 		return $this->listed;
 	}
+	/**
+	 *	@description	
+	 */
+	public	function setPassiveMode($passive = true)
+	{
+		ftp_pasv($this->con, $passive);
+		return $this;
+	}
 }
