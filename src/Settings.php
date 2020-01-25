@@ -76,7 +76,7 @@ class Settings extends \Nubersoft\nQuery
 	
 	public	function setOption($name, $value, $option_group_name = 'client')
 	{
-		if(is_array($name)) {
+		if(!is_string($name) && is_array($name)) {
 			foreach($name as $i => $key) {
 				$this->setOption($key, $value[$i], $option_group_name);
 			}
@@ -84,7 +84,7 @@ class Settings extends \Nubersoft\nQuery
 			return $this;
 		}
 		
-		if(is_array($value) || is_object($value))
+		if(!is_string($name) (is_array($value) || is_object($value)))
 			$value	=	json_encode($value);
 		
 		$this->insert($this->def_system)
