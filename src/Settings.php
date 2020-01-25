@@ -84,7 +84,7 @@ class Settings extends \Nubersoft\nQuery
 			return $this;
 		}
 		
-		if(!is_string($name) (is_array($value) || is_object($value)))
+		if(!is_string($name) && (is_array($value) || is_object($value)))
 			$value	=	json_encode($value);
 		
 		$this->insert($this->def_system)
