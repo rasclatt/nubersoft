@@ -136,7 +136,7 @@ class nRemote extends nApp
 			$this->def[CURLOPT_HTTPHEADER]	=	$this->attr['header'];
 		
 		# If post, add post request attributes
-		if(in_array($type, ['post','put'])) {
+		if(in_array($type, ['post','put','patch'])) {
 			if(!empty($attr) && !is_array($attr)) {
 				$this->def[CURLOPT_POST]			=	0;
 				$this->def[CURLOPT_POSTFIELDS]	=	$attr;
@@ -203,5 +203,15 @@ class nRemote extends nApp
 	public	function getErrors()
 	{
 		return $this->errors;
+	}
+	
+	public	function getCallAttributes()
+	{
+		return [
+			'attributes' => $this->attr,
+			'curl_settings' => $this->def,
+			'endpoint' => $this->url,
+			'response' => $this->errors
+		];
 	}
 }
