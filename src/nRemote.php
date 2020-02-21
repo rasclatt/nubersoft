@@ -13,7 +13,9 @@ class nRemote extends nApp
 				$url,
 				$format,
 				$attr,
-				$def;
+				$def,
+				$option_line,
+				$call_attr;
 	
 	protected	$con;
 	/**
@@ -136,7 +138,7 @@ class nRemote extends nApp
 			$this->def[CURLOPT_HTTPHEADER]	=	$this->attr['header'];
 		
 		# If post, add post request attributes
-		if(in_array($type, ['post','put','patch'])) {
+		if(in_array($type, ['post','put'])) {
 			if(!empty($attr) && !is_array($attr)) {
 				$this->def[CURLOPT_POST]			=	0;
 				$this->def[CURLOPT_POSTFIELDS]	=	$attr;
@@ -169,6 +171,11 @@ class nRemote extends nApp
 		//curl_setopt($this->con, CURLOPT_URL, $this->url);
 		# Set the options for service
 		curl_setopt_array($this->con, $this->def);
+		if(!empty($this->option_line)) {
+			foreach($this->option_line as $option) {
+				$option($this->con);
+			}
+		}
 		# Send the request
 		$this->response	=	curl_exec($this->con);
 		# Store any errors
@@ -204,14 +211,37 @@ class nRemote extends nApp
 	{
 		return $this->errors;
 	}
+	/**
+	 *	@description	
+	 */
+	public	function addOptionLine($func)
+	{
+		$this->option_line[]	=	function($con) use ($func)
+		{
+			$func($con);
+		};
+		return $this;
+	}
+	/**
+	 *	@description	
+	 */
+	public	function addCallAttribute($key, $value)
+	{
+		$this->call_attr[$key]	=	$value;
+		return $this;
+	}
 	
 	public	function getCallAttributes()
 	{
-		return [
+		$def	=	[
 			'attributes' => $this->attr,
 			'curl_settings' => $this->def,
 			'endpoint' => $this->url,
 			'response' => $this->errors
 		];
+		
+		$this->call_attr	=	(!empty($this->call_attr))? array_merge($def, $this->call_attr) : $def;
+		
+		return $this->call_attr;
 	}
 }
