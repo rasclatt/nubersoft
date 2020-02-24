@@ -171,7 +171,6 @@ class nRender extends \Nubersoft\nQuery
 			if($page['auto_cache'] == 'on' && !$this->isAdmin()) {
 				# See if the user is logged in and set name
 				$usergroup		=	(!empty($this->getSession('user')['usergroup']))? $this->getSession('user')['usergroup'] : 'loggedout';
-				echo $usergroup;
 				# Convert a string to numeric
 				if(!is_numeric($usergroup) && ($usergroup != 'loggedout'))
 					$usergroup	=	constant($usergroup);
