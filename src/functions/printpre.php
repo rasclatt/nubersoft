@@ -1,11 +1,16 @@
 <?php
+if(!defined('PRINTPRE_NOTRACE')) {
+	define('PRINTPRE_NOTRACE', 1);
+}
+
 function printpre()
 {
 	$args		=	func_get_args();
 	$value		=	(empty($args[0]))? false : $args[0];
-	$backtrace	=	(empty($args[1]));
+	$backtrace	=	(empty($args[1]) || ($args[1] != 1));
 	
 	if($backtrace) {
+		
 		$str		=	array_map(function($v){
 			$func	=	(isset($v['function']))? $v['function'] : false;
 			if(isset($v['function']) && strtolower($v['function']) == 'printpre')
@@ -19,19 +24,19 @@ function printpre()
 
 				$func	.=	' – ';
 			}
-			
+
 			if(empty($v['file']))
 				$v['file']	=	'EVAL::runtime';
-			
+
 			if(empty($v['line']))
 				$v['line']	=	'Interal app pointer';
-			
+
 				return $func.'<span class="gray">'.str_replace(NBR_ROOT_DIR, '', $v['file']).'</span> ('.$v['line'].')';
 
 		}, debug_backtrace());
 
 		return '<pre class="code"><span class="pre-value">'.print_r($value,1).'</span><br />'.implode('<br />'.PHP_EOL, $str).'</pre>';
 	}
-	
+
 	return '<pre class="code">'.print_r($value,1).'</pre>';
 }
