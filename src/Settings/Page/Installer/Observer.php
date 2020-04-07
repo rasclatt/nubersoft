@@ -15,7 +15,6 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		$registry	=	NBR_CLIENT_SETTINGS.DS.'registry.xml';
 		$hasAdmin	=
 		$hasTables	=	false;
-		
 		if(!is_file($file = NBR_CLIENT_CACHE.DS.'defines.php')) {
 			$this->getHelper("DataNode")->addNode('update_error', 'You need to reset your cache to get get client defines.');
 			if($this->getHelper('Settings\Controller')->createDefines($registry))
@@ -52,7 +51,6 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 				}
 			}
 		}
-		
 		if(!is_file($registry))
 			$default	=	$this->toArray(simplexml_load_file(NBR_SETTINGS.DS.'registry.xml'));
 		
@@ -81,6 +79,9 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 					$this->getHelper('DataNode')->addNode('table_error', 'Failed to create user.');
 					break;
 				}
+                else {
+                    $this->redirect('/');
+                }
 				
 				break;
 			case('save_registry_doc'):
@@ -135,21 +136,22 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 		if(!is_file($registry)) {
 			if(!is_file($registry)) {
 				$defines	=	array_change_key_case($default['ondefine'], CASE_UPPER);
-				$this->setLayout('do_defines', $defines);
+				die($this->setLayout('do_defines', $defines));
 			}
 			else
-				$this->getHelper('nRouter')->redirect('/');
+				$this->getHelper('nRouter')->redirect('/core/installer/');
 		}
 		
-		if(!is_file($dbcreds)) 
-			$this->setLayout('create_database', false);
-		
+		if(!is_file($dbcreds)){
+            die($this->setLayout('create_database', false));
+		}
+        
 		if(empty($hasTables) || ($hasAdmin == 0)) { 
 			
-			$this->setLayout('create_tables', [
+			die($this->setLayout('create_tables', [
 				'tables' => $hasTables,
 				'user' => $hasAdmin
-			]);
+			]));
 		}
 		
 		echo $this->setLayout('update_software', false);
@@ -159,6 +161,6 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
 	protected	function setLayout($action, $data)
 	{
 		$this->getHelper('DataNode')->addNode('data', ['action' => $action, 'data' => $data]);
-		return $this->render(NBR_CORE.DS.'installer'.DS.'html'.DS.'index.php');
+		return $this->render(NBR_DOMAIN_ROOT.DS.'core'.DS.'installer'.DS.'html'.DS.'index.php');
 	}
 }
