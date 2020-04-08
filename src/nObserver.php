@@ -3,5 +3,5 @@ namespace Nubersoft;
 
 interface nObserver
 {
-	public	function listen();
+    public    function listen();
 }

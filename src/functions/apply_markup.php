@@ -5,5 +5,5 @@ use Nubersoft\nApp as nApp;
 
 function apply_markup($match)
 {
-	return nApp::call()->getHelper('nMarkUp')->automate($match);
+    return nApp::call()->getHelper('nMarkUp')->automate($match);
 }
