@@ -196,9 +196,9 @@ class Tables extends \Nubersoft\System\Observer
     
     protected    function removeCurrentFilePath($ID, $table = 'components')
     {
-        $file    =    $this->getCurrentFilePath($ID);
+        $file    =    $this->getCurrentFilePath($ID, $table);
         if(!empty($file)) {
-            if(is_file($img = NBR_ROOT_DIR.$file)) {
+            if(is_file($img = NBR_DOMAIN_ROOT.$file)) {
                 unlink($img);
                 $this->query("UPDATE {$table} SET `file_name` = '', `file_path` = '', `file_size` = '' WHERE ID = ?", [$ID]);
             }
@@ -448,6 +448,7 @@ class Tables extends \Nubersoft\System\Observer
         
         if(!empty($POST['ID']) && is_numeric($POST['ID'])) {
             if(!empty($POST['delete'])) {
+                $this->removeCurrentFilePath($POST['ID'], $table);
                 $this->deleteFrom($table, $POST['ID']);
                 $this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row deleted");
             }
@@ -508,7 +509,7 @@ class Tables extends \Nubersoft\System\Observer
             if($FILES[0]['error'] == 0) {
                 if(is_numeric($ID))
                     $this->removeCurrentFilePath($ID);
-                $POST['file_name']    =    $FILES[0]['name'];
+                $POST['file_name']    =    preg_replace('/[^A-Z0-9_-]/i','',pathinfo($FILES[0]['name'], PATHINFO_FILENAME)).'.'.pathinfo($FILES[0]['name'], PATHINFO_EXTENSION);
                 $POST['file_path']    =    pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
                 $POST['file_size']    =    $FILES[0]['size'];
                 $POST['file']   =    $POST['file_path'].$POST['file_name'];
