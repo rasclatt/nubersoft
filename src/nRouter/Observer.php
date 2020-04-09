@@ -5,6 +5,8 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
 {
     public    function listen()
     {
+        $this->checkLastActive();
+        $this->splitRequest();
     }
     /**
      *    @description    Checks the last activity in the session and destroys old session if past timeout
@@ -46,4 +48,40 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
             }
         }
     }
+	/**
+	 *	@description	
+	 */
+	public	function splitRequest()
+	{
+        if(empty($this->getServer())) {
+            trigger_error('You must have the DataNode conversion process active.');
+            return false;
+        }
+        
+        $host   =   explode('.', $this->getServer('HTTP_HOST'));
+        $host   =   [
+            'ssl' => $this->getServer('HTTPS') == 'on',
+            'ajax' => $this->isAjaxRequest(),
+            'host' => $this->getServer('HTTP_HOST'),
+            'subdomain' => (count($host) > 2)? array_shift($host) : '',
+            'tld' => array_pop($host),
+            'domain' => implode($host),
+        ];
+        $arr    =   [];
+        parse_str($this->dec($this->getServer('QUERY_STRING')), $arr);
+        
+        if(!empty($arr)) {
+            if(preg_match('!/$!', key($arr))) {
+                $host['path']   =   trim(key($arr), '/');
+                array_shift($arr);
+            }
+        }
+        if(empty($host['path']))
+            $host['path']   =   '';
+        
+        $host['locale'] =   $this->getSession('locale');
+        $host['locale_lang'] =   $this->getSession('locale_lang');
+        $route_split    =   array_merge($host, ['query' => $arr]);
+        $this->getHelper('DataNode')->setNode('rounting_info', $route_split);
+	}
 }

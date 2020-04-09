@@ -463,7 +463,8 @@ class Tables extends \Nubersoft\System\Observer
                 $this->setFileData($POST);
                 $sql    =    "INSERT INTO `".$table."` (`".implode('`, `', array_keys($POST))."`) VALUES(".implode(',',array_fill(0, count($POST), '?')).")";
                 @$this->nQuery()->query($sql, array_values($POST));
-                if($this->isAjaxRequest()) {
+                
+                if($this->isAjaxRequest() && $table == 'media') {
                     $this->ajaxResponse([
                         'html' => [
                             $this->getPlugin('admintools','media'.DS.'index.php')
@@ -473,6 +474,7 @@ class Tables extends \Nubersoft\System\Observer
                         ]
                     ]);
                 }
+                
                 $this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row added");
             }
             else {

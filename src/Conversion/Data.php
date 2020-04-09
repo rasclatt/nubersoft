@@ -131,4 +131,14 @@ class Data extends \Nubersoft\nApp
         
         return false;
     }
+	/**
+	 *	@description	
+	 */
+	public	function arrayFromQueryString(string $string): array
+	{
+        $string =   $this->dec($string);
+        $arr    =   [];
+        parse_str($string, $arr);
+        return $arr;
+	}
 }

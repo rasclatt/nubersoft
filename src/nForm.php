@@ -435,8 +435,8 @@ class nForm extends \Nubersoft\nApp
     */
     public    function deliverToArray($string = false)
     {
-        if(empty($string) && !empty($this->getPost('deliver')->formData))
-            $string    =    $this->getPost('deliver')->formData;
+        if(empty($string) && !empty($this->getPost('deliver')['formData']))
+            $string    =    $this->getPost('deliver')['formData'];
 
         $parsed    =    array();
         $data    =    $this->safe()->decode($string);
