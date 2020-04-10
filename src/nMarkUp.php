@@ -39,9 +39,9 @@ class nMarkUp extends \Nubersoft\nRender
             elseif($front = (stripos($replaced,'FRONTEND::') !== false) || $back = (stripos($replaced,'BACKEND::') !== false)) {
                 $action        =    (!empty($front))? 'FRONTEND::' : 'BACKEND::';
                 $replaced    =    str_replace($action,'',$replaced);
-                $link        =    (!empty($front))? $this->getFrontEndPath($replaced) : $this->getBackEndPath($replaced);
+                $link        =    (!empty($front))? $this->getHelper('nRender')->getFrontEnd($replaced) : $this->getHelper('nRender')->getFrontEnd($replaced);
                 if(!empty($link))
-                    return $this->render($link);
+                    return $link;
             }
             # This will attempt to add a template component
             elseif(stripos($replaced,'PLUGIN::') !== false) {
