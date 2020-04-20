@@ -1,14 +1,17 @@
 <?php
 namespace Nubersoft\System;
 
+use \Nubersoft\ {
+    nQuery\enMasse as nQueryTrait,
+    nRender\enMasse as nRenderTrait
+};
+
 class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 {
-    use \Nubersoft\nQuery\enMasse;
-    use \Nubersoft\nRender\enMasse;
+    use nQueryTrait,
+        nRenderTrait;
     
-    private    $Router,
-            $Settings,
-            $Session;
+    private    $Router, $Settings, $Session;
     
     public    function __construct()
     {
@@ -299,4 +302,35 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg='.urlencode('Email sent successfully')));
         }
     }
+	/**
+	 *	@description	Allows content to be ajax based on a component key
+	 */
+	public	function componentToPage()
+	{
+        $err    =   [
+            'alert' => 'Invalid request'
+        ];
+        # Check background token
+        if(empty($this->getSession('token_page')))
+            $this->ajaxResponse($err);
+        # Stop if empty component request
+        if(empty($this->getPost('deliver')['ID']))
+            $this->ajaxResponse($err);
+        # Fetch component
+        $comp   =   $this->getHelper('Settings')->getComponent($this->getPost('deliver')['ID'], 'ID', false);
+        # Check authentication
+        if(empty($comp) || !$this->getHelper('Settings\Admin')->authComponent($comp)) {
+            $resp   =   (empty($comp))? ['alert' => 'Invalid request'] : [];
+            $this->ajaxResponse($resp);
+        }
+        # Respond
+        $this->ajaxResponse([
+            'html' => [
+                $comp['content']
+            ],
+            'sendto' => [
+                (!empty($this->getPost('deliver')['sendto']))? $this->getPost('deliver')['sendto'] : ""
+            ]
+        ]);
+	}
 }

@@ -66,6 +66,9 @@ class Tables extends \Nubersoft\System\Observer
                         $this->updateRecord($POST, $token, $Token);
                     }
                 }
+                if($this->isAjaxRequest()) {
+                    $this->ajaxResponse(['alert' => 'Updated', 'msg' => $this->getSystemMessages()]);
+                }
                 break;
             case('update_admin_url'):
                 $this->updatePage($token, $Token, $POST);
