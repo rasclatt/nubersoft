@@ -326,7 +326,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         # Respond
         $this->ajaxResponse([
             'html' => [
-                $comp['content']
+                $this->getHelper('nMarkUp')->useMarkUp($this->dec($comp['content']))
             ],
             'sendto' => [
                 (!empty($this->getPost('deliver')['sendto']))? $this->getPost('deliver')['sendto'] : ""

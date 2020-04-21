@@ -61,13 +61,17 @@ class Tables extends \Nubersoft\System\Observer
                 else {
                     if($this->getPost('delete') == 'on') {
                         $this->deleteRecord($POST['ID']);
+                        $msg    =   "Refresh the page to see update.";
                     }
                     else {
                         $this->updateRecord($POST, $token, $Token);
                     }
                 }
+                if(!isset($msg))
+                    $msg    =   'Updated';
+                
                 if($this->isAjaxRequest()) {
-                    $this->ajaxResponse(['alert' => 'Updated', 'msg' => $this->getSystemMessages()]);
+                    $this->ajaxResponse(['alert' => $msg, 'msg' => $this->getSystemMessages()]);
                 }
                 break;
             case('update_admin_url'):
@@ -429,7 +433,7 @@ class Tables extends \Nubersoft\System\Observer
             }
             $this->updateData($POST, 'components', 'Component updated');
 
-            if(!$page_match) {
+            if(!$page_match && !$this->isAjaxRequest()) {
                 $newPage    =    $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
 
                 $this->Router->redirect($newPage['full_path']);
