@@ -200,9 +200,14 @@ class Tables extends \Nubersoft\System\Observer
     
     protected    function getCurrentFilePath($ID, $table = 'components')
     {
-        $path    =    $this->query("SELECT CONCAT(`file_path`, `file_name`) as `image_url` FROM {$table} WHERE ID = ?", [$ID])->getResults(1);
-        
-        return (!empty($path['image_url']))? $path['image_url'] : false;
+        try {
+            $path    =    $this->query("SELECT CONCAT(`file_path`, `file_name`) as `image_url` FROM {$table} WHERE ID = ?", [$ID])->getResults(1);
+
+            return (!empty($path['image_url']))? $path['image_url'] : false;
+        }
+        catch(\PDOException $e) {
+            return false;
+        }
     }
     
     protected    function removeCurrentFilePath($ID, $table = 'components')
