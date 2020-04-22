@@ -21,7 +21,7 @@ class nUser extends \Nubersoft\nQuery
             ->fetch(1)['count'];
     }
     
-    public    function create($data)
+    public    function create($data, $autologin = false)
     {
         $data        =    $this->getHelper('ArrayWorks')->trimAll($data);
         $username    =    (!empty($data['username']))? $data['username'] : false;
@@ -84,8 +84,11 @@ class nUser extends \Nubersoft\nQuery
             ])
             ->write();
         
-        if($this->userExists($username)){
-            $this->getHelper('System')->login($username, $password);
+        if($autologin) {
+            if($this->userExists($username)){
+                $this->getHelper('System')->login($username, $password);
+                $this->redirect($this->getPage('full_path'));
+            }
         }
     }
     

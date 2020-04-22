@@ -1,10 +1,14 @@
 <?php
 namespace Nubersoft\System\Observer;
 
+use \Nubersoft\ {
+    nQuery\enMasse as nQueryEnMasse,
+    nDynamics
+};
+
 class Tables extends \Nubersoft\System\Observer
 {
-    use \Nubersoft\nQuery\enMasse;
-    use \Nubersoft\nDynamics;
+    use nQueryEnMasse,nDynamics;
     
     protected    $Router,
                 $Token,
@@ -233,12 +237,12 @@ class Tables extends \Nubersoft\System\Observer
         else {
             if(!empty($POST['ID']) && is_numeric($POST['ID'])) {
                 $required    =    array_filter([
-                    (isset($POST['username']) && filter_var($POST['username'], FILTER_VALIDATE_EMAIL))?? $POST['username'],
-                    (isset($POST['email']) && filter_var($POST['email'], FILTER_VALIDATE_EMAIL))?? $POST['email'],
-                    (isset($POST['first_name']))?? $POST['first_name'],
-                    (isset($POST['last_name']))?? $POST['last_name'],
-                    (isset($POST['usergroup']))?? $POST['usergroup'],
-                    (isset($POST['user_status']))?? $POST['user_status']
+                    (isset($POST['username']) && filter_var($POST['username'], FILTER_VALIDATE_EMAIL))? $POST['username'] : false,
+                    (isset($POST['email']) && filter_var($POST['email'], FILTER_VALIDATE_EMAIL))? $POST['email'] : false,
+                    ($POST['first_name'])?? $POST['first_name'],
+                    ($POST['last_name'])?? $POST['last_name'],
+                    ($POST['usergroup'])?? $POST['usergroup'],
+                    ($POST['user_status'])?? $POST['user_status']
                 ]);
 
                 if(!empty($POST['password'])) {
@@ -267,13 +271,13 @@ class Tables extends \Nubersoft\System\Observer
                 }
 
                 $required    =    array_filter([
-                    (isset($POST['username']) && filter_var($POST['username'], FILTER_VALIDATE_EMAIL))?? $POST['username'],
-                    (isset($POST['email']) && filter_var($POST['email'], FILTER_VALIDATE_EMAIL))?? $POST['email'],
-                    (isset($POST['first_name']))?? $this->getPost('first_name', false),
-                    (isset($POST['last_name']))?? $this->getPost('last_name', false),
-                    (isset($POST['usergroup']))?? $POST['usergroup'],
-                    (isset($POST['user_status']))? $POST['user_status'] : 'on',
-                    (isset($POST['password']))?? trim($this->getPost('password', false))
+                    (isset($POST['username']) && filter_var($POST['username'], FILTER_VALIDATE_EMAIL))? $POST['username'] : false,
+                    (isset($POST['email']) && filter_var($POST['email'], FILTER_VALIDATE_EMAIL))? $POST['email'] : false,
+                    $this->getPost('first_name', false),
+                    $this->getPost('last_name', false),
+                    ($POST['usergroup'])?? false,
+                    ($POST['user_status'])?? 'on',
+                    (isset($POST['password']))? trim($this->getPost('password', false)) : false
                 ]);
 
                 if(count($required) < 7) {
