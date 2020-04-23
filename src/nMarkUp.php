@@ -66,10 +66,10 @@ class nMarkUp extends \Nubersoft\nRender
 
                     $exp    =    array_map(function($v) use ($thisObj) {
                         $val    =    trim(trim($thisObj->dec($v),']'),'[');
-
-                        if(strpos($val,'/') !== false)
+                        # Check for a path but not JSON
+                        if(strpos($val, '/') !== false && empty(@json_decode($this->dec($val))))
                             return    explode('/',$val);
-
+                        # Send back if not a path
                         return $val;
 
                     },$raw);
@@ -105,16 +105,14 @@ class nMarkUp extends \Nubersoft\nRender
                 # Strip out the label
                 $unique_id    =    str_replace('COMPONENT::','',$replaced);
                 # Get component
-                $array        =    $this->query("select * from `components` where `unique_id` = ?",array(trim($unique_id)))
-                                    ->getResults(true);
-                if($array == 0)
-                    return false;
-
-                # Initialize the processing of array settings
-                $coreRender    =    $this->getPlugin('\nPlugins\Nubersoft\RenderPageElements');
-                $_layout    =    $coreRender->initialize($array);
-                $_perm        =    $coreRender->checkPermissions();
-                return $coreRender->display(true)->getDisplay();
+                $array        =    $this->getComponentBy([
+                        'ID' => (int) trim($unique_id)
+                ]);
+                # Stop if unavalable
+                if(empty($array))
+                    return '<!-- This component is not available. Check you have referenced the right id number -->';
+                # Send back component content
+                return $this->useMarkUp($this->dec($array[0]['content']));
             }
             elseif(preg_match('/app::|function::|func::/i',$replaced)) {
                 $replaced    =    str_replace(array("app::","APP::","FUNCTION::","function::","FUNC::","func::
