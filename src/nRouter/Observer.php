@@ -82,6 +82,6 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
         $host['locale'] =   $this->getSession('locale');
         $host['locale_lang'] =   $this->getSession('locale_lang');
         $route_split    =   array_merge($host, ['query' => $arr]);
-        $this->getHelper('DataNode')->setNode('rounting_info', $route_split);
+        $this->getHelper('DataNode')->setNode('routing_info', $route_split);
 	}
 }
