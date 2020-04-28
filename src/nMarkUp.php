@@ -176,6 +176,33 @@ class nMarkUp extends \Nubersoft\nRender
                 }
                 return '';
             }
+            elseif(strpos($replaced,'SESSION::') !== false) {
+                    $value    =    str_replace('SESSION::', '', $replaced);
+                    $exp    =   explode('->', $value);
+                    $arrV    =   false;
+                    foreach($exp as $k => $key) {
+                        if(empty($arrV)) {
+                            if(isset($this->getSession($key))) {
+                                $arrV   =   $this->getSession($key);
+                                unset($exp[$k]);
+                                if(count($exp) == 0)
+                                    return $arrV;
+                            }
+                            else
+                                return false;
+                        }
+                        else {
+                            if(isset($arrV[$key])) {
+                                $arrV   =   $arrV[$key];
+                                unset($exp[$k]);
+                                if(count($exp) == 0)
+                                    return $arrV;
+                            }
+                            else
+                                return false;
+                        }
+                    }
+            }
             elseif(strpos($replaced,"[") === false) {
                 if(is_file(NBR_ROOT_DIR.$replaced)) {
                     ob_start();
