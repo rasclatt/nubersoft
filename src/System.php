@@ -8,24 +8,24 @@ class System extends nSession\Controller
         $validate    =    $this->validate($username, $password, true);
         
         if(empty($validate)) {
-            $this->toError('Invalid username or password', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'), false, false);
             return false;
         }
         else {
             $user    =    $validate['user'];
             
             if($user['user_status'] != 'on') {
-                $this->toError('Account has been disabled.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('account_disabled'));
                 return false;
             }
             elseif(!$validate['allowed']) {
-                $this->toError('Invalid username or password.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'));
                 return false;
             }
             
             $this->toUserSession($user);
             
-            $this->toSuccess('User successfully logged in.');
+            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_login'));
             return true;
         }
     }
@@ -85,15 +85,15 @@ class System extends nSession\Controller
     public    function deleteFile($file, $ID = false, $table = false)
     {
         $update    =    false;
-        $err    =    'File resource could not be deleted.';
-        $succ    =    'File resource deleted.';
+        $err    =    $this->getHelper('ErrorMessaging')->getMessageAuto('fail_delete');
+        $succ    =    $this->getHelper('ErrorMessaging')->getMessageAuto('success_delete');
         if(!is_file($file)) {
             if(!empty($table) && !empty($ID)) {
                 $update    =    true;
                 $this->toSuccess($succ);
             }
             else {
-                $this->toError($err);
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail').': '.$err);
                 return false;
             }
         }
@@ -103,10 +103,10 @@ class System extends nSession\Controller
             
                 if(is_file($thumb)) {
                     if(unlink($thumb)) {
-                        $this->toSuccess("Thumbnail removed.");
+                        $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_thumbremoved'));
                     }
                     else {
-                        $this->toError("Thumbnail failed to be removed.");
+                        $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_thumbremoved'));
                     }
                 }
                 

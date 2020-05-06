@@ -27,19 +27,19 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         switch($this->getRequest('action')) {
             case('logout'):
                 $this->Session->destroy();
-                $this->Router->redirect('?msg=Successfully+signed+out');
+                $this->Router->redirect('?msg=success_logout');
                 break;
             case('download_file'):
                 $token    =    $this->getSession('token_page');
                 if(empty($token)) {
-                    $this->toError("Invalid request.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
                     return false;
                 }
                 
                 $dec    =    json_decode($this->getHelper('nCrypt')->decOpenSSLUrl($this->getGet('id',false)), 1);
                 
                 if(empty($dec)) {
-                    $this->toError("Download is not available.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_file'));
                     return false;
                 }
                 
@@ -75,14 +75,14 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             case('delete_file'):
                 $token    =    $this->getSession('token_page');
                 if(empty($token)) {
-                    $this->toError("Invalid request.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
                     return false;
                 }
                 
                 $dec    =    json_decode($this->getHelper('nCrypt')->decOpenSSLUrl($this->getGet('id',false)), 1);
                 
                 if(empty($dec)) {
-                    $this->toError("Download is not available.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('download_invalid'));
                     return false;
                 }
                     
@@ -114,7 +114,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                         }
                     }
                 }
-                $this->toSuccess('Cache has been deleted.');
+                $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_cachedeleted'));
                 return $this;
         }
         
@@ -125,7 +125,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                 $auth    =    $this->getHelper('Settings')->getSystemOption('frontend_admin');
                 
                 if(($data['is_admin'] && $auth == 'off') && ($this->getPage('is_admin') != 1)) {
-                    $this->toError('You must log in using the admin page.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('access_admin'));
                     return false;
                 }
                 $this->loginUser();               
@@ -151,7 +151,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         $token  =   (!empty($this->getPost('token')['login']))? $this->getPost('token')['login'] : false;
         
         if(empty($token)) {
-            $this->toError('Invalid request', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'), false, false);
             return false;
         }
         $Token      =   $this->getHelper('nToken');
@@ -159,7 +159,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         $matched    =   $Token->match('login', $token);
 
         if(!$matched) {
-            $this->toError('Invalid token request', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_token'), false, false);
             return false;
         }
         
@@ -175,14 +175,14 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
     {
         $token  =   (!empty($this->getPost('token')['login']))? $this->getPost('token')['login'] : false;
         if(empty($token)) {
-            $this->toError('Invalid request', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'), false, false);
             return false;
         }
         $Token      =   $this->getHelper('nToken');
         $matched    =   $Token->match('login', $token);
 
         if(!$matched) {
-            $this->toError('Invalid token request', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_token'), false, false);
             return false;
         }
 
@@ -205,12 +205,12 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                 if($success)
                     $Token->set('code_validate', ['code' => $code, 'user' => $validation['user']['ID']]);
                 else
-                    $this->toError("Code email failed to send. Try again later.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('failed'));
             }
             else {
                 $exists    =    (empty($validation['user']));
                 
-                $this->toError((!$exists)? 'Account has been disabled' : 'Invalid username or password');
+                $this->toError((!$exists)? $this->getHelper('ErrorMessaging')->getMessageAuto('account_disabled') : $this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'));
             }
         }
         else {
@@ -223,13 +223,13 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                 if(empty($code))
                     $Token->destroy('code_validate');
 
-                $this->toError('Code was incorrect. Please try again.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_code'));
                 return false;
             }
 
             if($valid != $code) {
                 $Token->destroy('code_validate');
-                $this->toError('Code was incorrect. Please try again.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_code'));
                 return false;
             }
 
@@ -239,14 +239,14 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             if($this->isLoggedIn())
                 $this->Router->redirect($this->getPage('full_path'));
             else
-                $this->toError('An error occurred logging in.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_login'));
         }
     }
     
     public    function getFormToken()
     {
         if(!$this->isAjaxRequest()) {
-            $this->toError('Invalid request.', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'), false, false);
             return false;
         }
         $Token  =   $this->getHelper('nToken');
@@ -275,15 +275,15 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         $Token  =   $this->getHelper('nToken');
         $token    =    (!empty($this->getPost('token')['nProcessor']))? $this->getPost('token')['nProcessor'] : false;
         if(empty($token)) {
-            $this->toError('Invalid request.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return $this;
         }
         if(!$Token->match('page', $token, false, false)) {
-            $this->toError('Invalid request.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return $this;
         }
         if(count(array_filter([$this->getPost('subject'),$this->getPost('message')])) != 2) {
-            $this->toError('You must fill out required fields.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
             return $this;
         }
         
@@ -295,11 +295,11 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             ->send();
         
         if(!$success) {
-            $this->toError('The email failed to send.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_email'));
             return $this;
         }
         else {
-            $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg='.urlencode('Email sent successfully')));
+            $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg=success_email'));
         }
     }
 	/**

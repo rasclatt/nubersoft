@@ -27,19 +27,30 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
         if(is_file($dbcreds)) {
             $nQuery        =    $this->getHelper('nQuery');
             $hasTables    =    $nQuery->query("show tables")->getResults();
-
-            try {
-                $hasAdmin    =    (!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
+            $hasUser    =   false;
+            
+            if(!empty($hasTables)) {
+                $hasUser    =   (!empty(array_filter(array_map(function($v){
+                    return (array_values($v)[0] == 'users');
+                }, $hasTables))));
+                
+                if(!$hasUser)
+                    $hasTables  =   false;
             }
-            catch (\PDOExeception $e) {
-                $hasAdmin    =    0;
+            
+            if($hasUser) {
+                try {
+                    $hasAdmin    =    (!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
+                }
+                catch (\PDOExeception $e) {
+                    $hasAdmin    =    0;
+                }
             }
         }
         else
             $hasAdmin    =    0;
         
-        if(!$this->isAdmin()) {
-            
+        if(!$this->isAdmin()) {    
             if($hasAdmin > 0) {
                 if(is_file($dbcreds) && is_file($registry)) {
                     if(filesize($dbcreds) > 0) {

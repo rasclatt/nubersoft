@@ -44,7 +44,7 @@ class Observer extends \Nubersoft\System\Observer
         $plugin    =    $this->getRequest('slug');
         
         if(empty($plugin)) {
-            $this->toError('Can not activate Widget. Missing widget name.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_widget'));
             return false;
         }
         
@@ -53,7 +53,7 @@ class Observer extends \Nubersoft\System\Observer
         switch($this->getRequest('action')) {
             case('activate_widget'):
                 if($Widget->isActive()) {
-                    $this->toSuccess("Plugin is already activated.");
+                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_pluginactive'));
                     return false;
                 }
                 $this->installWidget($Widget);
@@ -61,7 +61,7 @@ class Observer extends \Nubersoft\System\Observer
                 break;
             case('deactivate_widget'):
                 if(!$Widget->isActive()) {
-                    $this->toSuccess("Plugin is already deactivated.");
+                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_plugininactive'));
                     return false;
                 }
                 
@@ -285,7 +285,7 @@ class Observer extends \Nubersoft\System\Observer
             'system' => $this->getHelper('Settings\Controller')->getSettings(false, 'system')
         ]);
         # Create a success message
-        $this->toSuccess("Options Saved.");
+        $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_settingssaved'));
     }
     /**
      *    @description    Saves the site logo from admin settings
@@ -308,7 +308,7 @@ class Observer extends \Nubersoft\System\Observer
         ];
         
         if(!in_array($FILES['type'], $defmimes)) {
-            $this->toError('File must be '.implode(', ', $defmimes));
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required_filetype').': '.implode(', ', $defmimes));
             return false;
         }
         
@@ -319,9 +319,9 @@ class Observer extends \Nubersoft\System\Observer
         if(move_uploaded_file($FILES['tmp_name'], $destination)) {
             $this->deleteSystemOption('header_company_logo');
             $this->setSystemOption('header_company_logo', str_replace(NBR_DOMAIN_ROOT, '', $destination));
-            $this->toSuccess("Site logo uploaded.");
+            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_upload'));
         }
         else
-            $this->toError("Site logo failed to upload.");
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
     }
 }

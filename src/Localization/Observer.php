@@ -28,7 +28,9 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 				$POST	=	$q;
 				*/
 				if(!$this->isAdmin())
-					$this->ajaxResponse(['alert' => 'Permission Denied']);
+					$this->ajaxResponse([
+                        'alert' => $this->getHelper('ErrorMessaging')->getMessageAuto(403)
+                    ]);
                 
                 if(!empty($POST['deliver']['formData'])) {
                     $POST   =   $this->getHelper('Conversion\Data')->arrayFromQueryString($POST['deliver']['formData']);
@@ -50,7 +52,7 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 				$args['content']	=	$this->enc($POST['description']);
 				$this->addComponent($args);
 				$this->ajaxResponse([
-					'alert' => (!empty($this->getComponentBy($args)))? "Saved" : "An error occurred saving."
+					'alert' => (!empty($this->getComponentBy($args)))? $this->getHelper('ErrorMessaging')->getMessageAuto('success_saved') : $this->getHelper('ErrorMessaging')->getMessageAuto('fail_saved')
 				]);
         }
 	}

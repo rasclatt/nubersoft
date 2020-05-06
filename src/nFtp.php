@@ -15,8 +15,9 @@ class nFtp extends \Nubersoft\nFunctions
     {
         $this->root    =    $root;
         $this->con    =    ftp_connect($host,$port,$timeout);
+        $nApp   =   $this->getHelper('nApp');
         if (!$this->con) {
-            $this->getHelper('nApp')->toMsgCoreAdminAlert('Connection to FTP failed.');
+            $nApp->toMsgCoreAdminAlert($nApp->getHelper('ErrorMessaging')->getMessageAuto('success_cachedeleted'));
             //throw new \Exception('Connection to FTP failed.');
             return $this;
         }
@@ -24,7 +25,7 @@ class nFtp extends \Nubersoft\nFunctions
         $login        =    @ftp_login($this->con, $user, $pass); 
 
         if(!$login) {
-            $this->getHelper('nApp')->toMsgCoreAdminAlert($this->ftpname.': Login failed.');
+            $nApp->toMsgCoreAdminAlert($this->ftpname.': '.$nApp->getHelper('ErrorMessaging')->getMessageAuto('fail_login'));
             //throw new \Exception('Login failed.');
             return $this;
         }

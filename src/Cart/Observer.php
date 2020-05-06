@@ -17,11 +17,11 @@ class Observer extends \Nubersoft\Cart implements \Nubersoft\nObserver
                 $qty    =    (!empty($POST['qty']) && is_numeric($POST['qty']))? $POST['qty'] : 1;
                 
                 if(empty($sku)) {
-                    $this->toError('Nothing added to cart.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('cart_nothing'));
                     break;
                 }
                 
-                $this->addToCart($sku, $qty)->toSuccess('Added to cart.');
+                $this->addToCart($sku, $qty)->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('cart_added'));
                 break;
         }
     }

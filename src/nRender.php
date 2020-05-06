@@ -157,7 +157,7 @@ class nRender extends \Nubersoft\nQuery
             $path        =    (!empty($current['request']))? $current['request'] : '/';
             # If nothing has happened by now, it's not going to
             $this->ajaxResponse([
-                "alert" => "No actions to take, you may have been logged out.",
+                "alert" => $this->getHelper('ErrorMessaging')->getMessageAuto('ajax_invalid'),
                 "html" => [
                     "<script>window.location='".$path."';</script>"
                 ],

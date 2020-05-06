@@ -24,7 +24,7 @@ class Tables extends \Nubersoft\System\Observer
     public    function listen()
     {
         if(!$this->isAdmin()) {
-            $this->toError('You must be an admin to make this change.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(403));
             return false;
         }
         
@@ -84,7 +84,7 @@ class Tables extends \Nubersoft\System\Observer
             case('create_new_page'):
                 # Match token for all
                 if(empty($token) || !$Token->match('page', $token, false, false)) {
-                    $this->toError('Invalid request. Form token does not match.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_tokenmatch'));
                     return false;
                 }
                 
@@ -112,14 +112,14 @@ class Tables extends \Nubersoft\System\Observer
     {
         # Match token for all
         if(empty($token) || !$Token->match('page', $token, false, false)) {
-            $this->toError('Invalid request. Form token does not match.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_tokenmatch'));
             return false;
         }
 
         $ID    =    $this->getPost('ID');
         
         if(empty($ID)){
-            $this->toError("Invalid request. Page doesn't exist.");
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_page'));
             return false;
         }
         
@@ -131,7 +131,7 @@ class Tables extends \Nubersoft\System\Observer
                 return true;
             }
             else {
-                $this->toError("This action doesn't allow deleting of pages.");
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('403_delete'));
                 return false;
             }
         }
@@ -139,13 +139,13 @@ class Tables extends \Nubersoft\System\Observer
         $POST['full_path']    =    $this->Router->convertToStandardPath($POST['full_path']);
         $existing    =    $this->Router->getPage($POST['full_path'], 'full_path');
         if(empty($POST['full_path'])) {
-            $this->toError("Your slug/url can not be empty.");
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slug'));
             return false;
         }
 
         if(!empty($existing)) {
             if($existing['ID'] != $POST['ID']) {
-                $this->toError("This slug/path already exists.");
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slugexists'));
                 return false;
             }
         }
@@ -181,7 +181,7 @@ class Tables extends \Nubersoft\System\Observer
         $ID        =    (is_numeric($POST['ID']))? $POST['ID'] : false;
         
         if(empty($POST) || empty($ID)) {
-            $this->toError((!empty($err))? $err : "Nothing saved.");
+            $this->toError((!empty($err))? $err : $this->getHelper('ErrorMessaging')->getMessageAuto('no_action'));
             return false;
         }
         # Process file and the fields associated with the file
@@ -224,7 +224,7 @@ class Tables extends \Nubersoft\System\Observer
     protected    function updateUserData($POST, $token, $Token, $table, $ID)
     {
         if(empty($token) || !$Token->match('page', $token)) {
-            $this->toError('Invalid request.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return false;
         }
 
@@ -235,7 +235,7 @@ class Tables extends \Nubersoft\System\Observer
                 $this->Router->redirect($this->localeUrl($this->getHelper('nRender')->getPage('full_path').'?table=users&msg=User+successfully+deleted'));
             }
             else {
-                $this->toError("Unexpected error occurred.");
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
                 return $this;
             }
         }
@@ -258,20 +258,20 @@ class Tables extends \Nubersoft\System\Observer
                 }
                 
                 if(count($required) < 6) {
-                    $this->toError('All required fields must be filled out, or a field is not filled correctly.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
                     return $this;
                 }
 
-                $this->updateData($POST, 'users', "User account saved.", "An error occurred saving user account.");
+                $this->updateData($POST, 'users', $this->getHelper('ErrorMessaging')->getMessageAuto('account_saved'), $this->getHelper('ErrorMessaging')->getMessageAuto('account_savedfail'));
             }
             else {
                 if(!empty($POST['ID'])) {
-                    $this->toError('Invalid request');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
                     return $this;
                 }
 
                 if($this->getHelper('nUser')->getUser($this->getRequest('username'))) {
-                    $this->toError("User already exists.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_userexists'));
                     return $this;
                 }
 
@@ -295,11 +295,11 @@ class Tables extends \Nubersoft\System\Observer
                 $POST['timestamp']    =    date('Y-m-d H:i:s');
 
                 if($this->getHelper('nUser')->create($POST)) {
-                    $this->toSuccess('User successfully created.');
+                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_usercreate'));
                     return $this;
                 }
                 else {
-                    $this->toError("Unexpected error occurred.");
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
                     return $this;
                 }
             }
@@ -320,7 +320,7 @@ class Tables extends \Nubersoft\System\Observer
                 [$this->fetchUniqueId(), $refpage, 'code', 'Untitled ('.date('Y-m-d H:i:s').')', 'off']
             ])
             ->write();
-            $this->toSuccess("Component added");
+            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_componentcreate'));
         
         return $this;
     }
@@ -332,7 +332,7 @@ class Tables extends \Nubersoft\System\Observer
 
         $duplicate    =    $this->getHelper("Settings")->getComponent($ID);
         if(empty($duplicate)) {
-            $this->toError("Component doesn't exist.");
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_component'));
             return $this;
         }
 
@@ -378,10 +378,10 @@ class Tables extends \Nubersoft\System\Observer
         $this->query("DELETE FROM `components` WHERE ID = ?", [$ID]);
                         
         if(empty($this->getHelper('Settings')->getComponent($ID))) {
-            $this->toSuccess("Component Deleted");
+            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_delete'));
         }
         else {
-            $this->toError("Unexpected error occurred.");
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
         }
     }
     
@@ -390,7 +390,7 @@ class Tables extends \Nubersoft\System\Observer
         $POST['timestamp']    =    date('Y-m-d H:i:s');
         if(empty(!$POST['ID'])) {
             if(empty($token) || !$Token->match('component_'.$POST['ID'], $token)) {
-                $this->toError('Invalid request.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
                 return false;
             }
 
@@ -458,7 +458,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         
         if(empty($token) || !$Token->match('page', $token)) {
-            $this->toError('Invalid request.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return false;
         }
         
@@ -491,10 +491,10 @@ class Tables extends \Nubersoft\System\Observer
                     ]);
                 }
                 
-                $this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row added");
+                $this->redirect($this->getPage('full_path')."?table=".$table."&msg=success_created");
             }
             else {
-                $this->toError("Invalid request.");
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             }
         }
         
@@ -533,11 +533,11 @@ class Tables extends \Nubersoft\System\Observer
                 $POST['file']   =    $POST['file_path'].$POST['file_name'];
                 if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_DOMAIN_ROOT.DS.$POST['file_path'].DS.$POST['file_name']))) {
                     unset($POST['file_name'], $POST['file_path'], $POST['file_size'], $POST['file']);
-                    $this->toError('File failed to upload. Check permissions.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
                 }
             }
             else
-                $this->toError('File failed to upload. Check permissions.');
+                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
         }
     }
     

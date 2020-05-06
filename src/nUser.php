@@ -36,7 +36,7 @@ class nUser extends \Nubersoft\nQuery
             $usergroup    =    constant($usergroup);
         
         if(!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $this->toError('Username must be email address.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_username'));
             return false;
         }
         
@@ -48,12 +48,12 @@ class nUser extends \Nubersoft\nQuery
         ];
         
         if(array_sum($required) < 4) {
-            $this->toError('Required fields can not be empty.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
             return false;
         }
         
         if($this->userExists($username)) {
-            $this->toError('User already exists.');
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_userexists'));
             return false;
         }
         

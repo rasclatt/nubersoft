@@ -17,7 +17,7 @@ class Controller extends \Nubersoft\nToken
         }
         # Stop if they don't match
         if(!$matched) {
-            $this->toError('Invalid token request', false, false);
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_token'), false, false);
             return false;
         }
         # Matched

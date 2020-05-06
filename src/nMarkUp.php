@@ -182,7 +182,7 @@ class nMarkUp extends \Nubersoft\nRender
                     $arrV    =   false;
                     foreach($exp as $k => $key) {
                         if(empty($arrV)) {
-                            if(isset($this->getSession($key))) {
+                            if($this->getSession($key)) {
                                 $arrV   =   $this->getSession($key);
                                 unset($exp[$k]);
                                 if(count($exp) == 0)
