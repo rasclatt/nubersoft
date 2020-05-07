@@ -91,7 +91,7 @@ class nUser extends \Nubersoft\nQuery
             }
         }
         
-        return $this->query("SELECT * FROM users WHERE username = ?", [$username])->getResults(1);
+        return $this->getUser($username);
     }
     
     public    function hashPassword($password, $cost = 9)
