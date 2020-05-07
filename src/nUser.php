@@ -25,7 +25,7 @@ class nUser extends \Nubersoft\nQuery
     {
         $data        =    $this->getHelper('ArrayWorks')->trimAll($data);
         $username    =    (!empty($data['username']))? $data['username'] : false;
-        $password    =    (!empty($data['password']))? $this->getHelper('nUser')->hashPassword($data['password']) : false;
+        $password    =    (!empty($data['password']))? $this->hashPassword($data['password']) : false;
         $first_name    =    (!empty($data['first_name']))? $this->enc($data['first_name']) : false;
         $last_name    =    (!empty($data['last_name']))? $this->enc($data['last_name']) : false;
         $status        =    (!empty($data['user_status']))? $data['user_status'] : 'on';
