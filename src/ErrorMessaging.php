@@ -68,7 +68,9 @@ class ErrorMessaging extends \Nubersoft\nApp
         'invalid_slugexists' => 'The slug already exists',
         'invalid_component' => 'Component does not exist',
         'no_action' => 'No action was taken',
-        'ajax_invalid' => "No actions to take, you may have been logged out."
+        'ajax_invalid' => "No actions to take, you may have been logged out",
+        'site_comingsoon' => "Site coming soon",
+        'site_maintenance' => "Site is being worked on"
     ];
     /**
      *    @description    

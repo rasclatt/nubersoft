@@ -90,6 +90,8 @@ class nUser extends \Nubersoft\nQuery
                 $this->redirect($this->getPage('full_path'));
             }
         }
+        
+        return $this->query("SELECT * FROM users WHERE username = ?", [$username])->getResults(1);
     }
     
     public    function hashPassword($password, $cost = 9)

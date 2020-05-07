@@ -232,7 +232,7 @@ class Tables extends \Nubersoft\System\Observer
             $this->query("DELETE FROM `".str_replace('`', '', $table)."` WHERE ID = ?", [$ID]);
 
             if(empty($this->getHelper('nUser')->getUser($ID,'ID'))) {
-                $this->Router->redirect($this->localeUrl($this->getHelper('nRender')->getPage('full_path').'?table=users&msg=User+successfully+deleted'));
+                $this->Router->redirect($this->localeUrl($this->getHelper('nRender')->getPage('full_path').'?table=users&msg=success_delete'));
             }
             else {
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
@@ -286,14 +286,14 @@ class Tables extends \Nubersoft\System\Observer
                 ]);
 
                 if(count($required) < 7) {
-                    $this->toError('All required fields must be filled out, or a field is not filled correctly.');
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
                     return $this;
                 }
 
                 $POST['password']    =    trim($this->getPost('password', false));
                 $POST['unique_id']    =    $this->fetchUniqueId();
                 $POST['timestamp']    =    date('Y-m-d H:i:s');
-
+                
                 if($this->getHelper('nUser')->create($POST)) {
                     $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_usercreate'));
                     return $this;
