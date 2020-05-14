@@ -114,8 +114,8 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                         }
                     }
                 }
-                $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_cachedeleted'));
-                return $this;
+                $this->redirect('?msg=success_cachedeleted');
+                //$this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_cachedeleted'));
         }
         
         switch($this->getPost('action')) {
