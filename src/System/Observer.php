@@ -333,4 +333,35 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             ]
         ]);
 	}
+	/**
+	 *	@description	
+	 */
+	public	function componentSentinel()
+	{
+        switch($this->getPost('action')) {
+            case('viewblocklayout'):
+                
+                $this->ajaxResponse([
+                    'html' => [
+                         $this->getHelper('nMarkUp')->useMarkUp($this->dec($this->Settings->getComponentBy(['ID' => $this->getPost('component')])[0]['content'])).'<script>(new AnimatorFX()).applynFx();</script>'
+                    ],
+                    'sendto' => [
+                        '#loadspot-modal'
+                    ]
+                ], 1);
+            case('updatecomporder'):
+                foreach($this->getPost('data') as $component) {
+                    $this->query("UPDATE components SET page_order = ? WHERE ID = ?", [$component['page_order'],$component['component']]);
+                }
+                $this->ajaxResponse(["updated" => true]);
+            case('updatecompactive'):
+                $status =   $this->query("SELECT `page_live` FROM components WHERE ID = ?", [ $this->getPost('data')['component']])->getResults(1);
+                $mode   =   ($status['page_live'] == 'on')? 'off' : 'on';
+                $this->query("UPDATE components SET page_live = ? WHERE ID = ?", [$mode, $this->getPost('data')['component']]);
+                $this->ajaxResponse([
+                    "updated" => true,
+                    "mode" => $mode
+                ]);
+        }
+	}
 }
