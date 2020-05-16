@@ -197,7 +197,9 @@ class SearchEngine extends \Nubersoft\nApp
     
     public    function getColumnsAllowed($ticks = '')
     {
-        return array_map(function($v) use ($ticks) { return $ticks.$v.$ticks; },array_keys($this->columns_allowed));
+        return array_map(function($v) use ($ticks) {
+            return $ticks.$v.$ticks;
+        }, $this->columns_allowed);
     }
     
     public    function getData()
