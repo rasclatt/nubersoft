@@ -279,6 +279,19 @@ class Observer extends \Nubersoft\System\Observer
             $this->deleteSystemOption($name);
             # Resave
             $this->setSystemOption($name, $value);
+            if($name == 'composer') {
+                # Turn up the execution time for the script
+                ini_set('max_execution_time', 600);
+                # Save the composer file
+                file_put_contents(NBR_ROOT_DIR.DS.'composer.json', $this->dec($value));
+                # See if shell is allowed
+                if(defined("SHELL_ALLOWED") && SHELL_ALLOWED) {
+                    # See if the composer is ready
+                    if(defined("SHELL_COMPOSER") && SHELL_COMPOSER) {
+                        $result =   shell_exec(SHELL_COMPOSER . ' update --working-dir='.NBR_ROOT_DIR);
+                    }
+                }
+            }
         }
         # After saving the prerences, reload them to the data node so they are updated.
         $this->getHelper('DataNode')->setNode('settings', [
