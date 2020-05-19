@@ -174,6 +174,23 @@ class Tables extends \Nubersoft\System\Observer
             $this->Router->redirect($POST['full_path'].'?msg='.urlencode("Page saved.").'&'.http_build_query($this->getGet()));
         }
     }
+
+	/**
+	 *	@description	
+	 */
+	public	function filterUnMatched(&$array, $table)
+	{
+        $cols   =   [];
+        # Get the fields from database
+        \Nubersoft\ArrayWorks::extractAll(array_map(function($v){
+            return $v['Field'];
+        }, $this->query("describe {$table}")->getResults()), $cols);
+        # Loop through array and remove invalid fields from array
+        foreach($array as $key => $value) {
+            if(!in_array($key, $cols))
+                unset($array[$key]);
+        }
+	}
     
     protected    function updateData($POST, $table, $msg, $err = false)
     {
@@ -186,7 +203,9 @@ class Tables extends \Nubersoft\System\Observer
         }
         # Process file and the fields associated with the file
         $this->setFileData($POST, $ID);
-        
+        # Remove any fields that don't exist in the table
+        $this->filterUnMatched($POST, $table);
+        # Create array
         foreach($POST as $keys => $values) {
             $bind[]    =    $values;
             $sql[]    =    "`{$keys}` = ?";
