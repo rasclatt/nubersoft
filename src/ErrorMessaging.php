@@ -87,21 +87,21 @@ class ErrorMessaging extends \Nubersoft\nApp
         if(empty($local))
             $local  =   'usen';
         
-        $code    =    (new ErrorMessaging())->getComponentBy([
+        $stored    =    (new ErrorMessaging())->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
             'title' => $code.$local
         ]);
         
-        if(empty($code) && $local != 'usen') {
-            $code    =    (new ErrorMessaging())->getComponentBy([
+        if(empty($stored) && $local != 'usen') {
+            $stored    =    (new ErrorMessaging())->getComponentBy([
                 'category_id' => 'translator',
                 'component_type' => 'status_code',
                 'title' => $code.'usen'
             ]);
         }
         
-        $msg    =   (empty($code))? $def : $code[0]['content'];
+        $msg    =   (empty($stored))? $def : $stored[0]['content'];
         
         return (empty($msg))? $def : $msg;
     }
