@@ -119,13 +119,12 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 	{
 		if(!$this->isAdmin())
 			return false;
-		
 		$Session	=	$this->getHelper('nSession');
-		
 		$Session->destroy('translator_mode');
 		if($this->getGet('subaction') == 'on')
 			$Session->set('translator_mode', $this->getGet('subaction'));
-		
-		$this->redirect($this->getDataNode('_SERVER')['REDIRECT_URL']);
+        $path   =   $this->getDataNode('routing_info')['path'];
+        $path   =   (empty($path))? '/' : "/{$path}/";
+		$this->redirect($path);
 	}
 }

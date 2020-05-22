@@ -5,15 +5,16 @@ class System extends nSession\Controller
 {
     public    function login($username, $password)
     {
+        # Check login validation
         $validate    =    $this->validate($username, $password, true);
-        
+        # Stop if invalid
         if(empty($validate)) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'), false, false);
             return false;
         }
         else {
             $user    =    $validate['user'];
-            
+            #See if user is active, stop if not
             if($user['user_status'] != 'on') {
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('account_disabled'));
                 return false;
@@ -22,10 +23,13 @@ class System extends nSession\Controller
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'));
                 return false;
             }
-            
+            # Save the user session
             $this->toUserSession($user);
-            
+            # Regenerate the session id
+            $this->newSessionId();
+            # Report back
             $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_login'));
+            # Set success
             return true;
         }
     }
@@ -67,6 +71,7 @@ class System extends nSession\Controller
     public    function toUserSession($user)
     {
         $this->set('user', $user);
+        return $this;
     }
     
     public    function downloadFile($file)

@@ -59,4 +59,12 @@ class nSession extends \Nubersoft\DataNode
         
         return $this;
     }
+	/**
+	 *	@description	
+	 */
+	public	function newSessionId()
+	{
+        session_regenerate_id();
+        return $this;
+	}
 }
