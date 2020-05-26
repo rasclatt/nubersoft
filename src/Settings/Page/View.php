@@ -78,7 +78,7 @@ class View extends \Nubersoft\Settings\Page\Controller
             # Set data to key
             $itemData    =    $data[$key];
             # Create a wrapper if container
-            echo ($wrap || ($type == 'editor'))? PHP_EOL.'<div id="comp-'.$ID.'" class="item-container-'.$type.'-'.$data[$key]['component_type'].' container-'.((!empty($itemData['page_live']))? $itemData['page_live'] : 'off').'" data-itemid="'.$ID.'">'.PHP_EOL : '';
+            echo ($wrap || ($type == 'editor'))? PHP_EOL.'<div id="comp-'.$ID.'" class="component-parent item-container-'.$type.'-'.$data[$key]['component_type'].' container-'.((!empty($itemData['page_live']))? $itemData['page_live'] : 'off').'" data-itemid="'.$ID.'">'.PHP_EOL : '';
             # Render the component plugin
             echo $this->Plugin->setPluginContent($comb, $itemData)
                 ->getPlugin($type, $compType.'.php');

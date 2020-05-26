@@ -135,6 +135,9 @@ class nAutomator extends \Nubersoft\nApp
      */
     public    function doWorkflow($array)
     {
+        //if(!isset($array['object'][0]))
+        //    $array['object']    =   [$array['object']];
+        
         foreach($array['object'] as $event => $object) {
             if(isset($object['class'])) {
                 foreach($object['class'] as $classObj) {

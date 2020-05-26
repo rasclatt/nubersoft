@@ -34,6 +34,7 @@ class Tables extends \Nubersoft\System\Observer
         $POST        =    (!empty($this->getPost('ID')))? $this->getPost() : array_filter($this->getPost());
         $action        =    (!empty($POST['action']))? $POST['action'] : false;
         $token        =    (!empty($this->getPost('token')['nProcessor']))? $this->getPost('token')['nProcessor'] : false;
+        $ctoken        =    (!empty($this->getPost('token')['component'][$this->getPost('ID')]))? $this->getPost('token')['component'][$this->getPost('ID')] : false;
         # Remove action k/v
         if(isset($POST['action']))
             unset($POST['action']);
@@ -126,7 +127,7 @@ class Tables extends \Nubersoft\System\Observer
         if(!empty($POST['delete'])) {
             if($allow_delete) {
                 if($this->Settings->deletePage($ID)) {
-                    $this->Router->redirect('/?msg='.urlencode("Page deleted successfully. Components may have been disabled."));
+                    $this->Router->redirect('/?msg=success_delete');
                 }
                 return true;
             }
@@ -159,19 +160,17 @@ class Tables extends \Nubersoft\System\Observer
         else {
             $POST['link']    =    strtolower(pathinfo($POST['full_path'], PATHINFO_BASENAME));
         }
-
         $sql    =    [];
         foreach($POST as $key => $value) {
             $sql[]    =    "`{$key}` = ?";
         }
-
         $this->query("UPDATE `main_menus` SET ".implode(', ', $sql)." WHERE ID = ? ", array_values(array_merge(array_values($POST),[$ID])));
 
         if($this->getPage('full_path') != $POST['full_path']) {
-            $this->Router->redirect($POST['full_path']);
+            $this->Router->redirect($POST['full_path'].'?msg=fail_update');
         }
         else {
-            $this->Router->redirect($POST['full_path'].'?msg='.urlencode("Page saved.").'&'.http_build_query($this->getGet()));
+            $this->Router->redirect($POST['full_path'].'?msg=success_settingssaved&'.http_build_query($this->getGet()));
         }
     }
 
@@ -246,7 +245,6 @@ class Tables extends \Nubersoft\System\Observer
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return false;
         }
-
         if($this->getPost('delete') == 'on') {
             $this->query("DELETE FROM `".str_replace('`', '', $table)."` WHERE ID = ?", [$ID]);
 
@@ -387,7 +385,7 @@ class Tables extends \Nubersoft\System\Observer
             ])
             ->write();
         
-        $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg='.urlencode("Component added")));
+        $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg=success_create'));
     }
     
     protected    function deleteRecord($ID)
@@ -485,7 +483,7 @@ class Tables extends \Nubersoft\System\Observer
             if(!empty($POST['delete'])) {
                 $this->removeCurrentFilePath($POST['ID'], $table);
                 $this->deleteFrom($table, $POST['ID']);
-                $this->redirect($this->getPage('full_path')."?table=".$table."&msg=Row deleted");
+                $this->redirect($this->getPage('full_path')."?table=".$table."&msg=success_delete");
             }
             else
                 $this->updateData($POST, $table, $msg);
@@ -541,7 +539,7 @@ class Tables extends \Nubersoft\System\Observer
     protected    function setFileData(&$POST, $ID = false)
     {
         $FILES    =    $this->getDataNode('_FILES');
-
+        
         if(!empty($FILES)) {
             if($FILES[0]['error'] == 0) {
                 if(is_numeric($ID))
@@ -550,7 +548,10 @@ class Tables extends \Nubersoft\System\Observer
                 $POST['file_path']    =    pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
                 $POST['file_size']    =    $FILES[0]['size'];
                 $POST['file']   =    $POST['file_path'].$POST['file_name'];
-                if(!move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_DOMAIN_ROOT.DS.$POST['file_path'].DS.$POST['file_name']))) {
+                
+                $move   =   move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_DOMAIN_ROOT.DS.$POST['file_path'].DS.$POST['file_name']));
+                
+                if(!$move) {
                     unset($POST['file_name'], $POST['file_path'], $POST['file_size'], $POST['file']);
                     $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
                 }

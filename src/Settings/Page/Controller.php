@@ -29,23 +29,17 @@ class Controller extends \Nubersoft\Settings\Page
     
     public    function getTemplateList()
     {
-        $client_temps    =    (is_dir(NBR_CLIENT_TEMPLATES))? array_filter(array_map(function($v){
-            $path    =    rtrim(NBR_CLIENT_TEMPLATES.DS.$v, DS).DS;
-            
-            if(in_array($v, ['.','..']))
-                return false;
-            
-            return str_replace(NBR_ROOT_DIR, '', $path);
-            
-            },scandir(NBR_CLIENT_TEMPLATES))) : [];
+        $templates  =   array_merge(
+            $this->fetchTemplateListFromScan(NBR_CLIENT_TEMPLATES),
+            $this->fetchTemplateListFromScan(NBR_CORE.DS.'template')
+        );
         
-        $def    =    str_replace(NBR_ROOT_DIR, '', NBR_DEFAULT_TEMPLATE);
         $opts    =    array_map(function($v){
             return [
                 'name' => ucwords(\Nubersoft\nApp::call()->getHelper('Conversion')->columnToTitle(basename($v))),
                 'value' => str_replace(DS.DS, DS, $v.DS)
             ];
-        },array_merge([$def],$client_temps));
+        }, $templates);
         
         return $opts;
     }
@@ -60,4 +54,24 @@ class Controller extends \Nubersoft\Settings\Page
         $toggle    =    $this->siteLogoActive();
         return ($toggle == 'on')? $this->localeUrl($this->getSystemOption('header_company_logo')) : false;
     }
+	/**
+	 *	@description	
+	 */
+	public	function fetchTemplateListFromScan($dir)
+	{
+        if(!is_dir($dir))
+            return [];
+        
+        return array_filter(array_map(function($v) use ($dir) {
+            $path    =    rtrim($dir.DS.$v, DS).DS;
+            
+            if(in_array($v, ['.','..']))
+                return false;
+            elseif(strtolower($v) == 'plugins')
+                return false;
+            
+            return str_replace(NBR_ROOT_DIR, '', $path);
+            
+            }, scandir($dir)));
+	}
 }

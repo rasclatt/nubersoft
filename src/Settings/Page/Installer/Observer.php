@@ -58,6 +58,8 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
                         # Delete the flag file
                         if(is_file($flag))
                             unlink($flag);
+                        if(is_file($flag))
+                            throw new \Exception('First run flag can not be delete. Check permissions.');
                         # Redirect to home
                         $this->redirect('/');
                     }
@@ -139,7 +141,9 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
                 if(count($dbdef) == 6) {
                     try {
                         $testConn    =    new \PDO("mysql:host=".base64_decode(DB_HOST).";dbname=".base64_decode(DB_NAME), base64_decode(DB_USER), base64_decode(DB_PASS));
-                        file_put_contents($dbcreds, implode(PHP_EOL, $dbdef));
+                        if(!file_put_contents($dbcreds, implode(PHP_EOL, $dbdef))) {
+                            throw new \Exception("An error was encountered. Check permissions for the client folder.");
+                        }
                         $this->getHelper('nRouter')->redirect('/');
                     }
                     catch (\PDOException $e) {

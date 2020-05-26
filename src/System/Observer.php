@@ -282,25 +282,20 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
             return $this;
         }
-        if(count(array_filter([$this->getPost('subject'),$this->getPost('message')])) != 2) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
+        # Set automator
+        $nAutomator =   new \Nubersoft\nAutomator();
+        # See if there is an email automation
+        $emwf   =   $nAutomator->getClientWorkflow('email');
+        # See if there is an email automation
+        $emwfs   =   $nAutomator->getSystemWorkflow('email');
+        # If email automation, run it.
+        if($emwf || $emwfs) {
+            $arr    =   $nAutomator->normalizeWorkflowArray(($emwf)? $emwf : $emwfs);
+            $nAutomator->doWorkflow($arr);
             return $this;
         }
-        
-        $success    =    $this->getHelper('Emailer')
-            ->addTo(WEBMASTER)
-            ->addFrom(WEBMASTER)
-            ->addSubject($this->getPost('subject'))
-            ->addMessage($this->getPost('message'), false)
-            ->send();
-        
-        if(!$success) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_email'));
-            return $this;
-        }
-        else {
-            $this->Router->redirect($this->localeUrl($this->getPage('full_path').'?msg=success_email'));
-        }
+        # Send back for chainging
+        return $this;
     }
 	/**
 	 *	@description	Allows content to be ajax based on a component key
@@ -355,6 +350,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                 }
                 $this->ajaxResponse(["updated" => true]);
             case('updatecompactive'):
+                
                 $status =   $this->query("SELECT `page_live` FROM components WHERE ID = ?", [ $this->getPost('data')['component']])->getResults(1);
                 $mode   =   ($status['page_live'] == 'on')? 'off' : 'on';
                 $this->query("UPDATE components SET page_live = ? WHERE ID = ?", [$mode, $this->getPost('data')['component']]);
