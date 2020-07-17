@@ -57,21 +57,22 @@ class Settings extends \Nubersoft\nQuery
         
         return (count($query) > 1)? $query : $this->getHelper('ArrayWorks')->organizeByKey($query, 'category_id');
     }
-    
+    /**
+     *	@description	Fetch workflows from the settings
+     */
     public    function getSettingsByAction($action)
     {
         $query    =    $this->query("SELECT * FROM `{$this->def_system}` WHERE `action_slug` = ? AND `page_live` = 'on'",[$action])->getResults();
-        
         if(empty($query))
             return $query;
         
         foreach($query as $key => $value) {
             if(!empty($value['content'])) {
-                $query[$key]['content']    =    $this->decode($query[$key]['content']);
+                $query[$key]['content']    =    $this->dec($value['content']);
             }
         }
         
-        return $this->getHelper('ArrayWorks')->organizeByKey($query, 'page_element');
+        return $this->getHelper('ArrayWorks')->organizeByKey($query, 'action_slug');
     }
     
     public    function setOption($name, $value, $option_group_name = 'client')

@@ -122,7 +122,7 @@ class Pagination
         # See how many total requested
         $count  =   $this->query($this->counter, $this->bind)->getResults(1)['count'];
         # See how many total pages are found
-        $pages  =   round($count / $this->limit, 0, PHP_ROUND_HALF_UP);
+        $pages  =   ceil($count / $this->limit);
         # If the pages are less than the requested start point, set to max pages count
         if($this->page > $pages)
             $this->page =   $pages;

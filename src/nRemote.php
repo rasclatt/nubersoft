@@ -7,15 +7,15 @@ class nRemote extends nApp
 {
     use nDynamics;
     
-    private        $url_base,
-                $response,
-                $errors,
-                $url,
-                $format,
-                $attr,
-                $def,
-                $option_line,
-                $call_attr;
+    private $url_base,
+            $response,
+            $errors,
+            $url,
+            $format,
+            $attr,
+            $def,
+            $option_line,
+            $call_attr;
     
     protected    $con;
     /**
@@ -139,23 +139,27 @@ class nRemote extends nApp
         
         # If post, add post request attributes
         if(in_array($type, ['post','put'])) {
-            if(!empty($attr) && !is_array($attr)) {
-                $this->def[CURLOPT_POST]            =    0;
-                $this->def[CURLOPT_POSTFIELDS]    =    $attr;
+            if($type != 'put') {
+                if(!empty($attr) && !is_array($attr)) {
+                    $this->def[CURLOPT_POST]            =    0;
+                    $this->def[CURLOPT_POSTFIELDS]    =    $attr;
+                }
+                else {
+                    if(empty($attr))
+                        $attr    =    [];
+
+                    $count    =    count($attr);
+
+                    $this->def[CURLOPT_POST]            =    $count;
+                    if($count > 0)
+                        $this->def[CURLOPT_POSTFIELDS]    =    ($send == 'json')? json_encode($attr) : http_build_query($attr);
+                    else
+                        $this->def[CURLOPT_POSTFIELDS]    =    '';
+                }
             }
             else {
-                if(empty($attr))
-                    $attr    =    [];
-
-                $count    =    count($attr);
-
-                $this->def[CURLOPT_POST]            =    $count;
-                if($count > 0)
-                    $this->def[CURLOPT_POSTFIELDS]    =    ($send == 'json')? json_encode($attr) : http_build_query($attr);
-                else
-                    $this->def[CURLOPT_POSTFIELDS]    =    '';
-            }
-            if($type == 'put') {
+                $this->def[CURLOPT_POST]            =    0;
+                $this->def[CURLOPT_POSTFIELDS]    =    json_encode($attr);
                 $this->def[CURLOPT_CUSTOMREQUEST]    =    "PUT";
             }
         }

@@ -112,7 +112,7 @@ class nMarkUp extends \Nubersoft\nRender
                 if(empty($array))
                     return '<!-- This component is not available. Check you have referenced the right id number -->';
                 # Send back component content
-                return $this->useMarkUp($this->dec($array[0]['content']));
+                return $this->setPluginContent('layout_code', $array[0])->getPlugin('layout', $array[0]['component_type'].'.php');
             }
             elseif(preg_match('/app::|function::|func::/i',$replaced)) {
                 $replaced    =    str_replace(array("app::","APP::","FUNCTION::","function::","FUNC::","func::
