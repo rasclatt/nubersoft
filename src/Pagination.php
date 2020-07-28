@@ -189,4 +189,13 @@ class Pagination
         
         return $array;
 	}
+	/**
+	 *	@description	
+	 */
+	public	function addAttr($string)
+	{
+        $this->counter  .=  $string;
+        $this->statement   .= $string;
+        return $this;
+	}
 }
