@@ -16,10 +16,14 @@ class Plugin extends nRender
         if(empty($file))
             $file    =    'index.php';
         
-        $file    =    $this->pluginExists($name, $file);
-        
+        return $this->toView($this->pluginExists($name, $file), $path);
+    }
+	/**
+	 *	@description	
+	 */
+	private function toView($file, $path)
+	{
         ob_start();
-        
         
         if(($this->getSystemOption('fileid') == 'on')) {
             $dev    =    ($this->getSystemOption('devmode') == 'dev');
@@ -41,7 +45,17 @@ class Plugin extends nRender
         ob_end_clean();
         
         return $data;
-    }
+	}
+	/**
+	 *	@description	
+	 */
+	public function getPluginFrom(string $template, string $plugin, string $file = null):? string
+	{
+        if(empty($file))
+            $file   =   'index.php';
+        $path  =   str_replace(DS.DS, DS, realpath(NBR_CLIENT_TEMPLATES.DS.ltrim(str_replace('..', '', $template), DS).$plugin));
+        return $this->toView(str_replace(DS.DS, DS, $path.DS.basename($file)), $path);
+	}
     /**
      *    @description    Used to wrap the include so that $data does not become a reserved word
      */

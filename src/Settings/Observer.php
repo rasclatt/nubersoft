@@ -107,15 +107,18 @@ class Observer extends Controller implements \Nubersoft\nObserver
         if(empty($FILES))
             return $this;
         
-        
         $this->isDir(NBR_DOMAIN_CLIENT_DIR.DS.'media'.DS.'images', true);
         
         $files    =    [];
         $Conversion    =    $this->getHelper('Conversion\Data');
         
+        if(!isset($FILES['file'])) {
+            $this->assembleStandardFiles($FILES, false, $Conversion);
+            return $this;
+        }
+        
         foreach($FILES as $keyname => $rows) {
             foreach($rows as $key => $value) {
-
                 foreach($value as $i => $val) {
                     # Stop if there is nothing uploaded
                     if($key == 'name' && empty($val)) {
@@ -124,9 +127,9 @@ class Observer extends Controller implements \Nubersoft\nObserver
                     $files[$i][$key]    =    $val;
                     if($key == 'size') {
                         $files[$i]['size_attr'] = [
-                            'kb' => round($Conversion->getByteSize($val,['from' => 'b', 'to'=>'kb']), 2),
-                            'mb' => round($Conversion->getByteSize($val,['from' => 'b', 'to'=>'mb']), 2),
-                            'gb' => round($Conversion->getByteSize($val,['from' => 'b', 'to'=>'gb']), 2)
+                            'kb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'kb']), 2),
+                            'mb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'mb']), 2),
+                            'gb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'gb']), 2)
                         ];
                     }
                     elseif($key == 'name') {
@@ -138,9 +141,43 @@ class Observer extends Controller implements \Nubersoft\nObserver
                 }
             }
         }
-        
         $this->setNode('_FILES', $files);
         
         return $this;
     }
+	/**
+	 *	@description	
+	 */
+	private	function assembleStandardFiles($FILES, $keyname, $Conversion)
+	{
+        $files = [];
+        foreach($FILES as $i => $file) {
+            foreach($file as $key => $val) {
+                # Stop if there is nothing uploaded
+                if($key == 'name' && empty($val)) {
+                    continue;
+                }
+                $files[$i][$key]    =    $val;
+                if($key == 'size') {
+                    $files[$i]['size_attr'] = [
+                        'kb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'kb']), 2),
+                        'mb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'mb']), 2),
+                        'gb' => round($Conversion->getByteSize((int) $val,['from' => 'b', 'to'=>'gb']), 2)
+                    ];
+                }
+                elseif($key == 'name') {
+                    $files[$i]['file_key_name']    =    $keyname;
+                    $files[$i]['name_date']     =    date('YmdHis').'.'.strtolower(pathinfo($val, PATHINFO_EXTENSION));
+                    $files[$i]['path_default']    =    DS.'client'.DS.'media'.DS.'images'.DS.$val;
+                    $files[$i]['path_alt']        =    DS.'client'.DS.'media'.DS.'images'.DS.$files[$i]['name_date'];
+                }
+            }
+        }
+        $this->setNode('_FILES', $files);
+        echo printpre([
+            $this->getGet(),
+            $this->getPost(),
+            $_FILES
+        ]);
+	}
 }
