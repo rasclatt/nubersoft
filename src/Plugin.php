@@ -8,8 +8,7 @@ class Plugin extends nRender
     use Conversion\enMasse;
     use nDynamics;
         
-    protected    static    $plugin_content    =    [];
-    protected    static    $current_plugin    =    [];
+    protected static $plugin_content, $current_plugin    =    [];
     
     public    function getPlugin($name, $file = false, $path = false)
     {
@@ -47,14 +46,19 @@ class Plugin extends nRender
         return $data;
 	}
 	/**
-	 *	@description	
+	 *	@description	Fetch a plugin from a template folder
+     *  @param  $template The template folder name
+     *  @param  $plugin The name of the plugin
+     *  @param  $file   The name of any file inside the plugin folder
 	 */
 	public function getPluginFrom(string $template, string $plugin, string $file = null):? string
 	{
         if(empty($file))
             $file   =   'index.php';
-        $path  =   str_replace(DS.DS, DS, realpath(NBR_CLIENT_TEMPLATES.DS.ltrim(str_replace('..', '', $template), DS).$plugin));
-        return $this->toView(str_replace(DS.DS, DS, $path.DS.basename($file)), $path);
+        # Set the path
+        $path  =   str_replace(DS.DS, DS, str_replace('..', '', NBR_CLIENT_TEMPLATES.DS.ltrim($template, DS).DS.'plugins'.DS.$plugin));
+        # Try to render to view
+        return $this->toView(str_replace(DS.DS, DS, $path.DS.basename($file)), false);
 	}
     /**
      *    @description    Used to wrap the include so that $data does not become a reserved word

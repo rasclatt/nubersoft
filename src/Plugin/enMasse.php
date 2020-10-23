@@ -11,6 +11,12 @@ trait enMasse
         return $this->pluginObj->{__FUNCTION__}($dir, $path, $return);
     }
     
+    public    function getPluginFrom(string $template, string $plugin, string $file = null)
+    {
+        $this->pluginObj    =    new \Nubersoft\Plugin();
+        return $this->pluginObj->{__FUNCTION__}($template, $plugin, $file);
+    }
+    
     public    function getPluginInfo($name = false)
     {
         return $this->pluginObj->{__FUNCTION__}($name);
