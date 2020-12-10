@@ -74,7 +74,7 @@ class Pagination
 	public	function search($value, $key, $op = '=', $cont = "OR"): object
 	{
         if(is_callable($key)) {
-            $where  =   " WHERE ".$key($value, $op, $cont);
+            $where  =   " WHERE ".$key($value, $op, $cont, $this);
         }
         else {
             if(is_array($key)) {
@@ -196,6 +196,14 @@ class Pagination
 	{
         $this->counter  .=  $string;
         $this->statement   .= $string;
+        return $this;
+	}
+	/**
+	 *	@description	
+	 */
+	public function addToBind($value)
+	{
+        $this->bind[]   =   $value;
         return $this;
 	}
 }

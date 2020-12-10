@@ -20,10 +20,20 @@ class Controller extends \Nubersoft\nRouter
         return $this;
     }
     
-    public    function redirect($location)
+    public function redirect($location)
     {
+        # Fetch overrides for router
+        $reg    =   (new \Nubersoft\Conversion\Data())->xmlToArray(NBR_CLIENT_DIR.DS.'settings'.DS.'core'.DS.'router.xml');
+        # Fetch the redirect action
+        $action =   ($reg['redirect'])?? false;
+        # If not empty try new router
+        if(!empty($action)) {
+            # Run that router
+            return \Nubersoft\nReflect::instantiate($action)->redirect($location);
+        }
+        # Parse the url to process it's query
         $arr    =    parse_url($location);
-                
+        # Process query
         if(!empty($arr['query'])) {
             parse_str($arr['query'], $arr['query']);
             if(isset($arr['query']['msg'])) {
@@ -35,7 +45,7 @@ class Controller extends \Nubersoft\nRouter
                 $location    =    implode('',$arr);
             }
         }
-        
+        # Redirect
         $this->setHeader('Location: '.$location, true);
     }
     
