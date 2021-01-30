@@ -3,9 +3,9 @@ namespace Nubersoft;
 
 class nGlobal extends \Nubersoft\nApp
 {
-    private static    $enttable;
+    private static $enttable;
     
-    public    function sanitize($value)
+    public static function sanitize($value)
     {
         if(!is_array($value) && !is_object($value)) {
             if(!is_numeric($value) && !is_bool($value) && !is_int($value) && !is_float($value)) {
@@ -16,10 +16,10 @@ class nGlobal extends \Nubersoft\nApp
         }
         
         if(is_object($value))
-            $value    =    $this->toArray($value);
+            $value    =    parent::call()->toArray($value);
         
         foreach($value as $key => $subval) {
-            $value[$key]    =    $this->sanitize($subval);
+            $value[$key]    =    self::sanitize($subval);
         }
         
         return $value;

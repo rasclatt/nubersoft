@@ -3,7 +3,10 @@ namespace Nubersoft\System;
 
 use \Nubersoft\ {
     nQuery\enMasse as nQueryTrait,
-    nRender\enMasse as nRenderTrait
+    nRender\enMasse as nRenderTrait,
+    nRouter\Controller as Router,
+    Settings\Controller as Settings,
+    nSession
 };
 
 class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
@@ -13,11 +16,15 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
     
     private    $Router, $Settings, $Session;
     
-    public    function __construct()
+    public    function __construct(
+        Router $Router,
+        Settings $Settings,
+        nSession $Session
+    )
     {
-        $this->Router    =    $this->getHelper('nRouter\Controller');
-        $this->Settings    =    $this->getHelper('Settings\Controller');
-        $this->Session    =    $this->getHelper('nSession');
+        $this->Router   =   $Router;
+        $this->Settings    =    $Settings;
+        $this->Session    =    $Session;
         
         return parent::__construct(...func_get_args());
     }

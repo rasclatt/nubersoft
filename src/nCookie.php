@@ -5,7 +5,7 @@ namespace Nubersoft;
  */
 class nCookie extends nSession
 {
-    protected    $real = true;
+    protected $real = true;
     /**
      *    @description    
      */
@@ -24,15 +24,21 @@ class nCookie extends nSession
     public    function get($key = false)
     {
         if(empty($this->real)) {
-            $SESS            =    $this->getDataNode('_COOKIE');
-            return (isset($SESS[$key]))? $this->decoder($SESS[$key]) : false;
+            $SESS   =   $this->getDataNode('_COOKIE');
+            if(!empty($key))
+                return $this->decoder(($SESS[$key])?? null);
+            
+            return $SESS;
         }
-        return (isset($_COOKIE[$key]))? $this->decoder($_COOKIE[$key]) : false;
+        if(!empty($key))
+            return $this->decoder(($_COOKIE[$key])?? null);
+        
+        return $_COOKIE;
     }
     /**
      *    @description    
      */
-    public    function pullFromNode()
+    public function pullFromNode()
     {
         $this->real    =    false;
         return $this;
@@ -40,7 +46,7 @@ class nCookie extends nSession
     /**
      *    @description    
      */
-    public    function decoder($value)
+    public function decoder($value)
     {
         $val    =    @json_decode($value, 1);
         return (!empty($val))? $val : $value;
@@ -48,7 +54,7 @@ class nCookie extends nSession
     /**
      *    @description    
      */
-    public    function destroy($key = false, $path = '/', $domain = null)
+    public function destroy($key = false, $path = '/', $domain = null)
     {
         $SESS    =    $this->getDataNode('_COOKIE');
         $this->removeNode('_COOKIE');

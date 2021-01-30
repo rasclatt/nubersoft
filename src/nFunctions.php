@@ -3,26 +3,13 @@ namespace Nubersoft;
 
 class nFunctions
 {
-    private    static    $singleton,
-                    $msg;
-    const    TO_ARRAY     =    1;
-    const    TO_OBJECT     =    false;
-    /**
-     *    @description    Create a singleton to reuse
-     */
-    public    function __construct()
-    {
-        if(self::$singleton instanceof \Nubersoft\nFunctions)
-            return self::$singleton;
-        
-        self::$singleton    =    $this;
-        
-        return self::$singleton;
-    }
+    private static $msg;
+    const TO_ARRAY  =   1;
+    const TO_OBJECT =   false;
     /**
      *    @description    Used to retrieve global arrays
      */
-    public    function getGlobal()
+    public function getGlobal()
     {
         $args    =    func_get_args();
         $type    =    (!empty($args[0]))? strtolower($args[0]) : 'POST';
