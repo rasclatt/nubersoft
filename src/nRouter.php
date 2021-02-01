@@ -16,7 +16,7 @@ class nRouter extends \Nubersoft\nQuery
         return $query;
     }
     
-    public    function route($path, $func)
+    public function route($path, $func)
     {
         $curr    =    $this->getCurrentPage();
         $path    =    strtolower(trim($path));
@@ -27,13 +27,34 @@ class nRouter extends \Nubersoft\nQuery
             throw new HttpException('Page Not Found.', 404);
     }
     
-    public    function getCurrentPage()
+    public function getCurrentPage()
     {
         return strtolower(trim($this->getDataNode('_SERVER')['REQUEST_URI']));
     }
     
-    public    function convertToStandardPath($string, $preg = '/[^A-Z0-9\-\_\/]/i')
+    public function convertToStandardPath($string, $preg = '/[^A-Z0-9\-\_\/]/i')
     {
         return str_replace('//','/', '/'.trim(preg_replace($preg, '', str_replace(["\s","\t",PHP_EOL,' '],'-',$string)),'/').'/');
     }
+	/**
+	 *	@description	
+	 */
+	public static function createRoutingData(string $string)
+	{
+        $harr   =   parse_url($string);
+        $host   =   explode('.', $harr['host']);
+        $host   =   [
+            'ssl' => ($harr['scheme'] == 'https'),
+            'subdomain' => (count($host) > 2)? array_shift($host) : '',
+            'tld' => array_pop($host),
+            'domain' => implode($host)
+        ];
+        
+        if(empty($harr['path']))
+            $host['path']   =   '';
+        
+        $host['locale'] =   \Nubersoft\nApp::call()->getSession('locale');
+        $host['locale_lang'] =   \Nubersoft\nApp::call()->getSession('locale_lang');
+        return array_merge($host, ['query' => ($harr['query'])?? [] ]);
+	}
 }

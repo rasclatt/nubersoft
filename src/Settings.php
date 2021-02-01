@@ -140,10 +140,11 @@ class Settings extends \Nubersoft\nQuery
             return $this->getDataNode('settings')['system'][$name]['option_attribute'];
         
         $option    =    $this->getOption($name, 'system');
+        
         if(empty($option))
             return $substitute;
         
-        return $option[$name]['option_attribute'];
+        return (!empty($option[$name]))? $option[$name]['option_attribute'] : array_map(function($v){ return $v['option_attribute']; }, $option);
     }
 
     public    function addComponent()

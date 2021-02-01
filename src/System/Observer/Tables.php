@@ -3,22 +3,30 @@ namespace Nubersoft\System\Observer;
 
 use \Nubersoft\ {
     nQuery\enMasse as nQueryEnMasse,
-    nDynamics
+    nDynamics,
+    nRouter\Controller as Router,
+    nToken,
+    Settings\Controller as Settings,
+    DataNode
 };
 
 class Tables extends \Nubersoft\System\Observer
 {
     use nQueryEnMasse,nDynamics;
     
-    protected    $Router,
-                $Token,
-                $Settings;
+    protected $Router, $Token, $Settings, $DataNode;
     
-    public    function __construct()
+    public    function __construct(
+        Router $Router,
+        nToken $Token,
+        Settings $Settings,
+        DataNode $DataNode
+    )
     {
-        $this->Router    =    $this->getHelper('nRouter\Controller');
-        $this->Token    =    $this->getHelper('nToken');
-        $this->Settings    =    $this->getHelper('Settings\Controller');
+        $this->Router    =    $Router;
+        $this->Token    =    $Token;
+        $this->Settings    =    $Settings;
+        $this->DataNode =   $DataNode;
     }
     
     public    function listen()
@@ -30,7 +38,7 @@ class Tables extends \Nubersoft\System\Observer
         
         $Router        =    $this->Router;
         $Token        =    $this->Token;
-        $DataNode    =    $this->getHelper('DataNode');
+        $DataNode    =    $this->DataNode;
         $POST        =    (!empty($this->getPost('ID')))? $this->getPost() : array_filter($this->getPost());
         $action        =    (!empty($POST['action']))? $POST['action'] : false;
         $token        =    (!empty($this->getPost('token')['nProcessor']))? $this->getPost('token')['nProcessor'] : false;
@@ -458,13 +466,12 @@ class Tables extends \Nubersoft\System\Observer
                 }
             }
             $this->updateData($POST, 'components', 'Component updated');
-
             if(!$page_match && !$this->isAjaxRequest()) {
                 $newPage    =    $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
-
                 $this->Router->redirect($newPage['full_path']);
             }
         }
+        return $this;
     }
     
     public    function editTable($POST, $table, $token, $Token, $msg = 'Row saved')

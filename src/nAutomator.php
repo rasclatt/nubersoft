@@ -1,16 +1,21 @@
 <?php
 namespace Nubersoft;
 
-class nAutomator extends \Nubersoft\nApp
+use \Nubersoft\ {
+    nReflect,
+    nMarkUp\enMasse as nMarkUp
+};
+
+class nAutomator extends nApp
 {
-    use nMarkUp\enMasse;
+    use nMarkUp;
     
-    public    function getClientWorkflow($type)
+    public function getClientWorkflow($type)
     {
         return $this->getWorkflowFile($type, NBR_CLIENT_WORKFLOWS);
     }
     
-    public    function getSystemWorkflow($type)
+    public function getSystemWorkflow($type)
     {
         $workflow    =    $this->getWorkflowFile($type, NBR_WORKFLOWS);
         
@@ -35,7 +40,7 @@ class nAutomator extends \Nubersoft\nApp
         return $workflow;
     }
     
-    public    function getWorkflowFile($type, $from)
+    public function getWorkflowFile($type, $from)
     {
         return $this->getHelper('Conversion\Data')->xmlToArray($from.DS.$type.'.xml');
     }
@@ -44,11 +49,13 @@ class nAutomator extends \Nubersoft\nApp
      *    @param    $array [array]    This is the recursable array of attributes which determine what class to run
      *                            and all the dependencies
      */
-    public    function doClassWorkflow($array)
+    public function doClassWorkflow($array)
     {
         # Set out names for the class and method
         $class    =    $array['name'];
-        $method    =    $array['method'];
+        $method    =    ($array['method'])?? null;
+        if(!$method)
+            throw new \Exception('You must have a method in your workflow', 500);
         # See if there is a non-specified injector (no into="method")
         if(!empty($array['inject'][$method])) {
             $args    =    $this->doInjection($array['inject'][$method]);
@@ -59,7 +66,7 @@ class nAutomator extends \Nubersoft\nApp
             # Fetch the injectables
             $constr    =    (!empty($array['inject']['__construct']))? $this->doInjection($array['inject']['__construct']) : null;
             # Create new object, inject construct params if there
-            $Obj    =    (!empty($constr))? new $class(...$constr) : new $class();
+            $Obj    =    (!empty($constr))? new $class(...$constr) : nReflect::instantiate($class);
             # We don't want to call construct twice, so just run if not construct
             if($method != '__construct') {
                 # If there are arguments, inject those
@@ -71,7 +78,7 @@ class nAutomator extends \Nubersoft\nApp
         }
         # Create a reflection for auto-injection
         else {
-            $Reflect    =    new \Nubersoft\nReflect();
+            $Reflect    =    new nReflect();
             $Obj        =    $Reflect->reflectClassMethod($array['name'], $array['method']);
         }
         # Check for any methods that need to be chained

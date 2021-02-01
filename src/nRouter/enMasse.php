@@ -3,23 +3,23 @@ namespace Nubersoft\nRouter;
 
 trait enMasse
 {
-    public    function isAjaxRequest()
+    public function isAjaxRequest()
     {
-        return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}();
+        return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}();
     }
     
-    public    function ajaxResponse($arg, $modal = false)
+    public function ajaxResponse($arg, $modal = false)
     {
-        return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}($arg, $modal);
+        return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}($arg, $modal);
     }
     
-    public    function getPage($arg)
+    public function getPage($arg)
     {
-        return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}($arg);
+        return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}($arg);
     }
     
-    public    function redirect($arg)
+    public function redirect($arg)
     {
-        return (new \Nubersoft\nRouter\Controller())->{__FUNCTION__}($arg);
+        return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}($arg);
     }
 }

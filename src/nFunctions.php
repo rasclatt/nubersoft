@@ -97,11 +97,11 @@ class nFunctions
         return str_replace('//', '/', $value);
     }
     
-    public    function render()
+    public function render()
     {
-        $args        =    func_get_args();
-        $include    =    (!empty($args[0]))? $args[0] : false;
-        $useData    =    (!empty($args[1]))? $args[1] : false;
+        $args = func_get_args();
+        $include = (!empty($args[0]))? $args[0] : false;
+        $useData = (!empty($args[1]))? $args[1] : false;
         
         if(isset($args[0]))
             unset($args[0]);
@@ -115,7 +115,6 @@ class nFunctions
         include($include);
         $data    =    ob_get_contents();
         ob_end_clean();
-        
         return $data;
     }
     

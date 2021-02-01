@@ -3,7 +3,7 @@ namespace Nubersoft\nRouter;
 
 class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObserver
 {
-    public    function listen()
+    public function listen()
     {
         $this->checkLastActive();
         $this->splitRequest();
@@ -11,7 +11,7 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
     /**
      *    @description    Checks the last activity in the session and destroys old session if past timeout
      */
-    public    function checkLastActive()
+    public function checkLastActive()
     {
         # Fetch session obj
         $Session    =    $this->getHelper('nSession');

@@ -27,12 +27,7 @@ class Request
             return trim($array);
         $new    =   [];
         foreach($array as $key => $value) {
-            $k  =   trim($key);
-            
-            if(empty($k))
-                continue;
-            
-            $new[$k]    =   (is_array($value))? $this->filter($value) : trim($value);
+            $new[$key]    =   (is_array($value))? $this->filter($value) : trim($value);
         }
         
         return $new;

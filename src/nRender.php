@@ -9,21 +9,19 @@ class nRender extends \Nubersoft\nQuery
         Settings\enMasse,
         Settings\Page\enMasse;
     
-    protected    $Html,
-                $User,
-                $sUser;
+    protected $Html, $User, $sUser;
     
-    public    function __construct()
+    public function __construct()
     {
-        $this->sUser    =    (!empty($this->getSession('user')))? $this->getSession('user') : [];
-        $this->Html        =    $this->getHelper('Html');
-        $this->User        =    $this->getHelper('nUser');
+        $this->sUser = (!empty($this->getSession('user')))? $this->getSession('user') : [];
+        $this->Html = $this->getHelper('Html');
+        $this->User = $this->getHelper('nUser');
         return parent::__construct();
     }
     /**
      *    @description    
      */
-    public    function userGet($key = false)
+    public function userGet($key = false)
     {
         if(!empty($key))
             return (isset($this->sUser[$key]))? $this->sUser[$key] : false;
@@ -187,15 +185,16 @@ class nRender extends \Nubersoft\nQuery
                 }
                 echo $Cache->render();
             }
-            else
+            else {
                 # Render layout
                 echo parent::render($layout, $this);
+            }
         }
     }
     /**
      *    @description    
      */
-    public    function getContent()
+    public function getContent()
     {
         $unique_id    =    (!empty($this->getDataNode('routing')['unique_id']))? $this->getDataNode('routing')['unique_id'] : false;
         
@@ -210,7 +209,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getTitle($default = false, $tags = true)
+    public function getTitle($default = false, $tags = true)
     {
         $title    =    (!empty($this->getDataNode('routing')['menu_name']))? $this->getDataNode('routing')['menu_name'] : false;
         
@@ -225,7 +224,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getMeta($add = false)
+    public function getMeta($add = false)
     {
         $meta    =    (!empty($this->getDataNode('routing')['page_options']['meta']))? $this->getDataNode('routing')['page_options']['meta'] : $this->getSitePreferences('header_meta');
         
@@ -243,7 +242,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    protected    function allowedAsset($type, $func)
+    protected function allowedAsset($type, $func)
     {
         if(!is_callable($func)) {
             trigger_error(__FUNCTION__.'($type, $func) requires $func to be a callable function.', E_USER_NOTICE);
@@ -502,4 +501,19 @@ class nRender extends \Nubersoft\nQuery
         
         return $auth2;
     }
+	/**
+	 *	@description	
+	 */
+	public function getPageByType(string $name, $key = false)
+	{
+        $page   =   $this->query("SELECT ".((!empty($key))? "`{$key}`" : '*')." FROM main_menus WHERE page_type = ?", [$name])->getResults(1);
+        
+        if(empty($page))
+            return null;
+        
+        if(!empty($key))
+            return ($page[$key])?? null;
+        
+        return $page['full_path'];
+	}
 }

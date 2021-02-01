@@ -372,8 +372,10 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 	 */
 	public	function editComponent()
 	{
-        $comp   =   $this->getHelper('Settings')->getComponentBy(['ID' => $this->getPost('deliver')['ID']])[0];
-        //$this->reportErrors();
+        $comp   =   $this->Settings->getComponentBy([
+            'ID' => $this->getPost('deliver')['ID']
+        ])[0];
+        
         $this->ajaxResponse([
             'html' => [
                 $this->setPluginContent('component_content', $comp)->getPlugin('component', 'modal.php')
@@ -382,6 +384,6 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
                 '#loadspot-modal'
             ],
             'title' => 'Editing Component ID# '.$comp['ID']
-        ],1);
+        ], 1);
 	}
 }

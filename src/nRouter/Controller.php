@@ -1,12 +1,23 @@
 <?php
 namespace Nubersoft\nRouter;
 
+use \Nubersoft\Conversion\Data as Conversion;
+
 class Controller extends \Nubersoft\nRouter
 {
-    public    function setHeader()
+    private $Conversion;
+	/**
+	 *	@description	
+	 */
+	public	function __construct(Conversion $Conversion)
+	{
+        $this->Conversion   =   $Conversion;
+	}
+    
+    public function setHeader()
     {
-        $args    =    func_get_args();
-        $exit    =    (isset($args[1]))? $args[1] : false;
+        $args = func_get_args();
+        $exit = (isset($args[1]))? $args[1] : false;
         if(!is_array($args[0]))
             $args[0]    =    [$args[0]];
         
@@ -19,6 +30,14 @@ class Controller extends \Nubersoft\nRouter
         
         return $this;
     }
+	/**
+	 *	@description	Set xss protection if the user is not an admin logged in
+	 */
+	public function detectAdminXss()
+	{
+        header('X-XSS-Protection: '.((!$this->isAdmin())? '1; mode=block' : '0'));
+        return $this;
+	}
     
     public function redirect($location)
     {
@@ -59,7 +78,7 @@ class Controller extends \Nubersoft\nRouter
             return (strtolower($this->getServer('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest');
     }
     
-    public    function ajaxResponse($item, $modal = false)
+    public function ajaxResponse($item, $modal = false)
     {
         if($modal) {
             if(!empty($item['html'][0])) {
@@ -70,12 +89,15 @@ class Controller extends \Nubersoft\nRouter
                     ])->getPlugin('modal_window');
                 });
                 
+                header('Content-Type: application/json');
                 die(json_encode($item));
             }
         }
         else {
-            if(is_array($item) || is_object($item))
+            if(is_array($item) || is_object($item)) {
+                header('Content-Type: application/json');
                 die(json_encode($item));
+            }
             else
                 die($item);
         }

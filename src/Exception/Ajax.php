@@ -8,19 +8,14 @@ class Ajax extends \Exception
 	/**
 	 *	@description	
 	 */
-	public	function __construct()
-	{
-        header('Content-Type: application/json');
-	}
-	/**
-	 *	@description	
-	 */
 	public function ajaxResponse()
 	{
-        http_response_code($this->errorCode());
+        header('Content-Type: application/json');
+        http_response_code($this->getCode());
         
         die(json_encode([
-            'msg' => $this->getHelper('ErrorMessaging')->getMessageAuto($this->getMessage())
+            'success' => ($this->getCode() == 200),
+            'msg' => "Exception thrown: {$this->getMessage()}"
         ]));
 	}
 }

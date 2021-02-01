@@ -190,8 +190,19 @@ class nApp extends \Nubersoft\nFunctions
         return $this;
     }
     
-    public    function fetchUniqueId($other = false, $sub = 20)
+    public function fetchUniqueId($other = false, $sub = 20)
     {
         return substr(date('YmdHis').rand(1000000, 9999999).$other, 0, $sub);
     }
+	/**
+	 *	@description	
+	 */
+	public function getHost($key = false)
+	{
+        $data   =   $this->getDataNode('routing_info');
+        if(!empty($key))
+            return ($data[$key])?? null;
+        
+        return $data;
+	}
 }
