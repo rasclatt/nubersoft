@@ -8,19 +8,19 @@ class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
     /**
      *    @description    
      */
-    public    function listen()
+    public function listen()
     {
     }
     /**
      *    @description    
      */
-    public    function setCurrentPage()
+    public function setCurrentPage()
     {
         if($this->isAjaxRequest())
             return false;
         
         $args        =    func_get_args();
-        $duration    =    3600;
+        $duration    =    (defined('SESSION_EXPIRE_TIME'))? SESSION_EXPIRE_TIME : 3600;
         $path        =    '/';
         $domain        =    null;
         

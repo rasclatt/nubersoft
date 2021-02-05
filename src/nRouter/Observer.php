@@ -3,6 +3,7 @@ namespace Nubersoft\nRouter;
 
 class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObserver
 {
+    
     public function listen()
     {
         $this->checkLastActive();
@@ -51,7 +52,7 @@ class Observer extends \Nubersoft\nRouter\Controller implements \Nubersoft\nObse
 	/**
 	 *	@description	
 	 */
-	public	function splitRequest()
+	public function splitRequest()
 	{
         if(empty($this->getServer())) {
             trigger_error('You must have the DataNode conversion process active.');

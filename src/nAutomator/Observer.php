@@ -9,7 +9,7 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
     protected    $config;
     protected    $actionName    =    'action';
     
-    public    function listen()
+    public function listen()
     {
         # Normalize the config array
         $array    =    $this->normalizeWorkflowArray($this->config);
@@ -17,7 +17,7 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
         $this->doWorkflow($array);
     }
     
-    public    function setFlow($value, $type = 'work')
+    public function setFlow($value, $type = 'work')
     {
         $method            =    ucfirst($type);
         $this->config    =    $this->{"getClient{$method}flow"}($value);
@@ -31,19 +31,19 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
         return $this;
     }
     
-    public    function setWorkflow($value)
+    public function setWorkflow($value)
     {
         $this->setFlow($value);
         return $this;
     }
     
-    public    function setBlokflow($value)
+    public function setBlokflow($value)
     {
         $this->setFlow($value, 'block');
         return $this;
     }
     
-    public    function setActionKey($value)
+    public function setActionKey($value)
     {
         $this->actionName    =    $value;
         return $this;
@@ -66,7 +66,7 @@ class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
         return ($kind == 'db')? $this->toArray(simplexml_load_string('<?xml version="1.0" encoding="UTF-8"?><config>'.$xml.'</config>')) : $this->toArray(simplexml_load_file($xml));
     }
     
-    public    function runBlockflow()
+    public function runBlockflow()
     {
         $templates    =    $this->getDataNode('templates');
         $args        =    func_get_args();

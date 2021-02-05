@@ -3,7 +3,7 @@ namespace Nubersoft\Settings;
 
 class Admin extends \Nubersoft\Settings
 {
-    public    function getAdminPage($key = 'full_path')
+    public function getAdminPage($key = 'full_path')
     {
         $page    =    $this->select()
             ->from('main_menus')
@@ -18,7 +18,7 @@ class Admin extends \Nubersoft\Settings
         return $page;
     }
     
-    public    function isAdminPage()
+    public function isAdminPage()
     {
         $admin    =    (!empty($this->getDataNode('routing')['is_admin']))? $this->getDataNode('routing')['is_admin'] : false;
         
@@ -30,7 +30,7 @@ class Admin extends \Nubersoft\Settings
 	/**
 	 *	@description	
 	 */
-	public	function authComponent(array $component)
+	public function authComponent(array $component)
 	{
         if(isset($component[0]['ID']))
             $component  =   $component[0];

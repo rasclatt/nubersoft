@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class nMarkUp extends \Nubersoft\nRender
 {
-    public    function useMarkUp($string)
+    public function useMarkUp($string)
     {
         if(empty($string))
             return $string;
@@ -19,7 +19,7 @@ class nMarkUp extends \Nubersoft\nRender
         },$string);
     }
     
-    public    function automate($match)
+    public function automate($match)
     {
         if(isset($match[0])) {
             $replaced    =    str_replace("~","",$match[1]);
@@ -39,7 +39,8 @@ class nMarkUp extends \Nubersoft\nRender
             elseif($front = (stripos($replaced,'FRONTEND::') !== false) || $back = (stripos($replaced,'BACKEND::') !== false)) {
                 $action        =    (!empty($front))? 'FRONTEND::' : 'BACKEND::';
                 $replaced    =    str_replace($action,'',$replaced);
-                $link        =    (!empty($front))? $this->getHelper('nRender')->getFrontEnd($replaced) : $this->getHelper('nRender')->getFrontEnd($replaced);
+                $link        =    \Nubersoft\nReflect::instantiate('\Nubersoft\nRender')->getFrontEnd($replaced);
+                
                 if(!empty($link))
                     return $link;
             }
@@ -229,7 +230,7 @@ class nMarkUp extends \Nubersoft\nRender
         }
     }
     
-    public    function parseMarkdown($html)
+    public function parseMarkdown($html)
     {
         return nl2br(preg_replace_callback('/&quot;[\w\s]+&quot;/', function($v){
             return '<span class="quote-tag">'.$v[0].'</span>';

@@ -11,7 +11,7 @@ class nFtp extends \Nubersoft\nFunctions
 
     private    $ftpname    =    'FTP';
 
-    public    function __construct($host,$user,$pass,$root = false,$port = 21,$timeout = 90)
+    public function __construct($host,$user,$pass,$root = false,$port = 21,$timeout = 90)
     {
         $this->root    =    $root;
         $this->con    =    ftp_connect($host,$port,$timeout);
@@ -36,18 +36,18 @@ class nFtp extends \Nubersoft\nFunctions
         return $this;
     }
 
-    public    function setRoot($root)
+    public function setRoot($root)
     {
         $this->root    =    $root;
         return $this;
     }
 
-    public    function stripRootAppend($path,$append=false)
+    public function stripRootAppend($path,$append=false)
     {
         return    str_replace('/',DS,str_replace('//','/',$append.'/'.str_replace($this->root,'',$path)));    
     }
 
-    public    function changeDir($path)
+    public function changeDir($path)
     {
         $change    =    @ftp_chdir($this->con,$path);
 
@@ -57,7 +57,7 @@ class nFtp extends \Nubersoft\nFunctions
         return $this;
     }
 
-    public    function currentDir()
+    public function currentDir()
     {
         $current    =    @ftp_pwd($this->con);
 
@@ -67,23 +67,23 @@ class nFtp extends \Nubersoft\nFunctions
         return $current;
     }
 
-    public    function close()
+    public function close()
     {
         ftp_close($this->con);
     }
 
-    public    function dirList($path=false)
+    public function dirList($path=false)
     {
         return (!empty($path))? ftp_nlist($this->con,$path) : ftp_nlist($this->con,$this->currentDir());
     }
 
-    public    function goTo($path)
+    public function goTo($path)
     {
         $this->changeDir(str_replace('//','/',$this->currentDir().'/'.$path));
         return $this;
     }
 
-    public    function doWhile($from,$to,$func)
+    public function doWhile($from,$to,$func)
     {
         # Open file
         $file        =    fopen($to,'w');
@@ -101,7 +101,7 @@ class nFtp extends \Nubersoft\nFunctions
         fclose($file);
     }
 
-    public    function recurseDownload($directories,$root,$ext=array('jpg','jpeg','gif','png','php','html','html','xml'))
+    public function recurseDownload($directories,$root,$ext=array('jpg','jpeg','gif','png','php','html','html','xml'))
     {
         if(count($this->listed) >= 50) {
             return $this;
@@ -125,7 +125,7 @@ class nFtp extends \Nubersoft\nFunctions
         return $this;
     }
 
-    public    function getList($type=false)
+    public function getList($type=false)
     {
         if($type)
             return (isset($this->listed[$type]))? $this->listed[$type] : false;
@@ -135,7 +135,7 @@ class nFtp extends \Nubersoft\nFunctions
     /**
      *    @description    
      */
-    public    function setPassiveMode($passive = true)
+    public function setPassiveMode($passive = true)
     {
         ftp_pasv($this->con, $passive);
         return $this;

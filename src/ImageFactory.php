@@ -18,7 +18,7 @@ class ImageFactory extends \Nubersoft\nApp
     const    LARGE_INPUT        =    100000000;
     const    MAX_INPUT        =    10000000000000000;
 
-    public    function setFileSize()
+    public function setFileSize()
     {
         $args_count    =    func_num_args();
 
@@ -30,7 +30,7 @@ class ImageFactory extends \Nubersoft\nApp
         return $this;    
     }
 
-    public  function fetchOriginal($file)
+    public function fetchOriginal($file)
     {
         $size                       =   @getimagesize($file);
         $this->original['width']    =   $size[0];
@@ -39,12 +39,12 @@ class ImageFactory extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function getLargerDimension()
+    public function getLargerDimension()
     {
         return ($this->original['width'] > $this->original['height'])? 'width' : 'height';
     }
     
-    public    function autoScale($file, $targeDim)
+    public function autoScale($file, $targeDim)
     {
         $size    =    $this->fetchOriginal($file)->get();
         $scale    =    $targeDim / $size[$this->getLargerDimension()];
@@ -55,12 +55,12 @@ class ImageFactory extends \Nubersoft\nApp
         ];
     }
     
-    public    function get()
+    public function get()
     {
         return $this->original;
     }
 
-    public    function scrapThumbnails()
+    public function scrapThumbnails()
     {
         if(!empty($this->search_for_filename)) {
             if(!empty($this->search_for_location)) {
@@ -82,7 +82,7 @@ class ImageFactory extends \Nubersoft\nApp
         return $this->getHelper('Conversion\Data')->getByteSize($this->max_filesize,array('from'=>'B','to'=>'MB','round'=>2,'extension'=>true));
     }
 
-    public  function makeThumbnail($thumb_target = '', $width = 60, $height = 60,$SetFileName = false, $quality = 80, $cropImg = true)
+    public function makeThumbnail($thumb_target = '', $width = 60, $height = 60,$SetFileName = false, $quality = 80, $cropImg = true)
     {
     
         $this->scrapThumbnails();
@@ -162,7 +162,7 @@ class ImageFactory extends \Nubersoft\nApp
             imagedestroy($tmp_img);
     }
 
-    public    function searchFor($filename = false)
+    public function searchFor($filename = false)
     {
         if(empty($filename))
             return $this;
@@ -172,7 +172,7 @@ class ImageFactory extends \Nubersoft\nApp
         return $this;
     }
 
-    public    function searchLocation($dir = false)
+    public function searchLocation($dir = false)
     {
         if(empty($dir))
             return $this;

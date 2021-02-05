@@ -9,7 +9,7 @@ class Page extends \Nubersoft\Settings\Admin
     /**
      *    @description    
      */
-    public    function createPage($data)
+    public function createPage($data)
     {
         if(empty($data['unique_id']))
             $data['unique_id']    =    $this->fetchUniqueId();
@@ -30,7 +30,7 @@ class Page extends \Nubersoft\Settings\Admin
     /**
      *    @description    
      */
-    public    function recurseLayout($array)
+    public function recurseLayout($array)
     {
         $stored    =
         $new    =    [];
@@ -56,7 +56,7 @@ class Page extends \Nubersoft\Settings\Admin
         return $new;
     }
     
-    public    function recurseToParent(&$new, &$stored, $parent, $child)
+    public function recurseToParent(&$new, &$stored, $parent, $child)
     {
         foreach($new as $id => $arr) {
             if($parent == $id) {

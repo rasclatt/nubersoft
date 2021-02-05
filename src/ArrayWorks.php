@@ -5,7 +5,7 @@ class ArrayWorks extends \Nubersoft\nApp
 {
     private    static    $singleton;
     
-    public    function __construct()
+    public function __construct()
     {
         if(self::$singleton instanceof \Nubersoft\ArrayWorks)
             return self::$singleton;
@@ -407,7 +407,7 @@ class ArrayWorks extends \Nubersoft\nApp
     /**
      *    @description    Allows the static methods to be called non-static
      */
-    public    function __call($method, $args = false)
+    public function __call($method, $args = false)
     {
         return (count($args) > 0)? self::{$method}(...$args) : self::{$method}();
     }

@@ -10,7 +10,7 @@ class Plugin extends nRender
         
     protected static $plugin_content, $current_plugin    =    [];
     
-    public    function getPlugin($name, $file = false, $path = false)
+    public function getPlugin($name, $file = false, $path = false)
     {
         if(empty($file))
             $file    =    'index.php';
@@ -74,7 +74,7 @@ class Plugin extends nRender
         }
     }
     
-    public    function pluginExists($name, $file = false)
+    public function pluginExists($name, $file = false)
     {
         if(empty($file))
             $file    =    'index.php';
@@ -112,7 +112,7 @@ class Plugin extends nRender
         return $paths;
     }
     
-    public    function getPluginInfo($name = false)
+    public function getPluginInfo($name = false)
     {
         if($name)
             return (!empty(self::$current_plugin[$name]))? self::$current_plugin[$name] : false;
@@ -120,13 +120,13 @@ class Plugin extends nRender
         return self::$current_plugin;
     }
     
-    public    function setPluginContent($name, $value)
+    public function setPluginContent($name, $value)
     {
         self::$plugin_content[$name]    =    $value;
         return $this;
     }
     
-    public    function getPluginContent($name = false, $clear = true)
+    public function getPluginContent($name = false, $clear = true)
     {
         if($name) {
             $data = (!empty(self::$plugin_content[$name]))? self::$plugin_content[$name] : false;
@@ -148,7 +148,7 @@ class Plugin extends nRender
         return $data;
     }
     
-    public    function getShortCode($decode = false)
+    public function getShortCode($decode = false)
     {
         $data    =    $this->getDataNode('current_matched_plugin_content');
         

@@ -16,7 +16,7 @@ class Tables extends \Nubersoft\System\Observer
     
     protected $Router, $Token, $Settings, $DataNode;
     
-    public    function __construct(
+    public function __construct(
         Router $Router,
         nToken $Token,
         Settings $Settings,
@@ -29,7 +29,7 @@ class Tables extends \Nubersoft\System\Observer
         $this->DataNode =   $DataNode;
     }
     
-    public    function listen()
+    public function listen()
     {
         if(!$this->isAdmin()) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(403));
@@ -49,7 +49,7 @@ class Tables extends \Nubersoft\System\Observer
         # Remove the token k/v
         if(isset($POST['token']))
             unset($POST['token']);
-        #
+        
         switch($action) {
             case('edit_table_rows_details'):
                 $this->editTable($POST, $this->getRequest('table'), $token, $Token);
@@ -158,16 +158,19 @@ class Tables extends \Nubersoft\System\Observer
                 return false;
             }
         }
-
+        # Remove the ID for the update
         unset($POST['ID']);
-
+        
         if($POST['full_path'] == '/') {
-            $POST['is_admin']    =    2;
-            $POST['link']    =    'home';
+            $POST['is_admin']   =   2;
+            $POST['link']   =   'home';
         }
         else {
             $POST['link']    =    strtolower(pathinfo($POST['full_path'], PATHINFO_BASENAME));
         }
+        # Remove unavailable keys
+        $this->filterUnMatched($POST,  'main_menus');
+        
         $sql    =    [];
         foreach($POST as $key => $value) {
             $sql[]    =    "`{$key}` = ?";
@@ -185,7 +188,7 @@ class Tables extends \Nubersoft\System\Observer
 	/**
 	 *	@description	
 	 */
-	public	function filterUnMatched(&$array, $table)
+	public function filterUnMatched(&$array, $table)
 	{
         $cols   =   [];
         # Get the fields from database
@@ -257,7 +260,7 @@ class Tables extends \Nubersoft\System\Observer
             $this->query("DELETE FROM `".str_replace('`', '', $table)."` WHERE ID = ?", [$ID]);
 
             if(empty($this->getHelper('nUser')->getUser($ID,'ID'))) {
-                $this->Router->redirect($this->localeUrl($this->getHelper('nRender')->getPage('full_path').'?table=users&msg=success_delete'));
+                $this->Router->redirect($this->localeUrl(\Nubersoft\nReflect::instantiate('\Nubersoft\nRender')->getPage('full_path').'?table=users&msg=success_delete'));
             }
             else {
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
@@ -399,7 +402,10 @@ class Tables extends \Nubersoft\System\Observer
     protected    function deleteRecord($ID)
     {
         $query    =    $this->query("SELECT unique_id FROM components WHERE ID = ?", [$ID])->getResults(1);
-        $this->query("UPDATE components SET parent_id = '' WHERE parent_id = ?", [$query['unique_id']]);
+        
+        if(!empty($query['unique_id'])) {
+            $this->query("UPDATE components SET parent_id = '' WHERE parent_id = ?", [$query['unique_id']]);
+        }
         $this->query("DELETE FROM `components` WHERE ID = ?", [$ID]);
                         
         if(empty($this->getHelper('Settings')->getComponent($ID))) {
@@ -474,7 +480,7 @@ class Tables extends \Nubersoft\System\Observer
         return $this;
     }
     
-    public    function editTable($POST, $table, $token, $Token, $msg = 'Row saved')
+    public function editTable($POST, $table, $token, $Token, $msg = 'Row saved')
     {
         if($table == 'users') {
             $this->updateUserData($POST, $token, $Token, $table, $this->getRequest('ID'));
@@ -568,7 +574,7 @@ class Tables extends \Nubersoft\System\Observer
         }
     }
     
-    public    function deleteFrom($table, $value, $col = "ID")
+    public function deleteFrom($table, $value, $col = "ID")
     {
         @$this->nQuery()->query("DELETE FROM {$table} WHERE {$col} = ?", [$value]);
     }

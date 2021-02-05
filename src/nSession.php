@@ -3,13 +3,13 @@ namespace Nubersoft;
 
 class nSession extends \Nubersoft\DataNode
 {
-    public    function start()
+    public function start()
     {
         if(empty($_SESSION))
             session_start();
     }
     
-    public    function destroy($key = false)
+    public function destroy($key = false)
     {
         if(empty($key)) {
             $this->removeNode('_SESSION');
@@ -34,7 +34,7 @@ class nSession extends \Nubersoft\DataNode
         return $this;
     }
     
-    public    function get($key = false)
+    public function get($key = false)
     {
         if(!empty($this->getDataNode('_SESSION')))
             $SESS    =    $this->getDataNode('_SESSION');
@@ -50,7 +50,7 @@ class nSession extends \Nubersoft\DataNode
         return $SESS;
     }
     
-    public    function set($key, $value)
+    public function set($key, $value)
     {
         $_SESSION[$key]    =    $value;
         $SESS            =    $this->getDataNode('_SESSION');
@@ -62,7 +62,7 @@ class nSession extends \Nubersoft\DataNode
 	/**
 	 *	@description	
 	 */
-	public	function newSessionId()
+	public function newSessionId()
 	{
         session_regenerate_id();
         return $this;

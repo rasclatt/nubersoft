@@ -5,12 +5,12 @@ class Controller extends \Nubersoft\nUser
 {
     private    static    $Session;
     
-    public    function isLoggedIn()
+    public function isLoggedIn()
     {
         return (!empty($this->getDataNode('_SESSION')['user']['username']));
     }
     
-    public    function isAdmin()
+    public function isAdmin()
     {
         $SESS    =    $this->getDataNode('_SESSION');
         $user    =    (!empty($SESS['user']))? $SESS['user'] : false;

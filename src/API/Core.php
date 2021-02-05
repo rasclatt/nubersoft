@@ -5,13 +5,13 @@ class Core extends \Nubersoft\cURL
 {
     protected $statement;
     
-    public    function __construct($query = false)
+    public function __construct($query = false)
     {
         $this->sendHeader    =    false;
         $this->query        =    $query;
     }
     
-    public    function remote()
+    public function remote()
     {
         $this->start();
         $args    =    func_get_args();
@@ -21,7 +21,7 @@ class Core extends \Nubersoft\cURL
         $_url    =    $this->getEndpoint();
         
         if(empty($_url))
-            throw new \Nubersoft\nException('Endpoint can not be empty.');
+            throw new \Nubersoft\Exception('Endpoint can not be empty.');
         
         if(!empty($query)) {
             if($isPost) {
@@ -58,7 +58,7 @@ class Core extends \Nubersoft\cURL
         return $this;
     }
     
-    public    function getStatement()
+    public function getStatement()
     {
         return $this->statement;
     }

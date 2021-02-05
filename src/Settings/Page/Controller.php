@@ -10,14 +10,14 @@ class Controller extends \Nubersoft\Settings\Page
     /**
      *    @description    
      */
-    public    function getContentStructure($page)
+    public function getContentStructure($page)
     {
         return $this->recurseLayout($this->getPageComponents($page, false));
     }
     /**
      *    @description    
      */
-    public    function getPageComponents($page, $page_live = true)
+    public function getPageComponents($page, $page_live = true)
     {
         if(empty(self::$page[$page])) {
             $sql    =    ($page_live)? " AND `page_live` = 'on'" : false;
@@ -27,7 +27,7 @@ class Controller extends \Nubersoft\Settings\Page
         return self::$page[$page];
     }
     
-    public    function getTemplateList()
+    public function getTemplateList()
     {
         $templates  =   array_merge(
             $this->fetchTemplateListFromScan(NBR_CLIENT_TEMPLATES),
@@ -44,12 +44,12 @@ class Controller extends \Nubersoft\Settings\Page
         return $opts;
     }
     
-    public    function siteLogoActive()
+    public function siteLogoActive()
     {
         return ($this->getSystemOption('header_company_logo_toggle') == 'on');
     }
     
-    public    function getSiteLogo()
+    public function getSiteLogo()
     {
         $toggle    =    $this->siteLogoActive();
         return ($toggle == 'on')? $this->localeUrl($this->getSystemOption('header_company_logo')) : false;
@@ -57,7 +57,7 @@ class Controller extends \Nubersoft\Settings\Page
 	/**
 	 *	@description	
 	 */
-	public	function fetchTemplateListFromScan($dir)
+	public function fetchTemplateListFromScan($dir)
 	{
         if(!is_dir($dir))
             return [];

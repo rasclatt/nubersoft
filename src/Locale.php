@@ -11,7 +11,7 @@ class Locale extends \Nubersoft\nApp
     /**
      *    @description    
      */
-    public    function get($cou = false, $abbrCnt = 3)
+    public function get($cou = false, $abbrCnt = 3)
     {
         $this->getLocaleData($abbrCnt);
         
@@ -22,7 +22,7 @@ class Locale extends \Nubersoft\nApp
         return $this->data;
     }
     
-    public    function getLocaleData($abbrCnt)
+    public function getLocaleData($abbrCnt)
     {    
         foreach([NBR_CLIENT_SETTINGS, NBR_SETTINGS] as $dir) {
             if(is_file($path = $dir.DS.'locale'.DS.'locale_list.xml')) {
@@ -35,13 +35,13 @@ class Locale extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function getCountry($cou, $abbrCnt = 3)
+    public function getCountry($cou, $abbrCnt = 3)
     {
         $this->country    =    $this->get($cou, $abbrCnt);
         return $this;
     }
     
-    public    function getStates($abbr = 'USA')
+    public function getStates($abbr = 'USA')
     {
         foreach([NBR_CLIENT_SETTINGS, NBR_SETTINGS] as $dir) {
             if(is_file($path = $dir.DS.'locale'.DS.'states.xml')) {
@@ -60,7 +60,7 @@ class Locale extends \Nubersoft\nApp
         return $this->states;
     }
     
-    public    function __call($method, $args = false)
+    public function __call($method, $args = false)
     {
         $var    =    str_replace('get','',strtolower($method));
         

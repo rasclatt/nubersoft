@@ -7,10 +7,18 @@ class Observer extends \Nubersoft\System\Observer
 {
     use \Nubersoft\Settings\enMasse;
     
+    private $request;
+	/**
+	 *	@description	
+	 */
+	public function __construct()
+	{
+        $this->request  =   $this->getPost();
+	}
     /**
      *    @description
      */
-    public    function listen()
+    public function listen()
     {
         $subaction    =    $this->getPost('deliver')['subaction'];
         $layout        =    $this->getSettingsLayout($subaction);
@@ -36,7 +44,7 @@ class Observer extends \Nubersoft\System\Observer
     /**
      *    @description    
      */
-    public    function widgetManager()
+    public function widgetManager()
     {
         if(!$this->isAdmin())
             return false;
@@ -264,7 +272,7 @@ class Observer extends \Nubersoft\System\Observer
     /**
      *    @description    Saves settings from the admin area(s)
      */
-    public    function saveSettings()
+    public function saveSettings()
     {
         # Go throught the post
         foreach($this->getPost('setting') as $name => $value) {
@@ -303,7 +311,7 @@ class Observer extends \Nubersoft\System\Observer
     /**
      *    @description    Saves the site logo from admin settings
      */
-    public    function saveSiteLogo()
+    public function saveSiteLogo()
     {
         $FILES    =    (!empty($this->getDataNode('_FILES')[0]['name']))? $this->getDataNode('_FILES')[0] : false;
         $toggle    =    (!empty($this->getPost('setting')['header_company_logo_toggle']))? $this->getPost('setting')['header_company_logo_toggle'] : 'off';
@@ -337,4 +345,31 @@ class Observer extends \Nubersoft\System\Observer
         else
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
     }
+	/**
+	 *	@description	
+	 */
+	public function saveJWT()
+	{
+        $path = \Nubersoft\JWT\Controller::getJwtPath();
+        $jwtNew =   preg_replace('/[^\d\A-Z_\-]/i', '', ($this->request['token_name'])?? false);
+        
+        if(!$jwtNew) {
+            if(is_file($path)) {
+                unlink($path);
+            }
+        }
+        else {
+            file_put_contents($path, $jwtNew);
+        }
+        
+        $this->ajaxResponse([
+            'alert' => (is_file($path))? "JWT secret created." : "JWT secret does not exist.",
+            'input' => [
+                $jwtNew
+            ],
+            'sendto' => [
+                'input[name="token_name"]'
+            ]
+        ]);
+	}
 }

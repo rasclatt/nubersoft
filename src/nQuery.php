@@ -3,13 +3,13 @@ namespace Nubersoft;
 
 class nQuery extends \Nubersoft\nApp
 {
-    private    static    $con;
-    private    $query,
+    private static $con;
+    private $query,
             $sql,
             $bind,
             $stmt;
     
-    public    function getConnection()
+    public function getConnection()
     {
         if(self::$con instanceof \Nubersoft\Database)
             return self::$con;
@@ -29,7 +29,7 @@ class nQuery extends \Nubersoft\nApp
         }
     }
     
-    public    function query($sql, $bind = false, $conn = false)
+    public function query($sql, $bind = false, $conn = false)
     {
         $con    =    ($conn instanceof \PDO)? $conn : $this->getConnection();
         
@@ -45,7 +45,7 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function getResults($single = false)
+    public function getResults($single = false)
     {
         while($results = $this->query->fetch(\PDO::FETCH_ASSOC)) {
             $row[]    =    $results;
@@ -56,20 +56,20 @@ class nQuery extends \Nubersoft\nApp
         return ($single)? $row[0] : $row;
     }
     
-    public    function insert($table, $ticks = '`')
+    public function insert($table, $ticks = '`')
     {
         $this->sql        =    [];
-        $this->sql[]    =    "INSERT INTO {$ticks}{$table}{$ticks}";
+        $this->sql[]    =    "INSERT INTO {$ticks}{$this->stripTableName($table)}{$ticks}";
         return $this;
     }
     
-    public    function columns($columns, $ticks = '`')
+    public function columns($columns, $ticks = '`')
     {
         $this->sql[]    =    "({$ticks}".implode("{$ticks}, {$ticks}", $columns)."{$ticks})";
         return $this;
     }
     
-    public    function values($rows)
+    public function values($rows)
     {
         $this->bind        =    [];
         $this->sql[]    =    "VALUES";
@@ -84,14 +84,14 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function write()
+    public function write()
     {
         $this->stmt    =    implode(PHP_EOL, $this->sql);
         
         $this->query($this->stmt, $this->bind);
     }
     
-    public    function select($columns = '*')
+    public function select($columns = '*')
     {
         $this->bind        =
         $this->sql        =    [];
@@ -105,17 +105,17 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function from($table)
+    public function from($table)
     {
         if(is_array($table))
-            $table    =    implode(', ', $table);
+            $table    =    implode(', ', array_map(function($v){ return $this->stripTableName($v); }, $table));
         
-        $this->sql[]    =    'FROM '.$table;
+        $this->sql[]    =    'FROM '.$this->stripTableName($table);
         
         return $this;
     }
     
-    public    function where($where, $bind = false)
+    public function where($where, $bind = false)
     {
         if(empty($this->bind))
             $this->bind        =    [];
@@ -139,7 +139,7 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function orderBy($array)
+    public function orderBy($array)
     {
         $this->sql[]    =    'ORDER BY';
         
@@ -158,22 +158,22 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function addStmt($sql)
+    public function addStmt($sql)
     {
         $this->sql[]    =    $sql;
         return $this;
     }
     
-    public    function update($table)
+    public function update($table)
     {
         $this->bind        =
         $this->sql        =    [];
-        $this->sql[]    =    "UPDATE {$table}";
+        $this->sql[]    =    "UPDATE {$this->stripTableName($table)}";
 
         return $this;
     }
     
-    public    function set($array, $tick = "`")
+    public function set($array, $tick = "`")
     {
         $set            =    [];
         $this->sql[]    =    "SET";
@@ -185,39 +185,39 @@ class nQuery extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function getTables()
+    public function getTables()
     {
         return array_map(function($v){
             return $v['Tables_in_'.DB_NAME];
         },$this->query("show tables")->getResults());
     }
     
-    public    function describe($table, $tick = '`')
+    public function describe($table, $tick = '`')
     {
-        return $this->query("describe {$tick}{$table}{$tick}")->getResults();
+        return $this->query("describe {$tick}{$this->stripTableName($table)}{$tick}")->getResults();
     }
     
-    public    function getColumnsInTable($table, $ticks = '`')
+    public function getColumnsInTable($table, $ticks = '`')
     {
         return array_map(function($v){
             return $v['Field'];
-        }, $this->describe($table, $ticks));
+        }, $this->describe($this->stripTableName($table), $ticks));
     }
     
-    public    function delete($table, $ticks = '`')
+    public function delete($table, $ticks = '`')
     {
         $this->sql        =    [];
-        $this->sql[]    =    "DELETE FROM {$ticks}{$table}{$ticks}";
+        $this->sql[]    =    "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
         
         return $this;
     }
     
-    public    function filterArrayByColumns($table, &$array, $ticks = '`')
+    public function filterArrayByColumns($table, &$array, $ticks = '`')
     {
         ArrayWorks::filterByComparison($this->getColumnsInTable($table, $ticks), $array);
     }
     
-    public    function fetch($one = false)
+    public function fetch($one = false)
     {
         $sql    =    implode(PHP_EOL, $this->sql);
         $bind    =    (!empty($this->bind))? $this->bind : null;
@@ -229,4 +229,15 @@ class nQuery extends \Nubersoft\nApp
             $this->toError($e->getMessage().'stmt: '.$sql, 'sql');
         }
     }
+	/**
+	 *	@description	
+	 */
+	public function stripTableName(string $table)
+	{
+        $table  =   preg_replace('/[^A-Z\_\-\.\d]/i', '', strip_tags($table));
+        if(empty($table))
+            throw new \Exception("Invalid sql request", 500);
+        
+        return $table;
+	}
 }

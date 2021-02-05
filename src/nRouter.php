@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class nRouter extends \Nubersoft\nQuery
 {
-    public    function getPage($id, $column = 'full_path')
+    public function getPage($id, $column = 'full_path')
     {
         $path    =    trim($id);
         $nQuery    =    $this->getHelper('nQuery');

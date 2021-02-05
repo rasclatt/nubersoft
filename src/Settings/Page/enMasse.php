@@ -5,12 +5,12 @@ namespace Nubersoft\Settings\Page;
  */
 trait enMasse
 {
-    public    function siteLogoActive()
+    public function siteLogoActive()
     {
         return $this->getHelper('Settings\Page\Controller')->{__FUNCTION__}();
     }
     
-    public    function getSiteLogo($alt = false, $html = true)
+    public function getSiteLogo($alt = false, $html = true)
     {
         $path    =    $this->getHelper('Settings\Page\Controller')->{__FUNCTION__}();
         
@@ -26,7 +26,7 @@ trait enMasse
         return ($html)? '<img src="'.$path.'" class="site-image" />' : $path;
     }
     
-    public    function __call($method, $args)
+    public function __call($method, $args)
     {
         $args    =    (!is_array($args))? [] : $args;
         $class    =    $this->getHelper('Settings\Page\Controller');

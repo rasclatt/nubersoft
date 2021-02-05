@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class System extends nSession\Controller
 {
-    public    function login($username, $password)
+    public function login($username, $password)
     {
         # Check login validation
         $validate    =    $this->validate($username, $password, true);
@@ -34,7 +34,7 @@ class System extends nSession\Controller
         }
     }
     
-    public    function validate($username, $password, $return = false)
+    public function validate($username, $password, $return = false)
     {
         $user    =    $this->getHelper('nUser')->getUser($username);
         
@@ -59,7 +59,7 @@ class System extends nSession\Controller
         ];
     }
     
-    public    function logout($redirect = false)
+    public function logout($redirect = false)
     {
         $this->destroy();
         
@@ -68,13 +68,13 @@ class System extends nSession\Controller
         }
     }
     
-    public    function toUserSession($user)
+    public function toUserSession($user)
     {
         $this->set('user', $user);
         return $this;
     }
     
-    public    function downloadFile($file)
+    public function downloadFile($file)
     {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
@@ -87,7 +87,7 @@ class System extends nSession\Controller
         exit;
     }
     
-    public    function deleteFile($file, $ID = false, $table = false)
+    public function deleteFile($file, $ID = false, $table = false)
     {
         $update    =    false;
         $err    =    $this->getHelper('ErrorMessaging')->getMessageAuto('fail_delete');
@@ -130,7 +130,7 @@ class System extends nSession\Controller
             $this->query("UPDATE {$table} SET file_path = '', file_name = '', file_size = '' WHERE ID = ?",[$ID]);
     }
     
-    public    function deleteThumbnail($filename)
+    public function deleteThumbnail($filename)
     {
         $info    =    pathinfo($filename);
         
@@ -139,7 +139,7 @@ class System extends nSession\Controller
         return $thumb;
     }
     
-    public    function createReWrite($content, $path, $ext = '.htaccess')
+    public function createReWrite($content, $path, $ext = '.htaccess')
     {
         $file    =    $path.DS.$ext;
         file_put_contents($file, $content);

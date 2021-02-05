@@ -3,7 +3,7 @@ namespace Nubersoft\nGlobal;
 
 class Observer extends \Nubersoft\nGlobal implements \Nubersoft\nObserver
 {
-    public    function listen()
+    public function listen()
     {
         $this->createContainer(function(\Nubersoft\DataNode $DataNode){
             

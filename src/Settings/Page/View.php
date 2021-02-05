@@ -10,7 +10,7 @@ class View extends \Nubersoft\Settings\Page\Controller
     /**
      *    @description    
      */
-    public    function __construct()
+    public function __construct()
     {
         $this->Plugin    =    $this->getHelper('Plugin');
         
@@ -19,7 +19,7 @@ class View extends \Nubersoft\Settings\Page\Controller
     /**
      *    @description    
      */
-    public    function create($page, $type = 'layout')
+    public function create($page, $type = 'layout')
     {
         $data    =    $this->getPageComponents($page, false);
         $arr    =    $this->getContentStructure($page);

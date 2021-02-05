@@ -46,21 +46,21 @@ class nFunctions
     /**
      *    @description    Turns an object to an array by converting to json and back
      */
-    public    function toArray($array = false)
+    public function toArray($array = false)
     {
         return $this->toArrObj($array, self::TO_ARRAY);
     }
     /**
      *    @description    Turns an array into an object by converting to json and back
      */
-    public    function toObject($array = false)
+    public function toObject($array = false)
     {
         return $this->toArrObj($array, self::TO_OBJECT);
     }
     /**
      *    @description    Turns an array or object to either.
      */
-    public    function toArrObj($array = false, $type)
+    public function toArrObj($array = false, $type)
     {    
         if($array === false)
             return $array;
@@ -71,7 +71,7 @@ class nFunctions
      *    @description    Autoloads a function
      *    @returns        Array of errors or boolean (empty)
      */
-    public    function autoload($func, $path = false)
+    public function autoload($func, $path = false)
     {
         if(empty($path))
             $path    =    __DIR__.DS.'functions';
@@ -87,12 +87,12 @@ class nFunctions
         return (!empty($err))? $err : false;
     }
     
-    public    function toSingleDs($value)
+    public function toSingleDs($value)
     {
         return str_replace(DS.DS, DS, $value);
     }
     
-    public    function toSingleSlash($value)
+    public function toSingleSlash($value)
     {
         return str_replace('//', '/', $value);
     }
@@ -118,7 +118,7 @@ class nFunctions
         return $data;
     }
     
-    public    function toError($msg, $code = false, $log = true)
+    public function toError($msg, $code = false, $log = true)
     {
         if($code) {
             self::$msg['errors'][$code][]    =    $msg;
@@ -131,7 +131,7 @@ class nFunctions
         }
     }
     
-    public    function toSuccess($msg, $code = false, $log = false)
+    public function toSuccess($msg, $code = false, $log = false)
     {
         if($code) {
             self::$msg['success'][$code][]    =    $msg;
@@ -144,7 +144,7 @@ class nFunctions
         }
     }
     
-    public    function getSystemMessages($type = false)
+    public function getSystemMessages($type = false)
     {
         if($type)
             return (!empty(self::$msg[$type]))? self::$msg[$type] : [];
@@ -155,13 +155,13 @@ class nFunctions
      *    @description    Alias of siteUrl(). This used to contain country abbr but it deemed unecessary.
      *    @deprecation    Under review for removal
      */
-    public    function localeUrl($path = '/')
+    public function localeUrl($path = '/')
     {
         //$this->getHelper('nSession')->get('locale');
         return $this->siteUrl($path);
     }
     
-    public    function siteUrl($path = false)
+    public function siteUrl($path = false)
     {
         $proto    =    ($this->isSsl())? 'https://' : 'http://';
         
@@ -178,12 +178,12 @@ class nFunctions
         return $domain;
     }
     
-    public    function isSsl()
+    public function isSsl()
     {
         return (!empty($this->getServer('HTTPS')));
     }
     
-    public    function isDir($dir, $make = false, $perm = 0775)
+    public function isDir($dir, $make = false, $perm = 0775)
     {
         $exists    =    is_dir($dir);
         
@@ -199,7 +199,7 @@ class nFunctions
         return is_dir($dir);
     }
     
-    public    function __($string)
+    public function __($string)
     {
         return $string;
     }

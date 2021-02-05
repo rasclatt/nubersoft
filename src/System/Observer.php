@@ -6,17 +6,19 @@ use \Nubersoft\ {
     nRender\enMasse as nRenderTrait,
     nRouter\Controller as Router,
     Settings\Controller as Settings,
-    nSession
+    nSession,
+    nObserver,
+    System
 };
 
-class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
+class Observer extends System implements nObserver
 {
     use nQueryTrait,
         nRenderTrait;
     
-    private    $Router, $Settings, $Session;
+    private    $Router, $Settings, $Session, $JWT;
     
-    public    function __construct(
+    public function __construct(
         Router $Router,
         Settings $Settings,
         nSession $Session
@@ -25,7 +27,6 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         $this->Router   =   $Router;
         $this->Settings    =    $Settings;
         $this->Session    =    $Session;
-        
         return parent::__construct(...func_get_args());
     }
     
@@ -148,12 +149,12 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         }
     }
     
-    public    function getFilesFolders($dir, $skip = false)
+    public function getFilesFolders($dir, $skip = false)
     {
         return new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),\RecursiveIteratorIterator::SELF_FIRST);
     }
     
-    public    function loginUser()
+    public function loginUser()
     {
         $token  =   (!empty($this->getPost('token')['login']))? $this->getPost('token')['login'] : false;
         
@@ -250,7 +251,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         }
     }
     
-    public    function getFormToken()
+    public function getFormToken()
     {
         if(!$this->isAjaxRequest()) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'), false, false);
@@ -270,14 +271,14 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
         ]);
     }
     
-    public    function setEditMode()
+    public function setEditMode()
     {
         $this->Session->set('editor', ($this->getRequest('active') == 'on'));
     }
     /**
      *    @description    
      */
-    public    function sendEmail()
+    public function sendEmail()
     {
         $Token  =   $this->getHelper('nToken');
         $token    =    (!empty($this->getPost('token')['nProcessor']))? $this->getPost('token')['nProcessor'] : false;
@@ -307,7 +308,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 	/**
 	 *	@description	Allows content to be ajax based on a component key
 	 */
-	public	function componentToPage()
+	public function componentToPage()
 	{
         $err    =   [
             'alert' => 'Invalid request'
@@ -338,7 +339,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 	/**
 	 *	@description	
 	 */
-	public	function componentSentinel()
+	public function componentSentinel()
 	{
         switch($this->getPost('action')) {
             case('viewblocklayout'):
@@ -370,7 +371,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
 	/**
 	 *	@description	
 	 */
-	public	function editComponent()
+	public function editComponent()
 	{
         $comp   =   $this->Settings->getComponentBy([
             'ID' => $this->getPost('deliver')['ID']

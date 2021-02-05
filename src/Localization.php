@@ -2,15 +2,15 @@
 namespace Nubersoft;
 
 use \Nubersoft\ {
-    nRender,
-    Settings
+    Settings,
+    Settings\enMasse as SettingsTrait
 };
 /**
  *	@description	
  */
-class Localization extends nRender
+class Localization extends nApp
 {
-    use Settings\enMasse;
+    use SettingsTrait;
 	/**
 	 *	@description	
 	 */
@@ -46,8 +46,62 @@ class Localization extends nRender
 	/**
 	 *	@description	
 	 */
-	public static function getSiteLocale()
+	public function saveTranslation(string $transkey, $value, $translation_key = 'translator', $ref_page = false)
 	{
-        return \Nubersoft\nApp::call('nCookie')->get('locale');
+        $args		=	[
+            'title' => $transkey,
+            'category_id' => 'translator'
+        ];
+
+        if(!empty($ref_page))
+            $args['ref_page']   =  $ref_page; 
+
+        $component	=	$this->getComponentBy($args);
+
+        if(!empty($component))
+            $this->deleteComponentBy($args);
+
+        $args['content']	=	$this->enc($value);
+        $this->addComponent($args);
+        
+        return $this->getComponentBy([
+            'title' => $transkey,
+            'category_id' => 'translator'
+        ]);
+	}
+	/**
+	 *	@description	
+	 */
+	public function translationExists(string $transkey)
+	{
+        $d = $this->getComponentBy([
+            'title' => $transkey,
+            'category_id' => 'translator'
+        ]);
+        return (empty($d))? false : $d;
+	}
+	/**
+	 *	@description	
+	 */
+	public static function getSiteLocale($def = 'us')
+	{
+        $l = nApp::call('nCookie')->get('locale');
+        return (empty($l))? $def : $l;
+	}
+	/**
+	 *	@description	
+	 */
+	public static function getSiteLanguage($def = 'en')
+	{
+        $l = nApp::call('nCookie')->get('language');
+        return (empty($l))? $def : $l;
+	}
+	/**
+	 *	@description	
+	 */
+	public static function getSiteCountry($def = 'us')
+	{
+        $l = nApp::call('nCookie')->get('country');
+        return (empty($l))? $def : $l;
 	}
 }

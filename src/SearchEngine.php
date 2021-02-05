@@ -5,40 +5,17 @@ class SearchEngine extends \Nubersoft\nApp
 {
     use nQuery\enMasse;
     
-    public        $numrows,
-                $totalpages,
-                $currentpage,
-                $results,
-                $s_count,
-                $stats,
-                $table_permission,
-                $columns;
-
-//    protected    $permissions;
-    protected    $table,
-                $sql,
-                $sql_mod,
-                $maxcount,
-                $limit,
-                $nubquery,
-                $spread,
-                $searchword,
-                $admintoggle,
-                $constr_string,
-                $constr_array,
-                $columns_allowed,
-                $constraints,
-                $forceConstr,
-                $selectArr;
+    public $numrows, $totalpages, $currentpage, $results, $s_count, $stats, $table_permission, $columns;
     
-    private        $count_query,
-                $search_query;
+    protected $table, $sql, $sql_mod, $maxcount, $limit, $nubquery, $spread, $searchword, $admintoggle, $constr_string, $constr_array, $columns_allowed, $constraints, $forceConstr, $selectArr;
     
-    public    function __construct($table = false, $admintoggle = false)
+    private $count_query, $search_query;
+    
+    public function __construct(string $table = null, $admintoggle = false)
     {
-        $this->table        =    (empty($table))? $this->getDefaultTable() : $table;
-        $this->table        =    $this->enc($this->table);
-        $this->admintoggle    =    ($admintoggle && $this->isAdmin());
+        $this->table = ((empty($table))? $this->getDefaultTable() : $table);
+        $this->table = $this->stripTableName($this->enc($this->table));
+        $this->admintoggle = ($admintoggle && $this->isAdmin());
 
         return parent::__construct();
     }
@@ -48,17 +25,17 @@ class SearchEngine extends \Nubersoft\nApp
         return $this->getColumnsInTable($table);
     }
     
-    public    function getDefaultTable()
+    public function getDefaultTable()
     {
         return $this->getRequest('table');
     }
     
-    public    function setAttr($name,$value)
+    public function setAttr($name,$value)
     {
         self::$settings[$name] = $value;
     }
 
-    public    function filterColumns($compare = array(), $addlist = false)
+    public function filterColumns($compare = array(), $addlist = false)
     {
         if(is_array($compare)) {
             # List all columns skip searching in
@@ -82,7 +59,7 @@ class SearchEngine extends \Nubersoft\nApp
             return array();
     }
 
-    public    function addConstraints($array)
+    public function addConstraints($array)
     {
         if(!is_array($array))
             return $this;
@@ -92,7 +69,7 @@ class SearchEngine extends \Nubersoft\nApp
         return $this;
     }
 
-    public    function fetch($settings = array(), $count_func = false, $query_func = false)
+    public function fetch($settings = array(), $count_func = false, $query_func = false)
     {
         $method        =    strtolower(ArrayWorks::setKeyValue($settings,'method','get'));
         $def_limit    =    ArrayWorks::setKeyValue($settings,'limit',10);
@@ -195,14 +172,14 @@ class SearchEngine extends \Nubersoft\nApp
         return $this;
     }
     
-    public    function getColumnsAllowed($ticks = '')
+    public function getColumnsAllowed($ticks = '')
     {
         return array_map(function($v) use ($ticks) {
             return $ticks.$v.$ticks;
         }, $this->columns_allowed);
     }
     
-    public    function getData()
+    public function getData()
     {
         $data    =    array(
             'data' => (($this->stats)? $this->stats : array()),
@@ -216,7 +193,7 @@ class SearchEngine extends \Nubersoft\nApp
     **                    clause into the sql. If admin, the constraints are ignored. This overrides the
     **                    constraint to be used regardless of admin status
     */
-    public    function forceConstraint($force = true)
+    public function forceConstraint($force = true)
     {
         $this->forceConstr    =    $force;
         return $this;

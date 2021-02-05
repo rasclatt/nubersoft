@@ -5,12 +5,12 @@ class Controller extends \Nubersoft\Settings\Model
 {
     use \Nubersoft\nMarkUp\enMasse;
     
-    public    function getReWrite()
+    public function getReWrite()
     {
         return $this->getSettingContent('system', 'htaccess');
     }
     
-    public    function getTimezone($db = false)
+    public function getTimezone($db = false)
     {
         if($db)
             return $this->getOption('timezone', 'system');
@@ -19,12 +19,12 @@ class Controller extends \Nubersoft\Settings\Model
         return $this->getSettingContent('system', 'timezone', $timezone);
     }
     
-    public    function getSiteStatus()
+    public function getSiteStatus()
     {
         return $this->getSettingContent('system', 'site_live');
     }
     
-    public    function getDefaultTemplate()
+    public function getDefaultTemplate()
     {
         # See if it's already stored
         if(!empty($this->getDataNode('settings')['system']['template']['option_attribute']))
@@ -40,7 +40,7 @@ class Controller extends \Nubersoft\Settings\Model
         return $this->toSingleDs(NBR_ROOT_DIR.DS.$template.DS);
     }
     
-    public    function getTemplatePaths()
+    public function getTemplatePaths()
     {
         $page    =    $this->getPage('template');
         $paths    =    [
@@ -52,7 +52,7 @@ class Controller extends \Nubersoft\Settings\Model
         return array_unique($paths);
     }
     
-    public    function getPluginPaths()
+    public function getPluginPaths()
     {
         $page    =    $this->getPage('template');
         return array_unique([
@@ -63,7 +63,7 @@ class Controller extends \Nubersoft\Settings\Model
         ]);
     }
     
-    public    function getFooterPrefs()
+    public function getFooterPrefs()
     {
         $settings    =    $this->getDataNode('settings');
         $system        =    (!empty($settings['system']))? $settings['system'] : false;
@@ -83,12 +83,12 @@ class Controller extends \Nubersoft\Settings\Model
         return ($toggle == 'on')? $attr : false;
     }
     
-    public    function getHeaderPrefs($key = false)
+    public function getHeaderPrefs($key = false)
     {
         return $this->getSettingContent('head', $key);
     }
     
-    public    function setTemplateLayout()
+    public function setTemplateLayout()
     {
         $DataNode    =    $this->getHelper('DataNode');
         $frontend    =    
@@ -135,7 +135,7 @@ class Controller extends \Nubersoft\Settings\Model
             $DataNode->addNode('templates', '', 'errors');
     }
     
-    public    function setTemplateConfig($template, \Nubersoft\DataNode $DataNode)
+    public function setTemplateConfig($template, \Nubersoft\DataNode $DataNode)
     {
         $thisObj    =    $this;
         $configs    =    $this->getHelper('ArrayWorks')
@@ -158,7 +158,7 @@ class Controller extends \Nubersoft\Settings\Model
         return $configs;
     }
     
-    public    function getFormAttr($table)
+    public function getFormAttr($table)
     {
         
         $cols    =    $this->getColumnsInTable($table);
@@ -177,7 +177,7 @@ class Controller extends \Nubersoft\Settings\Model
         return $this->getHelper('ArrayWorks')->organizeByKey($inputs, 'column_name');
     }
     
-    public    function createDefines($registry)
+    public function createDefines($registry)
     {
         $registry    =    $this->toArray(@simplexml_load_file($registry));
 

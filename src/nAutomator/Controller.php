@@ -3,7 +3,7 @@ namespace Nubersoft\nAutomator;
 
 class Controller extends \Nubersoft\nAutomator
 {
-    public    function createWorkflow($name, $type = 'work', $action = false)
+    public function createWorkflow($name, $type = 'work', $action = false)
     {
         if(empty($action))
             $action    =    (defined('NBR_ACTION_KEY')? NBR_ACTION_KEY : 'action');
@@ -19,7 +19,7 @@ class Controller extends \Nubersoft\nAutomator
             ->listen();
     }
     
-    public    function createBlockflow($name, $action = false)
+    public function createBlockflow($name, $action = false)
     {
         $this->createWorkflow($name, 'block', $action);
     }

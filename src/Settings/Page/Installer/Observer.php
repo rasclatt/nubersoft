@@ -8,7 +8,7 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
     /**
      *    @description    
      */
-    public    function listen()
+    public function listen()
     {
         # Check if database and/or registry file is created
         $dbcreds    =    NBR_CLIENT_SETTINGS.DS.'dbcreds.php';

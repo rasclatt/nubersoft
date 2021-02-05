@@ -9,7 +9,7 @@ class Widget extends \Nubersoft\Plugin
             $author;
     private    static    $singleton;
     
-    public    function __construct($plugin)
+    public function __construct($plugin)
     {
         if(empty(self::$singleton))
             self::$singleton    =    $this;
@@ -22,12 +22,12 @@ class Widget extends \Nubersoft\Plugin
         return self::$singleton;
     }
     
-    public    function configPath()
+    public function configPath()
     {
         return NBR_CLIENT_PLUGINS.DS.$this->plugin.DS.'config.xml';
     }
     
-    public    function init()
+    public function init()
     {
         $plugin    =    $this->configPath();
         
@@ -43,32 +43,32 @@ class Widget extends \Nubersoft\Plugin
         return $this;
     }
     
-    public    function getConfig()
+    public function getConfig()
     {
         return $this->widget->widget;
     }
     
-    public    function getActions()
+    public function getActions()
     {
         return $this->getConfig()->actions;
     }
     
-    public    function getBlockflows()
+    public function getBlockflows()
     {
         return $this->getConfig()->blockflows;
     }
     
-    public    function getSlug()
+    public function getSlug()
     {
         return $this->getConfig()->slug->__toString();
     }
     
-    public    function getName()
+    public function getName()
     {
         return $this->getConfig()->name->__toString();
     }
     
-    public    function getAuthor($key = false)
+    public function getAuthor($key = false)
     {
         if(empty($this->author))
             $this->author    =    $this->toArray($this->getConfig()->author);
@@ -79,29 +79,29 @@ class Widget extends \Nubersoft\Plugin
         return $arr;
     }
     
-    public    function exists()
+    public function exists()
     {
         return is_file();
     }
     
-    public    function getAdminToolOptions()
+    public function getAdminToolOptions()
     {
         return $this->toArray($this->getConfig()->admintools);
     }
     
-    public    function isActive()
+    public function isActive()
     {
         $widget    =    $this->getOption('widget_'.$this->getSlug());
         return ($widget == 'on');
     }
     
-    public    function activate()
+    public function activate()
     {
         $this->setOption('widget_'.$this->getSlug(), 'on');
         $this->addComponent(['category_id' => 'widget_'.$this->getSlug(),'component_type' => 'receipt','content' => date('Y-m-d H:i:s')]);
     }
     
-    public    function deactivate()
+    public function deactivate()
     {
         $this->query("DELETE FROM main_menus WHERE parent_id = ?", ['widget_'.$this->getSlug()]);
         $this->deleteOption('widget_'.$this->getSlug());

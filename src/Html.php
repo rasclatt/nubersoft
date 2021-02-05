@@ -3,12 +3,12 @@ namespace Nubersoft;
 
 class Html extends nApp
 {
-    public    function createMeta($name, $content, $trunc = false)
+    public function createMeta($name, $content, $trunc = false)
     {
         return ($trunc)? '<meta '.$name.'="'.$content.'" />'.PHP_EOL : '<meta name="'.$name.'" content="'.$content.'" />'.PHP_EOL;
     }
     
-    public    function createScript($src, $local = false, $type = false, $id = false, $attr = false)
+    public function createScript($src, $local = false, $type = false, $id = false, $attr = false)
     {
         if(empty($type))
             $type    =    'text/javascript';
@@ -22,7 +22,7 @@ class Html extends nApp
         return '<script type="'.$type.'" src="'.$src.'"'.$id.' '.$attr.'></script>'.PHP_EOL;
     }
     
-    public    function createLinkRel($src, $local = false, $type = false, $rel = false, $id = false)
+    public function createLinkRel($src, $local = false, $type = false, $rel = false, $id = false)
     {
         if(empty($type))
             $type = 'text/css';

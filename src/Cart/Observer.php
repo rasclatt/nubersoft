@@ -8,7 +8,7 @@ class Observer extends \Nubersoft\Cart implements \Nubersoft\nObserver
     /**
      *    @description    
      */
-    public    function listen()
+    public function listen()
     {
         $POST    =    $this->getPost();
         switch($POST['action']) {

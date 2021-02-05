@@ -21,7 +21,7 @@ class nRemote extends nApp
     /**
     *    @description    Establish our live and test urls from base url
     */
-    public    function __construct($endpoint, $attributes, $func = false)
+    public function __construct($endpoint, $attributes, $func = false)
     {
         # Reset these storage arrays
         $this->attr    =
@@ -39,7 +39,7 @@ class nRemote extends nApp
     *    @description    Fetch the stored api credentials
     *    @param    $type    [string|bool] Fetch a specific key
     */
-    public    function getCreds($type = false)
+    public function getCreds($type = false)
     {
         # Send back requested
         if(!empty($type))
@@ -53,7 +53,7 @@ class nRemote extends nApp
     *    @param    $path    [string] needs to include a path and/or query string
     *    @param    $environment    [string(live/test)] Changes the environment to which call is made
     */
-    public    function doService($path)
+    public function doService($path)
     {
         $this->url    .=    $path;
         return $this;
@@ -61,14 +61,14 @@ class nRemote extends nApp
     /**
     *    @description    Returns full endpoint url
     */
-    public    function getUrl()
+    public function getUrl()
     {
         return $this->url;
     }
     /**
     *    @description    Returns full endpoint url
     */
-    public    function setUrl($url)
+    public function setUrl($url)
     {
         $this->url    =    $url;
         return $this;
@@ -76,14 +76,14 @@ class nRemote extends nApp
     /**
     *    @description    Returns full endpoint url
     */
-    public    function getEndpoint()
+    public function getEndpoint()
     {
         return $this->attr['endpoint'];
     }
     /**
     *    @description    Adds header attribute
     */
-    public    function addHeader($key, $value)
+    public function addHeader($key, $value)
     {
         $this->attr['header'][$key]    =    $key.': '.$value;
         return $this;
@@ -91,7 +91,7 @@ class nRemote extends nApp
     /**
     *    @description    
     */
-    public    function addSsl()
+    public function addSsl()
     {
         $this->addOption(CURLOPT_SSL_VERIFYPEER, 1)
             ->addOption(CURLOPT_SSL_VERIFYHOST, 2);
@@ -100,7 +100,7 @@ class nRemote extends nApp
     /**
     *    @description    
     */
-    public    function addOption($key, $value)
+    public function addOption($key, $value)
     {
         $this->def[$key]    =    $value;
         return $this;
@@ -108,7 +108,7 @@ class nRemote extends nApp
     /**
     *    @description    
     */
-    public    function addAuth($username, $password)
+    public function addAuth($username, $password)
     {
         $auth    =    $username.':'.$password;
         $this->addOption(CURLOPT_USERPWD, $auth)
@@ -124,7 +124,7 @@ class nRemote extends nApp
     *    @param    $type    [string(get/post/delete/put)] Set the type of request
     *    @param    $return    [string] Set the type of data to return
     */
-    public    function query($attr = false, $settings = false, $type = 'get', $send = 'json', $return = 'json')
+    public function query($attr = false, $settings = false, $type = 'get', $send = 'json', $return = 'json')
     {
         $this->format    =    $return;
         $this->def    =    [
@@ -197,7 +197,7 @@ class nRemote extends nApp
     *    @description    Return the results of the string 
     *    @param    $decode    [bool] Decode the response before sending back response
     */
-    public    function getResults($decode = true)
+    public function getResults($decode = true)
     {
         # Response includes the headers for whatever reason, so remove that and just isolate the data
         if(stripos($this->response,'Content-Length:') !== false) {
@@ -211,14 +211,14 @@ class nRemote extends nApp
             return $this->response;
     }
     
-    public    function getErrors()
+    public function getErrors()
     {
         return $this->errors;
     }
     /**
      *    @description    
      */
-    public    function addOptionLine($func)
+    public function addOptionLine($func)
     {
         $this->option_line[]    =    function($con) use ($func)
         {
@@ -229,13 +229,13 @@ class nRemote extends nApp
     /**
      *    @description    
      */
-    public    function addCallAttribute($key, $value)
+    public function addCallAttribute($key, $value)
     {
         $this->call_attr[$key]    =    $value;
         return $this;
     }
     
-    public    function getCallAttributes()
+    public function getCallAttributes()
     {
         $def    =    [
             'attributes' => $this->attr,

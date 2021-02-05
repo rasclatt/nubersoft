@@ -8,7 +8,7 @@ trait enMasse
     /**
      *    @description    
      */
-    public    function getThumbnail($pathname, $imagename)
+    public function getThumbnail($pathname, $imagename)
     {
         return (new \Nubersoft\System\Controller())->{__FUNCTION__}($pathname, $imagename);
     }

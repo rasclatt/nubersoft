@@ -8,7 +8,7 @@ class Controller extends \Nubersoft\System
     /**
      *    @description    
      */
-    public    function getThumbnail($filepath, $filename)
+    public function getThumbnail($filepath, $filename)
     {
         if(empty($filepath) || empty($filename))
             return false;

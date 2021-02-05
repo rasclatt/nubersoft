@@ -5,7 +5,7 @@ class nReflect
 {
     private    static    $singleton;
     
-    public    function __construct()
+    public function __construct()
     {
         if(self::$singleton instanceof \Nubersoft\nReflect)
             return self::$singleton;
@@ -13,7 +13,7 @@ class nReflect
         return  self::$singleton    =    $this;
     }
     
-    public    function execute()
+    public function execute()
     {
         $args    =    func_get_args();
         
@@ -22,7 +22,7 @@ class nReflect
         $Class    =    new \ReflectionClass($class);
 
         if(!$Class->isInstantiable()) {
-             throw new nException("App failure. {$class} not found.");
+             throw new \Exception("App failure. {$class} not found.".printpre());
          }
         
         $constr    =    $Class->getConstructor();
@@ -67,7 +67,7 @@ class nReflect
         return $Class->execute(...func_get_args());
     }
     
-    public    function reflectClassMethod($func,$method)
+    public function reflectClassMethod($func,$method)
     {
         # Create Class
         $Class        =    (is_string($func))? $this->execute($func) : $func;
@@ -97,7 +97,7 @@ class nReflect
     /**
     *    @description    Creates auto-injected functions
     */
-    public    function reflectFunction($func)
+    public function reflectFunction($func)
     {
         $Reflector    =    new \ReflectionFunction($func);
         $params        =    $Reflector->getParameters();

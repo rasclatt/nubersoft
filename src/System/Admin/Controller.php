@@ -8,7 +8,7 @@ class Controller extends \Nubersoft\SearchEngine
     /**
      *    @description    
      */
-    public    function paginate($table, $REQ,  $searchCols, $filter = false, $max_range = [5,10,20,50,100], $orderB = 'ID', $orderH = 'DESC')
+    public function paginate($table, $REQ,  $searchCols, $filter = false, $max_range = [5,10,20,50,100], $orderB = 'ID', $orderH = 'DESC')
     {
         $this->fetch([
             'columns' => $searchCols,

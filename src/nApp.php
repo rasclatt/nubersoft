@@ -12,7 +12,7 @@ class nApp extends \Nubersoft\nFunctions
 	/**
 	 *	@description	
 	 */
-	public	function __construct()
+	public function __construct()
 	{
 	}
     
@@ -37,34 +37,34 @@ class nApp extends \Nubersoft\nFunctions
         return $data;
 	}
     
-    public    function getPost($key = false, $encode = true)
+    public function getPost($key = false, $encode = true)
     {
         return $this->requestFetch(__FUNCTION__, $key, $encode);
     }
     
-    public    function getGet($key = false, $encode = true)
+    public function getGet($key = false, $encode = true)
     {
         return $this->requestFetch(__FUNCTION__, $key, $encode);
     }
     
-    public    function getRequest($key = false, $encode = true)
+    public function getRequest($key = false, $encode = true)
     {
         return $this->requestFetch(__FUNCTION__, $key, $encode);
     }
     
-    public    function getCookie($key = false, $encode = true)
+    public function getCookie($key = false, $encode = true)
     {
         $data    =    $this->getHelper('nCookie')->pullFromNode()->get($key);
         return ($encode)? nGlobal::sanitize($data) : $data;
     }
     
-    public    function getServer($key = false, $encode = true)
+    public function getServer($key = false, $encode = true)
     {
         $data    =    $this->getGlobal('SERVER', $key);
         return ($encode)? nGlobal::sanitize($data) : $data;
     }
     
-    public    function getSession($key = false)
+    public function getSession($key = false)
     {
         $SESS    =    $this->getDataNode('_SESSION');
         
@@ -77,12 +77,12 @@ class nApp extends \Nubersoft\nFunctions
         return $SESS;
     }
     
-    public    function getFiles()
+    public function getFiles()
     {
         return $this->getDataNode('_FILES');
     }
     
-    public    function getHelper()
+    public function getHelper()
     {
         $args        =    func_get_args();
         $class        =    (!empty($args[1]))? $args[0] : str_replace('\\\\', '\\', "\\Nubersoft\\".$args[0]);
@@ -95,9 +95,9 @@ class nApp extends \Nubersoft\nFunctions
         }
     }
     
-    public    function getHelperClass($class)
+    public function getHelperClass($class)
     {
-        return $this->getHelper($class, 1);
+        return nReflect::instantiate("\\Nubersoft{$class}");
     }
     
     public    static function call($class = false, $plugin= false)
@@ -129,22 +129,22 @@ class nApp extends \Nubersoft\nFunctions
         return self::$Reflect    =    new nReflect();
     }
     
-    public    function getDataNode($key = false)
+    public function getDataNode($key = false)
     {
         return $this->getHelper('DataNode')->getDataNode($key);
     }
     
-    public    function decode($value)
+    public function decode($value)
     {
         return json_decode($this->dec($value),true);
     }
     
-    public    function encode($value)
+    public function encode($value)
     {
         return $this->enc(json_encode($value));
     }
     
-    public    function enc($value)
+    public function enc($value)
     {
         if(is_array($value) || is_object($value))
             return $value;
@@ -152,7 +152,7 @@ class nApp extends \Nubersoft\nFunctions
         return htmlentities($value, ENT_QUOTES, 'UTF-8');
     }
     
-    public    function dec($value)
+    public function dec($value)
     {
         if(is_array($value) || is_object($value))
             return $value;
@@ -160,17 +160,17 @@ class nApp extends \Nubersoft\nFunctions
         return html_entity_decode($value, ENT_QUOTES, 'UTF-8');
     }
     
-    public    function getAdminPage($key = 'full_path')
+    public function getAdminPage($key = 'full_path')
     {
         return $this->getHelper('Settings\Admin')->{__FUNCTION__}($key);
     }
     
-    public    function isAdminPage()
+    public function isAdminPage()
     {
         $this->getHelper('Settings\Admin')->{__FUNCTION__}();
     }
     
-    public    function saveSetting($key, $value, $clear = false)
+    public function saveSetting($key, $value, $clear = false)
     {
         $DataNode    =    $this->getHelper('DataNode');
         
@@ -180,7 +180,7 @@ class nApp extends \Nubersoft\nFunctions
         $DataNode->addNode($key, $value);
     }
     
-    public    function reportErrors($rep = true)
+    public function reportErrors($rep = true)
     {    
         ini_set('display_errors', $rep);
     

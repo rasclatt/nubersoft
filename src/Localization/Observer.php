@@ -3,7 +3,8 @@ namespace Nubersoft\Localization;
 
 use \Nubersoft\ {
     nRouter as Router,
-    Localization as Locale
+    Localization\View as Locale,
+    Localization\Controller
 };
 /**
  *	@description	
@@ -12,10 +13,21 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 {
     use \Nubersoft\Settings\enMasse;
     use \Nubersoft\nQuery\enMasse;
+    
+    private $Localization;
 	/**
 	 *	@description	
 	 */
-	public	function actionListen()
+	public	function __construct(
+        Controller $Controller
+    )
+	{
+        $this->Localization   =   $Controller;
+	}
+	/**
+	 *	@description	
+	 */
+	public function actionListen()
 	{
         $POST	=	$this->getPost();
 		$action	=	(isset($POST['subaction']))? $POST['subaction'] : $POST['action'];
@@ -23,16 +35,7 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 		$locale	=	$this->getSession('locale');
         
 		switch($action) {
-			case('wb_create_translator'):
-                /*
-				# Assign the form
-				$form		=	$this->dec($POST['deliver']['formData']);
-				# Convert the string to form data
-				$q			=	[];
-				parse_str($form, $q);
-				
-				$POST	=	$q;
-				*/
+			case('create_translator'):
 				if(!$this->isAdmin())
 					$this->ajaxResponse([
                         'alert' => $this->getHelper('ErrorMessaging')->getMessageAuto(403)
@@ -41,31 +44,25 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
                 if(!empty($POST['deliver']['formData'])) {
                     $POST   =   $this->getHelper('Conversion\Data')->arrayFromQueryString($POST['deliver']['formData']);
                 }
+                $lang   =   strtolower($this->getCookie('language'));
+                if($lang != 'en') {
+                    $translation    =   $this->Localization->saveTranslation(...[
+                        "{$POST['transkey']}us{$lang}",
+                        $POST['description'],
+                        ($POST['category_id'])?? 'translator',
+                        ($POST['ref_page'])?? null
+                    ]);
+                }
                 
-				$args		=	[
-					'title' => $POST['title'],
-					'category_id' => ($POST['category_id'])?? 'translator'
-				];
-				
-                if(!empty($POST['ref_page']))
-                    $args['ref_page']   =  $POST['ref_page']; 
-                
-				$component	=	$this->getComponentBy($args);
-				
-				if(!empty($component))
-					$this->deleteComponentBy($args);
-				
-				$args['content']	=	$this->enc($POST['description']);
-				$this->addComponent($args);
 				$this->ajaxResponse([
-					'alert' => (!empty($this->getComponentBy($args)))? $this->getHelper('ErrorMessaging')->getMessageAuto('success_saved') : $this->getHelper('ErrorMessaging')->getMessageAuto('fail_saved')
+					'alert' => (!empty($translation))? $this->getHelper('ErrorMessaging')->getMessageAuto('success_saved') : $this->getHelper('ErrorMessaging')->getMessageAuto('fail_saved')
 				]);
         }
 	}
 	/**
 	 *	@description	
 	 */
-	public	function listen()
+	public function listen()
 	{
         $redirect   =   array_filter([
             $this->setLocalization('locale', 'country'),
@@ -87,9 +84,20 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         if(empty($this->getSession($sess_tag)) || $req) {
             # If being set
             if($req) {
-                $Session->destroy($sess_tag);
-                $Session->set($sess_tag, substr(strtolower($req),0,2));
-                $redirect   =   true;
+                # Get the abbr
+                $req    =   substr(strtolower($req),0,2);
+                # See if this is a valid language
+                $isActive   =   $this->Localization->localeAttrActive('language', $req);
+                # Check if user is admin
+                $isAdmin    =   $this->isAdmin();
+                # If active, change the language
+                if($isActive) {
+                    if(($isActive == 'adm' && $isAdmin) || $isActive == 'on') {
+                        $Session->destroy($sess_tag);
+                        $Session->set($sess_tag, $req);
+                    }
+                    $redirect   =   true;
+                }
             }
             # If not being set, set automatically
             else {
@@ -107,21 +115,78 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         $parse   =   parse_url($this->getDataNode('_SERVER')['REQUEST_URI']);
         if(!isset($parse['query']))
             return $this->getDataNode('_SERVER')['REQUEST_URI'];
-
         $arr    =   [];
-        parse_str($parse['query'], $arr);
+        parse_str($this->dec($parse['query']), $arr);
+        
         if(isset($arr['country']))
             unset($arr['country']);
+        
         if(isset($arr['language']))
             unset($arr['language']);
         
-        $query  =   http_build_query($arr);
+        $query  =   http_build_query($arr); 
         return $parse['path'].((empty($query))? '' : '?'.$query);
 	}
 	/**
 	 *	@description	
 	 */
-	public	function toggleEditMode()
+	public function updateLocaleSettings()
+	{
+        $Settings = $this->getSettingsModel();
+        $filters =   [
+            'country',
+            'language'
+        ];
+        
+        $csv    =   ($this->getFiles()['countries'])?? false;
+        
+        if($csv['type'] != 'text/csv')
+            $csv = false;
+        
+        $POST   =   $this->getPost();
+        
+        if(!empty($csv['tmp_name'])) {
+            $countries  =   array_filter(array_map(function($v){
+                return $v[0];
+            }, array_map('str_getcsv', file($csv['tmp_name']))));
+            $POST['country']    =   [];
+            $i = 1;
+            foreach($countries as $abbr) {
+                $POST['country']['name'][]  =   $abbr;
+                $POST['country']['page_order'][]  =   $i;
+                $POST['country']['page_live'][]  =   'on';
+                $i++;
+            }
+        }
+        
+        foreach($filters as $filter) {
+            if(!empty($Settings->getOption($filter, 'locale')))
+               $Settings->deleteOption($filter, 'locale');
+
+            if(!empty($POST[$filter]['name'][0])) {
+                foreach($POST[$filter]['name'] as $k => $v) {
+                    
+                    if(empty($v))
+                        continue;
+                    
+                    $this->query("INSERT INTO `system_settings` (`option_group_name`,`category_id`,`option_attribute`,`page_order`,`page_live`) VALUES ('locale', ?, ?, ?, ?)", [
+                        $filter,
+                        strtolower($v),
+                        $POST[$filter]['page_order'][$k],
+                        $POST[$filter]['page_live'][$k]
+                    ]);
+                }
+            }
+        }
+        
+        $this->toSuccess('Locale settings saved.');
+        
+        return $this;
+	}
+	/**
+	 *	@description	
+	 */
+	public function toggleEditMode()
 	{
 		if(!$this->isAdmin())
 			return false;
@@ -139,34 +204,42 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
 	public function apiListener()
 	{
         # Hide all errors
-        $this->reportErrors(0);
+        //$this->reportErrors();
+        # Stop of no translation requested
         if($this->getPost('service') != 'translation')
             return $this;
+        # Stop if not ajax request
         elseif(!$this->isAjaxRequest())
             return $this;
-        elseif(empty($this->getPost('keys'))) {
+        # Stop of there are not requested keys
+        elseif(empty($this->getPost('keys')) && $this->getPost('subservice') != 'store') {
             throw new \Nubersoft\Exception\Ajax('Keys are required for translating.', 200);
         }
-        
-        $filter  =   $this->getSystemOption('transhost');
-        $host   =   "{$this->getHost('domain')}.{$this->getHost('tld')}";
-        
-        if(empty($filter))
-            return $this;
-        
-        if(!is_array($filter))
-            $filter =   [$filter];
-        $referrer    =   $this->getServer('HTTP_REFERER');
-        $refHost    =   explode('.', parse_url($referrer)['host']);
-        $refHostComb =   array_pop($refHost);
-        $refHostComb =   strtolower(array_pop($refHost).'.'.$refHostComb);
-        $allow  =   false;
-        foreach($filter as $h) {
-            if($refHostComb == strtolower($h))
-                $allow  =   true;
+        try {
+            $filter  =   $this->getSystemOption('transhost');
+            $host   =   "{$this->getHost('domain')}.{$this->getHost('tld')}";
+
+            if(empty($filter))
+                return $this;
+
+            if(!is_array($filter))
+                $filter =   [$filter];
+            $referrer    =   $this->getServer('HTTP_REFERER');
+            $refHost    =   explode('.', parse_url($referrer)['host']);
+            $refHostComb =   array_pop($refHost);
+            $refHostComb =   strtolower(array_pop($refHost).'.'.$refHostComb);
+            $allow  =   false;
+            foreach($filter as $h) {
+                if($refHostComb == strtolower($h))
+                    $allow  =   true;
+            }
+            if(!$allow)
+                return $this;
         }
-        if(!$allow)
-            return $this;
+        catch (\Exception $e) {
+            throw new \Nubersoft\Exception\Ajax($e->getMessage(), 500);
+        }
+        
         try {
             $referrer   =   Router::createRoutingData($this->getServer('HTTP_REFERER'));
             $domain =   "{$referrer['domain']}.{$referrer['tld']}";
@@ -175,7 +248,16 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
                 $Locale =   new Locale($this->getPost('lang'), 'us');
                 foreach($this->getPost('generate') as $key => $value) {
                     if(!$Locale->transKeyExists($key)) {
-                        $Locale->saveTransKey($key, $this->dec($value), 'auto');
+                        $value  =   $this->dec($value);
+                        $Locale->saveTransKey($key, $value, 'auto');
+                        
+                        foreach($this->Localization->getActiveLanguages() as $activeLang) {
+                            $l  =   strtolower($activeLang['option_attribute']);
+                            if($l == 'en')
+                                continue;
+                            
+                            $this->Localization->saveTranslation("{$key}us{$l}", $value);
+                        }
                     }
                 }
                 $this->ajaxResponse([
@@ -191,8 +273,12 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
             }, $this->getPost('keys'));
             # Combine language-specific and general keys
             $keys   =   array_merge($keys, $this->getPost('keys'));
-            # Search
-            $translations   =   $this->query("SELECT `title`, `content`, `component_type` FROM components WHERE title IN (".implode(',', array_fill(0, count($keys), '?')).")", $keys)->getResults();
+            # See if any keys are availavble
+            $kcount =   count($keys);
+            if($kcount > 0) {
+                # Search
+                $translations   =   $this->query("SELECT `title`, `content`, `component_type` FROM components WHERE title IN (".implode(',', array_fill(0, $kcount, '?')).")", $keys)->getResults();
+            }
             # Assemble translation response
             if(!empty($translations)) {
                 foreach($translations as $row) {
@@ -219,5 +305,31 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
                 'success' => false
             ]);
         }
+	}
+	/**
+	 *	@description	
+	 */
+	public function autoGenTranslations()
+	{
+        $co =   ($this->getPost('co'))? $this->getPost('co') : 'us';
+        $languages   =   $this->Localization->getActiveLanguages();
+        $allKeys    =   \Nubersoft\ArrayWorks::organizeByKey($this->query("SELECT title as t, content from components WHERE component_type = 'transkey'")->getResults(), 't');
+        $stored =   false;
+        
+        foreach($languages as $key => $value) {
+            if($value['option_attribute'] == 'en')
+                continue;
+            foreach($allKeys as $transkey_value => $content) {
+                $tkey   =   "{$transkey_value}us{$value['option_attribute']}";
+                if(!$this->Localization->translationExists($tkey)) {
+                    $this->Localization->saveTranslation($tkey, $content['content']);
+                    $stored =   true;
+                }
+            }
+        }
+        if($stored)
+            $this->toSuccess("Translation keys have been generated.");
+        else 
+            $this->toSuccess("All translation keys are up to date.");
 	}
 }

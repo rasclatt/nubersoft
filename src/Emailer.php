@@ -14,7 +14,7 @@ class    Emailer extends \Nubersoft\nApp
                 $reply,
                 $notification;
 
-    public    function __construct()
+    public function __construct()
     {
         if(!defined('WEBMASTER'))
             define('WEBMASTER',"no-reply@".$_SERVER['HTTP_HOST']);
@@ -22,12 +22,12 @@ class    Emailer extends \Nubersoft\nApp
         return parent::__construct();
     }
 
-    public    function getAllLayouts()
+    public function getAllLayouts()
     {
         return @$this->nQuery()->query("select * from `components` where `email_id` != ''")->getResults();
     }
 
-    public    function getLayout($name = 'default')
+    public function getLayout($name = 'default')
     {
         $content    =    @$this->nQuery()->query("select `content` from `emailer` where `email_id` = ?",[$name])->getResults();
 
@@ -39,19 +39,19 @@ class    Emailer extends \Nubersoft\nApp
         return    (isset($html))? $html : '';
     }
 
-    public    function addTo($from)
+    public function addTo($from)
     {
         $this->sending['to']    =    (is_string($from))? $from : implode(',',$from);
         return $this;
     }
 
-    public    function addAttr($key,$value)
+    public function addAttr($key,$value)
     {
         $this->sending[$key]    =    $value;
         return $this;
     }
 
-    public    function addFrom($from)
+    public function addFrom($from)
     {
         $fProc                        =    ((is_array($from))? implode(',',$from) : $from);
         $this->sending['raw_from']    =    $fProc;
@@ -59,26 +59,26 @@ class    Emailer extends \Nubersoft\nApp
         return $this;
     }
 
-    public    function addHeader($string)
+    public function addHeader($string)
     {
         $this->sending['header'][]    =    $string;
         return $this;
     }
 
-    public    function addBcc($string)
+    public function addBcc($string)
     {
         $string                        =    (is_array($string))? implode(',',$string) : $string;
         $this->sending['header'][]    =    "Bcc:".$string;
         return $this;
     }
 
-    public    function addSubject($string)
+    public function addSubject($string)
     {
         $this->sending['subject']    =    $string;
         return $this;
     }
 
-    public    function addMessage($message, $layout = 'default')
+    public function addMessage($message, $layout = 'default')
     {
         if(!empty($layout)) {
             $html        =    str_replace(array('~message~'),array($message),$this->getLayout($layout));
@@ -91,14 +91,14 @@ class    Emailer extends \Nubersoft\nApp
         return $this;
     }
 
-    public    function addRawMessage($message)
+    public function addRawMessage($message)
     {
         $this->sending['raw_message']    =    $message;
 
         return $this;
     }
 
-    public    function useHtml()
+    public function useHtml()
     {
         $this->sending['header'][]    =    'MIME-Version: 1.0';
         $this->sending['header'][]    =    'Content-type: text/html; charset=iso-8859-1';
@@ -106,12 +106,12 @@ class    Emailer extends \Nubersoft\nApp
         return $this;
     }
 
-    public    function send()
+    public function send()
     {
         return mail($this->sending['to'],$this->sending['subject'],wordwrap($this->sending['message'],70,PHP_EOL),implode(PHP_EOL,$this->sending['header']));
     }
 
-    public    function saveReceipt()
+    public function saveReceipt()
     {
         $columns    =    array(
             'unique_id',
@@ -142,14 +142,14 @@ class    Emailer extends \Nubersoft\nApp
         @$this->nQuery()->query($sql,array(json_encode($this->sending)));
     }
 
-    public    function getReceiptMessage($layout)
+    public function getReceiptMessage($layout)
     {
         $arr    =    @$this->nQuery()->query("select `return_response` from `emailer` where `email_id` = ?",[$layout])->getResults(true);
 
         return (!empty($arr['return_response']))? $arr['return_response'] : false;
     }
 
-    public    function resetSendArray()
+    public function resetSendArray()
     {
         $this->sending    =    array();
 

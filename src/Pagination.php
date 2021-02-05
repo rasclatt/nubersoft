@@ -14,9 +14,9 @@ class Pagination
 	/**
 	 *	@description	Set the basic attributes to search
 	 */
-	public	function __construct($table, $page = 1, $limit = 10, $select = '*')
+	public function __construct($table, $page = 1, $limit = 10, $select = '*')
 	{
-        $this->table    =   (is_array($table))? implode(',', $table) : $table;
+        $this->table    =   $this->stripTableName((is_array($table))? implode(',', $table) : $table);
         $this->limit    =   ($limit > 0)? $limit : 10;
         $this->page     =   ($page > 0)? $page : 1;
         
@@ -30,7 +30,7 @@ class Pagination
 	/**
 	 *	@description	Allow ordering
 	 */
-	public	function orderBy($column, $type): object
+	public function orderBy($column, $type): object
 	{
         $this->order    =   [];
         
@@ -55,7 +55,7 @@ class Pagination
 	/**
 	 *	@description	Set the amount of pages before and after to veiw (if row counts > 0)
 	 */
-	public	function setSpread($spread): object
+	public function setSpread($spread): object
 	{
         $this->spread   =   $spread;
         return $this;
@@ -63,7 +63,7 @@ class Pagination
 	/**
 	 *	@description	
 	 */
-	public	function setMaxRange(array $range): object
+	public function setMaxRange(array $range): object
 	{
         $this->max_range    =   $range;
         return $this;
@@ -71,7 +71,7 @@ class Pagination
 	/**
 	 *	@description	Create a WHERE clause based on a search string
 	 */
-	public	function search($value, $key, $op = '=', $cont = "OR"): object
+	public function search($value, $key, $op = '=', $cont = "OR"): object
 	{
         if(is_callable($key)) {
             $where  =   " WHERE ".$key($value, $op, $cont, $this);
@@ -107,7 +107,7 @@ class Pagination
 	/**
 	 *	@description	
 	 */
-	public	function getStatement($type = false): string
+	public function getStatement($type = false): string
 	{
         return ($type)? $this->counter : $this->statement;
 	}
@@ -116,7 +116,7 @@ class Pagination
      *  @param  [void|true|callable]    When empty, fetch pagination data.
      *  Any value other than callable will return sql statement. Callable allows extra processing of results
 	 */
-	public	function get()
+	public function get()
 	{
         $args   =   func_get_args();
         # See how many total requested
@@ -177,7 +177,7 @@ class Pagination
 	/**
 	 *	@description	
 	 */
-	public	function getColumnsInTable()
+	public function getColumnsInTable()
 	{
         $data   =   $this->query("describe ".$this->table)->getResults();
         if(empty($data))
@@ -192,7 +192,7 @@ class Pagination
 	/**
 	 *	@description	
 	 */
-	public	function addAttr($string)
+	public function addAttr($string)
 	{
         $this->counter  .=  $string;
         $this->statement   .= $string;

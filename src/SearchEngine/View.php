@@ -3,7 +3,7 @@ namespace Nubersoft\SearchEngine;
 
 class View extends \Nubersoft\SearchEngine
 {
-    public    function highlightSearch($content,$search = false,$class="nbr_found")
+    public function highlightSearch($content,$search = false,$class="nbr_found")
     {
         if(empty($search))
             return $content;
@@ -13,7 +13,7 @@ class View extends \Nubersoft\SearchEngine
         },$content);
     }
 
-    public    function getAllButResults()
+    public function getAllButResults()
     {
         $data    =    $this->toArray($this->getData());
         if(isset($data['data']['results']))
@@ -22,7 +22,7 @@ class View extends \Nubersoft\SearchEngine
         return (empty($data['data']) || !is_array($data['data']))? [] : $data['data'];
     }
 
-    public    function getResults()
+    public function getResults()
     {
         $data    =    $this->toArray($this->getData());
         return (!empty($data['data']['results']) && is_array($data['data']['results']))? $data['data']['results'] : [];

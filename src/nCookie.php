@@ -9,7 +9,7 @@ class nCookie extends nSession
     /**
      *    @description    
      */
-    public    function set($key, $value = false, $duration = 3600, $path = '/', $domain = null)
+    public function set($key, $value = false, $duration = 3600, $path = '/', $domain = null)
     {
         $SESS            =    $this->getDataNode('_COOKIE');
         $SESS[$key]        =    $value;
@@ -21,7 +21,7 @@ class nCookie extends nSession
     /**
      *    @description    
      */
-    public    function get($key = false)
+    public function get($key = false)
     {
         if(empty($this->real)) {
             $SESS   =   $this->getDataNode('_COOKIE');

@@ -9,7 +9,7 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
     /**
      *    @description    
      */
-    public    function listen()
+    public function listen()
     {
         $ID        =    (!empty($this->getPost("deliver")['ID']))? $this->getPost("deliver")['ID'] : false; 
         $comp    =    $this->getHelper('Settings')->getComponent($ID, 'ID', false);

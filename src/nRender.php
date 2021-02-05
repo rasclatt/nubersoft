@@ -9,13 +9,18 @@ class nRender extends \Nubersoft\nQuery
         Settings\enMasse,
         Settings\Page\enMasse;
     
-    protected $Html, $User, $sUser;
+    protected $Html, $User, $sUser, $DataNode;
     
-    public function __construct()
+    public function __construct(
+        DataNode $DataNode,
+        Html $Html,
+        nUser $User
+    )
     {
+        $this->DataNode =   $DataNode;
         $this->sUser = (!empty($this->getSession('user')))? $this->getSession('user') : [];
-        $this->Html = $this->getHelper('Html');
-        $this->User = $this->getHelper('nUser');
+        $this->Html = $Html;
+        $this->User = $User;
         return parent::__construct();
     }
     /**
@@ -31,7 +36,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getHeader()
+    public function getHeader()
     {
         $data    =    $this->getHelper('Settings\Controller')->getHeaderPrefs('html');
         if(!empty($data['toggle']) && $data['toggle'] == 'on') {
@@ -41,7 +46,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getFooter()
+    public function getFooter()
     {
         return $this->getHelper('nMarkUp')->useMarkUp($this->dec($this->getHelper('Settings\Controller')->getFooterPrefs()));
     }
@@ -72,7 +77,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function render()
+    public function render()
     {
         $page    =    $this->getPage();
         $code    =    (!empty($this->getDataNode('header')['header_response_code']))? $this->getDataNode('header')['header_response_code'] : 200;
@@ -91,6 +96,7 @@ class nRender extends \Nubersoft\nQuery
         }
         # Get the layout
         $layout        =    (!empty($this->getDataNode('templates')[$temp]))? $this->getDataNode('templates')[$temp] : 'false';
+        
         # Redirect
         if(!empty($page['auto_fwd']) && !$this->isAdmin()) {
             $page['auto_fwd']    =    trim($page['auto_fwd']);
@@ -116,6 +122,7 @@ class nRender extends \Nubersoft\nQuery
                 foreach($this->getDataNode('templates')['paths'] as $path) {
                     
                     if(is_file($login = str_replace(DS.DS,DS,$path.DS.$temp.DS.'login.php'))) {
+                        echo $this->renderBeforeHint($login);
                         # Render layout
                         echo parent::render($login, $this);
                         exit;
@@ -180,14 +187,48 @@ class nRender extends \Nubersoft\nQuery
                 $this->isDir(pathinfo($destination, PATHINFO_DIRNAME), true);
                 $Cache    =    $this->getHelper('nCache');
                 $Cache->start($destination);
+                echo $this->renderBeforeHint($layout);
                 if(!$Cache->isCached()) {
                     echo parent::render($layout, $this);
                 }
                 echo $Cache->render();
             }
-            else {
+            else { 
+                # Try last ditch effort to fetch a template
+                if($layout == 'false') {
+                    foreach($this->getDataNode('templates')['paths'] as $path) {
+                        if($layout != 'false')
+                            continue;
+                        if(is_dir($l = $path.DS.$temp))
+                            $layout =   $l.DS.'index.php';
+                    }
+                }
+                if($layout == 'false')
+                    throw new \Exception('Templates are not working correctly.', 500);
+                # Fetch the system settings
+                $settings   =   ($this->getDataNode('settings')['system'])?? false;
+                # If available, lets see status
+                if($settings) {
+                    $settings   =   \Nubersoft\ArrayWorks::organizeByKey($settings, 'category_id');
+                    $live =   ((($settings['site_live']['option_attribute'])?? 'on') == 'on');
+                    if(!$live && !($this->getPage('is_admin') == 1)) {
+                        
+                        if(!$this->isAdmin())
+                            throw new \Nubersoft\HttpException('Site is not available at this time.', 10000);
+                    }
+                    $maintenance    =   ((($settings['maintenance_mode']['option_attribute'])?? 'off') == 'on');
+                    if($maintenance && !($this->getPage('is_admin') == 1)) {
+                        if(!$this->isAdmin())
+                            throw new \Nubersoft\HttpException('Site is not available at this time and is undergoing maintenance. We\'ll be back soon!', 10002);
+                    }
+                }
+                echo $this->renderBeforeHint($layout);
                 # Render layout
                 echo parent::render($layout, $this);
+                # Reset the warnings back to the system
+                dns_get_record(gethostbyaddr($this->getServer('SERVER_ADDR')));
+                # Restore errors after render
+                restore_error_handler();
             }
         }
     }
@@ -320,13 +361,13 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function headerJavaScript()
+    public function headerJavaScript()
     {
         $html    =    $this->dec($this->getSitePreferences('header_javascript'));
         return    (!empty($html))? '<script>'.PHP_EOL.$html.PHP_EOL.'</script>'.PHP_EOL : false;
     }
     
-    public    function headerStyleSheets()
+    public function headerStyleSheets()
     {
         $html    =    $this->dec($this->getSitePreferences('header_styles'));
         return    (!empty($html))? '<style>'.PHP_EOL.$html.PHP_EOL.'</style>'.PHP_EOL : false;
@@ -334,7 +375,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function javaScript()
+    public function javaScript()
     {
         return $this->allowedAsset('javascript', function($Html, $path, $is_local){            
             return $Html->createScript($path, $is_local);
@@ -343,7 +384,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function styleSheets()
+    public function styleSheets()
     {
         return $this->allowedAsset('stylesheet', function($Html, $path, $is_local){            
             return $Html->createLinkRel($path, $is_local);
@@ -352,7 +393,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getMastHead()
+    public function getMastHead()
     {
         $html    =    $this->dec($this->getSitePreferences('header_html'));
         if(empty($html))
@@ -363,7 +404,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function isFrontEnd()
+    public function isFrontEnd()
     {
         $route        =    $this->getDataNode('routing');
         if(!isset($route['is_admin']))
@@ -375,14 +416,14 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function isBackEnd()
+    public function isBackEnd()
     {
         return (empty($this->isFrontEnd()));
     }
     /**
      *    @description    
      */
-    public    function getPage($key = false)
+    public function getPage($key = false)
     {
         $data    =    $this->getDataNode('routing');
         
@@ -397,11 +438,17 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getTemplateFile($file = 'index.php', $type = 'frontend', $path = false)
+    public function getTemplateFile($file = 'index.php', $type = 'frontend', $path = false)
     {
+        if(!is_array($this->getDataNode('templates')['paths']))
+            return false;
+        
         foreach($this->getDataNode('templates')['paths'] as $dir) {
-            if(is_file($inc = $this->toSingleDs($dir.DS.$type.DS.$file)))
-                return ($path)? $inc : parent::render($inc);
+            if(is_file($inc = $this->toSingleDs($dir.DS.$type.DS.$file))) {
+                $s = (!$path)? $this->renderBeforeHint($inc) : false;
+                    
+                return ($path)? $inc : $s.parent::render($inc);
+            }
         }
         
         return false;
@@ -409,35 +456,39 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function getFrontEndFrom($file = 'index.php', $path)
+    public function getFrontEndFrom($file = 'index.php', $path)
     {
-        return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file);
+        $path   =   NBR_CLIENT_TEMPLATES.DS.$path.DS.'frontend'.DS.$file;
+        $s = $this->renderBeforeHint($path);
+        return $s.parent::render($path);
     }
     /**
      *    @description    
      */
-    public    function getBackEndFrom($file = 'index.php', $path)
+    public function getBackEndFrom($file = 'index.php', $path)
     {
-        return parent::render(NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file);
+        $path   =   NBR_CLIENT_TEMPLATES.DS.$path.DS.'backend'.DS.$file;
+        $s = $this->renderBeforeHint($path);
+        return $s.parent::render($path);
     }
     /**
      *    @description    
      */
-    public    function getFrontEnd($file = 'index.php', $path = false)
+    public function getFrontEnd($file = 'index.php', $path = false)
     {
         return $this->getTemplateFile($file, 'frontend', $path);
     }
     /**
      *    @description    
      */
-    public    function getBackEnd($file = 'index.php', $path = false)
+    public function getBackEnd($file = 'index.php', $path = false)
     {
         return $this->getTemplateFile($file, 'backend', $path);
     }
     /**
      *    @description    
      */
-    public    function getSitePreferences($key = false)
+    public function getSitePreferences($key = false)
     {
         $prefs    =    $this->getHelper('Settings\Controller')->getSettingContent('system');
         
@@ -460,14 +511,14 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function signUpAllowed()
+    public function signUpAllowed()
     {
         return ($this->getSitePreferences('sign_up') == 'on');
     }
     /**
      *    @description    
      */
-    public    function user($key = false)
+    public function user($key = false)
     {
         $SESSION    =    $this->getDataNode('_SESSION');
         
@@ -484,7 +535,7 @@ class nRender extends \Nubersoft\nQuery
     /**
      *    @description    
      */
-    public    function useAuth2()
+    public function useAuth2()
     {
         $auth2        =    false;
         $authType    =    $this->getSystemOption('two_factor_auth');
@@ -515,5 +566,19 @@ class nRender extends \Nubersoft\nQuery
             return ($page[$key])?? null;
         
         return $page['full_path'];
+	}
+	/**
+	 *	@description	
+	 */
+	public function renderBeforeHint($file)
+	{
+        if(($this->getSystemOption('fileid') != 'on'))
+            return false;
+        
+        $dev    =    ($this->getSystemOption('devmode') == 'dev');
+        
+        if(!$this->isAjaxRequest() && $this->getPage('is_admin') != 1 && $dev)
+            return '<div class="file-id-backtrace">'.$file.'</div>';
+        
 	}
 }

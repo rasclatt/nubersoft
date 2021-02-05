@@ -14,24 +14,24 @@ class Currency extends \Nubersoft\cURL
     const    DEFAULT_API        =    'http://api.fixer.io/latest';
     const    BASE_CURRENCY    =    'USD';
 
-    public    function setBaseCurrency($currency)
+    public function setBaseCurrency($currency)
     {
         $this->baseCurrency    =    $currency;
         return $this;
     }
 
-    public    function getBaseCurrency()
+    public function getBaseCurrency()
     {
         return (!empty($this->baseCurrency))? $this->baseCurrency : self::BASE_CURRENCY;
     }
 
-    public    function setAttributes($attr)
+    public function setAttributes($attr)
     {
         $this->queryString    =    http_build_query($attr);
         return $this;
     }
 
-    public    function fetch()
+    public function fetch()
     {
         if(empty($this->endpoint)) {
             $this->endpoint    =    self::DEFAULT_API;
@@ -44,7 +44,7 @@ class Currency extends \Nubersoft\cURL
         return $this;
     }
 
-    public    function getRates($get = false)
+    public function getRates($get = false)
     {
         $response    =    $this->getResponse(true);
         if(!empty($get)) {
@@ -57,7 +57,7 @@ class Currency extends \Nubersoft\cURL
         return (isset($response['rates']))? $response['rates'] : array();
     }
 
-    public    function convert($array)
+    public function convert($array)
     {
         $this->setBaseCurrency($array['from'])->fetch();
 
@@ -67,20 +67,20 @@ class Currency extends \Nubersoft\cURL
         return $array['value']*$rate;
     }
 
-    public    function getLocale($country)
+    public function getLocale($country)
     {
         $locales    =    $this->getLocaleList();
         return (isset($locales[$country]['lang']))? $locales[$country]['lang'] : 'en_US';
     }
 
-    public    function getLocaleList($key = 'abbr3')
+    public function getLocaleList($key = 'abbr3')
     {
         $path    =    NBR_SETTINGS.DS.'locale'.DS.'locale_list.xml';
         $reg    =    nApp::call()->toArray(simplexml_load_file($path));
         return ArrayWorks::organizeByKey($reg['locale'], $key, ['unset' => false]);
     }
 
-    public    function getFormatList()
+    public function getFormatList()
     {
         $nApp    =    \Nubersoft\nApp::call();
 
@@ -93,7 +93,7 @@ class Currency extends \Nubersoft\cURL
 
     }
 
-    public    function getMoneyFormat($country)
+    public function getMoneyFormat($country)
     {
         $format    =    $this->getFormatList();
 
@@ -120,7 +120,7 @@ class Currency extends \Nubersoft\cURL
         return $array;
     }
 
-    public    function toMoney($number,$country,$append='$',$toArray=false)
+    public function toMoney($number,$country,$append='$',$toArray=false)
     {
         $format    =    $this->getMoneyFormat($country);
         $value    =    number_format($number,$format['dec'],$format['format']['sep_dec'],$format['format']['sep_num']);
@@ -134,7 +134,7 @@ class Currency extends \Nubersoft\cURL
         return $value;
     }
 
-    public    function toDollar($number,$country = 'USA',$format = '%i',$append='UTF-8')
+    public function toDollar($number,$country = 'USA',$format = '%i',$append='UTF-8')
     {
         $locales    =    $this->getLocaleList();
         $encode        =    (isset($locales[$country]['lang']))? $locales[$country]['lang'] : 'en_US';

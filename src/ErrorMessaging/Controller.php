@@ -10,7 +10,7 @@ class Controller extends \Nubersoft\ErrorMessaging
 	/**
 	 *	@description	
 	 */
-	public	function __construct($locale = 'us', $lang = 'en')
+	public function __construct($locale = 'us', $lang = 'en')
 	{
         $this->locale   =   $locale;
         $this->lang =   $lang;
@@ -18,7 +18,7 @@ class Controller extends \Nubersoft\ErrorMessaging
     /**
 	 *	@description	
 	 */
-	public	function installDefaultCodes()
+	public function installDefaultCodes()
 	{
         if(empty($this->locale))
             $this->locale   =   'us';

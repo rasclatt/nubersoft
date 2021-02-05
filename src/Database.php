@@ -5,7 +5,7 @@ class Database extends \Nubersoft\nApp
 {
     private    static $con;
     
-    public    function __construct($host, $dbname, $user, $pass, $charset = 'utf-8', $db = 'mysql', $opts = false)
+    public function __construct($host, $dbname, $user, $pass, $charset = 'utf-8', $db = 'mysql', $opts = false)
     {
         if(self::$con instanceof \PDO)
             return self::$con;
@@ -19,7 +19,7 @@ class Database extends \Nubersoft\nApp
         self::$con    =    new \PDO($db.':host='.base64_decode($host).';dbname='.base64_decode($dbname).';charset='.$charset, base64_decode($user), base64_decode($pass), $opts);
     }
     
-    public    function getConnection()
+    public function getConnection()
     {
         return self::$con;
     }

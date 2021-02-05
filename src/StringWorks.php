@@ -30,7 +30,7 @@ class StringWorks extends nApp
 	/**
 	 *	@description	
 	 */
-	public	function toXml($xml): ?string
+	public function toXml($xml): ?string
 	{
         
 	}

@@ -1,9 +1,39 @@
 <?php
 namespace Nubersoft\Settings;
 
-class Observer extends Controller implements \Nubersoft\nObserver
+use \Nubersoft\ {
+    nObserver,
+    JWTFactory as JWT,
+    nSession
+};
+
+class Observer extends Controller implements nObserver
 {
-    public    function listen()
+    private $Session, $JWT;
+	/**
+	 *	@description	
+	 */
+	public function __construct(
+        nSession $Session
+    )
+	{
+        $this->Session  =   $Session;
+        $this->JWT  = JWT::get();
+	}
+	/**
+	 *	@description	
+	 */
+	public function createJWT()
+	{
+        $this->Session->set('jwtToken', $this->JWT->create([
+            "user" => (!empty($this->userGet('ID')))? $this->userGet('ID') : 'anon',
+            "action" => $this->getRequest('action')
+        ]));
+        
+        return $this;
+	}
+    
+    public function listen()
     {
         $Router        =    $this->getHelper('nRouter\Controller');
         $DataNode    =    $this->getHelper('DataNode');
@@ -52,7 +82,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
         return $this;
     }
     
-    public    function checkUserSettings()
+    public function checkUserSettings()
     {
         $registry    =    NBR_CLIENT_SETTINGS.DS.'registry.xml';
         
@@ -75,7 +105,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
         return $this;
     }
     
-    public    function setReWrite($content = false)
+    public function setReWrite($content = false)
     {
         $system    =    (defined('NBR_SERVER_TYPE'))? NBR_SERVER_TYPE : 'linux';
         $file    =    NBR_DOMAIN_ROOT.DS.(($system == 'linux')? '.htaccess' : 'web.config');
@@ -92,7 +122,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
         return is_file($file);
     }
     
-    public    function setTimezone()
+    public function setTimezone()
     { 
         date_default_timezone_set($this->getTimezone());
         return $this;
@@ -100,7 +130,7 @@ class Observer extends Controller implements \Nubersoft\nObserver
     /**
      *    @description    
      */
-    public    function formatFileUploads()
+    public function formatFileUploads()
     {
         $FILES    =    $this->getDataNode('_FILES');
         
@@ -174,10 +204,5 @@ class Observer extends Controller implements \Nubersoft\nObserver
             }
         }
         $this->setNode('_FILES', $files);
-        echo printpre([
-            $this->getGet(),
-            $this->getPost(),
-            $_FILES
-        ]);
 	}
 }

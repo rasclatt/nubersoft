@@ -10,7 +10,7 @@ class Menu extends \Nubersoft\nRender
 	/**
 	 *	@description	
 	 */
-	public	function recurseMenu($array, &$new)
+	public function recurseMenu($array, &$new)
 	{
 		foreach($array as $value) {
 			if(!isset($new[$value])) {
@@ -22,7 +22,7 @@ class Menu extends \Nubersoft\nRender
 		}
 	}
 	
-	public	function recurseMenuBuild($new, $prev = '')
+	public function recurseMenuBuild($new, $prev = '')
 	{
 		$html	=	PHP_EOL.'<ul>';
 		foreach($new as $key => $children) {
@@ -35,7 +35,7 @@ class Menu extends \Nubersoft\nRender
 	/**
 	 *	@description	
 	 */
-	public	function create($menuset = false)
+	public function create($menuset = false)
 	{
 		if(!$menuset)
 			$menuset	=	$this->getHelper('Settings\Model')->getMenu();

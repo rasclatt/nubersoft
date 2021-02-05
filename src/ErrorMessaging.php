@@ -108,7 +108,7 @@ class ErrorMessaging extends \Nubersoft\nApp
 	/**
 	 *	@description	
 	 */
-	public	function createCode($code, $message, $locale = 'us', $lang = 'en')
+	public function createCode($code, $message, $locale = 'us', $lang = 'en')
 	{
         $exists =   $this->getComponentBy([
             'category_id' => 'translator',
@@ -136,7 +136,7 @@ class ErrorMessaging extends \Nubersoft\nApp
 	/**
 	 *	@description	
 	 */
-	public	function getMessageAuto($keycode)
+	public function getMessageAuto($keycode)
 	{
         return self::getMessage($keycode, $this->getSession('locale'), $this->getSession('locale_lang'));
 	}

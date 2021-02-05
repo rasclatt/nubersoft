@@ -1,12 +1,15 @@
 <?php
 namespace Nubersoft\nMarkUp;
 
-use \Nubersoft\nMarkUp as MarkUp;
+use \Nubersoft\ {
+    nMarkUp as MarkUp,
+    nReflect as Reflect
+};
 
 trait enMasse
 {
-    public    function useMarkUp()
+    public function useMarkUp()
     {
-        return (new \Nubersoft\nMarkUp())->useMarkUp(...func_get_args());
+        return Reflect::instantiate('\Nubersoft\nMarkUp')->useMarkUp(...func_get_args());
     }
 }

@@ -8,7 +8,7 @@ trait nDynamics
     /**
      *    @description    
      */
-    public    function __call($method, $args)
+    public function __call($method, $args)
     {
         $class    =    str_replace('_','\\', $method);
         $obj    =    nApp::call()->getHelper($class, ...$args);

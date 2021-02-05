@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class    nImage extends \Nubersoft\nApp
 {
-    public    function toBase64($string, $ext, $enc = false)
+    public function toBase64($string, $ext, $enc = false)
     {
         if(empty($string))
             return false;
@@ -13,7 +13,7 @@ class    nImage extends \Nubersoft\nApp
         return ($enc)? $enc.$b64 : 'data:image/'.$ext.';base64,'.$b64;
     }
     
-    public    function toBase64fromFile($file, $enc = false)
+    public function toBase64fromFile($file, $enc = false)
     {
         if(!is_file($file))
             return false;

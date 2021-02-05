@@ -1,7 +1,10 @@
 <?php
 namespace Nubersoft\nRouter;
 
-use \Nubersoft\Conversion\Data as Conversion;
+use \Nubersoft\ {
+    Conversion\Data as Conversion,
+    JWTFactory as JWT
+};
 
 class Controller extends \Nubersoft\nRouter
 {
@@ -9,7 +12,7 @@ class Controller extends \Nubersoft\nRouter
 	/**
 	 *	@description	
 	 */
-	public	function __construct(Conversion $Conversion)
+	public function __construct(Conversion $Conversion)
 	{
         $this->Conversion   =   $Conversion;
 	}
@@ -41,6 +44,7 @@ class Controller extends \Nubersoft\nRouter
     
     public function redirect($location)
     {
+        $JWT    =   JWT::get();
         # Fetch overrides for router
         $reg    =   (new \Nubersoft\Conversion\Data())->xmlToArray(NBR_CLIENT_DIR.DS.'settings'.DS.'core'.DS.'router.xml');
         # Fetch the redirect action
@@ -56,19 +60,31 @@ class Controller extends \Nubersoft\nRouter
         if(!empty($arr['query'])) {
             parse_str($arr['query'], $arr['query']);
             if(isset($arr['query']['msg'])) {
-                $arr['query']['msg']    =    urlencode($this->getHelper('nCrypt')->encOpenSSL($arr['query']['msg']));
-
+                # First see if the message is already encoded
+                try {
+                    $decode =   $JWT->get($arr['query']['msg']);
+                }
+                catch (\Exception $e){
+                    # If not encoded, create a new one
+                    $arr['query']['msg']    =    $JWT->create([
+                        'expire' => time()+5,
+                        'msg' => $arr['query']['msg']
+                    ]);
+                }
+                # Rebuild redirect
                 $arr['query']    =    '?'.http_build_query($arr['query']);
+                if(!isset($arr['scheme']))
+                    $arr['scheme']  =   '';
                 $arr['scheme']    .=    ':';
         
                 $location    =    implode('',$arr);
             }
         }
         # Redirect
-        $this->setHeader('Location: '.$location, true);
+        $this->setHeader("Location: {$location}", true);
     }
     
-    public    function isAjaxRequest()
+    public function isAjaxRequest()
     {
         $type    =    $this->getDataNode('request');
         

@@ -3,13 +3,13 @@ namespace Nubersoft\Settings;
 
 class Model extends \Nubersoft\Settings
 {    
-    public    function deletePage($ID)
+    public function deletePage($ID)
     {
         $this->query("DELETE FROM `main_menus` WHERE `ID` = ?", [$ID]);
         return ($this->query("SELECT COUNT(*) as count FROM `main_menus` WHERE `ID` = ?", [$ID])->getResults(1)['count'] == 0);
     }
     
-    public    function getPage($key = false)
+    public function getPage($key = false)
     {
         # Get data node
         $data    =    $this->getDataNode('routing');
@@ -20,7 +20,7 @@ class Model extends \Nubersoft\Settings
         return $data;
     }
     
-    public    function getSettingContent($type, $key = false, $default = false)
+    public function getSettingContent($type, $key = false, $default = false)
     {
         # Get data node
         $data        =    $this->getDataNode();
@@ -41,7 +41,7 @@ class Model extends \Nubersoft\Settings
         return $default;
     }
     
-    public    function getMenu($id = false, $column = 'ID')
+    public function getMenu($id = false, $column = 'ID')
     {
         $sql    =    (!empty($id))? " WHERE {$column} = ?" : '';
         return $this->query("SELECT * FROM main_menus{$sql}",(!empty($id)? [$id] : null))->getResults((!empty($id) && $column == 'ID'));

@@ -123,7 +123,7 @@ class Data extends \Nubersoft\nApp
         }
     }
     
-    public    function xmlToArray($config)
+    public function xmlToArray($config)
     {
         if(is_file($config)) {
             return $this->toArray(simplexml_load_file($config));
@@ -134,7 +134,7 @@ class Data extends \Nubersoft\nApp
 	/**
 	 *	@description	
 	 */
-	public	function arrayFromQueryString(string $string): array
+	public function arrayFromQueryString(string $string): array
 	{
         $string =   $this->dec($string);
         $arr    =   [];

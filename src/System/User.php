@@ -8,7 +8,7 @@ class User extends \Nubersoft\System
     /**
      *    @description    
      */
-    public    function getUser($key = false)
+    public function getUser($key = false)
     {
         $data    =    $this->get('user');
         

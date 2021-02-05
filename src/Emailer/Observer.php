@@ -9,7 +9,7 @@ class Observer extends \Nubersoft\Emailer implements \Nubersoft\nObserver
 	/**
 	 *	@description	
 	 */
-	public	function listen()
+	public function listen()
 	{
         if(count(array_filter([$this->getPost('subject'),$this->getPost('message')])) != 2) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));

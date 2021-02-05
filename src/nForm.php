@@ -7,7 +7,7 @@ class nForm extends \Nubersoft\nApp
                 $NBR_ROOT_DIR,
                 $labelWrap;
 
-    public    function __construct($dir = false)
+    public function __construct($dir = false)
     {
         # Create default root
         $this->setObserverRootDir($dir);
@@ -17,7 +17,7 @@ class nForm extends \Nubersoft\nApp
         return parent::__construct();
     }
     
-    public    function createForm($array, $openAttr = false){
+    public function createForm($array, $openAttr = false){
         
         echo $this->open($openAttr);
         foreach($array as $attr) {
@@ -35,13 +35,13 @@ class nForm extends \Nubersoft\nApp
         echo $this->close();
     }
 
-    public    function labelPos($val = true)
+    public function labelPos($val = true)
     {
         $this->labelWrap    =    (!empty($val));
         return $this;
     }
 
-    public    function setObserverRootDir($dir)
+    public function setObserverRootDir($dir)
     {
         $this->NBR_ROOT_DIR    =    (!empty($dir))? $dir : __DIR__.DS.'nForm';
     }
@@ -189,7 +189,7 @@ class nForm extends \Nubersoft\nApp
     *                    to build single inputs
     *    @param    $settings [array{forced}] This is all the required settings to build a form input
     */
-    public    function multiValueDeterminer(array $settings)
+    public function multiValueDeterminer(array $settings)
     {
         if(empty($settings)) {
             throw self::getClass('nException','Settings can not be empty.');
@@ -265,7 +265,7 @@ class nForm extends \Nubersoft\nApp
     *                    to build single inputs
     *    @param    $settings [array{forced}] This is all the required settings to build a form input
     */
-    public    function multiForm(array $settings)
+    public function multiForm(array $settings)
     {
         if(empty($settings)) {
             throw self::getClass('nException','Settings can not be empty.');
@@ -338,7 +338,7 @@ class nForm extends \Nubersoft\nApp
         return $this->{$type}($opts);
     }
 
-    public    function open($settings = false,$quotes = false)
+    public function open($settings = false,$quotes = false)
     {
         $settings['action']    =    (!empty($settings['action']))? $settings['action'] : '#';
         $settings['method']    =    (!empty($settings['method']))? $settings['method'] : 'post';
@@ -365,7 +365,7 @@ class nForm extends \Nubersoft\nApp
         return $data;
     }
 
-    public    function close()
+    public function close()
     {
         ob_start();
         include(__DIR__.DS.'nForm'.DS.'form'.DS.'close.php');
@@ -375,7 +375,7 @@ class nForm extends \Nubersoft\nApp
         return $data;
     }
 
-    public    function __call($name,$args = false)
+    public function __call($name,$args = false)
     {
         $name                =    strtolower($name);
         $kind['checkbox']    =    'chk';
@@ -393,7 +393,7 @@ class nForm extends \Nubersoft\nApp
         return (new nForm())->{$method}(...$args);
     }
 
-    public    function repSelectOptions($options,$replace = array('name'=>'menuName','value'=>'menuVal'))
+    public function repSelectOptions($options,$replace = array('name'=>'menuName','value'=>'menuVal'))
     {
         foreach($options as $key => $option) {
             $this->replaceKeys($options[$key], $replace);
@@ -402,7 +402,7 @@ class nForm extends \Nubersoft\nApp
         return $options;
     }
 
-    public    function setIsSelected($options,$value,$matchto = 'name')
+    public function setIsSelected($options,$value,$matchto = 'name')
     {
         foreach($options as $key => $option) {
             if($value == $options[$key][$matchto]) {
@@ -412,7 +412,7 @@ class nForm extends \Nubersoft\nApp
         return $options;
     }
 
-    public    function formatSelectOptions($options,$value = false,$replace = false)
+    public function formatSelectOptions($options, $value = false, $replace = false)
     {
         # Get the column name
         $getAssoc    =    $this->getMatchedArray(array('assoc_column'),'',$options);
@@ -433,7 +433,7 @@ class nForm extends \Nubersoft\nApp
     /**
     *    @description    Takes a string (from a parsed jquery form by default) and turns it to array
     */
-    public    function deliverToArray($string = false)
+    public function deliverToArray($string = false)
     {
         if(empty($string) && !empty($this->getPost('deliver')['formData']))
             $string    =    $this->getPost('deliver')['formData'];
@@ -444,4 +444,25 @@ class nForm extends \Nubersoft\nApp
 
         return $parsed;
     }
+	/**
+	 *	@description	
+	 */
+	public static function getOptions(string $assoc_column, $selected = false)
+	{
+        $def    =   [
+            [
+                'name' => 'Select',
+                'value' => ''
+            ]
+        ];
+        $data   =   \Nubersoft\nApp::call('nQuery')->query("SELECT menuName as `name`, menuVal as `value` FROM dropdown_menus WHERE assoc_column = ? AND page_live = 'on'",[$assoc_column])->getResults();
+        if(empty($data))
+            return $def;
+        
+        return array_map(function($v) use ($selected){
+            if($selected == $v['value'])
+                $v['selected'] = true;
+            return $v;
+        }, array_merge($data, $def));
+	}
 }

@@ -3,34 +3,60 @@ namespace Nubersoft;
 
 class nUser extends \Nubersoft\nQuery
 {
-    public    function getUser($value, $type = 'username')
+    private $required   =   [
+        'username',
+        'password',
+        'first_name',
+        'last_name',
+        'country'
+    ];
+    
+    public function getUser($value, $type = 'username')
     {
-        $data    =    $this->select()
+        return $this->select()
             ->from('users')
-            ->where([['c' => $type, 'v' => $value]])
+            ->where([
+                [
+                    'c' => $this->stripTableName($type),
+                    'v' => strtolower($value)
+                ]
+            ])
             ->fetch(1);
-    
-        return $data;
     }
     
-    public    function userExists($value, $type = 'username')
+    public function userExists($value, $type = 'username')
     {
-        return $this->select("COUNT(*) as count", false)
-            ->from("users")
-            ->where([['c'=>$type, 'v'=> $value]])
-            ->fetch(1)['count'];
+        return $this->query("SELECT COUNT(*) as count FROM users WHERE `{$this->stripTableName($type)}` = LOWER(?)",[strtolower($value)])->getResults(1)['count'];
     }
+	/**
+	 *	@description	
+	 */
+	public function setRequiredFields(array $array, $override = false)
+	{
+        $this->required =   ($override)? $array : array_merge($this->required, $array);
+        return $this;
+	}
+	/**
+	 *	@description	This is a simple empty check
+	 */
+	protected function isValid($key, array $data)
+	{
+        if(!isset($data[$key]))
+            return false;
+        
+        return (!empty(trim($data[$key])));
+	}
     
-    public    function create($data, $autologin = false)
+    public function create($data, $autologin = false)
     {
-        $data        =    $this->getHelper('ArrayWorks')->trimAll($data);
-        $username    =    (!empty($data['username']))? $data['username'] : false;
-        $password    =    (!empty($data['password']))? $this->hashPassword($data['password']) : false;
-        $first_name    =    (!empty($data['first_name']))? $this->enc($data['first_name']) : false;
-        $last_name    =    (!empty($data['last_name']))? $this->enc($data['last_name']) : false;
-        $status        =    (!empty($data['user_status']))? $data['user_status'] : 'on';
-        $email        =    (!empty($data['email']))? $data['email'] : $username;
-        $usergroup    =    (!empty($data['usergroup']))? $data['usergroup'] : NBR_WEB;
+        $data = $this->getHelper('ArrayWorks')->trimAll($data);
+        $username = strtolower((!empty($data['username']))? $data['username'] : false);
+        $password = (!empty($data['password']))? $this->hashPassword($data['password']) : false;
+        $first_name = (!empty($data['first_name']))? $this->enc($data['first_name']) : false;
+        $last_name = (!empty($data['last_name']))? $this->enc($data['last_name']) : false;
+        $status = (!empty($data['user_status']))? $data['user_status'] : 'on';
+        $email = strtolower((!empty($data['email']))? $data['email'] : $username);
+        $usergroup = (!empty($data['usergroup']))? $data['usergroup'] : NBR_WEB;
         
         if(!is_numeric($usergroup))
             $usergroup    =    constant($usergroup);
@@ -39,21 +65,27 @@ class nUser extends \Nubersoft\nQuery
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_username'));
             return false;
         }
-        
-        $required    =    [
-            (!empty($data['username'])),
-            (!empty($data['password'])),
-            (!empty($data['first_name'])),
-            (!empty($data['last_name']))
-        ];
-        
-        if(array_sum($required) < 4) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
-            return false;
+        # Stop of required fields are missing
+        if(empty($this->required))
+            throw new \Exception('You need required fields to create users');
+        # Check if fields are required
+        $allowed   =   false;
+        foreach($this->required as $r) {
+            $allowed    =   $this->isValid($r, $data);
+            if(!$allowed)
+                break;
         }
-        
-        if($this->userExists($username)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_userexists'));
+        # If not allowed, just stop
+        if(!$allowed) {
+            $msg    =   'required';
+        }        
+        elseif($this->userExists($username)) {
+            $allowed    =   false;
+            $msg    =   'fail_userexists';
+        }
+        # Stop and return message
+        if(!$allowed) {
+            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto($msg));
             return false;
         }
         
@@ -94,9 +126,10 @@ class nUser extends \Nubersoft\nQuery
         return $this->getUser($username);
     }
     
-    public    function hashPassword($password, $cost = 9)
+    public function hashPassword($password, $cost = 9)
     {
-        $passcost            =    (defined('NBR_PASS_COST') && is_numeric(NBR_PASS_COST))? NBR_PASS_COST : $cost;
+        $passcost = (defined('NBR_PASS_COST') && is_numeric(NBR_PASS_COST))? NBR_PASS_COST : $cost;
         return password_hash($password, PASSWORD_DEFAULT, ['cost' => $passcost]);
     }
+    
 }

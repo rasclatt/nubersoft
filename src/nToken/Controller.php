@@ -3,7 +3,7 @@ namespace Nubersoft\nToken;
 
 class Controller extends \Nubersoft\nToken
 {
-    public    function validCSRF($token, $key = 'login')
+    public function validCSRF($token, $key = 'login')
     {
         # Make sure the token is not currently empty
         if(empty($token)) {

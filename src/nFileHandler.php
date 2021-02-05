@@ -9,7 +9,7 @@ class nFileHandler extends \Nubersoft\nApp
     /**
      *    @description    
      */
-    public    function addTarget($path)
+    public function addTarget($path)
     {
         $this->target[]    =    $path;
         return $this;
@@ -17,7 +17,7 @@ class nFileHandler extends \Nubersoft\nApp
     /**
      *    @description    
      */
-    public    function deleteAll($path = false)
+    public function deleteAll($path = false)
     {
         if(!empty($path))
             $this->addTarget($path);
@@ -29,7 +29,7 @@ class nFileHandler extends \Nubersoft\nApp
     /**
      *    @description    
      */
-    public    function recurseDelete($path)
+    public function recurseDelete($path)
     {
         if(!is_dir($path) && !is_file($path))
             return false;
@@ -54,7 +54,7 @@ class nFileHandler extends \Nubersoft\nApp
             $this->isDir($path, 1);
     }
     
-    public    function recurseClone($from, $to, $skip = ['composer.json'], $preflight = false)
+    public function recurseClone($from, $to, $skip = ['composer.json'], $preflight = false)
     {
         # Recursively loop extracted zip folder
         foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($from, \RecursiveDirectoryIterator::KEY_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS)) as $key => $value) {

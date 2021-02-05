@@ -7,19 +7,19 @@ class nCrypt extends \Nubersoft\nApp
 {
     private    $enctype    =    'AES-256-CBC';
     
-    public    function encOpenSSLUrl($value)
+    public function encOpenSSLUrl($value)
     {
         return urlencode(base64_encode($this->encOpenSSL($value)));
     }
     
-    public    function decOpenSSLUrl($value)
+    public function decOpenSSLUrl($value)
     {
         return $this->decOpenSSL(base64_decode(urldecode($value)));
     }
     /**
      *    @description
      */
-    public    function encOpenSSL($value, $enctype = false, $iv = false, $salt = false)
+    public function encOpenSSL($value, $enctype = false, $iv = false, $salt = false)
     {
         if(!empty($enctype))
             $this->enctype    =    $enctype;
@@ -30,7 +30,7 @@ class nCrypt extends \Nubersoft\nApp
         return openssl_encrypt(base64_encode($value), $this->enctype, $salt, 0, $iv); //OPENSSL_RAW_DATA
     }
 
-    public    function decOpenSSL($value, $enctype = false, $iv = false, $salt = false)
+    public function decOpenSSL($value, $enctype = false, $iv = false, $salt = false)
     {
         if(!empty($enctype))
             $this->enctype    =    $enctype;

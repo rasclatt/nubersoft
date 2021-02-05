@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class Cart extends nSession
 {
-    public    function addToCart($sku, $qty = 1)
+    public function addToCart($sku, $qty = 1)
     {
         $cart    =    $this->getCart(true);
         
@@ -17,12 +17,12 @@ class Cart extends nSession
         return $this;
     }
     
-    public    function remove($sku, $qty = false)
+    public function remove($sku, $qty = false)
     {
         return $this->removeFromCart($sku, $qty);
     }
     
-    public    function removeFromCart($sku, $qty = false)
+    public function removeFromCart($sku, $qty = false)
     {
         $cart    =    $this->getCart(true);
         
@@ -42,7 +42,7 @@ class Cart extends nSession
         return $this;
     }
     
-    public    function getCart($destroy = false)
+    public function getCart($destroy = false)
     {
         $cart    =    $this->get('cart');
         
@@ -52,7 +52,7 @@ class Cart extends nSession
         return (!empty($cart))? $cart : [];
     }
     
-    public    function setSkuAttr($sku, $key, $attr)
+    public function setSkuAttr($sku, $key, $attr)
     {
         $cart    =    $this->getCart(true);
         
@@ -63,43 +63,43 @@ class Cart extends nSession
         return $this;
     }
     
-    public    function setTitle($sku, $title)
+    public function setTitle($sku, $title)
     {
         $this->setSkuAttr($sku, 'title', $title);
         return $this;
     }
     
-    public    function setPrice($sku, $price)
+    public function setPrice($sku, $price)
     {
         $this->setSkuAttr($sku, 'price', $price);
         return $this;
     }
     
-    public    function itemInCart($sku)
+    public function itemInCart($sku)
     {
         $cart    =    $this->getCart();
         
         return (isset($cart[$sku]))? $cart[$sku]['qty'] : 0;
     }
     
-    public    function emptyCart()
+    public function emptyCart()
     {
         $this->clearCart();
         return $this;
     }
     
-    public    function clearCart()
+    public function clearCart()
     {
         $this->destroy('cart');
         return $this;
     }
     
-    public    function getTotalItems()
+    public function getTotalItems()
     {
         return count($this->getCart());
     }
     
-    public    function getTotalUnits()
+    public function getTotalUnits()
     {
         $count    =    0;
         foreach($this->getCart() as $sku => $item) {
@@ -111,14 +111,14 @@ class Cart extends nSession
         return $count;
     }
     
-    public    function setSubTotals(&$cart)
+    public function setSubTotals(&$cart)
     {
         foreach($cart as $sku => $item) {
             $cart[$sku]['subtotal']    =    $this->sumSku($sku);
         }
     }
     
-    public    function getCartSummary($func = false)
+    public function getCartSummary($func = false)
     {
         $cart    =    $this->getCart();
         $this->setSubTotals($cart);
@@ -134,7 +134,7 @@ class Cart extends nSession
         return (is_callable($func))? $func($totals) : $totals;
     }
     
-    public    function sumSku($sku)
+    public function sumSku($sku)
     {
         $cart    =    $this->getCart();
         
@@ -150,7 +150,7 @@ class Cart extends nSession
         return 0;
     }
     
-    public    function getCartTotal($key = 'subtotal')
+    public function getCartTotal($key = 'subtotal')
     {
         $cart    =    $this->getCart();
         $this->setSubTotals($cart);

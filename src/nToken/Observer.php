@@ -1,10 +1,46 @@
 <?php
 namespace Nubersoft\nToken;
+
+use \Nubersoft\ {
+    nToken,
+    nObserver,
+    JWTFactory as JWT,
+    Exception\Ajax as AjaxError
+};
 /**
  *	@description	
  */
-class Observer extends \Nubersoft\nToken implements \Nubersoft\nObserver
+class Observer extends nToken implements nObserver
 {
+    private $JWT;
+	/**
+	 *	@description	
+	 */
+	public function __construct()
+	{
+        $this->JWT  =   JWT::get();
+	}
+	/**
+	 *	@description	Validate a previously set JWT token
+	 */
+	public function validateJWT()
+	{
+        try {
+            $this->JWT->get($this->getSession('jwtToken'));
+        }
+        catch (\Exception $e) {
+            # If invalid, check to see if a post is being run
+            if(!empty($this->getPost())) {
+                # Stop if there is a post request
+                if($this->isAjaxRequest())
+                    throw new AjaxError('Invalid request', 403);
+                else
+                    throw new \Exception('Invalid request', 403);
+            }
+        }
+        
+        return $this;
+	}
 	/**
 	 *	@description	These are all the actions that don't require a token
 	 */
@@ -12,7 +48,7 @@ class Observer extends \Nubersoft\nToken implements \Nubersoft\nObserver
 	/**
 	 *	@description	
 	 */
-	public	function listen()
+	public function listen()
 	{
         # Don't do anything if nothing is happening
         if(empty($this->getPost()))
@@ -44,7 +80,7 @@ class Observer extends \Nubersoft\nToken implements \Nubersoft\nObserver
 	/**
 	 *	@description	Adds skippable actions
 	 */
-	public	function addSkipService($val)
+	public function addSkipService($val)
 	{
         if(!is_array($val))
             $val    =   [$val];

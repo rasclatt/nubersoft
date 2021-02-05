@@ -25,12 +25,12 @@ class nAutomator extends nApp
         return $workflow;
     }
     
-    public    function getClientBlockflow($type)
+    public function getClientBlockflow($type)
     {
         return $this->getWorkflowFile($type, NBR_CLIENT_BLOCKFLOWS);
     }
     
-    public    function getSystemBlockflow($type)
+    public function getSystemBlockflow($type)
     {
         $workflow    =    $this->getWorkflowFile($type, NBR_BLOCKFLOWS);
         
@@ -105,7 +105,7 @@ class nAutomator extends nApp
      *    @param    $array    [array|bool] This will be an array of nested arrays/values to process
      *    @returns    Can return an array of mixed types
      */
-    public    function doInjection($array)
+    public function doInjection($array)
     {
         $storage    =    [];
         # Take the injectable and see if a class exists to build
@@ -140,7 +140,7 @@ class nAutomator extends nApp
     /**
      *    @description    Base method to loop the workflow objects
      */
-    public    function doWorkflow($array)
+    public function doWorkflow($array)
     {
         //if(!isset($array['object'][0]))
         //    $array['object']    =   [$array['object']];
@@ -157,7 +157,7 @@ class nAutomator extends nApp
      *    @description    This takes an array and tries to make all the nested values the same type so it's easily recursed
      *    @param    $array [array]
      */
-    public    function normalizeWorkflowArray($array)
+    public function normalizeWorkflowArray($array)
     {
         if(!is_array($array))
             return $array;
@@ -205,7 +205,7 @@ class nAutomator extends nApp
                 foreach($array['object'][$key]['include'] as $incl) {
                     $incl    =    $this->useMarkUp($incl);
                     if(is_file($incl))
-                        echo $this->render($incl, new nRender());
+                        echo $this->render($incl, \Nubersoft\nReflect::instantiate('\Nubersoft\nRender'));
                 }
             }
         }
