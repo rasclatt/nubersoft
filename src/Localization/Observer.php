@@ -332,4 +332,21 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         else 
             $this->toSuccess("All translation keys are up to date.");
 	}
+	/**
+	 *	@description	
+	 */
+	public function createTransHost()
+	{
+        $this->query("DELETE FROM system_settings WHERE category_id = 'transhost'");
+        $hosts  =   array_filter($this->getPost('option_attribute'));
+        if(empty($hosts)) {
+            $this->toSuccess("Translation whitelisted hosts update.");
+            return $this;
+        }
+        foreach($hosts as $host) {
+            $this->query("INSERT INTO system_settings (`category_id`,`option_group_name`,`option_attribute`) VALUES ('transhost','system',?)", [$host]);
+        }
+        $this->toSuccess("Translation whitelisted hosts update.");
+        return $this;
+	}
 }
