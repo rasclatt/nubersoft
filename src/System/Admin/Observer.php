@@ -372,4 +372,26 @@ class Observer extends \Nubersoft\System\Observer
             ]
         ]);
 	}
+	/**
+	 *	@description	
+	 */
+	public function decodeBlock()
+	{
+        $nQuery =   $this->getHelper('nQuery');
+        $table = $nQuery->stripTableName($this->request['deliver']['table']);
+        $column = $nQuery->stripTableName($this->request['deliver']['column']);
+        $ID =   $this->request['deliver']['ID'];
+        $content = $this->enc($this->dec($this->dec($this->query("SELECT {$column} FROM `{$table}` WHERE ID = ?", [$ID])->getResults(1)[$column])));
+        
+        $this->query("UPDATE {$table} SET `{$column}` = ? WHERE ID = ?", [$content, $ID]);
+        
+        $this->ajaxResponse([
+            'html' => [
+                $content
+            ],
+            'sendto' => [
+                $this->request['deliver']['sendto']
+            ]
+        ]);
+	}
 }
