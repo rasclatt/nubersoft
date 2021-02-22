@@ -344,7 +344,7 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
             return $this;
         }
         foreach($hosts as $host) {
-            $this->query("INSERT INTO system_settings (`category_id`,`option_group_name`,`option_attribute`) VALUES ('transhost','system',?)", [$host]);
+            $this->query("INSERT INTO system_settings (`category_id`,`option_group_name`,`option_attribute`,`page_live`) VALUES ('transhost','system',?,'on')", [$host]);
         }
         $this->toSuccess("Translation whitelisted hosts update.");
         return $this;
