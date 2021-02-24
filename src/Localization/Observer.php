@@ -48,7 +48,7 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
                 if($lang != 'en') {
                     $translation    =   $this->Localization->saveTranslation(...[
                         "{$POST['transkey']}us{$lang}",
-                        $POST['description'],
+                        $this->dec($POST['description']),
                         ($POST['category_id'])?? 'translator',
                         ($POST['ref_page'])?? null
                     ]);
