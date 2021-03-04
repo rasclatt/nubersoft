@@ -48,7 +48,6 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
                 if($lang != 'en') {
                     $translation    =   $this->Localization->saveTranslation(...[
                         "{$POST['transkey']}us{$lang}",
-                        $this->dec($POST['description']),
                         ($POST['category_id'])?? 'translator',
                         ($POST['ref_page'])?? null
                     ]);
@@ -208,12 +207,12 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         # Stop of no translation requested
         if($this->getPost('service') != 'translation')
             return $this;
-        # Stop if not ajax request
-        elseif(!$this->isAjaxRequest())
-            return $this;
+        # Check if ajax requiest
+        $ajax = $this->isAjaxRequest();
         # Stop of there are not requested keys
-        elseif(empty($this->getPost('keys')) && $this->getPost('subservice') != 'store') {
-            throw new \Nubersoft\Exception\Ajax('Keys are required for translating.', 200);
+        if(empty($this->getPost('keys')) && $this->getPost('subservice') != 'store') {
+            $class = ($ajax)? '\Exception' : '\Nubersoft\Exception\Ajax';
+            throw new $class('Keys are required for translating.', 200);
         }
         try {
             $filter  =   $this->getSystemOption('transhost');
@@ -344,7 +343,6 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
             return $this;
         }
         foreach($hosts as $host) {
-            $this->query("INSERT INTO system_settings (`category_id`,`option_group_name`,`option_attribute`,`page_live`) VALUES ('transhost','system',?,'on')", [$host]);
         }
         $this->toSuccess("Translation whitelisted hosts update.");
         return $this;
