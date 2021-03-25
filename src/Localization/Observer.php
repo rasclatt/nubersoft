@@ -241,7 +241,7 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
             $referrer   =   Router::createRoutingData($this->getServer('HTTP_REFERER'));
             $domain =   "{$referrer['domain']}.{$referrer['tld']}";
             # Create keys
-            if($this->getPost('generate') && $this->isAdmin()) {
+            if($this->getPost('generate')) {
                 $Locale =   new Locale($this->getPost('lang'), 'us');
                 foreach($this->getPost('generate') as $key => $value) {
                     if(!$Locale->transKeyExists($key)) {
