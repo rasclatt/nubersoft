@@ -281,6 +281,22 @@ class nRender extends \Nubersoft\nQuery
         return $this->dec($meta).PHP_EOL.implode('', $storage);
     }
     /**
+     *	@description	
+     *	@param	
+     */
+    private function splitPid($attr)
+    {
+        if(empty($attr['page_id']))
+            return false;
+        
+        if(strpos($attr['page_id'], ',')) 
+            $attr['page_id']    =   explode(',', $attr['page_id']);
+        else
+            $attr['page_id']    =   [$attr['page_id']];
+           
+        return in_array($this->getPage('ID'), $attr['page_id']);
+    }
+    /**
      *    @description    
      */
     protected function allowedAsset($type, $func)
@@ -296,19 +312,19 @@ class nRender extends \Nubersoft\nQuery
             return false;
         
         foreach($data as $include) {
-            $allow            =    false;
-            $attr             =    (!empty($include['@attributes']))? $include['@attributes'] : false;
-            $is_local        =    (!empty($attr['is_local']) && $attr['is_local'] == 'true');
-            $is_admin        =    (!empty($attr['is_admin']) && $attr['is_admin'] == 'true');
-            $is_frontend    =    (!empty($attr['is_frontend']) && $attr['is_frontend'] == 'true');
-            $is_backend        =    (!empty($attr['is_backend']) && $attr['is_backend'] == 'true');
-            $page_id        =    (!empty($attr['page_id']) && $attr['page_id'] == $this->getPage('ID'));
-            $page_path        =    (!empty($attr['page_path']) && (strtolower($attr['page_path']) == strtolower($this->getPage('full_path'))));
-            $is_loggedin    =    (!empty($attr['logged_in']) && $attr['logged_in'] == 'true');
-            $get_key        =    (!empty($attr['get_key']) && isset($this->getDataNode('_GET')[$attr['get_key']]));
-            $post_key        =    (!empty($attr['post_key']) && isset($this->getDataNode('_POST')[$attr['post_key']]));
+            $allow = false;
+            $attr = (!empty($include['@attributes']))? $include['@attributes'] : false;
+            $page_id = $this->splitPid($attr);
+            $is_local = (!empty($attr['is_local']) && $attr['is_local'] == 'true');
+            $is_admin = (!empty($attr['is_admin']) && $attr['is_admin'] == 'true');
+            $is_frontend = (!empty($attr['is_frontend']) && $attr['is_frontend'] == 'true');
+            $is_backend = (!empty($attr['is_backend']) && $attr['is_backend'] == 'true');
+            $page_path = (!empty($attr['page_path']) && (strtolower($attr['page_path']) == strtolower($this->getPage('full_path'))));
+            $is_loggedin = (!empty($attr['logged_in']) && $attr['logged_in'] == 'true');
+            $get_key = (!empty($attr['get_key']) && isset($this->getDataNode('_GET')[$attr['get_key']]));
+            $post_key = (!empty($attr['post_key']) && isset($this->getDataNode('_POST')[$attr['post_key']]));
             
-            $path            =    str_replace(str_replace(DS,'/', NBR_DOMAIN_ROOT),'', $include['path']);
+            $path = str_replace(str_replace(DS,'/', NBR_DOMAIN_ROOT),'', $include['path']);
             
             if(empty($attr))
                 $allow    =    true;
