@@ -16,5 +16,9 @@
 		"psr-4": {
 			"Nubersoft\\": "src/"
 		}
-	}
+	},
+    "require": {
+        "rasclatt/smart-dto": "*",
+        "firebase/php-jwt": "*"
+    }
 }
