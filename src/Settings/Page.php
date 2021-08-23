@@ -1,11 +1,17 @@
 <?php
 namespace Nubersoft\Settings;
+
+use \Nubersoft\ {
+    Settings\Admin,
+    nQuery\enMasse
+};
+
 /**
  *    @description    
  */
-class Page extends \Nubersoft\Settings\Admin
+class Page extends Admin
 {
-    use \Nubersoft\nQuery\enMasse;
+    use enMasse;
     /**
      *    @description    
      */

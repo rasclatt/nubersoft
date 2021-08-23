@@ -24,9 +24,9 @@ class nUser extends \Nubersoft\nQuery
             ->fetch(1);
     }
     
-    public function userExists($value, $type = 'username')
+    public function userExists($value, string $type = 'username'): int
     {
-        return $this->query("SELECT COUNT(*) as count FROM users WHERE `{$this->stripTableName($type)}` = LOWER(?)",[strtolower($value)])->getResults(1)['count'];
+        return (int) $this->query("SELECT COUNT(*) as count FROM users WHERE `{$this->stripTableName($type)}` = LOWER(?)",[ strtolower($value) ])->getResults(1)['count'];
     }
 	/**
 	 *	@description	

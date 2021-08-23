@@ -79,15 +79,32 @@ class nApp extends \Nubersoft\nFunctions
     
     public function getFiles()
     {
-        return $this->getDataNode('_FILES');
+        $files = $this->getDataNode('_FILES');
+        
+        if(empty($files))
+            return [];
+
+        return array_map(function($v){
+            return new \Nubersoft\Dto\File($v);
+        }, $files);
     }
-    
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function getFile(): \Nubersoft\Dto\File
+    {
+        $files = $this->getFiles();
+        return (count($files) == 1)? $files[0] : new \Nubersoft\Dto\File();
+
+    }
+
     public function getHelper()
     {
-        $args        =    func_get_args();
-        $class        =    (!empty($args[1]))? $args[0] : str_replace('\\\\', '\\', "\\Nubersoft\\".$args[0]);
+        $args = func_get_args();
+        $class = (!empty($args[1]))? $args[0] : str_replace('\\\\', '\\', "\\Nubersoft\\".$args[0]);
         try {
-            $Reflect    =    $this->getReflector();
+            $Reflect = $this->getReflector();
             return $Reflect->execute($class);
         }
         catch(\Exception $e) {

@@ -4,21 +4,30 @@ namespace Nubersoft\Settings;
 use \Nubersoft\ {
     nObserver,
     JWTFactory as JWT,
-    nSession
+    nSession,
+    nRouter\Controller as nRender,
+    DataNode,
+    nToken
 };
 
 class Observer extends Controller implements nObserver
 {
-    private $Session, $JWT;
+    private $Session, $JWT, $nRender, $DataNode, $nToken;
 	/**
 	 *	@description	
 	 */
 	public function __construct(
-        nSession $Session
+        nSession $Session,
+        nRender $nRender,
+        DataNode $DataNode,
+        nToken $nToken
     )
 	{
+        $this->nRender = $nRender;
         $this->Session  =   $Session;
         $this->JWT  = JWT::get();
+        $this->DataNode = $DataNode;
+        $this->nToken = $nToken;
 	}
 	/**
 	 *	@description	
@@ -35,29 +44,29 @@ class Observer extends Controller implements nObserver
     
     public function listen()
     {
-        $Router        =    $this->getHelper('nRouter\Controller');
-        $DataNode    =    $this->getHelper('DataNode');
-        $Token        =    $this->getHelper('nToken');
-        $SERVER        =    $this->getServer();
+        $Router = $this->nRender;
+        $DataNode = $this->DataNode;
+        $Token = $this->nToken;
+        $SERVER = $this->getServer();
         
         if(!isset($SERVER['SCRIPT_URL']) && !isset($SERVER['REQUEST_URI']))
-            $scrurl    =    '/';
+            $scrurl = '/';
         else {
-            $scrurl        =    (isset($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : parse_url($SERVER['REQUEST_URI'])['path'];
+            $scrurl = (isset($SERVER['SCRIPT_URL']))? $SERVER['SCRIPT_URL'] : parse_url($SERVER['REQUEST_URI'])['path'];
         }
         
-        $path        =    (strpos(strtolower($scrurl), '.') !== false)? str_replace('//', '/', '/'.implode('/',array_filter(array_map(function($v){
+        $path = (strpos(strtolower($scrurl), '.') !== false)? str_replace('//', '/', '/'.implode('/',array_filter(array_map(function($v){
             return (strpos(strtolower($v), '.') !== false)? false : $v;
         },explode('/',$scrurl)))).'/') : $scrurl;
         
-        $query        =    (empty($path) || $path == '/')? $Router->getPage('2', 'is_admin') : $Router->getPage($path);
-        $settings    =    $this->getSettings(false, 'system');
+        $query = (empty($path) || $path == '/')? $Router->getPage('2', 'is_admin') : $Router->getPage($path);
+        $settings = $this->getSettings(false, 'system');
         $DataNode->setNode('cache_folder', (!defined('CLIENT_CACHE'))? NBR_CLIENT_CACHE : CLIENT_CACHE);
         $DataNode->setNode('routing', $query);
         $DataNode->setNode('settings', ['system' => $settings]);
         # Fetch any preferences that have the action
         if(!empty($this->getRequest('action'))) {
-            $actions    =    $this->getSettingsByAction($this->getRequest('action'));
+            $actions = $this->getSettingsByAction($this->getRequest('action'));
             if(!empty($actions)) {
                 $DataNode->addNode('settings', $actions, 'actions');
             }
@@ -84,7 +93,7 @@ class Observer extends Controller implements nObserver
     
     public function checkUserSettings()
     {
-        $registry    =    NBR_CLIENT_SETTINGS.DS.'registry.xml';
+        $registry = NBR_CLIENT_SETTINGS.DS.'registry.xml';
         
         if(is_file($definc = $this->getClientDefines())) {
             @include_once($definc);
@@ -96,8 +105,8 @@ class Observer extends Controller implements nObserver
                 throw new \Nubersoft\HttpException('Registry file to create important settings is missing. Reinstall required.', 100);
             
             if($this->createDefines($registry)) {
-                $msg    =    ($this->isAdmin())? "?msg=".urlencode('Cache has been removed.') : '';
-                $this->getHelper('nRouter')->redirect($this->getPage('full_path'));
+                $msg = ($this->isAdmin())? "?msg=".urlencode('Cache has been removed.') : '';
+                $this->nRender->redirect($this->getPage('full_path'));
             }
             
         }
@@ -132,15 +141,15 @@ class Observer extends Controller implements nObserver
      */
     public function formatFileUploads()
     {
-        $FILES    =    $this->getDataNode('_FILES');
+        $FILES = $this->getDataNode('_FILES');
         
         if(empty($FILES))
             return $this;
         
         $this->isDir(NBR_DOMAIN_CLIENT_DIR.DS.'media'.DS.'images', true);
         
-        $files    =    [];
-        $Conversion    =    $this->getHelper('Conversion\Data');
+        $files = [];
+        $Conversion = $this->getHelper('Conversion\Data');
         
         if(!isset($FILES['file'])) {
             $this->assembleStandardFiles($FILES, false, $Conversion);
@@ -163,10 +172,10 @@ class Observer extends Controller implements nObserver
                         ];
                     }
                     elseif($key == 'name') {
-                        $files[$i]['file_key_name']    =    $keyname;
-                        $files[$i]['name_date']     =    date('YmdHis').'.'.strtolower(pathinfo($val, PATHINFO_EXTENSION));
-                        $files[$i]['path_default']    =    DS.'client'.DS.'media'.DS.'images'.DS.$val;
-                        $files[$i]['path_alt']        =    DS.'client'.DS.'media'.DS.'images'.DS.$files[$i]['name_date'];
+                        $files[$i]['file_key_name'] = $keyname;
+                        $files[$i]['name_date'] = date('YmdHis').'.'.strtolower(pathinfo($val, PATHINFO_EXTENSION));
+                        $files[$i]['path_default'] = DS.'client'.DS.'media'.DS.'images'.DS.$val;
+                        $files[$i]['path_alt'] = DS.'client'.DS.'media'.DS.'images'.DS.$files[$i]['name_date'];
                     }
                 }
             }

@@ -36,11 +36,6 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         
 		switch($action) {
 			case('create_translator'):
-				if(!$this->isAdmin())
-					$this->ajaxResponse([
-                        'alert' => $this->getHelper('ErrorMessaging')->getMessageAuto(403)
-                    ]);
-                
                 if(!empty($POST['deliver']['formData'])) {
                     $POST   =   $this->getHelper('Conversion\Data')->arrayFromQueryString($POST['deliver']['formData']);
                 }
@@ -208,10 +203,13 @@ class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
         # Stop of no translation requested
         if($this->getPost('service') != 'translation')
             return $this;
+        # Check if ajax requiest
+        $ajax = $this->isAjaxRequest();
         # Stop of there are not requested keys
-        if(empty($this->getPost('keys')) && $this->getPost('subservice') != 'store')
-            throw new \Nubersoft\Exception\Ajax('Keys are required for translating.', 200);
-	# Start translation engine
+        if(empty($this->getPost('keys')) && $this->getPost('subservice') != 'store') {
+            $class = ($ajax)? '\Exception' : '\Nubersoft\Exception\Ajax';
+            throw new $class('Keys are required for translating.', 200);
+        }
         try {
             $filter  =   $this->getSystemOption('transhost');
             $host   =   "{$this->getHost('domain')}.{$this->getHost('tld')}";

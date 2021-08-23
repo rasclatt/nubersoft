@@ -41,9 +41,17 @@ class Model extends \Nubersoft\Settings
         return $default;
     }
     
-    public function getMenu($id = false, $column = 'ID')
+    public function getMenu($id = null, string $column = 'ID', $useDto = false)
     {
-        $sql    =    (!empty($id))? " WHERE {$column} = ?" : '';
-        return $this->query("SELECT * FROM main_menus{$sql}",(!empty($id)? [$id] : null))->getResults((!empty($id) && $column == 'ID'));
+        $sql = (!empty($id))? " WHERE {$column} = ?" : '';
+        $menu = $this->query("SELECT * FROM main_menus{$sql}",(!empty($id)? [$id] : null))->getResults((!empty($id) && $column == 'ID'));
+
+        if(!empty($menu)) {
+            return ($useDto)? array_map(function($v){
+                return new \Nubersoft\Dto\Menu($v);
+            }, $menu) : $menu;
+        }
+        
+        return [];
     }
 }

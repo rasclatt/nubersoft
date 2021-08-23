@@ -1,29 +1,31 @@
 <?php
 namespace Nubersoft\Settings\Page;
+
+use \Nubersoft\Settings\Page;
 /**
  *    @description    
  */
-class Controller extends \Nubersoft\Settings\Page
+class Controller extends Page
 {
-    protected    static    $page;
+    protected static $page;
     
     /**
      *    @description    
      */
-    public function getContentStructure($page)
+    public function getContentStructure(string $page)
     {
         return $this->recurseLayout($this->getPageComponents($page, false));
     }
     /**
      *    @description    
      */
-    public function getPageComponents($page, $page_live = true)
+    public function getPageComponents(string $page, bool $page_live = true)
     {
         if(empty(self::$page[$page])) {
-            $sql    =    ($page_live)? " AND `page_live` = 'on'" : false;
-            self::$page[$page]    =    $this->getHelper('ArrayWorks')->organizeByKey($this->query("SELECT * FROM components WHERE `ref_page` = ? {$sql} ORDER BY `parent_id` ASC, `page_order` ASC, `ID` ASC", [$page])->getResults(), 'unique_id');
+            $sql = ($page_live)? " AND `page_live` = 'on'" : false;
+            self::$page[$page] = \Nubersoft\ArrayWorks::organizeByKey($this->query("SELECT * FROM components WHERE `ref_page` = ? {$sql} ORDER BY `parent_id` ASC, `page_order` ASC, `ID` ASC", [$page])->getResults(), 'unique_id');
         }
-        
+                
         return self::$page[$page];
     }
     

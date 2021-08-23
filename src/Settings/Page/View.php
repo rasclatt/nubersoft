@@ -1,34 +1,40 @@
 <?php
 namespace Nubersoft\Settings\Page;
+
+use \Nubersoft\ {
+    Plugin
+};
+
+use \Nubersoft\Dto\Settings\Page\View\ConstructRequest as Helpers;
+
 /**
  *    @description    
  */
-class View extends \Nubersoft\Settings\Page\Controller
+class View extends Controller
 {
-    private        $Plugin;
-    protected    $user    =    false;
+    private $Plugin;
+    protected $user = false;
     /**
      *    @description    
      */
-    public function __construct()
+    public function __construct(Helpers $request)
     {
-        $this->Plugin    =    $this->getHelper('Plugin');
-        
-        return parent::__construct();
+        $this->Plugin = new Plugin($request);
+        parent::__construct();
     }
     /**
      *    @description    
      */
-    public function create($page, $type = 'layout')
+    public function create($page, string $type = 'layout'):? string
     {
-        $data    =    $this->getPageComponents($page, false);
-        $arr    =    $this->getContentStructure($page);
+        $data = $this->getPageComponents($page, false);
+        $arr = $this->getContentStructure($page);
         
         if(empty($arr))
-            return false;
+            return null;
         
         if(empty($this->user))
-            $this->user    =    $this->getHelper('System\User')->getUser();
+            $this->user    =    (new \Nubersoft\System\User())->getUser();
         
         ob_start();
         $this->recurseRender($arr, $data, $type);
@@ -40,7 +46,7 @@ class View extends \Nubersoft\Settings\Page\Controller
     /**
      *    @description    
      */
-    protected    function recurseRender($array, $data, $type)
+    protected function recurseRender($array, $data, $type)
     {
         $editor        =    $this->getSession('editor');
         $usergroup    =    (!empty($this->user['usergroup']))? $this->user['usergroup'] : false;
