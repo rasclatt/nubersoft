@@ -2,32 +2,35 @@
 namespace Nubersoft\Plugin;
 
 use \Nubersoft\ {
-    nReflect as Reflect
+    nReflect as Reflect,
+    Plugin
 };
+
+use \Nubersoft\Dto\Settings\Page\View\ConstructRequest;
 
 trait enMasse
 {
     private    $pluginObj;
     
-    public function getPlugin($dir, $path = false, $return = false)
+    public function getPlugin(string $dir, string $path = null, bool $return = false)
     {
-        $this->pluginObj    =    Reflect::instantiate('\Nubersoft\Plugin');
+        $this->pluginObj = new Plugin(new ConstructRequest());
         return $this->pluginObj->{__FUNCTION__}($dir, $path, $return);
     }
     
     public function getPluginFrom(string $template, string $plugin, string $file = null)
     {
-        $this->pluginObj    =    Reflect::instantiate('\Nubersoft\Plugin');
+        $this->pluginObj = new Plugin(new ConstructRequest());
         return $this->pluginObj->{__FUNCTION__}($template, $plugin, $file);
     }
     
-    public function getPluginInfo($name = false)
+    public function getPluginInfo(string $name = null)
     {
         return $this->pluginObj->{__FUNCTION__}($name);
     }
     
-    public function setPluginContent($name, $value)
+    public function setPluginContent(string $name, $value)
     {
-        return Reflect::instantiate('\Nubersoft\Plugin')->{__FUNCTION__}($name, $value);
+        return (new Plugin(new ConstructRequest()))->{__FUNCTION__}($name, $value);
     }
 }

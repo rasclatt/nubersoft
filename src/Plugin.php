@@ -10,10 +10,10 @@ class Plugin extends nRender
         
     protected static $plugin_content, $current_plugin    =    [];
     
-    public function getPlugin($name, $file = false, $path = false)
+    public function getPlugin(string $name, $file = false, $path = false)
     {
         if(empty($file))
-            $file    =    'index.php';
+            $file = 'index.php';
         
         return $this->toView($this->pluginExists($name, $file), $path);
     }

@@ -4,15 +4,20 @@ namespace Nubersoft\Localization;
 use \Nubersoft\ {
     nRouter as Router,
     Localization\View as Locale,
-    Localization\Controller
+    Localization\Controller,
+    nSession,
+    nObserver,
+    Settings\enMasse as SettingsTrait,
+    nQuery\enMasse as nQueryTrait
 };
+
 /**
  *	@description	
  */
-class Observer extends \Nubersoft\nSession implements \Nubersoft\nObserver
+class Observer extends nSession implements nObserver
 {
-    use \Nubersoft\Settings\enMasse;
-    use \Nubersoft\nQuery\enMasse;
+    use SettingsTrait;
+    use nQueryTrait;
     
     private $Localization;
 	/**

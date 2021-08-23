@@ -18,7 +18,7 @@ class StringWorks extends nApp
 	/**
 	 *	@description	
 	 */
-	public static function toString($element): ?string
+	public static function toString($element):? string
 	{
         if(is_array($element) || is_object($element))
             return json_encode($element);
@@ -30,8 +30,8 @@ class StringWorks extends nApp
 	/**
 	 *	@description	
 	 */
-	public function toXml($xml): ?string
+	public function toXml($xml):? string
 	{
-        
+        return '';
 	}
 }

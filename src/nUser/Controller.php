@@ -1,32 +1,27 @@
 <?php
 namespace Nubersoft\nUser;
 
+use \Nubersoft\Dto\Session\User\GetResponse;
+
 class Controller extends \Nubersoft\nUser
 {
-    private    static    $Session;
-    
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
-        return (!empty($this->getDataNode('_SESSION')['user']['username']));
+        $user = new GetResponse(($this->getDataNode('_SESSION')['user'])?? []);
+        return (!empty($user->username));
     }
     
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        $SESS    =    $this->getDataNode('_SESSION');
-        $user    =    (!empty($SESS['user']))? $SESS['user'] : false;
-        
-        //echo printpre($user);
-        
-        if(empty($user['username']))
+        $SESS = $this->getDataNode('_SESSION');
+        $user = new GetResponse((!empty($SESS['user']))? $SESS['user'] : null);
+        if(empty($user->username))
             return false;
         
-        if(!is_numeric($user['usergroup'])) {
-            $user['usergroup']    =    constant($user['usergroup']);
+        if(!is_numeric($user->usergroup)) {
+            $user->usergroup = constant($user->usergroup);
         }
         
-        if(!defined('NBR_ADMIN'))
-            return false;
-        else
-            return ($user['usergroup'] <= NBR_ADMIN);
+        return (!defined('NBR_ADMIN'))? false : ($user->usergroup <= NBR_ADMIN);
     }
 }

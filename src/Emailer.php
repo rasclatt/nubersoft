@@ -5,14 +5,9 @@ class    Emailer extends \Nubersoft\nApp
 {
     use \Nubersoft\nDynamics;
     
-    public        $sent,
-                $response,
-                $sending;
+    public $sent, $response, $sending;
 
-    protected    $addresses,
-                $headers,
-                $reply,
-                $notification;
+    protected $addresses, $headers, $reply, $notification;
 
     public function __construct()
     {

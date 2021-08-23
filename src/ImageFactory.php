@@ -3,39 +3,35 @@ namespace Nubersoft;
 
 class ImageFactory extends \Nubersoft\nApp
 {
-    public      $destination,
-                $error;
+    public $destination, $error;
 
-    protected   $original,
-                $search_for_filename,
-                $search_for_location,
-                $filesize;
+    protected  $original, $search_for_filename, $search_for_location, $filesize;
 
-    protected    static    $singleton;
+    protected static $singleton;
 
-    const    SMALL_INPUT        =    1000000;
-    const    MEDIUM_INPUT    =    10000000;
-    const    LARGE_INPUT        =    100000000;
-    const    MAX_INPUT        =    10000000000000000;
+    const SMALL_INPUT = 1000000;
+    const MEDIUM_INPUT = 10000000;
+    const LARGE_INPUT = 100000000;
+    const MAX_INPUT = 10000000000000000;
 
     public function setFileSize()
     {
-        $args_count    =    func_num_args();
+        $args_count = func_num_args();
 
         if($args_count > 0)
-            $args    =    func_get_args();
+            $args = func_get_args();
 
-        $this->max_filesize    =    (isset($args))? $args[0]: self::SMALL_INPUT;
+        $this->max_filesize = (isset($args))? $args[0]: self::SMALL_INPUT;
 
-        return $this;    
+        return $this;
     }
 
     public function fetchOriginal($file)
     {
-        $size                       =   @getimagesize($file);
-        $this->original['width']    =   $size[0];
-        $this->original['height']   =   $size[1];
-        $this->original['type']     =   $size['mime'];
+        $size = @getimagesize($file);
+        $this->original['width'] = $size[0];
+        $this->original['height'] = $size[1];
+        $this->original['type'] = $size['mime'];
         return $this;
     }
     
@@ -167,7 +163,7 @@ class ImageFactory extends \Nubersoft\nApp
         if(empty($filename))
             return $this;
 
-        $this->search_for_filename[]    =    $filename;
+        $this->search_for_filename[] = $filename;
 
         return $this;
     }
@@ -177,13 +173,13 @@ class ImageFactory extends \Nubersoft\nApp
         if(empty($dir))
             return $this;
 
-        $directory                    =    $this->getDirList(array("dir"=>$dir));
+        $directory = $this->getDirList(array("dir"=>$dir));
 
         if(isset($directory['host'])) {
             if(isset($this->search_for_location) && is_array($this->search_for_location))
-                $this->search_for_location    =    array_merge($this->search_for_location,$directory['host']);
+                $this->search_for_location = array_merge($this->search_for_location,$directory['host']);
             else
-                $this->search_for_location    =    $directory['host'];
+                $this->search_for_location = $directory['host'];
         }
 
         return $this;
