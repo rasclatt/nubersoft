@@ -5,7 +5,7 @@ class Cart extends nSession
 {
     public function addToCart($sku, $qty = 1)
     {
-        $cart    =    $this->getCart(true);
+        $cart = $this->getCart(true);
         
         if(!isset($cart[$sku]))
             $cart[$sku]['qty']    =    $qty;

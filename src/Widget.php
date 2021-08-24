@@ -1,25 +1,17 @@
 <?php
 namespace Nubersoft;
 
-class Widget extends \Nubersoft\Plugin
+class Widget extends Plugin
 {
-    private    $plugin,
-            $widget,
-            $slug,
-            $author;
-    private    static    $singleton;
-    
+    private $plugin, $widget, $slug, $author;
+            
     public function __construct($plugin)
     {
-        if(empty(self::$singleton))
-            self::$singleton    =    $this;
-        $this->author    =
-        $this->widget    =
-        $this->slug        =    false;
-        $this->plugin    =    $plugin;
+        $this->author =
+        $this->widget =
+        $this->slug = false;
+        $this->plugin = $plugin;
         $this->init();
-        
-        return self::$singleton;
     }
     
     public function configPath()

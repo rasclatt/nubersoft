@@ -2,21 +2,23 @@
 namespace Nubersoft;
 
 use \Nubersoft\nApp;
+use \Nubersoft\Dto\ {
+    StringWorks\StringToArrayRequest,
+    Currency\MoneyFormatsResponse,
+    Currency\ToMoneyRequest
+};
+use Nubersoft\Dto\Currency\ToDollarRequest;
 
-class Currency extends \Nubersoft\cURL
+class Currency extends cURL
 {
-    protected    $endpoint,
-                $rates,
-                $currency,
-                $queryString,
-                $baseCurrency;
+    protected $endpoint, $rates, $currency, $queryString, $baseCurrency;
 
-    const    DEFAULT_API        =    'http://api.fixer.io/latest';
-    const    BASE_CURRENCY    =    'USD';
+    const DEFAULT_API = 'http://api.fixer.io/latest';
+    const BASE_CURRENCY = 'USD';
 
     public function setBaseCurrency($currency)
     {
-        $this->baseCurrency    =    $currency;
+        $this->baseCurrency = $currency;
         return $this;
     }
 
@@ -27,26 +29,26 @@ class Currency extends \Nubersoft\cURL
 
     public function setAttributes($attr)
     {
-        $this->queryString    =    http_build_query($attr);
+        $this->queryString = http_build_query($attr);
         return $this;
     }
 
     public function fetch()
     {
         if(empty($this->endpoint)) {
-            $this->endpoint    =    self::DEFAULT_API;
+            $this->endpoint = self::DEFAULT_API;
             $this->setAttributes(array('base'=>$this->getBaseCurrency()));
         }
 
         $this->query($this->endpoint.((!empty($this->queryString))? '?'.$this->queryString : ''));
 
-        $this->queryString    =    false;
+        $this->queryString = false;
         return $this;
     }
 
     public function getRates($get = false)
     {
-        $response    =    $this->getResponse(true);
+        $response = $this->getResponse(true);
         if(!empty($get)) {
             if($get == $this->getBaseCurrency())
                 return 1;
@@ -61,89 +63,69 @@ class Currency extends \Nubersoft\cURL
     {
         $this->setBaseCurrency($array['from'])->fetch();
 
-        $to                =    $array['to'];
-        $rate            =    $this->getRates($to);
-        $array['value']    =    preg_replace('/[^\d\.]/','',$array['value']);
+        $to             = $array['to'];
+        $rate         = $this->getRates($to);
+        $array['value'] = preg_replace('/[^\d\.]/','',$array['value']);
         return $array['value']*$rate;
     }
 
     public function getLocale($country)
     {
-        $locales    =    $this->getLocaleList();
+        $locales = $this->getLocaleList();
         return (isset($locales[$country]['lang']))? $locales[$country]['lang'] : 'en_US';
     }
 
     public function getLocaleList($key = 'abbr3')
     {
-        $path    =    NBR_SETTINGS.DS.'locale'.DS.'locale_list.xml';
-        $reg    =    nApp::call()->toArray(simplexml_load_file($path));
+        $path = NBR_SETTINGS.DS.'locale'.DS.'locale_list.xml';
+        $reg = nApp::call()->toArray(simplexml_load_file($path));
         return ArrayWorks::organizeByKey($reg['locale'], $key, ['unset' => false]);
     }
-
-    public function getFormatList()
+    /**
+     * @description Fetches all the available international money formats from xml file
+     */
+    public function getMoneyFormats(): array
     {
-        $nApp    =    \Nubersoft\nApp::call();
-
-        return $nApp->getPrefFile('money_format',array('save'=>true),false,function($path,$nApp) {
-            $config    =    $nApp->getHelper('nRegister')->parseXmlFile(__DIR__.DS.'Currency'.DS.'Core'.DS.'settings'.DS.'money_format.xml');
-            $array    =    $nApp->organizeByKey($config['money_format'],'abbr',array('unset'=>false));
-            ksort($array);
-            return $array;
-        });
-
+        $request = new StringToArrayRequest();
+        $request->from = 'xml';
+        $request->input = @file_get_contents(__DIR__.DS.'Currency'.DS.'Core'.DS.'settings'.DS.'locale_list.xml');
+        return array_map(function($v){
+            return new MoneyFormatsResponse($v);
+        }, StringWorks::stringToArray($request)['locale']);
     }
 
-    public function getMoneyFormat($country)
+    public static function toMoney(ToMoneyRequest $request)
     {
-        $format    =    $this->getFormatList();
-
-        $array    =    (!empty($format[$country]))? $format[$country] : array('abbr'=>'USD','format'=>'#,###.##','dec'=>'2');
-
-        $chars    =    explode('#',$array['format']);
-        $filter    =    array(' ','.',',');
-        foreach($chars as $i => $value) {
-            if(!in_array($value,$filter))
-                unset($chars[$i]); 
-            else {
-                if($value == ' ')
-                    $chars[$i]    =    '&nbsp;';
-            }
+        if(!class_exists('NumberFormatter')) {
+            throw new \Exception('"NumberFormatter" is required to be installed. You need install "php-intl"', 500);
         }
-
-        $chars    =    (!empty($chars))? array_values($chars) : false;
-        $array['format']    =    array(
-            'sep_num'=>(isset($chars[0]))? $chars[0] : '',
-            'sep_dec'=>(isset($chars[1]))? $chars[1] : ''
-        );
-
-
-        return $array;
+        $fmt = new \NumberFormatter(...[
+            "{$request->language}_{$request->country}",
+            \NumberFormatter::CURRENCY
+        ]);
+        $str = $fmt->formatCurrency($request->number, $request->to);
+        return $str;
     }
 
-    public function toMoney($number,$country,$append='$',$toArray=false)
+    public static function toDollar(
+        float $number,
+        string $to = 'USD',
+        string $country = 'USA'
+    )
     {
-        $format    =    $this->getMoneyFormat($country);
-        $value    =    number_format($number,$format['dec'],$format['format']['sep_dec'],$format['format']['sep_num']);
-        if(!empty($append)) {
-            if($toArray) 
-                return (is_bool($append))? array('symbol'=>$format['abbr'],'value'=>$value) : array('symbol'=>$append,'value'=>$value);
+        $format = null;
 
-            return    (is_bool($append))? '('.$format['abbr'].') '.$value : $append.$value;
-        }
+        array_map(function($v) use ($country, $format) {
+            if($v->abbr3 == $country)
+                $format = $v;
+        }, (new Currency())->getMoneyFormats());
 
-        return $value;
-    }
+        $dto = new ToDollarRequest([
+            'number' => $number,
+            'format' => $format,
+            'to' => $to
+        ]);
 
-    public function toDollar($number,$country = 'USA',$format = '%i',$append='UTF-8')
-    {
-        $locales    =    $this->getLocaleList();
-        $encode        =    (isset($locales[$country]['lang']))? $locales[$country]['lang'] : 'en_US';
-        if(!empty($append))
-            $encode    .=    '.'.$append;
-
-        echo $encode;
-
-        setlocale(LC_MONETARY, $encode);
-        return money_format($format, $number);
+        return self::toMoney($dto);
     }
 }

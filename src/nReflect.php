@@ -3,16 +3,6 @@ namespace Nubersoft;
 
 class nReflect
 {
-    private    static    $singleton;
-    
-    public function __construct()
-    {
-        if(self::$singleton instanceof \Nubersoft\nReflect)
-            return self::$singleton;
-        
-        return  self::$singleton    =    $this;
-    }
-    
     public function execute()
     {
         $args    =    func_get_args();
@@ -86,8 +76,8 @@ class nReflect
             if($params) {
                 # Loop and assign as arguments
                 foreach($params as $param) {
-                    $rDep                =    $param->getClass();
-                    $auto_injectors[]    =    (!empty($rDep->name))? $this->reflectClassMethod($rDep->name,false) : $param->getDefaultValue();
+                    $rDep = $param->getClass();
+                    $auto_injectors[] = (!empty($rDep->name))? $this->reflectClassMethod($rDep->name,false) : $param->getDefaultValue();
                 }
             }
         }
@@ -103,8 +93,8 @@ class nReflect
         $params        =    $Reflector->getParameters();
         
         foreach($params as $parameter) {
-            $class                =    $parameter->getClass();
-            $auto_injectors[]    =    (!empty($class->name))? $this->reflectClassMethod($class->name,false) : $param->getDefaultValue();
+            $class = $parameter->getClass();
+            $auto_injectors[] = (!empty($class->name))? $this->reflectClassMethod($class->name,false) : $parameter->getDefaultValue();
         }
         
         # Send back the injected class with injected classes into methods

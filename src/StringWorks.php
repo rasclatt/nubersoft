@@ -1,5 +1,7 @@
 <?php
 namespace Nubersoft;
+
+use \Nubersoft\Dto\StringWorks\StringToArrayRequest;
 /**
  *	@description	
  */
@@ -33,5 +35,30 @@ class StringWorks extends nApp
 	public function toXml($xml):? string
 	{
         return '';
+	}
+	/**
+	 *	@description	
+	 *	@param	
+	 */
+	public static function stringToArray(StringToArrayRequest $request)
+	{
+        switch($request->from) {
+            case('xml'):
+                $request->result = json_decode(json_encode(simplexml_load_string($request->input, "SimpleXMLElement", LIBXML_NOCDATA)), 1);
+                break;
+            case('json'):
+                $request->result = json_decode($request->input, 1);
+                break;
+            case('serial'):
+                $request->result = unserialize($request->input);
+                break;
+            case('file'):
+                $request->result = (is_file($request->input))? file($request->input) : [];
+        }
+
+        if(empty($request->result))
+            return (!empty($request->dto))? new $request->dto() : [];
+        else
+			return (!empty($request->dto))? new $request->dto($request->result) : $request->result;
 	}
 }

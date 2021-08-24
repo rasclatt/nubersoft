@@ -1,28 +1,34 @@
 <?php
 namespace Nubersoft;
 
-class nQuery extends \Nubersoft\nApp
+use \Nubersoft\Dto\Database\ConstructRequest as DbSettings;
+
+class nQuery extends nApp
 {
     private static $con;
-    private $query,
-            $sql,
-            $bind,
-            $stmt;
+    private $query, $sql, $bind, $stmt;
     
-    public function getConnection()
+    public function getConnection(DbSettings $Settings = null)
     {
-        if(self::$con instanceof \Nubersoft\Database)
-            return self::$con;
+        if(empty($Settings)) {
+            if(self::$con instanceof Database)
+                return self::$con;
+
+            include_once(NBR_DATABASE_CREDS);
         
-        include_once(NBR_DATABASE_CREDS);
-        
-        if(!defined('DB_HOST'))
-            throw new HttpException\Core('Required database credentials not set or are missing.', 9090);
-        
+            if(!defined('DB_HOST'))
+                throw new HttpException\Core('Required database credentials not set or are missing.', 9090);
+
+            $Settings = new DbSettings();
+            $Settings->host = DB_HOST;
+            $Settings->dbname = DB_NAME;
+            $Settings->user = DB_USER;
+            $Settings->pass = DB_PASS;
+            $Settings->charset = DB_CHARSET;
+        }
+            
         try {
-            $Db    =    new Database(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_CHARSET);
-            self::$con    =    $Db->getConnection();
-            return self::$con;
+            return self::$con = (new Database($Settings))->getConnection();
         }
         catch(\PDOException $e) {
             throw new HttpException($e->getMessage(), 103);
@@ -31,15 +37,15 @@ class nQuery extends \Nubersoft\nApp
     
     public function query($sql, $bind = false, $conn = false)
     {
-        $con    =    ($conn instanceof \PDO)? $conn : $this->getConnection();
+        $con = ($conn instanceof \PDO)? $conn : $this->getConnection();
         
-        if($bind) {
-            $bArr            =    array_values($bind);
-            $this->query    =    $con->prepare($sql);
+        if(is_array($bind)) {
+            $bArr = array_values($bind);
+            $this->query = $con->prepare($sql);
             $this->query->execute($bind);
         }
         else {
-            $this->query    =    $con->query($sql);
+            $this->query = $con->query($sql);
         }
         
         return $this;
@@ -48,7 +54,7 @@ class nQuery extends \Nubersoft\nApp
     public function getResults($single = false)
     {
         while($results = $this->query->fetch(\PDO::FETCH_ASSOC)) {
-            $row[]    =    $results;
+            $row[] = $results;
         }
         if(empty($row))
             return [];
@@ -58,49 +64,49 @@ class nQuery extends \Nubersoft\nApp
     
     public function insert($table, $ticks = '`')
     {
-        $this->sql        =    [];
-        $this->sql[]    =    "INSERT INTO {$ticks}{$this->stripTableName($table)}{$ticks}";
+        $this->sql = [];
+        $this->sql[] = "INSERT INTO {$ticks}{$this->stripTableName($table)}{$ticks}";
         return $this;
     }
     
     public function columns($columns, $ticks = '`')
     {
-        $this->sql[]    =    "({$ticks}".implode("{$ticks}, {$ticks}", $columns)."{$ticks})";
+        $this->sql[] = "({$ticks}".implode("{$ticks}, {$ticks}", $columns)."{$ticks})";
         return $this;
     }
     
     public function values($rows)
     {
-        $this->bind        =    [];
-        $this->sql[]    =    "VALUES";
+        $this->bind = [];
+        $this->sql[] = "VALUES";
         foreach($rows as $row) {
-            $this->bind    =    array_merge($this->bind, $row);
-            $cols[]    =    "(".implode(', ',array_fill(0,count($row), '?')).")";
+            $this->bind = array_merge($this->bind, $row);
+            $cols[] = "(".implode(', ',array_fill(0,count($row), '?')).")";
         }
         
         if(!empty($cols))
-            $this->sql[]    =    implode(','.PHP_EOL, $cols);
+            $this->sql[] = implode(','.PHP_EOL, $cols);
         
         return $this;
     }
     
     public function write()
     {
-        $this->stmt    =    implode(PHP_EOL, $this->sql);
+        $this->stmt = implode(PHP_EOL, $this->sql);
         
         $this->query($this->stmt, $this->bind);
     }
     
     public function select($columns = '*')
     {
-        $this->bind        =
-        $this->sql        =    [];
-        $this->sql[]    =    "SELECT";
+        $this->bind =
+        $this->sql = [];
+        $this->sql[] = "SELECT";
         
         if(is_array($columns))
-            $columns    =    implode(', ', $columns);
+            $columns = implode(', ', $columns);
         
-        $this->sql[]    =    $columns;
+        $this->sql[] = $columns;
         
         return $this;
     }
@@ -108,9 +114,9 @@ class nQuery extends \Nubersoft\nApp
     public function from($table)
     {
         if(is_array($table))
-            $table    =    implode(', ', array_map(function($v){ return $this->stripTableName($v); }, $table));
+            $table = implode(', ', array_map(function($v){ return $this->stripTableName($v); }, $table));
         
-        $this->sql[]    =    'FROM '.$this->stripTableName($table);
+        $this->sql[] = 'FROM '.$this->stripTableName($table);
         
         return $this;
     }
@@ -118,22 +124,22 @@ class nQuery extends \Nubersoft\nApp
     public function where($where, $bind = false)
     {
         if(empty($this->bind))
-            $this->bind        =    [];
-        $this->sql[]    =    'WHERE';
+            $this->bind = [];
+        $this->sql[] = 'WHERE';
         if(!is_array($where)) {
-            $this->sql[]    =    $where;
+            $this->sql[] = $where;
             if(!empty($bind))
-                $this->bind    =    (is_array($bind))? array_merge($this->bind, $bind) : $bind;
+                $this->bind = (is_array($bind))? array_merge($this->bind, $bind) : $bind;
             return $this;
         }
         
         foreach($where as $cond) {
-            $column            =    (!empty($cond['c']))? $cond['c'] : false;
-            $value            =    (!empty($cond['v']))? $cond['v'] : false;
-            $operand        =    (!empty($cond['op']))? $cond['op'] : '=';
-            $condition        =    (!empty($cond['co']))? $cond['co'] : '';
-            $this->bind[]    =    $value;
-            $this->sql[]    =    $column.' '.$operand.' ? '.$condition;
+            $column = (!empty($cond['c']))? $cond['c'] : false;
+            $value = (!empty($cond['v']))? $cond['v'] : false;
+            $operand = (!empty($cond['op']))? $cond['op'] : '=';
+            $condition = (!empty($cond['co']))? $cond['co'] : '';
+            $this->bind[] = $value;
+            $this->sql[] = $column.' '.$operand.' ? '.$condition;
         }
         
         return $this;
@@ -141,47 +147,47 @@ class nQuery extends \Nubersoft\nApp
     
     public function orderBy($array)
     {
-        $this->sql[]    =    'ORDER BY';
+        $this->sql[] = 'ORDER BY';
         
         if(!is_array($array)) {
-            $this->sql[]    =    $array;
+            $this->sql[] = $array;
             return $this;
         }
         
-        $rows    =    [];
+        $rows = [];
         foreach($array as $key => $value) {
-            $rows[]    =    $key.' '.$value;
+            $rows[] = $key.' '.$value;
         }
         
-        $this->sql[] =    implode(', ', $rows);
+        $this->sql[] = implode(', ', $rows);
         
         return $this;
     }
     
     public function addStmt($sql)
     {
-        $this->sql[]    =    $sql;
+        $this->sql[] = $sql;
         return $this;
     }
     
     public function update($table)
     {
-        $this->bind        =
-        $this->sql        =    [];
-        $this->sql[]    =    "UPDATE {$this->stripTableName($table)}";
+        $this->bind =
+        $this->sql = [];
+        $this->sql[] = "UPDATE {$this->stripTableName($table)}";
 
         return $this;
     }
     
     public function set($array, $tick = "`")
     {
-        $set            =    [];
-        $this->sql[]    =    "SET";
+        $set = [];
+        $this->sql[] = "SET";
         foreach($array as $key => $value) {
-            $this->bind[]    =    $value;
-            $set[]    =    "{$tick}{$key}{$tick} = ?";
+            $this->bind[] = $value;
+            $set[] = "{$tick}{$key}{$tick} = ?";
         }
-        $this->sql[]    =    implode(', ', $set);
+        $this->sql[] = implode(', ', $set);
         return $this;
     }
     
@@ -206,8 +212,8 @@ class nQuery extends \Nubersoft\nApp
     
     public function delete($table, $ticks = '`')
     {
-        $this->sql        =    [];
-        $this->sql[]    =    "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
+        $this->sql = [];
+        $this->sql[] = "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
         
         return $this;
     }
@@ -219,10 +225,10 @@ class nQuery extends \Nubersoft\nApp
     
     public function fetch($one = false)
     {
-        $sql    =    implode(PHP_EOL, $this->sql);
-        $bind    =    (!empty($this->bind))? $this->bind : null;
+        $sql = implode(PHP_EOL, $this->sql);
+        $bind = (!empty($this->bind))? $this->bind : null;
         try {
-            $data    =    $this->query(implode(PHP_EOL, $this->sql), $bind)->getResults($one);
+            $data = $this->query(implode(PHP_EOL, $this->sql), $bind)->getResults($one);
             return $data;
         }
         catch (\PDOException $e) {

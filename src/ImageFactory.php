@@ -7,8 +7,6 @@ class ImageFactory extends \Nubersoft\nApp
 
     protected  $original, $search_for_filename, $search_for_location, $filesize;
 
-    protected static $singleton;
-
     const SMALL_INPUT = 1000000;
     const MEDIUM_INPUT = 10000000;
     const LARGE_INPUT = 100000000;
@@ -164,23 +162,6 @@ class ImageFactory extends \Nubersoft\nApp
             return $this;
 
         $this->search_for_filename[] = $filename;
-
-        return $this;
-    }
-
-    public function searchLocation($dir = false)
-    {
-        if(empty($dir))
-            return $this;
-
-        $directory = $this->getDirList(array("dir"=>$dir));
-
-        if(isset($directory['host'])) {
-            if(isset($this->search_for_location) && is_array($this->search_for_location))
-                $this->search_for_location = array_merge($this->search_for_location,$directory['host']);
-            else
-                $this->search_for_location = $directory['host'];
-        }
 
         return $this;
     }
