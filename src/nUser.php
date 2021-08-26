@@ -3,7 +3,7 @@ namespace Nubersoft;
 
 class nUser extends \Nubersoft\nQuery
 {
-    private $required   =   [
+    protected $required   =   [
         'username',
         'password',
         'first_name',
@@ -49,7 +49,7 @@ class nUser extends \Nubersoft\nQuery
     
     public function create($data, $autologin = false)
     {
-        $data = $this->getHelper('ArrayWorks')->trimAll($data);
+        $data = \Nubersoft\ArrayWorks::trimAll($data);
         $username = strtolower((!empty($data['username']))? $data['username'] : false);
         $password = (!empty($data['password']))? $this->hashPassword($data['password']) : false;
         $first_name = (!empty($data['first_name']))? $this->enc($data['first_name']) : false;
@@ -61,8 +61,10 @@ class nUser extends \Nubersoft\nQuery
         if(!is_numeric($usergroup))
             $usergroup    =    constant($usergroup);
         
+        $Errors = new \Nubersoft\ErrorMessaging();
+        
         if(!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_username'));
+            $this->toError($Errors->getMessageAuto('invalid_username'));
             return false;
         }
         # Stop of required fields are missing
@@ -71,21 +73,21 @@ class nUser extends \Nubersoft\nQuery
         # Check if fields are required
         $allowed   =   false;
         foreach($this->required as $r) {
-            $allowed    =   $this->isValid($r, $data);
+            $allowed = $this->isValid($r, $data);
             if(!$allowed)
                 break;
         }
         # If not allowed, just stop
         if(!$allowed) {
-            $msg    =   'required';
+            $msg = 'required';
         }        
-        elseif($this->userExists($username)) {
-            $allowed    =   false;
-            $msg    =   'fail_userexists';
+        elseif($this->userExists($username) != 0) {
+            $allowed = false;
+            $msg = 'fail_userexists';
         }
         # Stop and return message
         if(!$allowed) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto($msg));
+            $this->toError($Errors->getMessageAuto($msg));
             return false;
         }
         

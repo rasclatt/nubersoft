@@ -75,14 +75,14 @@ class ErrorMessaging extends \Nubersoft\nApp
     /**
      *    @description    
      */
-    public    static    function getMessage($code, $locale = 'us', $lang = 'en')
+    public static function getMessage($code, $locale = 'us', $lang = 'en')
     {
         $defcode    =   500;
         $def        =   self::DEFAULT_CODES[500];
         $local      =   $locale.$lang;
         
         if(empty($local))
-            $local  =   \Nubersoft\nApp::create()->getSession('locale').\Nubersoft\nApp::create()->getSession('locale_lang');
+            $local  =   \Nubersoft\nApp::call()->getSession('locale').\Nubersoft\nApp::call()->getSession('locale_lang');
         
         if(empty($local))
             $local  =   'usen';

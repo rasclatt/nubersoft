@@ -11,10 +11,10 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
     public function listen()
     {
         # Check if database and/or registry file is created
-        $dbcreds    =    NBR_CLIENT_SETTINGS.DS.'dbcreds.php';
-        $registry    =    NBR_CLIENT_SETTINGS.DS.'registry.xml';
-        $hasAdmin    =
-        $hasTables    =    false;
+        $dbcreds = NBR_CLIENT_SETTINGS.DS.'dbcreds.php';
+        $registry = NBR_CLIENT_SETTINGS.DS.'registry.xml';
+        $hasAdmin =
+        $hasTables = false;
         if(!is_file($file = NBR_CLIENT_CACHE.DS.'defines.php')) {
             $this->getHelper("DataNode")->addNode('update_error', 'You need to reset your cache to get get client defines.');
             if($this->getHelper('Settings\Controller')->createDefines($registry))
@@ -25,9 +25,9 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
         }
         
         if(is_file($dbcreds)) {
-            $nQuery        =    $this->getHelper('nQuery');
-            $hasTables    =    $nQuery->query("show tables")->getResults();
-            $hasUser    =   false;
+            $nQuery = $this->getHelper('nQuery');
+            $hasTables = $nQuery->query("show tables")->getResults();
+            $hasUser = false;
             
             if(!empty($hasTables)) {
                 $hasUser    =   (!empty(array_filter(array_map(function($v){
@@ -42,7 +42,7 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
                 try {
                     $hasAdmin    =    (!empty($hasTables))? $nQuery->query("SELECT COUNT(*) as count FROM users WHERE usergroup = 'NBR_SUPERUSER' OR usergroup = ?", [NBR_SUPERUSER])->getResults(1)['count'] : 0;
                 }
-                catch (\PDOExeception $e) {
+                catch (\PDOException $e) {
                     $hasAdmin    =    0;
                 }
             }
@@ -77,9 +77,7 @@ class Observer extends \Nubersoft\nApp implements \Nubersoft\nObserver
                     $this->getHelper('DataNode')->addNode('table_error', 'Username must be an email address.');
                     break;
                 }
-                
-                $User    =    $this->getHelper("nUser");
-                
+                $User = new \Nubersoft\nUser\FirstRun();
                 $User->create([
                     'username' => $username,
                     'password' => $password,
