@@ -1,6 +1,8 @@
 <?php
 namespace Nubersoft;
 
+use \Nubersoft\Dto\File as FileDto;
+
 class nApp extends \Nubersoft\nFunctions
 {
     use nUser\enMasse,
@@ -77,15 +79,15 @@ class nApp extends \Nubersoft\nFunctions
         return $SESS;
     }
     
-    public function getFiles()
+    public function getFiles():? array
     {
         $files = $this->getDataNode('_FILES');
         
         if(empty($files))
-            return [];
+            return null;
 
         return array_map(function($v){
-            return new \Nubersoft\Dto\File($v);
+            return new FileDto($v);
         }, $files);
     }
     /**
@@ -111,7 +113,7 @@ class nApp extends \Nubersoft\nFunctions
             throw new HttpException('Class doesn\'t exist: <pre>'.print_r(array_map(function($v){ return (isset($v['file']))? str_replace(NBR_ROOT_DIR, '', $v['file']).'('.$v['line'].')' : $v; },debug_backtrace()),1).'</pre>', 100);
         }
     }
-    
+
     public function getHelperClass($class)
     {
         return nReflect::instantiate("\\Nubersoft{$class}");

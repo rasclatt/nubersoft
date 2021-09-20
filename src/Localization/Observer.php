@@ -19,7 +19,7 @@ class Observer extends nSession implements nObserver
     use SettingsTrait;
     use nQueryTrait;
     
-    private $Localization;
+    private $Localization, $request;
 	/**
 	 *	@description	
 	 */
@@ -27,6 +27,7 @@ class Observer extends nSession implements nObserver
         Controller $Controller
     )
 	{
+        $this->request = $this->getPost();
         $this->Localization   =   $Controller;
 	}
 	/**
@@ -34,7 +35,7 @@ class Observer extends nSession implements nObserver
 	 */
 	public function actionListen()
 	{
-        $POST	=	$this->getPost();
+        $POST	=	$this->request;
 		$action	=	(isset($POST['subaction']))? $POST['subaction'] : $POST['action'];
 		$respto	=	(!empty($POST['sendto']))? \Nubersoft\Conversion\Data::getBoolVal($POST['sendto']) : false;
 		$locale	=	$this->getSession('locale');
@@ -137,14 +138,16 @@ class Observer extends nSession implements nObserver
             'country',
             'language'
         ];
-        
-        $csv    =   ($this->getFiles()['countries'])?? false;
-        
-        if($csv['type'] != 'text/csv')
+        # Check if the countries key is available
+        $csv    =   (!empty($this->getFiles()[0]->countries))? $this->getFiles()[0] : null;
+        # See if this is a CSV file
+        if($csv->type != 'text/csv')
             $csv = false;
-        
-        $POST   =   $this->getPost();
-        
+        # Set to array
+        $csv = $csv->toArray();
+        # Assign the post
+        $POST = $this->request;
+        # Fetch out the countires and such
         if(!empty($csv['tmp_name'])) {
             $countries  =   array_filter(array_map(function($v){
                 return $v[0];

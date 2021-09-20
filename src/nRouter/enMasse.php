@@ -18,7 +18,7 @@ trait enMasse
         return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}($arg);
     }
     
-    public function redirect($arg)
+    public function redirect(string $arg)
     {
         return \Nubersoft\nReflect::instantiate('\Nubersoft\nRouter\Controller')->{__FUNCTION__}($arg);
     }

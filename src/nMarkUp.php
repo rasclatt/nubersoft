@@ -1,8 +1,10 @@
 <?php
 namespace Nubersoft;
 
-class nMarkUp extends \Nubersoft\nRender
+class nMarkUp extends nApp
 {
+    use Settings\enMasse;
+
     public function useMarkUp($string)
     {
         if(empty($string))
