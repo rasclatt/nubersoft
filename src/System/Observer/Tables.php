@@ -561,12 +561,17 @@ class Tables extends \Nubersoft\System\Observer
                 $POST['file_path']    =    pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME).DS;
                 $POST['file_size']    =    $FILES[0]['size'];
                 $POST['file']   =    $POST['file_path'].$POST['file_name'];
+                $path = str_replace(DS.DS, DS, NBR_DOMAIN_ROOT.DS.$POST['file_path']);
+                $this->isDir($path, true);
                 
-                $move   =   move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS,DS,NBR_DOMAIN_ROOT.DS.$POST['file_path'].DS.$POST['file_name']));
+                $move   =   move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS.DS, DS, $path.DS.$POST['file_name']));
                 
                 if(!$move) {
                     unset($POST['file_name'], $POST['file_path'], $POST['file_size'], $POST['file']);
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
+                    $msg = $this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload');
+                    ($this->isAjaxRequest())? $this->ajaxResponse([
+                        'alert' => "{$msg}: {$path}"
+                    ]) : $this->toError($msg);
                 }
             }
             else
