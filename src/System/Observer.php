@@ -103,7 +103,7 @@ class Observer extends System implements nObserver
                     $this->deleteFile($image['file']);
                 }
                 
-                $this->Router->redirect($this->getPage('full_path'));
+                $this->Router->redirect($this->getPage()->full_path);
             case('clear_cache'):
                 foreach($this->getFilesFolders(NBR_CLIENT_CACHE, ['dbcreds.php']) as $key => $path) {
                     $path    =    $path->__toString();
@@ -128,11 +128,10 @@ class Observer extends System implements nObserver
         
         switch($this->getPost('action')) {
             case('login'):
-                $data    =    $this->validate($this->getPost('username', true), $this->getPost('password', true), true);
-                
-                $auth    =    $this->getHelper('Settings')->getSystemOption('frontend_admin');
-                
-                if(($data['is_admin'] && $auth == 'off') && ($this->getPage('is_admin') != 1)) {
+                $data = $this->validate($this->getPost('username', true), $this->getPost('password', true), true);
+                $auth = $this->getHelper('Settings')->getSystemOption('frontend_admin');
+
+                if((($data['is_admin'])?? false && $auth == 'off') && ($this->getPage()->is_admin != 1)) {
                     $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('access_admin'));
                     return false;
                 }
@@ -175,7 +174,7 @@ class Observer extends System implements nObserver
 
         if($this->isLoggedIn()){
             $Token->set('login', true);
-            $this->Router->redirect($this->getPage('full_path'));
+            $this->Router->redirect($this->getPage()->full_path);
         }
     }
     
@@ -245,7 +244,7 @@ class Observer extends System implements nObserver
             $this->toUserSession($user);
 
             if($this->isLoggedIn())
-                $this->Router->redirect($this->getPage('full_path'));
+                $this->Router->redirect($this->getPage()->full_path);
             else
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_login'));
         }
