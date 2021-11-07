@@ -14,9 +14,9 @@ class    nCache extends \Nubersoft\nApp
     
     public function start($path_to_file)
     {
-        $this->destination    =    $path_to_file;
-        $this->has_layout    =    false;
-        $exists                =    is_file($this->destination);
+        $this->destination = $path_to_file;
+        $this->has_layout = false;
+        $exists = is_file($this->destination);
         
         if($this->refresh && $exists) {
             unlink($this->destination);
@@ -67,7 +67,7 @@ class    nCache extends \Nubersoft\nApp
 	public function __($func, $def = 'index.html')
 	{
         if(empty($this->basepath))
-            $path =   NBR_CLIENT_CACHE.DS.'pages'.DS.$this->getDataNode('routing')['ID'].DS.$def;
+            $path =   NBR_CLIENT_CACHE.DS.'pages'.DS.$this->getDataNode('routing')->ID.DS.$def;
         else
             $path   =   $this->basepath.$def;
         

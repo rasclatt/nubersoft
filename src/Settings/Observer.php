@@ -79,7 +79,7 @@ class Observer extends Controller implements nObserver
         $DataNode->setNode('plugins', ['paths' => $this->getPluginPaths()]);
         # Create a 404 if routing is missing
         $DataNode->setNode('header', [
-            'header_response_code' => (empty($this->getDataNode('routing')))? 404 : 200
+            'header_response_code' => (empty($this->getDataNode('routing')->ID))? 404 : 200
         ]);
         # Checks if request is likely ajax in nature
         $DataNode->setNode('request', (($Router->isAjaxRequest())? 'ajax' : 'http'), 'type');

@@ -1,16 +1,29 @@
 <?php
 namespace Nubersoft;
 
+use \Nubersoft\Dto\Router\GetPageResponse;
+
 class nRouter extends \Nubersoft\nQuery
 {
-    public function getPage($id, $column = 'full_path')
+    public function getPage($id, $column = 'full_path'): GetPageResponse
     {
-        $path    =    trim($id);
-        $nQuery    =    $this->getHelper('nQuery');
-        $query    =    $nQuery->query("SELECT * FROM main_menus WHERE `{$column}` = ?",[$id])->getResults(1);
-        
-        if(!empty($query['page_options'])) {
-            $query['page_options']    =    json_decode(html_entity_decode($query['page_options'], ENT_QUOTES),true);
+        $nQuery = new nQuery;
+        if($column == 'full_path') {
+            $sql = "`{$column}` = ? OR `{$column}` = ?";
+            $bind = [
+                rtrim($id, '/').'/',
+                rtrim($id, '/')
+            ];
+        }
+        else {
+            $sql = "`{$column}` = ?";
+            $bind = [$id];
+        }
+
+        $query = new GetPageResponse($nQuery->query("SELECT * FROM main_menus WHERE {$sql}", $bind)->getResults(1));
+    
+        if($query->is_valid && !empty($query->page_options)) {
+            $query['page_options']    =    json_decode(html_entity_decode($query->page_options, ENT_QUOTES),true);
         }
         
         return $query;

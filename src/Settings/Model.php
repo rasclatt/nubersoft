@@ -12,7 +12,7 @@ class Model extends \Nubersoft\Settings
     public function getPage($key = false)
     {
         # Get data node
-        $data    =    $this->getDataNode('routing');
+        $data = $this->getDataNode('routing')->toArray();
         
         if($key)
             return (isset($data[$key]))? $data[$key] : null;

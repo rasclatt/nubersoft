@@ -20,12 +20,12 @@ class Admin extends \Nubersoft\Settings
     
     public function isAdminPage()
     {
-        $admin    =    (!empty($this->getDataNode('routing')['is_admin']))? $this->getDataNode('routing')['is_admin'] : false;
+        $admin = (!empty($this->getDataNode('routing')->is_admin))? $this->getDataNode('routing')->is_admin : false;
         
         if(empty($admin))
             return false;
         
-        return ($this->getDataNode('routing')['is_admin'] == 1);
+        return ($this->getDataNode('routing')->is_admin == 1);
     }
 	/**
 	 *	@description	
