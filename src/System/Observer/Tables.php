@@ -144,12 +144,13 @@ class Tables extends \Nubersoft\System\Observer
         $existing = $this->Router->getPage($POST['full_path'], 'full_path');
         if ($existing instanceof \SmartDto\Dto)
             $existing = $existing->toArray();
+
         if (empty($POST['full_path'])) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slug'));
             return false;
         }
 
-        if (!empty($existing)) {
+        if (!empty($existing['full_path'])) {
             if ($existing['ID'] != $POST['ID']) {
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slugexists'));
                 return false;
@@ -173,7 +174,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $this->query("UPDATE `main_menus` SET " . implode(', ', $sql) . " WHERE ID = ? ", array_values(array_merge(array_values($POST), [$ID])));
 
-        if ($this->getPage('full_path') != $POST['full_path']) {
+        if ($this->getPage()->full_path != $POST['full_path']) {
             $this->Router->redirect($POST['full_path'] . '?msg=fail_update');
         } else {
             $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->getGet()));
