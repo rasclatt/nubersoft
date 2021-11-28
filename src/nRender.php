@@ -1,7 +1,10 @@
 <?php
 namespace Nubersoft;
 
-use \Nubersoft\nQuery;
+use \Nubersoft\ {
+    nQuery,
+    nSession\User
+};
 use \Nubersoft\Dto\Settings\Page\View\ConstructRequest as Helpers;
 use \Nubersoft\Dto\DataNode\ {
     Routing\GetRequest as Routing,
@@ -24,7 +27,7 @@ class nRender extends nQuery
         $this->templates = new Templates();
         $this->Helpers = $Helpers;
         $this->routing = new Routing();
-        $this->sUser = new \Nubersoft\Dto\Session\User\GetResponse($this->getSession('user'));
+        $this->sUser = User::get();
         return parent::__construct();
     }
     /**

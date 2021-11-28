@@ -1,6 +1,8 @@
 <?php
 namespace Nubersoft;
 
+use \Nubersoft\nFileHandler as Files;
+
 class System extends nSession\Controller
 {
     public function login($username, $password)
@@ -71,18 +73,17 @@ class System extends nSession\Controller
         $this->set('user', $user);
         return $this;
     }
-
+    /**
+     * @description Downloads a valid file
+     * */
     public function downloadFile($file)
     {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . basename($file) . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file));
-        readfile($file);
-        exit;
+        if(!is_file($file)) {
+            $this->toError("File is invalid.", 500);
+            return $this;
+        }
+        # Download file
+        Files::download($file);
     }
 
     public function deleteFile($file, $ID = false, $table = false)

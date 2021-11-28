@@ -1,4 +1,5 @@
 <?php
+
 namespace Nubersoft;
 
 class nForm extends \Nubersoft\nApp
@@ -99,22 +100,22 @@ class nForm extends \Nubersoft\nApp
             }
         }, trim($settings['default'], '~')) : '';
 
-        $class   = (!empty($settings['class'])) ? $this->useWrapper('class', $this->imploder($settings['class'], ' ')) : false;
-        $name   = (!empty($settings['name'])) ? $settings['name'] : false;
-        $size   = (!empty($settings['size'])) ? $settings['size'] : false;
-        $label   = (!empty($settings['label'])) ? $settings['label'] : false;
+        $class = (!empty($settings['class'])) ? $this->useWrapper('class', $this->imploder($settings['class'], ' ')) : false;
+        $name = (!empty($settings['name'])) ? $settings['name'] : false;
+        $size = (!empty($settings['size'])) ? $settings['size'] : false;
+        $label = (!empty($settings['label'])) ? $settings['label'] : false;
 
-        $value   = (!empty($settings['value'])) ? $settings['value'] : $default;
-        $options  = (!empty($settings['options'])) ? $settings['options'] : array(array('', 'Select', true));
+        $value = (!empty($settings['value'])) ? $settings['value'] : $default;
+        $options = (!empty($settings['options'])) ? $settings['options'] : array(array('', 'Select', true));
         $id = (!empty($settings['id'])) ? $this->useWrapper('id', $settings['id']) : false;
-        $type   = (!empty($settings['type'])) ? $settings['type'] : 'text';
-        $style   = (!empty($settings['style'])) ? $this->useWrapper('style', $this->imploder($settings['style'])) : false;
+        $type = (!empty($settings['type'])) ? $settings['type'] : 'text';
+        $style = (!empty($settings['style'])) ? $this->useWrapper('style', $this->imploder($settings['style'])) : false;
         $placeholder = (!empty($settings['placeholder'])) ? $this->useWrapper('placeholder', $settings['placeholder']) : false;
-        $selected  = (!empty($settings['selected'])) ? ' selected' : false;
-        $select   = (!empty($settings['select'])) ? $settings['select'] : false;
-        $disabled  = (!empty($settings['disabled'])) ? ' disabled' : false;
-        $other   = (!empty($settings['other'])) ? ' ' . $this->imploder($settings['other'], ' ') : false;
-        $wrap_class  = (!empty($settings['wrap_class'])) ? ' ' . $this->imploder($settings['wrap_class'], ' ') : false;
+        $selected = (!empty($settings['selected'])) ? ' selected' : false;
+        $select = (!empty($settings['select'])) ? $settings['select'] : false;
+        $disabled = (!empty($settings['disabled'])) ? ' disabled' : false;
+        $other = (!empty($settings['other'])) ? ' ' . $this->imploder($settings['other'], ' ') : false;
+        $wrap_class = (!empty($settings['wrap_class'])) ? ' ' . $this->imploder($settings['wrap_class'], ' ') : false;
 
         $this->nform_settings = array(
             'name' => $name,
@@ -184,7 +185,7 @@ class nForm extends \Nubersoft\nApp
     }
     /**
      * @description This method will take a full array of data that make up an entire form and use it
-     *  to build single inputs
+     * to build single inputs
      * @param $settings [array{forced}] This is all the required settings to build a form input
      */
     public function multiValueDeterminer(array $settings)
@@ -194,17 +195,17 @@ class nForm extends \Nubersoft\nApp
             return false;
         }
         # Type will attempt a dynamic method call
-        $type   = (!empty($settings['type'])) ? $settings['type'] : 'text';
-        $values   = (!empty($settings['value'])) ? $settings['value'] : false;
-        $name   = (!empty($settings['name'])) ? $settings['name'] : 'name';
-        $size   = (!empty($settings['size'])) ? $settings['size'] : false;
-        $dropdowns   = (!empty($settings['options'])) ? $settings['options'] : array();
+        $type = (!empty($settings['type'])) ? $settings['type'] : 'text';
+        $values = (!empty($settings['value'])) ? $settings['value'] : false;
+        $name = (!empty($settings['name'])) ? $settings['name'] : 'name';
+        $size = (!empty($settings['size'])) ? $settings['size'] : false;
+        $dropdowns = (!empty($settings['options'])) ? $settings['options'] : array();
         $placeholder = (!empty($settings['placeholder'])) ? $settings['placeholder'] : false;
-        $label   = (!empty($settings['label'])) ? $settings['label'] : false;
-        $other   = (!empty($settings['other'])) ? $settings['other'] : false;
-        $class   = (!empty($settings['class'])) ? $settings['class'] : false;
-        $wrap_class  = (!empty($settings['wrap_class'])) ? $settings['wrap_class'] : false;
-        $style   = (!empty($settings['style'])) ? $settings['style'] : false;
+        $label = (!empty($settings['label'])) ? $settings['label'] : false;
+        $other = (!empty($settings['other'])) ? $settings['other'] : false;
+        $class = (!empty($settings['class'])) ? $settings['class'] : false;
+        $wrap_class = (!empty($settings['wrap_class'])) ? $settings['wrap_class'] : false;
+        $style = (!empty($settings['style'])) ? $settings['style'] : false;
 
         if (is_array($values)) {
             $values = $this->toArray($values);
@@ -215,9 +216,9 @@ class nForm extends \Nubersoft\nApp
             $sColumn = array_map(function ($v) {
                 return str_replace(']', '', $v);
             }, $sColumn);
-            $new   = array();
-            $findArr  = $this->getMatchedArray($sColumn, '', $values);
-            $curr   = end($sColumn);
+            $new = array();
+            $findArr = $this->getMatchedArray($sColumn, '', $values);
+            $curr = end($sColumn);
             $values[$name] = (isset($findArr[$curr][0])) ? $findArr[$curr][0] : false;
         }
         $column = $name;
@@ -240,7 +241,7 @@ class nForm extends \Nubersoft\nApp
             # Get the column name
             $colName = $opts['options'][0]['assoc_column'];
             # Add a select button
-            $blank  = array_unshift($opts['options'], array(
+            $blank = array_unshift($opts['options'], array(
                 'assoc_column' => $colName,
                 'menuName' => 'Select',
                 'menuVal' => ''
@@ -260,7 +261,7 @@ class nForm extends \Nubersoft\nApp
     }
     /**
      * @description This method will take a full array of data that make up an entire form and use it
-     *  to build single inputs
+     * to build single inputs
      * @param $settings [array{forced}] This is all the required settings to build a form input
      */
     public function multiForm(array $settings)
@@ -270,17 +271,17 @@ class nForm extends \Nubersoft\nApp
             return false;
         }
         # Type will attempt a dynamic method call
-        $type   = (!empty($settings['type'])) ? $settings['type'] : 'text';
-        $values   = (!empty($settings['value'])) ? $settings['value'] : false;
-        $name   = (!empty($settings['name'])) ? $settings['name'] : 'name';
-        $size   = (!empty($settings['size'])) ? $settings['size'] : false;
-        $dropdowns   = (!empty($settings['options'])) ? $settings['options'] : array();
+        $type = (!empty($settings['type'])) ? $settings['type'] : 'text';
+        $values = (!empty($settings['value'])) ? $settings['value'] : false;
+        $name = (!empty($settings['name'])) ? $settings['name'] : 'name';
+        $size = (!empty($settings['size'])) ? $settings['size'] : false;
+        $dropdowns = (!empty($settings['options'])) ? $settings['options'] : array();
         $placeholder = (!empty($settings['placeholder'])) ? $settings['placeholder'] : false;
-        $label   = (!empty($settings['label'])) ? $settings['label'] : false;
-        $other   = (!empty($settings['other'])) ? $settings['other'] : false;
-        $class   = (!empty($settings['class'])) ? $settings['class'] : false;
-        $wrap_class  = (!empty($settings['wrap_class'])) ? $settings['wrap_class'] : false;
-        $style   = (!empty($settings['style'])) ? $settings['style'] : false;
+        $label = (!empty($settings['label'])) ? $settings['label'] : false;
+        $other = (!empty($settings['other'])) ? $settings['other'] : false;
+        $class = (!empty($settings['class'])) ? $settings['class'] : false;
+        $wrap_class = (!empty($settings['wrap_class'])) ? $settings['wrap_class'] : false;
+        $style = (!empty($settings['style'])) ? $settings['style'] : false;
 
         if (is_array($values)) {
             $values = $this->toArray($values);
@@ -291,9 +292,9 @@ class nForm extends \Nubersoft\nApp
             $sColumn = array_map(function ($v) {
                 return str_replace(']', '', $v);
             }, $sColumn);
-            $new   = array();
-            $findArr  = $this->getMatchedArray($sColumn, '', $values);
-            $curr   = end($sColumn);
+            $new = array();
+            $findArr = $this->getMatchedArray($sColumn, '', $values);
+            $curr = end($sColumn);
             $values[$name] = (isset($findArr[$curr][0])) ? $findArr[$curr][0] : false;
         }
         $column = $name;
@@ -376,7 +377,7 @@ class nForm extends \Nubersoft\nApp
     {
         $name = strtolower($name);
         $kind['checkbox'] = 'chk';
-        $kind['text']  = 'mod';
+        $kind['text'] = 'mod';
         $kind['password'] = 'mod';
         $mod = (isset($kind[$name])) ? $kind[$name] : 'std';
         $arg = (isset($args[0])) ? $args[0] : false;
@@ -446,13 +447,13 @@ class nForm extends \Nubersoft\nApp
      */
     public static function getOptions(string $assoc_column, $selected = false)
     {
-        $def =   [
+        $def = [
             [
                 'name' => 'Select',
                 'value' => ''
             ]
         ];
-        $data   =   \Nubersoft\nApp::call('nQuery')->query("SELECT menuName as `name`, menuVal as `value` FROM dropdown_menus WHERE assoc_column = ? AND page_live = 'on'", [$assoc_column])->getResults();
+        $data = \Nubersoft\nApp::call('nQuery')->query("SELECT menuName as `name`, menuVal as `value` FROM dropdown_menus WHERE assoc_column = ? AND page_live = 'on'", [$assoc_column])->getResults();
         if (empty($data))
             return $def;
 

@@ -1,6 +1,10 @@
 <?php
 namespace Nubersoft;
 
+use \Nubersoft\Dto\ErrorMessaging\ {
+    CreateCodeRequest,
+    GetMessageAutoRequest
+};
 /**
  * @description 
  */
@@ -8,7 +12,7 @@ class ErrorMessaging extends \Nubersoft\nApp
 {
     use \Nubersoft\Settings\enMasse;
 
-    const   DEFAULT_CODES   =   [
+    const DEFAULT_CODES = [
         200 => 'OK',
         404 => 'Page does not exist',
         403 => 'Permission denied',
@@ -78,15 +82,15 @@ class ErrorMessaging extends \Nubersoft\nApp
      */
     public static function getMessage($code, $locale = 'us', $lang = 'en')
     {
-        $defcode =   500;
-        $def  =   self::DEFAULT_CODES[500];
-        $local   =   $locale . $lang;
+        $defcode = 500;
+        $def = self::DEFAULT_CODES[500];
+        $local = $locale . $lang;
 
         if (empty($local))
-            $local  =   \Nubersoft\nApp::call()->getSession('locale') . \Nubersoft\nApp::call()->getSession('locale_lang');
+            $local = \Nubersoft\nApp::call()->getSession('locale') . \Nubersoft\nApp::call()->getSession('locale_lang');
 
         if (empty($local))
-            $local  =   'usen';
+            $local = 'usen';
 
         $stored = (new ErrorMessaging())->getComponentBy([
             'category_id' => 'translator',
@@ -102,19 +106,19 @@ class ErrorMessaging extends \Nubersoft\nApp
             ]);
         }
 
-        $msg =   (empty($stored)) ? $def : $stored[0]['content'];
+        $msg = (empty($stored)) ? $def : $stored[0]['content'];
 
         return (empty($msg)) ? $def : $msg;
     }
     /**
      *	@description	
      */
-    public function createCode($code, $message, $locale = 'us', $lang = 'en')
+    public function createCode(CreateCodeRequest $request)
     {
-        $exists =   $this->getComponentBy([
+        $exists = $this->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code . $locale . $lang
+            'title' => $request->code . $request->locale . $request->lang
         ]);
 
         if ($exists) {
@@ -124,14 +128,14 @@ class ErrorMessaging extends \Nubersoft\nApp
         $this->addComponent([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code . $locale . $lang,
-            'content' => $message
+            'title' => $request->code . $request->locale . $request->lang,
+            'content' => $request->message
         ]);
 
-        return  $this->getComponentBy([
+        return $this->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code . $locale . $lang
+            'title' => $request->code . $request->locale . $request->lang
         ]);
     }
     /**
@@ -139,6 +143,7 @@ class ErrorMessaging extends \Nubersoft\nApp
      */
     public function getMessageAuto($keycode)
     {
-        return self::getMessage($keycode, $this->getSession('locale'), $this->getSession('locale_lang'));
+        $session = new GetMessageAutoRequest;
+        return self::getMessage($keycode, $session->locale, $session->locale_lang);
     }
 }
