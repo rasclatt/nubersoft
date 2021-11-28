@@ -25,7 +25,7 @@ class Tables extends \Nubersoft\System\Observer
         $this->Router = $Router;
         $this->Token = $Token;
         $this->Settings = $Settings;
-        $this->DataNode =   $DataNode;
+        $this->DataNode = $DataNode;
     }
 
     public function listen()
@@ -35,13 +35,13 @@ class Tables extends \Nubersoft\System\Observer
             return false;
         }
 
-        $Router  = $this->Router;
-        $Token  = $this->Token;
+        $Router = $this->Router;
+        $Token = $this->Token;
         $DataNode = $this->DataNode;
-        $POST  = (!empty($this->getPost('ID'))) ? $this->getPost() : array_filter($this->getPost());
-        $action  = (!empty($POST['action'])) ? $POST['action'] : false;
-        $token  = (!empty($this->getPost('token')['nProcessor'])) ? $this->getPost('token')['nProcessor'] : false;
-        $ctoken  = (!empty($this->getPost('token')['component'][$this->getPost('ID')])) ? $this->getPost('token')['component'][$this->getPost('ID')] : false;
+        $POST = (!empty($this->getPost('ID'))) ? $this->getPost() : array_filter($this->getPost());
+        $action = (!empty($POST['action'])) ? $POST['action'] : false;
+        $token = (!empty($this->getPost('token')['nProcessor'])) ? $this->getPost('token')['nProcessor'] : false;
+        $ctoken = (!empty($this->getPost('token')['component'][$this->getPost('ID')])) ? $this->getPost('token')['component'][$this->getPost('ID')] : false;
         # Remove action k/v
         if (isset($POST['action']))
             unset($POST['action']);
@@ -72,13 +72,13 @@ class Tables extends \Nubersoft\System\Observer
                 } else {
                     if ($this->getPost('delete') == 'on') {
                         $this->deleteRecord($POST['ID']);
-                        $msg =   "Refresh the page to see update.";
+                        $msg = "Refresh the page to see update.";
                     } else {
                         $this->updateRecord($POST, $token, $Token);
                     }
                 }
                 if (!isset($msg))
-                    $msg =   'Updated';
+                    $msg = 'Updated';
 
                 if ($this->isAjaxRequest()) {
                     $this->ajaxResponse(['alert' => $msg, 'msg' => $this->getSystemMessages()]);
@@ -142,15 +142,12 @@ class Tables extends \Nubersoft\System\Observer
 
         $POST['full_path'] = $this->Router->convertToStandardPath($POST['full_path']);
         $existing = $this->Router->getPage($POST['full_path'], 'full_path');
-        if ($existing instanceof \SmartDto\Dto)
-            $existing = $existing->toArray();
-
         if (empty($POST['full_path'])) {
             $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slug'));
             return false;
         }
 
-        if (!empty($existing['full_path'])) {
+        if (!empty($existing)) {
             if ($existing['ID'] != $POST['ID']) {
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slugexists'));
                 return false;
@@ -160,13 +157,13 @@ class Tables extends \Nubersoft\System\Observer
         unset($POST['ID']);
 
         if ($POST['full_path'] == '/') {
-            $POST['is_admin']   =   2;
-            $POST['link']   =   'home';
+            $POST['is_admin'] = 2;
+            $POST['link'] = 'home';
         } else {
             $POST['link'] = strtolower(pathinfo($POST['full_path'], PATHINFO_BASENAME));
         }
         # Remove unavailable keys
-        $this->filterUnMatched($POST,  'main_menus');
+        $this->filterUnMatched($POST, 'main_menus');
 
         $sql = [];
         foreach ($POST as $key => $value) {
@@ -174,7 +171,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $this->query("UPDATE `main_menus` SET " . implode(', ', $sql) . " WHERE ID = ? ", array_values(array_merge(array_values($POST), [$ID])));
 
-        if ($this->getPage()->full_path != $POST['full_path']) {
+        if ($this->getPage('full_path') != $POST['full_path']) {
             $this->Router->redirect($POST['full_path'] . '?msg=fail_update');
         } else {
             $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->getGet()));
@@ -186,7 +183,7 @@ class Tables extends \Nubersoft\System\Observer
      */
     public function filterUnMatched(&$array, $table)
     {
-        $cols   =   [];
+        $cols = [];
         # Get the fields from database
         \Nubersoft\ArrayWorks::extractAll(array_map(function ($v) {
             return $v['Field'];
@@ -201,7 +198,7 @@ class Tables extends \Nubersoft\System\Observer
     protected function updateData($POST, $table, $msg, $err = false)
     {
         $table = preg_replace('/[^0-9A-Z\_\.\`\-]/i', '', $table);
-        $ID  = (is_numeric($POST['ID'])) ? $POST['ID'] : false;
+        $ID = (is_numeric($POST['ID'])) ? $POST['ID'] : false;
 
         if (empty($POST) || empty($ID)) {
             $this->toError((!empty($err)) ? $err : $this->getHelper('ErrorMessaging')->getMessageAuto('no_action'));
@@ -326,7 +323,7 @@ class Tables extends \Nubersoft\System\Observer
 
     protected function addNewRecord($POST)
     {
-        $type  = (!empty($POST['parent_type'])) ? $POST['parent_type'] : 'code';
+        $type = (!empty($POST['parent_type'])) ? $POST['parent_type'] : 'code';
         $refpage = (!empty($POST['ref_page'])) ? $POST['ref_page'] : $this->getPage('unique_id');
 
         unset($POST['parent_type']);
@@ -361,7 +358,7 @@ class Tables extends \Nubersoft\System\Observer
             $from = NBR_DOMAIN_ROOT . $duplicate['file_path'] . $duplicate['file_name'];
             $finfo = pathinfo($from);
             $fname = $finfo['filename'] . date('YmdHis') . '.' . $finfo['extension'];
-            $to  = $finfo['dirname'] . DS . $fname;
+            $to = $finfo['dirname'] . DS . $fname;
             if (!copy($from, $to)) {
                 $duplicate['file_path'] =
                     $duplicate['file_name'] = '';
@@ -372,7 +369,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $timestamp = date('Y-m-d H:i:s');
         if (!empty($duplicate['title']))
-            $duplicate['title']    .= "-Copy {$timestamp}";
+            $duplicate['title'] .= "-Copy {$timestamp}";
 
         $duplicate['timestamp'] = $timestamp;
 
@@ -441,9 +438,9 @@ class Tables extends \Nubersoft\System\Observer
             if (!$page_match) {
                 $thisObj = $this;
                 $uniques = [];
-                $Page  = $this->getHelper('Settings\Page\Controller');
-                $struct  = $Page->getContentStructure($this->getPage('unique_id'));
-                $test  = $this->getHelper('ArrayWorks')->recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
+                $Page = $this->getHelper('Settings\Page\Controller');
+                $struct = $Page->getContentStructure($this->getPage('unique_id'));
+                $test = $this->getHelper('ArrayWorks')->recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
 
                     if ($k == $POST['unique_id']) {
                         if (!empty($v)) {
@@ -453,7 +450,7 @@ class Tables extends \Nubersoft\System\Observer
                 });
 
                 if (!empty($uniques)) {
-                    $c   = count($uniques);
+                    $c = count($uniques);
                     $uniques = array_merge([$POST['ref_page']], $uniques);
 
                     $this->query("UPDATE components SET `ref_page` = ? WHERE `unique_id` IN (" . (implode(',', array_fill(0, $c, '?'))) . ")", $uniques);
@@ -518,7 +515,7 @@ class Tables extends \Nubersoft\System\Observer
         }
     }
 
-    public function    getRowsInTable($table, $array = false)
+    public function getRowsInTable($table, $array = false)
     {
         $columns = $this->getColumnsInTable($table);
 
@@ -545,18 +542,13 @@ class Tables extends \Nubersoft\System\Observer
                 $POST['file_name'] = preg_replace('/[^A-Z0-9_-]/i', '', pathinfo($FILES[0]['name'], PATHINFO_FILENAME)) . '.' . pathinfo($FILES[0]['name'], PATHINFO_EXTENSION);
                 $POST['file_path'] = pathinfo($FILES[0]['path_default'], PATHINFO_DIRNAME) . DS;
                 $POST['file_size'] = $FILES[0]['size'];
-                $POST['file']   = $POST['file_path'] . $POST['file_name'];
-                $path = str_replace(DS . DS, DS, NBR_DOMAIN_ROOT . DS . $POST['file_path']);
-                $this->isDir($path, true);
+                $POST['file'] = $POST['file_path'] . $POST['file_name'];
 
-                $move   =   move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS . DS, DS, $path . DS . $POST['file_name']));
+                $move = move_uploaded_file($FILES[0]['tmp_name'], str_replace(DS . DS, DS, NBR_DOMAIN_ROOT . DS . $POST['file_path'] . DS . $POST['file_name']));
 
                 if (!$move) {
                     unset($POST['file_name'], $POST['file_path'], $POST['file_size'], $POST['file']);
-                    $msg = $this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload');
-                    ($this->isAjaxRequest()) ? $this->ajaxResponse([
-                        'alert' => "{$msg}: {$path}"
-                    ]) : $this->toError($msg);
+                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
                 }
             } else
                 $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));

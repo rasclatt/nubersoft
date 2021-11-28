@@ -2,90 +2,91 @@
 namespace Nubersoft\Localization;
 
 use \Nubersoft\nApp;
+
 /**
- *	@description	
+ * @description 
  */
 class View extends \Nubersoft\Localization
 {
-    private static $editor =   [
-        'class' => 'nbr_ajax_form'
-    ];
+	private static $editor = [
+		'class' => 'nbr_ajax_form'
+	];
 	/**
-	 *	@description	
+	 * @description 
 	 */
-	public	static function setAttr(string $name, $value): void
+	public static function setAttr(string $name, $value): void
 	{
-        self::$editor[$name]  =   $value;
+		self::$editor[$name] = $value;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
-	public	static function setOpts(array $opts): void
+	public static function setOpts(array $opts): void
 	{
-        foreach($opts as $key => $value)
-            self::setAttr($key, $value);
+		foreach ($opts as $key => $value)
+			self::setAttr($key, $value);
 	}
 	/**
-	 *	@description	
-	 *	@param	
+	 * @description 
+	 * @param 
 	 */
-	public	static	function isEditableMode()
+	public static function isEditableMode()
 	{
-        $nApp   =   \Nubersoft\nApp::call();
-		if(empty($nApp->getSession('translator_mode')))
+		$nApp = \Nubersoft\nApp::call();
+		if (empty($nApp->getSession('translator_mode')))
 			return false;
-		
+
 		return $nApp->isAdmin();
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public function getBlock($identifier)
 	{
-		$item	=	$this->getComponentBy([
+		$item = $this->getComponentBy([
 			'category_id' => 'translator',
 			'title' => $identifier
 		]);
-		
-		return (!empty($item[0]['content']))? nApp::call()->dec($item[0]['content']) : false;
+
+		return (!empty($item[0]['content'])) ? nApp::call()->dec($item[0]['content']) : false;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
-	public static	function get($tag, $def, $max = '300px', $label = false)
+	public static function get($tag, $def, $max = '300px', $label = false)
 	{
-        $nApp   =   nApp::call();
-        $locale =   $nApp->getSession('locale');
-        $lang =   $nApp->getSession('locale_lang');
-        
-        $default    =   [
-            'label' => $label,
-            'id' => $tag.$locale.$lang,
-            'height' => $max,
-            'is_admin' => $nApp->isAdmin(),
-            'text' => (new View())->getBlock($tag.$locale.$lang),
-            'default' => $def
-        ];
-        
-        $default    =   array_merge($default, self::$editor);
-        
-        return $nApp->getHelper('Settings')
-            ->setPluginContent('translator', $default)->getPlugin('text_block_editor');
+		$nApp = nApp::call();
+		$locale = $nApp->getSession('locale');
+		$lang = $nApp->getSession('locale_lang');
+
+		$default = [
+			'label' => $label,
+			'id' => $tag . $locale . $lang,
+			'height' => $max,
+			'is_admin' => $nApp->isAdmin(),
+			'text' => (new View())->getBlock($tag . $locale . $lang),
+			'default' => $def
+		];
+
+		$default = array_merge($default, self::$editor);
+
+		return $nApp->getHelper('Settings')
+			->setPluginContent('translator', $default)->getPlugin('text_block_editor');
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
-	public	static  function getOnly($tag, $def = false)
+	public static function getOnly($tag, $def = false)
 	{
-        $nApp   =   nApp::call();
-        $locale =   $nApp->getSession('locale');
-        $lang =   $nApp->getSession('locale_lang');
-        
-        $comp =   (new View())->getBlock($tag.$locale.$lang);
-        
-        if(!empty($comp))
-            return $nApp->getHelper('nMarkUp')->useMarkUp($comp);
-        
-        return $def;
+		$nApp = nApp::call();
+		$locale = $nApp->getSession('locale');
+		$lang = $nApp->getSession('locale_lang');
+
+		$comp = (new View())->getBlock($tag . $locale . $lang);
+
+		if (!empty($comp))
+			return $nApp->getHelper('nMarkUp')->useMarkUp($comp);
+
+		return $def;
 	}
 }

@@ -1,12 +1,13 @@
 <?php
 namespace Nubersoft;
+
 /**
- *    @description    
+ * @description 
  */
 class ErrorMessaging extends \Nubersoft\nApp
 {
     use \Nubersoft\Settings\enMasse;
-    
+
     const   DEFAULT_CODES   =   [
         200 => 'OK',
         404 => 'Page does not exist',
@@ -73,71 +74,71 @@ class ErrorMessaging extends \Nubersoft\nApp
         'site_maintenance' => "Site is being worked on"
     ];
     /**
-     *    @description    
+     * @description 
      */
     public static function getMessage($code, $locale = 'us', $lang = 'en')
     {
-        $defcode    =   500;
-        $def        =   self::DEFAULT_CODES[500];
-        $local      =   $locale.$lang;
-        
-        if(empty($local))
-            $local  =   \Nubersoft\nApp::call()->getSession('locale').\Nubersoft\nApp::call()->getSession('locale_lang');
-        
-        if(empty($local))
+        $defcode =   500;
+        $def  =   self::DEFAULT_CODES[500];
+        $local   =   $locale . $lang;
+
+        if (empty($local))
+            $local  =   \Nubersoft\nApp::call()->getSession('locale') . \Nubersoft\nApp::call()->getSession('locale_lang');
+
+        if (empty($local))
             $local  =   'usen';
-        
-        $stored    =    (new ErrorMessaging())->getComponentBy([
+
+        $stored = (new ErrorMessaging())->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code.$local
+            'title' => $code . $local
         ]);
-        
-        if(empty($stored) && $local != 'usen') {
-            $stored    =    (new ErrorMessaging())->getComponentBy([
+
+        if (empty($stored) && $local != 'usen') {
+            $stored = (new ErrorMessaging())->getComponentBy([
                 'category_id' => 'translator',
                 'component_type' => 'status_code',
-                'title' => $code.'usen'
+                'title' => $code . 'usen'
             ]);
         }
-        
-        $msg    =   (empty($stored))? $def : $stored[0]['content'];
-        
-        return (empty($msg))? $def : $msg;
+
+        $msg =   (empty($stored)) ? $def : $stored[0]['content'];
+
+        return (empty($msg)) ? $def : $msg;
     }
-	/**
-	 *	@description	
-	 */
-	public function createCode($code, $message, $locale = 'us', $lang = 'en')
-	{
+    /**
+     *	@description	
+     */
+    public function createCode($code, $message, $locale = 'us', $lang = 'en')
+    {
         $exists =   $this->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code.$locale.$lang
+            'title' => $code . $locale . $lang
         ]);
-        
-        if($exists) {
+
+        if ($exists) {
             $this->deleteComponent($exists[0]['ID']);
         }
-        
+
         $this->addComponent([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code.$locale.$lang,
+            'title' => $code . $locale . $lang,
             'content' => $message
         ]);
-        
+
         return  $this->getComponentBy([
             'category_id' => 'translator',
             'component_type' => 'status_code',
-            'title' => $code.$locale.$lang
+            'title' => $code . $locale . $lang
         ]);
     }
-	/**
-	 *	@description	
-	 */
-	public function getMessageAuto($keycode)
-	{
+    /**
+     *	@description	
+     */
+    public function getMessageAuto($keycode)
+    {
         return self::getMessage($keycode, $this->getSession('locale'), $this->getSession('locale_lang'));
-	}
+    }
 }

@@ -1,26 +1,27 @@
 <?php
+
 namespace Nubersoft;
 
-class     cURL
+class  cURL
 {
-    protected    $response,
-                $ch,
-                $sendHeader,
-                $postFields,
-                $endpoint,
-                $errors,
-                $query;
-    protected    $userAgent    =    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56';
+    protected $response,
+        $ch,
+        $sendHeader,
+        $postFields,
+        $endpoint,
+        $errors,
+        $query;
+    protected $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56';
 
     public function __construct($query = false)
     {
-        $this->sendHeader    =    false;
-        $this->query        =    $query;
+        $this->sendHeader = false;
+        $this->query  = $query;
         // Remote Connect
         $this->initConnect();
-        if(!empty($this->query)) {
-            if(!is_array($this->query))
-                $this->response    =    $this->connect($this->query);
+        if (!empty($this->query)) {
+            if (!is_array($this->query))
+                $this->response = $this->connect($this->query);
             else
                 $this->encode();
         }
@@ -28,13 +29,13 @@ class     cURL
 
     public function initConnect()
     {
-        $this->ch     = curl_init();
+        $this->ch  = curl_init();
         return $this;
     }
 
     public function start()
     {
-        $this->ch     = curl_init();
+        $this->ch  = curl_init();
 
         return $this;
     }
@@ -46,14 +47,14 @@ class     cURL
 
     public function sendPost($array = array())
     {
-        $this->postFields['payload']    =    $array;
-        $this->postFields['query']        =    http_build_query($array);
+        $this->postFields['payload'] = $array;
+        $this->postFields['query']  = http_build_query($array);
         return $this;
     }
 
-    public function setAttr($attr = false,$val = false)
+    public function setAttr($attr = false, $val = false)
     {
-        if(!empty($attr)) {
+        if (!empty($attr)) {
             curl_setopt($this->ch, $attr, $val);
         }
 
@@ -62,74 +63,74 @@ class     cURL
 
     public function connect()
     {
-        $args    =    func_get_args();
-        $_url    =    (!empty($args[0]) && is_string($args[0]))? $args[0] : false;
-        $deJSON    =    (!empty($args[1]));
-        $close    =    (!empty($args[2]));
-        $return    =    (isset($args[3]) && is_bool($args[3]))? $args[3] : true;
-        
-        if(empty($_url))
-            $_url    =    $this->endpoint;
-            
-        if(empty($_url))
+        $args = func_get_args();
+        $_url = (!empty($args[0]) && is_string($args[0])) ? $args[0] : false;
+        $deJSON = (!empty($args[1]));
+        $close = (!empty($args[2]));
+        $return = (isset($args[3]) && is_bool($args[3])) ? $args[3] : true;
+
+        if (empty($_url))
+            $_url = $this->endpoint;
+
+        if (empty($_url))
             throw new \Exception('Endpoint can not be empty.');
-        
+
         $this->setAttr(CURLOPT_URL, $_url)
             ->setAttr(CURLOPT_RETURNTRANSFER, 1);
 
-        if(strpos($_url,"https://") !== false) {
-            $this->setAttr(CURLOPT_SSL_VERIFYPEER,2)
-                ->setAttr(CURLOPT_SSL_VERIFYHOST,2);
+        if (strpos($_url, "https://") !== false) {
+            $this->setAttr(CURLOPT_SSL_VERIFYPEER, 2)
+                ->setAttr(CURLOPT_SSL_VERIFYHOST, 2);
         }
 
-        if(!empty($this->postFields['payload'])) {
+        if (!empty($this->postFields['payload'])) {
             $this->setAttr(CURLOPT_POST, count($this->postFields['payload']))
                 ->setAttr(CURLOPT_POSTFIELDS, $this->postFields['query']);
         }
 
-        if(!empty($this->sendHeader))
+        if (!empty($this->sendHeader))
             $this->setAttr(CURLOPT_USERAGENT, $this->userAgent);
 
-        $decode            =    curl_exec($this->ch);
-        $this->response    =    ($deJSON)? json_decode($decode, true) : $decode;
-        $error            =    curl_error($this->ch);
+        $decode   = curl_exec($this->ch);
+        $this->response = ($deJSON) ? json_decode($decode, true) : $decode;
+        $error   = curl_error($this->ch);
 
-        if($close)
+        if ($close)
             curl_close($this->ch);
 
-        if(!$return)
+        if (!$return)
             return $this;
 
-        return (empty($error))? $this->response: $error;
+        return (empty($error)) ? $this->response : $error;
     }
 
     public function emulateBrowser()
     {
-        $this->sendHeader    =    true;
+        $this->sendHeader = true;
         return $this;
     }
 
-    public function setTimeOut($val1 = 10,$val2 = 15)
+    public function setTimeOut($val1 = 10, $val2 = 15)
     {
-        if($val2 < $val1)
-            $val2    =    $val1+5;
+        if ($val2 < $val1)
+            $val2 = $val1 + 5;
 
         $this->setAttr(CURLOPT_CONNECTTIMEOUT, $val1)
-        ->setAttr(CURLOPT_TIMEOUT, $val2);
+            ->setAttr(CURLOPT_TIMEOUT, $val2);
 
         return $this;
     }
 
     public function encode($_filter = 0)
     {
-        foreach($this->query as $key => $value) {
-            $string[]    =    urlencode($key).'='.urlencode($value);
+        foreach ($this->query as $key => $value) {
+            $string[] = urlencode($key) . '=' . urlencode($value);
         }
 
-        if($_filter == true)
-            $string    =    array_filter($string);
+        if ($_filter == true)
+            $string = array_filter($string);
 
-        return implode("&",$string);
+        return implode("&", $string);
     }
 
     public function getResource()
@@ -139,16 +140,16 @@ class     cURL
 
     public function getResponse($decode = false)
     {
-        return ($decode)? json_decode($this->response,true) : $this->response;
+        return ($decode) ? json_decode($this->response, true) : $this->response;
     }
 
-    public function getContents($url,$decode = true)
+    public function getContents($url, $decode = true)
     {
-        $content    =    file_get_contents($url);
-        if(empty($content))
+        $content = file_get_contents($url);
+        if (empty($content))
             return;
 
-        return ($decode)? json_decode($content,true) : $content;
+        return ($decode) ? json_decode($content, true) : $content;
     }
 
     public function query($url)
@@ -163,7 +164,7 @@ class     cURL
 
     public function setEndpoint($url)
     {
-        $this->endpoint    =    $url;
+        $this->endpoint = $url;
         return $this;
     }
 
@@ -176,24 +177,24 @@ class     cURL
     {
         $this->setAttr(CURLOPT_URL, $this->endpoint);
 
-        if($return)
+        if ($return)
             $this->setAttr(CURLOPT_RETURNTRANSFER, 1);
 
-        if(strpos($this->endpoint,"https://") !== false) {
-            $this->setAttr(CURLOPT_SSL_VERIFYPEER,2)
-                ->setAttr(CURLOPT_SSL_VERIFYHOST,2);
+        if (strpos($this->endpoint, "https://") !== false) {
+            $this->setAttr(CURLOPT_SSL_VERIFYPEER, 2)
+                ->setAttr(CURLOPT_SSL_VERIFYHOST, 2);
         }
 
-        if(!empty($this->postFields['payload'])) {
+        if (!empty($this->postFields['payload'])) {
             $this->setAttr(CURLOPT_POST, count($this->postFields['payload']))
                 ->setAttr(CURLOPT_POSTFIELDS, $this->postFields['query']);
         }
 
-        if(!empty($this->sendHeader))
+        if (!empty($this->sendHeader))
             $this->setAttr(CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56');
 
-        $this->response    =    curl_exec($this->ch);
-        $this->errors[]    =    curl_error($this->ch);
+        $this->response = curl_exec($this->ch);
+        $this->errors[] = curl_error($this->ch);
 
         return $this;
     }

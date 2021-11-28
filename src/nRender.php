@@ -241,7 +241,7 @@ class nRender extends nQuery
      */
     public function getContent()
     {
-        $unique_id = ($this->getDataNode('routing')->unique_id)?? false;
+        $unique_id = (!empty($this->getDataNode('routing')['unique_id']))? $this->getDataNode('routing')['unique_id'] : false;
         
         if(empty($unique_id))
             return false;
@@ -256,7 +256,7 @@ class nRender extends nQuery
      */
     public function getTitle($default = false, $tags = true)
     {
-        $title = ($this->getDataNode('routing')->menu_name)?? false;
+        $title = (!empty($this->getDataNode('routing')['menu_name']))? $this->getDataNode('routing')['menu_name'] : false;
         
         if(empty($title)) {
             $title = $default; 
@@ -271,7 +271,7 @@ class nRender extends nQuery
      */
     public function getMeta(array $add = null)
     {
-        $meta = ($this->getDataNode('routing')->page_options['meta'])?? $this->getSitePreferences('header_meta');
+        $meta = (!empty($this->getDataNode('routing')['page_options']['meta']))? $this->getDataNode('routing')['page_options']['meta'] : $this->getSitePreferences('header_meta');
         
         if(empty($meta) && empty($add))
             return false;
@@ -406,10 +406,9 @@ class nRender extends nQuery
     public function isFrontEnd()
     {
         $route     = $this->getDataNode('routing');
-        if(!isset($route->is_admin))
+        if(!isset($route['is_admin']))
             return true;
-        
-        $page_type = ($this->getDataNode('routing')->is_admin)?? false;
+        $page_type = (!empty($this->getDataNode('routing')['is_admin']))? $this->getDataNode('routing')['is_admin'] : false;
         
         return ($page_type !== 1);
     }

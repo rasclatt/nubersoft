@@ -1,17 +1,21 @@
 <?php
-
 namespace Nubersoft;
 
-class nFtp extends nFunctions
+class nFtp extends \Nubersoft\nFunctions
 {
-    private $con, $current, $errors, $root, $listed;
+    private $con,
+        $current,
+        $errors,
+        $root,
+        $listed;
+
     private $ftpname = 'FTP';
 
     public function __construct($host, $user, $pass, $root = false, $port = 21, $timeout = 90)
     {
         $this->root = $root;
         $this->con = ftp_connect($host, $port, $timeout);
-        $nApp   =   new nApp;
+        $nApp   =   $this->getHelper('nApp');
         if (!$this->con) {
             $nApp->toMsgCoreAdminAlert($nApp->getHelper('ErrorMessaging')->getMessageAuto('success_cachedeleted'));
             //throw new \Exception('Connection to FTP failed.');
@@ -128,7 +132,7 @@ class nFtp extends nFunctions
         return $this->listed;
     }
     /**
-     *    @description    
+     * @description 
      */
     public function setPassiveMode($passive = true)
     {

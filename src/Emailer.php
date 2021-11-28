@@ -1,18 +1,18 @@
 <?php
 namespace Nubersoft;
 
-class    Emailer extends \Nubersoft\nApp
+class Emailer extends \Nubersoft\nApp
 {
     use \Nubersoft\nDynamics;
-    
+
     public $sent, $response, $sending;
 
     protected $addresses, $headers, $reply, $notification;
 
     public function __construct()
     {
-        if(!defined('WEBMASTER'))
-            define('WEBMASTER',"no-reply@".$_SERVER['HTTP_HOST']);
+        if (!defined('WEBMASTER'))
+            define('WEBMASTER', "no-reply@" . $_SERVER['HTTP_HOST']);
 
         return parent::__construct();
     }
@@ -24,129 +24,128 @@ class    Emailer extends \Nubersoft\nApp
 
     public function getLayout($name = 'default')
     {
-        $content    =    @$this->nQuery()->query("select `content` from `emailer` where `email_id` = ?",[$name])->getResults();
+        $content = @$this->nQuery()->query("select `content` from `emailer` where `email_id` = ?", [$name])->getResults();
 
-        if(isset($content[0]['content']))
-            $html    =    $this->dec($content[0]['content']);
-        elseif(is_file($layout = NBR_CORE.DS.'settings'.DS.'default'.DS.'messaging'.DS.'email'.DS.$name.'.txt'))
-            $html    =    file_get_contents($layout);
+        if (isset($content[0]['content']))
+            $html = $this->dec($content[0]['content']);
+        elseif (is_file($layout = NBR_CORE . DS . 'settings' . DS . 'default' . DS . 'messaging' . DS . 'email' . DS . $name . '.txt'))
+            $html = file_get_contents($layout);
 
-        return    (isset($html))? $html : '';
+        return (isset($html)) ? $html : '';
     }
 
     public function addTo($from)
     {
-        $this->sending['to']    =    (is_string($from))? $from : implode(',',$from);
+        $this->sending['to'] = (is_string($from)) ? $from : implode(',', $from);
         return $this;
     }
 
-    public function addAttr($key,$value)
+    public function addAttr($key, $value)
     {
-        $this->sending[$key]    =    $value;
+        $this->sending[$key] = $value;
         return $this;
     }
 
     public function addFrom($from)
     {
-        $fProc                        =    ((is_array($from))? implode(',',$from) : $from);
-        $this->sending['raw_from']    =    $fProc;
-        $this->sending['header'][]    =    'From: '.$fProc;
+        $fProc   = ((is_array($from)) ? implode(',', $from) : $from);
+        $this->sending['raw_from'] = $fProc;
+        $this->sending['header'][] = 'From: ' . $fProc;
         return $this;
     }
 
     public function addHeader($string)
     {
-        $this->sending['header'][]    =    $string;
+        $this->sending['header'][] = $string;
         return $this;
     }
 
     public function addBcc($string)
     {
-        $string                        =    (is_array($string))? implode(',',$string) : $string;
-        $this->sending['header'][]    =    "Bcc:".$string;
+        $string   = (is_array($string)) ? implode(',', $string) : $string;
+        $this->sending['header'][] = "Bcc:" . $string;
         return $this;
     }
 
     public function addSubject($string)
     {
-        $this->sending['subject']    =    $string;
+        $this->sending['subject'] = $string;
         return $this;
     }
 
     public function addMessage($message, $layout = 'default')
     {
-        if(!empty($layout)) {
-            $html        =    str_replace(array('~message~'),array($message),$this->getLayout($layout));
-            $nAutomator    =    $this->getHelper('nMarkUp');
-            $this->sending['message']    =    $nAutomator->useMarkUp($html);
-        }
-        else
-            $this->sending['message']    =    $message;
+        if (!empty($layout)) {
+            $html  = str_replace(array('~message~'), array($message), $this->getLayout($layout));
+            $nAutomator = $this->getHelper('nMarkUp');
+            $this->sending['message'] = $nAutomator->useMarkUp($html);
+        } else
+            $this->sending['message'] = $message;
 
         return $this;
     }
 
     public function addRawMessage($message)
     {
-        $this->sending['raw_message']    =    $message;
+        $this->sending['raw_message'] = $message;
 
         return $this;
     }
 
     public function useHtml()
     {
-        $this->sending['header'][]    =    'MIME-Version: 1.0';
-        $this->sending['header'][]    =    'Content-type: text/html; charset=iso-8859-1';
-        $this->sending['is_html']    =    true;
+        $this->sending['header'][] = 'MIME-Version: 1.0';
+        $this->sending['header'][] = 'Content-type: text/html; charset=iso-8859-1';
+        $this->sending['is_html'] = true;
         return $this;
     }
 
     public function send()
     {
-        return mail($this->sending['to'],$this->sending['subject'],wordwrap($this->sending['message'],70,PHP_EOL),implode(PHP_EOL,$this->sending['header']));
+        return mail($this->sending['to'], $this->sending['subject'], wordwrap($this->sending['message'], 70, PHP_EOL), implode(PHP_EOL, $this->sending['header']));
     }
 
     public function saveReceipt()
     {
-        $columns    =    array(
+        $columns = array(
             'unique_id',
             'content',
             'category_id',
             'page_live',
             'timestamp'
         );
-        
-        $values        =    array(
-            "'".$this->fetchUniqueId()."'",
-            '?',"'email_receipt'",
+
+        $values  = array(
+            "'" . $this->fetchUniqueId() . "'",
+            '?', "'email_receipt'",
             "'on'",
-            "'".$this->encode($this->getHelper('nLocale')->getTimeZone())."'"
+            "'" . $this->encode($this->getHelper('nLocale')->getTimeZone()) . "'"
         );
 
-        $args        =    func_get_args();
+        $args  = func_get_args();
 
-        if(!empty($args[0])) {
-            $columns[]    =    'ref_anchor';
-            $values[]    =    "'{$args[0]}'";
+        if (!empty($args[0])) {
+            $columns[] = 'ref_anchor';
+            $values[] = "'{$args[0]}'";
         }
 
-        $sql    =    "INSERT INTO
-                        `components` (`".implode('`,`',$columns)."`)
-                    VALUES (".implode(", ",$values).")";
+        $sql = "INSERT INTO
+   `components` (`" . implode('`,`', $columns) . "`)
+  VALUES (" . implode(", ", $values) . ")";
 
-        @$this->nQuery()->query($sql,array(json_encode($this->sending)));
+        @$this->nQuery()->query($sql, array(json_encode($this->sending)));
     }
 
     public function getReceiptMessage($layout)
     {
-        $arr    =    @$this->nQuery()->query("select `return_response` from `emailer` where `email_id` = ?",[$layout])->getResults(true);
+        $arr = @$this->nQuery()->query("select `return_response` from `emailer` where `email_id` = ?", [$layout])->getResults(true);
 
-        return (!empty($arr['return_response']))? $arr['return_response'] : false;
+        return (!empty($arr['return_response'])) ? $arr['return_response'] : false;
     }
 
     public function resetSendArray()
     {
-        $this->sending    =    array();
+        $this->sending = array();
 
         return $this;
     }
