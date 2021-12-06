@@ -5,22 +5,36 @@ use \Nubersoft\nFileHandler as Files;
 
 class System extends nSession\Controller
 {
+    protected $nApp, $nQuery;
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function __construct(
+        nApp $nApp,
+        nQuery $nQuery
+    )
+    {
+        $this->nQuery = $nQuery;
+        $this->nApp = $nApp;
+    }
+
     public function login($username, $password)
     {
         # Check login validation
         $validate = $this->validate($username, $password, true);
         # Stop if invalid
         if (empty($validate)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'), false, false);
+            $this->nApp->toError((new ErrorMessaging)->getMessageAuto('invalid_user'), false, false);
             return false;
         } else {
             $user = $validate['user'];
             #See if user is active, stop if not
             if ($user['user_status'] != 'on') {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('account_disabled'));
+                $this->nApp->toError((new ErrorMessaging)->getMessageAuto('account_disabled'));
                 return false;
             } elseif (!$validate['allowed']) {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_user'));
+                $this->nApp->toError((new ErrorMessaging)->getMessageAuto('invalid_user'));
                 return false;
             }
             # Save the user session
@@ -28,7 +42,7 @@ class System extends nSession\Controller
             # Regenerate the session id
             $this->newSessionId();
             # Report back
-            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_login'));
+            $this->nApp->toSuccess((new ErrorMessaging)->getMessageAuto('success_login'));
             # Set success
             return true;
         }
@@ -36,7 +50,7 @@ class System extends nSession\Controller
 
     public function validate($username, $password, $return = false)
     {
-        $user = $this->getHelper('nUser')->getUser($username);
+        $user = (new nUser)->getUser($username);
 
         if (empty($user['ID']))
             return false;
@@ -64,7 +78,7 @@ class System extends nSession\Controller
         $this->destroy();
 
         if ($redirect) {
-            $this->getHelper('nRouter\Controller')->redirect($redirect);
+            (new nRouter\Controller(new Conversion\Data))->redirect($redirect);
         }
     }
 
@@ -79,7 +93,7 @@ class System extends nSession\Controller
     public function downloadFile($file)
     {
         if(!is_file($file)) {
-            $this->toError("File is invalid.", 500);
+            $this->nApp->toError("File is invalid.", 500);
             return $this;
         }
         # Download file
@@ -89,14 +103,14 @@ class System extends nSession\Controller
     public function deleteFile($file, $ID = false, $table = false)
     {
         $update = false;
-        $err = $this->getHelper('ErrorMessaging')->getMessageAuto('fail_delete');
-        $succ = $this->getHelper('ErrorMessaging')->getMessageAuto('success_delete');
+        $err = (new ErrorMessaging)->getMessageAuto('fail_delete');
+        $succ = (new ErrorMessaging)->getMessageAuto('success_delete');
         if (!is_file($file)) {
             if (!empty($table) && !empty($ID)) {
                 $update = true;
-                $this->toSuccess($succ);
+                $this->nApp->toSuccess($succ);
             } else {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail') . ': ' . $err);
+                $this->nApp->toError((new ErrorMessaging)->getMessageAuto('fail') . ': ' . $err);
                 return false;
             }
         } else {
@@ -105,24 +119,24 @@ class System extends nSession\Controller
 
                 if (is_file($thumb)) {
                     if (unlink($thumb)) {
-                        $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_thumbremoved'));
+                        $this->nApp->toSuccess((new ErrorMessaging)->getMessageAuto('success_thumbremoved'));
                     } else {
-                        $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_thumbremoved'));
+                        $this->nApp->toError((new ErrorMessaging)->getMessageAuto('fail_thumbremoved'));
                     }
                 }
 
                 if (!empty($table) && !empty($ID))
                     $update = true;
 
-                $this->toSuccess($succ);
+                $this->nApp->toSuccess($succ);
             } else {
-                $this->toError($err);
+                $this->nApp->toError($err);
                 return false;
             }
         }
 
         if ($update)
-            $this->query("UPDATE {$table} SET file_path = '', file_name = '', file_size = '' WHERE ID = ?", [$ID]);
+            $this->nQuery->query("UPDATE {$table} SET file_path = '', file_name = '', file_size = '' WHERE ID = ?", [$ID]);
     }
 
     public function deleteThumbnail($filename)

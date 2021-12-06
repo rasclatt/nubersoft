@@ -1,9 +1,14 @@
 <?php
 namespace Nubersoft\System\Component;
+
+use \Nubersoft\ {
+    System,
+    nObserver
+};
 /**
  *    @description    
  */
-class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
+class Observer extends System implements nObserver
 {
     use \Nubersoft\Plugin\enMasse;
     /**
@@ -11,9 +16,9 @@ class Observer extends \Nubersoft\System implements \Nubersoft\nObserver
      */
     public function listen()
     {
-        $ID        =    (!empty($this->getPost("deliver")['ID']))? $this->getPost("deliver")['ID'] : false; 
-        $comp    =    $this->getHelper('Settings')->getComponent($ID, 'ID', false);
-        $this->ajaxResponse([
+        $ID        =    (!empty($this->nApp->getPost("deliver")['ID']))? $this->nApp->getPost("deliver")['ID'] : false; 
+        $comp    =    (new \Nubersoft\Settings)->getComponent($ID, 'ID', false);
+        $this->nApp->ajaxResponse([
             'html' => [
                 (!empty($ID))? $this->setPluginContent('component_content', $comp)->getPlugin('component') : $comp
             ],

@@ -10,22 +10,22 @@ class Pagination
 
     private $data, $table, $limit, $page, $sql, $statement, $counter, $bind, $order;
     # Set the page spread for ease. Modify using ->setSpread() method
-    private $spread =   2;
-    private $max_range  =   [20, 50, 100, 500];
+    private $spread = 2;
+    private $max_range  = [20, 50, 100, 500];
     /**
      * @description Set the basic attributes to search
      */
     public function __construct($table, $page = 1, $limit = 10, $select = '*')
     {
-        $this->table    =   $this->stripTableName((is_array($table)) ? implode(',', $table) : $table);
-        $this->limit    =   ($limit > 0) ? $limit : 10;
-        $this->page     =   ($page > 0) ? $page : 1;
+        $this->table = $this->stripTableName((is_array($table)) ? implode(',', $table) : $table);
+        $this->limit = ($limit > 0) ? $limit : 10;
+        $this->page  = ($page > 0) ? $page : 1;
 
         if (is_array($select))
-            $select =   implode(",", $select);
+            $select = implode(",", $select);
 
 
-        $this->statement   =   (is_callable($select)) ? $select($this->table) : "SELECT {$select} FROM " . $this->table;
+        $this->statement = (is_callable($select)) ? $select($this->table) : "SELECT {$select} FROM " . $this->table;
         $this->counter  =  (is_callable($select)) ? $select($this->table, 'count') : "SELECT COUNT(*) as count FROM " . $this->table;
     }
     /**
@@ -33,21 +33,21 @@ class Pagination
      */
     public function orderBy($column, $type): object
     {
-        $this->order    =   [];
+        $this->order = [];
 
         if (is_array($column)) {
             foreach ($column as $k => $col) {
                 if (is_array($type)) {
-                    $this->order[]    =  "{$col} " . ((isset($type[$k])) ? $type[$k] : end($type));
+                    $this->order[] =  "{$col} " . ((isset($type[$k])) ? $type[$k] : end($type));
                 } else {
-                    $this->order[]    =  "{$col} {$type}";
+                    $this->order[] =  "{$col} {$type}";
                 }
             }
         } else {
-            $this->order[]    =  "{$column} {$type}";
+            $this->order[] =  "{$column} {$type}";
         }
 
-        $this->order    =   " ORDER BY " . implode(', ', $this->order);
+        $this->order = " ORDER BY " . implode(', ', $this->order);
 
         return $this;
     }
@@ -56,7 +56,7 @@ class Pagination
      */
     public function setSpread($spread): object
     {
-        $this->spread   =   $spread;
+        $this->spread = $spread;
         return $this;
     }
     /**
@@ -64,7 +64,7 @@ class Pagination
      */
     public function setMaxRange(array $range): object
     {
-        $this->max_range    =   $range;
+        $this->max_range = $range;
         return $this;
     }
     /**
@@ -73,12 +73,12 @@ class Pagination
     public function search($value, $key, $op = '=', $cont = "OR"): object
     {
         if (is_callable($key)) {
-            $where  =   " WHERE " . $key($value, $op, $cont, $this);
+            $where  = " WHERE " . $key($value, $op, $cont, $this);
         } else {
             if (is_array($key)) {
-                $where    =   " WHERE " . implode(" {$cont} " . PHP_EOL, array_map(function ($v) use ($op, $value) {
+                $where = " WHERE " . implode(" {$cont} " . PHP_EOL, array_map(function ($v) use ($op, $value) {
                     if (!empty($value)) {
-                        $this->bind[]   =   $value;
+                        $this->bind[] = $value;
                         return " {$v} {$op} ?";
                     } else {
                         return " {$v} {$op} ''";
@@ -86,7 +86,7 @@ class Pagination
                 }, $key));
             } else {
                 if (!empty($value)) {
-                    $this->bind[]   =   $value;
+                    $this->bind[] = $value;
                     $where  = " WHERE {$key} {$op} ?";
                 } else {
                     $where  = " WHERE {$key} {$op} ''";
@@ -95,7 +95,7 @@ class Pagination
         }
 
         $this->counter  .=  $where;
-        $this->statement   .= $where;
+        $this->statement .= $where;
 
         return $this;
     }
@@ -108,25 +108,25 @@ class Pagination
     }
     /**
      * @description Fetch the results OR the final SQL statement
-     *  @param  [void|true|callable]    When empty, fetch pagination data.
+     *  @param  [void|true|callable]  When empty, fetch pagination data.
      *  Any value other than callable will return sql statement. Callable allows extra processing of results
      */
     public function get()
     {
-        $args   =   func_get_args();
+        $args = func_get_args();
         # See how many total requested
-        $count  =   $this->query($this->counter, $this->bind)->getResults(1)['count'];
+        $count  = $this->query($this->counter, $this->bind)->getResults(1)['count'];
         # See how many total pages are found
-        $pages  =   ceil($count / $this->limit);
+        $pages  = ceil($count / $this->limit);
         # If the pages are less than the requested start point, set to max pages count
         if ($this->page > $pages)
-            $this->page =   $pages;
+            $this->page = $pages;
         # Determine start and end prev/next page ranges
-        $start  =   $this->page - $this->spread;
-        $end    =   $this->spread + $this->page;
-        $offset =   ($this->limit * ($this->page - 1));
+        $start  = $this->page - $this->spread;
+        $end = $this->spread + $this->page;
+        $offset = ($this->limit * ($this->page - 1));
         # If the offset is negative or 0, just don't put offset
-        $offset =   ($offset < 0) ? false : " OFFSET {$offset}";
+        $offset = ($offset < 0) ? false : " OFFSET {$offset}";
         # Create the results query
         $this->statement .= " {$this->order} LIMIT {$this->limit} {$offset}";
         # Allow query to be returned
@@ -135,19 +135,19 @@ class Pagination
         # Create the next/previous ranges
         for ($i = $start; $i <= $end; $i++) {
             if (($i > 0) && ($i <= $pages))
-                $range[]    =   $i;
+                $range[] = $i;
         }
         # Fetch the final results
-        $results    =   $this->query($this->getStatement(), $this->bind)->getResults();
+        $results = $this->query($this->getStatement(), $this->bind)->getResults();
         # Set the miminum page based on the result count
         if ($this->page == 0 && $count > 0)
-            $this->page =   1;
+            $this->page = 1;
         # Set the minimum prev based on returned rows
-        $prevdef    =   ($count == 0) ? 0 : 1;
+        $prevdef = ($count == 0) ? 0 : 1;
         # Set the minimum spread based on returned rows
-        $spreaddef  =   ($count == 0) ? [] : [1];
+        $spreaddef  = ($count == 0) ? [] : [1];
         # Store data
-        $data   =   [
+        $data = [
             # The per-page range
             'max_range' => $this->max_range,
             # How many rows to show per page
@@ -174,10 +174,10 @@ class Pagination
      */
     public function getColumnsInTable()
     {
-        $data   =   $this->query("describe " . $this->table)->getResults();
+        $data = $this->query("describe " . $this->table)->getResults();
         if (empty($data))
             return ['ID'];
-        $array  =   [];
+        $array  = [];
         ArrayWorks::extractAll(array_map(function ($v) {
             return $v['Field'];
         }, $data), $array);
@@ -190,7 +190,7 @@ class Pagination
     public function addAttr($string)
     {
         $this->counter  .=  $string;
-        $this->statement   .= $string;
+        $this->statement .= $string;
         return $this;
     }
     /**
@@ -198,7 +198,7 @@ class Pagination
      */
     public function addToBind($value)
     {
-        $this->bind[]   =   $value;
+        $this->bind[] = $value;
         return $this;
     }
 }

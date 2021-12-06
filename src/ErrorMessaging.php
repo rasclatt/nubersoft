@@ -8,7 +8,7 @@ use \Nubersoft\Dto\ErrorMessaging\ {
 /**
  * @description 
  */
-class ErrorMessaging extends \Nubersoft\nApp
+class ErrorMessaging
 {
     use \Nubersoft\Settings\enMasse;
 

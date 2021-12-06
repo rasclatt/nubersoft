@@ -1,32 +1,50 @@
 <?php
 namespace Nubersoft\System\Admin;
 
+use \Nubersoft\ {
+    nApp,
+    Helper\File,
+    System\Observer as System,
+    Settings\enMasse as Settings,
+    nFileHandler,
+    ErrorMessaging
+};
+use \Nubersoft\Dto\System\Admin\Observer\SaveSiteLogoRequest;
+
 /**
  * @description 
  */
-class Observer extends \Nubersoft\System\Observer
+class Observer extends System
 {
-    use \Nubersoft\Settings\enMasse;
+    use Settings;
 
-    private $request;
+    protected $nApp, $Errors, $FileHandler, $request;
+
     /**
      *	@description	
      */
-    public function __construct()
+    public function __construct(
+        nApp $nApp,
+        ErrorMessaging $Errors,
+        nFileHandler $FileHandler
+    )
     {
-        $this->request = $this->getPost();
+        $this->FileHandler = $FileHandler;
+        $this->Errors = $Errors;
+        $this->nApp = $nApp;
+        $this->request = $this->nApp->getPost();
     }
     /**
      * @description
      */
     public function listen()
     {
-        $subaction = $this->getPost('deliver')['subaction'];
+        $subaction = $this->nApp->getPost('deliver')['subaction'];
         $layout = $this->getSettingsLayout($subaction);
-        $modal = (!empty($this->getPost('deliver')['modal']));
+        $modal = (!empty($this->nApp->getPost('deliver')['modal']));
 
         if (empty($layout)) {
-            $this->ajaxResponse([
+            $this->nApp->ajaxResponse([
                 "alert" => "Layout for this settings page is not set."
             ]);
         }
@@ -36,33 +54,33 @@ class Observer extends \Nubersoft\System\Observer
             ],
             'title' => 'Editing ' . ucwords($subaction) . ' Settings.',
             'sendto' => [
-                (!empty($this->getPost('deliver')['sendto'])) ? $this->getPost('deliver')['sendto'] : '#admin-content'
+                (!empty($this->nApp->getPost('deliver')['sendto'])) ? $this->nApp->getPost('deliver')['sendto'] : '#admin-content'
             ]
         ];
 
-        $this->ajaxResponse($response, $modal);
+        $this->nApp->ajaxResponse($response, $modal);
     }
     /**
      * @description 
      */
     public function widgetManager()
     {
-        if (!$this->isAdmin())
+        if (!$this->nApp->isAdmin())
             return false;
 
-        $plugin = $this->getRequest('slug');
+        $plugin = $this->nApp->getRequest('slug');
 
         if (empty($plugin)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_widget'));
+            $this->nApp->toError($this->Errors->getMessageAuto('fail_widget'));
             return false;
         }
 
-        $Widget = new \Nubersoft\Widget($this->getRequest('slug'));
+        $Widget = new \Nubersoft\Widget($this->nApp->getRequest('slug'));
 
-        switch ($this->getRequest('action')) {
+        switch ($this->nApp->getRequest('action')) {
             case ('activate_widget'):
                 if ($Widget->isActive()) {
-                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_pluginactive'));
+                    $this->nApp->toSuccess($this->Errors->getMessageAuto('success_pluginactive'));
                     return false;
                 }
                 $this->installWidget($Widget);
@@ -70,7 +88,7 @@ class Observer extends \Nubersoft\System\Observer
                 break;
             case ('deactivate_widget'):
                 if (!$Widget->isActive()) {
-                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_plugininactive'));
+                    $this->nApp->toSuccess($this->Errors->getMessageAuto('success_plugininactive'));
                     return false;
                 }
 
@@ -98,7 +116,7 @@ class Observer extends \Nubersoft\System\Observer
                     $this->addComponent([
                         "category_id" => 'widget_' . $plugin_name,
                         'component_type' => 'plugin_action',
-                        'content' => $this->enc($actions)
+                        'content' => $this->nApp->enc($actions)
                     ]);
                 }
             }
@@ -110,13 +128,13 @@ class Observer extends \Nubersoft\System\Observer
                     $this->addComponent([
                         "category_id" => 'widget_' . $plugin_name,
                         'component_type' => 'plugin_blockflow',
-                        'content' => $this->enc($blockflows)
+                        'content' => $this->nApp->enc($blockflows)
                     ]);
                 }
             }
         }
         # Convert the xml to settings
-        $widget = $this->toArray($Widget->getConfig());
+        $widget = $this->nApp->toArray($Widget->getConfig());
         # Loop each router
         if (isset($widget['router'])) {
             if (!$preflight)
@@ -129,11 +147,11 @@ class Observer extends \Nubersoft\System\Observer
 
                 $to = NBR_VENDOR;
                 $from = $base . DS . 'vendor';
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
                 foreach ($widget['vendor']['name'] as $vendor) {
 
-                    $this->isDir($to . DS . $vendor, 1);
-                    $this->isDir($from . DS . $vendor, 1);
+                    $this->nApp->isDir($to . DS . $vendor, 1);
+                    $this->nApp->isDir($from . DS . $vendor, 1);
 
                     $Files->recurseClone($from . DS . $vendor, $to . DS . $vendor, ['composer.json'], $preflight);
                 }
@@ -145,7 +163,7 @@ class Observer extends \Nubersoft\System\Observer
                 $widget['template']['name'] = [$widget['template']['name']];
 
             if (!isset($Files))
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
 
             foreach ($widget['template']['name'] as $template) {
 
@@ -161,7 +179,7 @@ class Observer extends \Nubersoft\System\Observer
                 $widget['plugins']['name'] = [$widget['plugins']['name']];
 
             if (!isset($Files))
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
 
             foreach ($widget['plugins']['name'] as $plugin) {
                 $fromPlug = $base . DS . $plugin . DS . 'plugins' . DS . $plugin;
@@ -202,7 +220,7 @@ class Observer extends \Nubersoft\System\Observer
             ]);
         }
         # Convert the xml to settings
-        $widget = $this->toArray($Widget->getConfig());
+        $widget = $this->nApp->toArray($Widget->getConfig());
         # Loop each router
         if (isset($widget['router'])) {
             $this->query("DELETE FROM main_menus WHERE parent_id = ?", 'widget_' . $plugin_name);
@@ -214,7 +232,7 @@ class Observer extends \Nubersoft\System\Observer
 
                 $to = NBR_VENDOR;
                 $from = $base . DS . 'vendor';
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
                 foreach ($widget['vendor']['name'] as $vendor) {
                     $Files->recurseDelete($to . DS . $vendor);
                     if (is_dir($vendor))
@@ -228,7 +246,7 @@ class Observer extends \Nubersoft\System\Observer
                 $widget['template']['name'] = [$widget['template']['name']];
 
             if (!isset($Files))
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
 
             foreach ($widget['template']['name'] as $template) {
                 $Files->recurseDelete(NBR_CLIENT_DIR . DS . 'template' . DS . $template);
@@ -242,7 +260,7 @@ class Observer extends \Nubersoft\System\Observer
                 $widget['plugins']['name'] = [$widget['plugins']['name']];
 
             if (!isset($Files))
-                $Files = $this->getHelper('nFileHandler');
+                $Files = ( new \Nubersoft\nFileHandler);
 
             foreach ($widget['plugins']['name'] as $plugin) {
                 $Files->recurseDelete(NBR_CLIENT_DIR . DS . 'template' . DS . 'plugins' . DS . $plugin);
@@ -268,7 +286,7 @@ class Observer extends \Nubersoft\System\Observer
 
     private function getSettingsLayout($type)
     {
-        return $this->getPlugin('settings', DS . $type . '.php');
+        return $this->nApp->getPlugin('settings', DS . $type . '.php');
     }
     /**
      * @description Saves settings from the admin area(s)
@@ -276,13 +294,13 @@ class Observer extends \Nubersoft\System\Observer
     public function saveSettings()
     {
         # Go throught the post
-        foreach ($this->getPost('setting') as $name => $value) {
+        foreach ($this->nApp->getPost('setting') as $name => $value) {
             # If the value is an array, save the array to json
             if (is_array($value))
                 $value = json_encode($value);
             # Create the htaccess by default
             if ($name == 'htaccess') {
-                file_put_contents(NBR_DOMAIN_ROOT . DS . '.htaccess', $this->dec($value));
+                file_put_contents(NBR_DOMAIN_ROOT . DS . '.htaccess', $this->nApp->dec($value));
             }
             # Remove the option so it can be resaved
             $this->deleteSystemOption($name);
@@ -292,7 +310,7 @@ class Observer extends \Nubersoft\System\Observer
                 # Turn up the execution time for the script
                 ini_set('max_execution_time', 600);
                 # Save the composer file
-                file_put_contents(NBR_ROOT_DIR . DS . 'composer.json', $this->dec($value));
+                file_put_contents(NBR_ROOT_DIR . DS . 'composer.json', $this->nApp->dec($value));
                 # See if shell is allowed
                 if (defined("SHELL_ALLOWED") && SHELL_ALLOWED) {
                     # See if the composer is ready
@@ -303,47 +321,47 @@ class Observer extends \Nubersoft\System\Observer
             }
         }
         # After saving the prerences, reload them to the data node so they are updated.
-        $this->getHelper('DataNode')->setNode('settings', [
-            'system' => $this->getHelper('Settings\Controller')->getSettings(false, 'system')
+        ( new \Nubersoft\DataNode)->setNode('settings', [
+            'system' => (new \Nubersoft\Settings\Controller)->getSettings(false, 'system')
         ]);
         # Create a success message
-        $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_settingssaved'));
+        $this->nApp->toSuccess(( new \Nubersoft\ErrorMessaging)->getMessageAuto('success_settingssaved'));
     }
     /**
      * @description Saves the site logo from admin settings
      */
-    public function saveSiteLogo()
+    public function saveSiteLogo(SaveSiteLogoRequest $request)
     {
-        $FILES = (!empty($this->getDataNode('_FILES')[0]['name'])) ? $this->getDataNode('_FILES')[0] : false;
-        $toggle = (!empty($this->getPost('setting')['header_company_logo_toggle'])) ? $this->getPost('setting')['header_company_logo_toggle'] : 'off';
-
+        $FILES = File::get();
+        $toggle = $request->setting->header_company_logo_toggle;
         $this->deleteSystemOption('header_company_logo_toggle');
         $this->setSystemOption('header_company_logo_toggle', $toggle);
+        $companyFile = $this->getSystemOption('header_company_logo');
+        $defmimes = $request->allowed_mimes;
 
-        if (empty($FILES))
+        if($request->delete == 'on' && (!empty($companyFile) && is_file($f = NBR_DOMAIN_ROOT.$companyFile))) {
+            $this->deleteSystemOption('header_company_logo');
+            unlink($f);
+        }
+        if (empty($FILES->file))
             return false;
 
-        $defmimes = [
-            'image/jpeg',
-            'image/png',
-            'image/gif'
-        ];
-
-        if (!in_array($FILES['type'], $defmimes)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required_filetype') . ': ' . implode(', ', $defmimes));
+        if (!in_array($FILES->type, $defmimes)) {
+            $this->nApp->toError(( new \Nubersoft\ErrorMessaging)
+                ->getMessageAuto('required_filetype') . ': ' . implode(', ', $defmimes));
             return false;
         }
 
-        $destination = NBR_DOMAIN_CLIENT_DIR . DS . 'media' . DS . 'images' . DS . 'default' . DS . 'company_logo.' . pathinfo($FILES['name'], PATHINFO_EXTENSION);
+        $destination = NBR_DOMAIN_CLIENT_DIR . DS . 'media' . DS . 'images' . DS . 'default' . DS . 'company_logo.' . pathinfo($FILES->name, PATHINFO_EXTENSION);
 
-        $this->isDir(pathinfo($destination, PATHINFO_DIRNAME), true);
+        $this->nApp->isDir(pathinfo($destination, PATHINFO_DIRNAME), true);
 
-        if (move_uploaded_file($FILES['tmp_name'], $destination)) {
+        if (move_uploaded_file($FILES->tmp_name, $destination)) {
             $this->deleteSystemOption('header_company_logo');
             $this->setSystemOption('header_company_logo', str_replace(NBR_DOMAIN_ROOT, '', $destination));
-            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_upload'));
+            $this->nApp->toSuccess(( new \Nubersoft\ErrorMessaging)->getMessageAuto('success_upload'));
         } else
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
+            $this->nApp->toError(( new \Nubersoft\ErrorMessaging)->getMessageAuto('fail_upload'));
     }
     /**
      *	@description	
@@ -361,7 +379,7 @@ class Observer extends \Nubersoft\System\Observer
             file_put_contents($path, $jwtNew);
         }
 
-        $this->ajaxResponse([
+        $this->nApp->ajaxResponse([
             'alert' => (is_file($path)) ? "JWT secret created." : "JWT secret does not exist.",
             'input' => [
                 $jwtNew
@@ -376,15 +394,15 @@ class Observer extends \Nubersoft\System\Observer
      */
     public function decodeBlock()
     {
-        $nQuery = $this->getHelper('nQuery');
+        $nQuery = ( new \Nubersoft\nQuery);
         $table = $nQuery->stripTableName($this->request['deliver']['table']);
         $column = $nQuery->stripTableName($this->request['deliver']['column']);
         $ID = $this->request['deliver']['ID'];
-        $content = $this->enc($this->dec($this->dec($this->query("SELECT {$column} FROM `{$table}` WHERE ID = ?", [$ID])->getResults(1)[$column])));
+        $content = $this->nApp->enc($this->nApp->dec($this->nApp->dec($this->query("SELECT {$column} FROM `{$table}` WHERE ID = ?", [$ID])->getResults(1)[$column])));
 
         $this->query("UPDATE {$table} SET `{$column}` = ? WHERE ID = ?", [$content, $ID]);
 
-        $this->ajaxResponse([
+        $this->nApp->ajaxResponse([
             'html' => [
                 $content
             ],

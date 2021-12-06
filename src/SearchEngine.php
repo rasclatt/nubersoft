@@ -35,7 +35,7 @@ class SearchEngine extends \Nubersoft\nApp
         self::$settings[$name] = $value;
     }
 
-    public function filterColumns($compare = array(), $addlist = false)
+    public function filterColumns($compare = [], $addlist = false)
     {
         if (is_array($compare)) {
             # List all columns skip searching in
@@ -183,11 +183,11 @@ class SearchEngine extends \Nubersoft\nApp
 
         return $this->toArray($data);
     }
-    /*
- ** @description There is an constraint that is by default set to false. It forces a "WHERE"
- **  clause into the sql. If admin, the constraints are ignored. This overrides the
- **  constraint to be used regardless of admin status
- */
+    /**
+     * @description There is an constraint that is by default set to false. It forces a "WHERE"
+     *  clause into the sql. If admin, the constraints are ignored. This overrides the
+     *  constraint to be used regardless of admin status
+     */
     public function forceConstraint($force = true)
     {
         $this->forceConstr = $force;

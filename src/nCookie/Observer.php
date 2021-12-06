@@ -1,11 +1,26 @@
 <?php
 namespace Nubersoft\nCookie;
 
+use \Nubersoft\ {
+    nApp,
+    nCookie,
+    nObserver
+};
+
 /**
  * @description 
  */
-class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
+class Observer extends nCookie implements nObserver
 {
+    private $nApp;
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function __construct(nApp $nApp)
+    {
+        $this->nApp = $nApp;
+    }
     /**
      * @description 
      */
@@ -17,7 +32,7 @@ class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
      */
     public function setCurrentPage()
     {
-        if ($this->isAjaxRequest())
+        if ($this->nApp->getServer())
             return false;
 
         $args = func_get_args();
@@ -34,7 +49,7 @@ class Observer extends \Nubersoft\nCookie implements \Nubersoft\nObserver
         }
 
         # Set default incase referrer is not set
-        $referrer = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : $this->siteUrl();
+        $referrer = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : $this->nApp->siteUrl();
 
         $this->set('nbr_current_page', [
             'self' => $_SERVER['PHP_SELF'],

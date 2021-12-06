@@ -1,7 +1,9 @@
 <?php
 namespace Nubersoft\Settings\Page;
 
-use \Nubersoft\{
+use \Nubersoft\ {
+    nApp,
+    nQuery,
     Plugin
 };
 
@@ -34,7 +36,7 @@ class View extends Controller
             return null;
 
         if (empty($this->user))
-            $this->user = (new \Nubersoft\System\User())->getUser();
+            $this->user = (new \Nubersoft\System\User(new nApp, new nQuery))->getUser();
 
         ob_start();
         $this->recurseRender($arr, $data, $type);

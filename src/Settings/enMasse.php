@@ -1,6 +1,8 @@
 <?php
 namespace Nubersoft\Settings;
 
+use \Nubersoft\Settings;
+
 /**
  * @description 
  */
@@ -8,7 +10,7 @@ trait enMasse
 {
     public function getSystemOption($name, $substitute = false)
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}($name, $substitute);
+        return (new Settings)->{__FUNCTION__}($name, $substitute);
     }
 
     public function setSystemOption($name, $value)
@@ -30,7 +32,7 @@ trait enMasse
      */
     public function getOption($name, $substitute = false, $option_group_name = 'client')
     {
-        $option = $this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
+        $option = (new Settings)->{__FUNCTION__}($name, $option_group_name);
 
         if (empty($option))
             return $substitute;
@@ -42,58 +44,58 @@ trait enMasse
 
     public function setOption($name, $value, $option_group_name = 'client')
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}($name, $value, $option_group_name);
+        return (new Settings)->{__FUNCTION__}($name, $value, $option_group_name);
     }
 
     public function updateOption($name, $value, $option_group_name = 'client')
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}($name, $value, $option_group_name);
+        return (new Settings)->{__FUNCTION__}($name, $value, $option_group_name);
     }
 
     public function deleteOption($name, $option_group_name = 'client')
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
+        return (new Settings)->{__FUNCTION__}($name, $option_group_name);
     }
 
     public function optionExists($name, $option_group_name = 'client')
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}($name, $option_group_name);
+        return (new Settings)->{__FUNCTION__}($name, $option_group_name);
     }
 
     public function addComponent()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
 
     public function getComponent()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
 
     public function getComponentBy()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
 
     public function deleteComponent()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
 
     public function deleteComponentBy()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
 
     public function componentExists()
     {
-        return $this->getHelper('Settings')->{__FUNCTION__}(...func_get_args());
+        return (new Settings)->{__FUNCTION__}(...func_get_args());
     }
     /**
      *	@description	
      */
     public function getSettingsModel()
     {
-        return $this->getHelper('Settings');
+        return (new Settings);
     }
 }

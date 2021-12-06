@@ -2,46 +2,53 @@
 namespace Nubersoft\System\Observer;
 
 use \Nubersoft\{
+    nApp,
     nQuery\enMasse as nQueryEnMasse,
     nDynamics,
     nRouter\Controller as Router,
     nToken,
     Settings\Controller as Settings,
-    DataNode
+    DataNode,
+    nRender
 };
+
+use \Nubersoft\Dto\Settings\Page\View\ConstructRequest as Helpers;
 
 class Tables extends \Nubersoft\System\Observer
 {
     use nQueryEnMasse, nDynamics;
 
-    protected $Router, $Token, $Settings, $DataNode;
+    protected $nRender, $nApp, $Router, $Token, $Settings, $DataNode;
 
     public function __construct(
         Router $Router,
         nToken $Token,
         Settings $Settings,
-        DataNode $DataNode
+        DataNode $DataNode,
+        nApp $nApp
     ) {
         $this->Router = $Router;
         $this->Token = $Token;
         $this->Settings = $Settings;
         $this->DataNode = $DataNode;
+        $this->nApp = $nApp;
+        $this->nRender = new nRender(new Helpers);
     }
 
     public function listen()
     {
-        if (!$this->isAdmin()) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(403));
+        if (!$this->nApp->isAdmin()) {
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto(403));
             return false;
         }
 
         $Router = $this->Router;
         $Token = $this->Token;
         $DataNode = $this->DataNode;
-        $POST = (!empty($this->getPost('ID'))) ? $this->getPost() : array_filter($this->getPost());
+        $POST = (!empty($this->nApp->getPost('ID'))) ? $this->nApp->getPost() : array_filter($this->nApp->getPost());
         $action = (!empty($POST['action'])) ? $POST['action'] : false;
-        $token = (!empty($this->getPost('token')['nProcessor'])) ? $this->getPost('token')['nProcessor'] : false;
-        $ctoken = (!empty($this->getPost('token')['component'][$this->getPost('ID')])) ? $this->getPost('token')['component'][$this->getPost('ID')] : false;
+        $token = (!empty($this->nApp->getPost('token')['nProcessor'])) ? $this->nApp->getPost('token')['nProcessor'] : false;
+        $ctoken = (!empty($this->nApp->getPost('token')['component'][$this->nApp->getPost('ID')])) ? $this->nApp->getPost('token')['component'][$this->nApp->getPost('ID')] : false;
         # Remove action k/v
         if (isset($POST['action']))
             unset($POST['action']);
@@ -51,10 +58,10 @@ class Tables extends \Nubersoft\System\Observer
 
         switch ($action) {
             case ('edit_table_rows_details'):
-                $this->editTable($POST, $this->getRequest('table'), $token, $Token);
+                $this->editTable($POST, $this->nApp->getRequest('table'), $token, $Token);
                 return $this;
             case ('edit_user_details'):
-                $this->updateUserData($POST, $token, $Token, $this->getRequest('table'), $this->getRequest('ID'));
+                $this->updateUserData($POST, $token, $Token, $this->nApp->getRequest('table'), $this->nApp->getRequest('ID'));
                 return $this;
             case ('edit_component'):
                 $timestamp = date('Y-m-d H:i:s');
@@ -70,7 +77,7 @@ class Tables extends \Nubersoft\System\Observer
                             $this->duplicateRecord($POST);
                     }
                 } else {
-                    if ($this->getPost('delete') == 'on') {
+                    if ($this->nApp->getPost('delete') == 'on') {
                         $this->deleteRecord($POST['ID']);
                         $msg = "Refresh the page to see update.";
                     } else {
@@ -80,8 +87,8 @@ class Tables extends \Nubersoft\System\Observer
                 if (!isset($msg))
                     $msg = 'Updated';
 
-                if ($this->isAjaxRequest()) {
-                    $this->ajaxResponse(['alert' => $msg, 'msg' => $this->getSystemMessages()]);
+                if ($this->nApp->isAjaxRequest()) {
+                     $this->nApp->ajaxResponse(['alert' => $msg, 'msg' => $this->getSystemMessages()]);
                 }
                 break;
             case ('update_admin_url'):
@@ -90,21 +97,21 @@ class Tables extends \Nubersoft\System\Observer
             case ('create_new_page'):
                 # Match token for all
                 if (empty($token) || !$Token->match('page', $token, false, false)) {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_tokenmatch'));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_tokenmatch'));
                     return false;
                 }
 
                 if (empty($POST['full_path'])) {
                     $dpath = implode('/', [date('Y'), date('m'), date('d'), date('s')]);
-                    $path = ($this->getPage('is_admin') != 1) ? $this->getPage('full_path') . $dpath : '/' . $dpath;
+                    $path = ( $this->nRender->getPage('is_admin') != 1) ?  $this->nRender->getPage('full_path') . $dpath : '/' . $dpath;
                 } else
                     $path = $this->convertToStandardPath($POST['full_path']);
 
                 @$this->nQuery()->insert("main_menus")
                     ->columns(['unique_id', 'full_path', 'page_live', 'menu_name', 'link'])
-                    ->values([[$this->fetchUniqueId(), '/' . trim($path, '/') . '/', 'off', 'Untitled', 'untitled' . date('YmdHis')]])
+                    ->values([[$this->nApp->fetchUniqueId(), '/' . trim($path, '/') . '/', 'off', 'Untitled', 'untitled' . date('YmdHis')]])
                     ->write();
-                $this->Router->redirect($this->localeUrl($path));
+                $this->Router->redirect($this->nApp->localeUrl($path));
                 break;
             case ('update_page'):
                 $this->updatePage($token, $Token, $POST);
@@ -117,14 +124,14 @@ class Tables extends \Nubersoft\System\Observer
     {
         # Match token for all
         if (empty($token) || !$Token->match('page', $token, false, false)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_tokenmatch'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_tokenmatch'));
             return false;
         }
 
-        $ID = $this->getPost('ID');
+        $ID = $this->nApp->getPost('ID');
 
         if (empty($ID)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_page'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_page'));
             return false;
         }
 
@@ -135,7 +142,7 @@ class Tables extends \Nubersoft\System\Observer
                 }
                 return true;
             } else {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('403_delete'));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('403_delete'));
                 return false;
             }
         }
@@ -143,13 +150,13 @@ class Tables extends \Nubersoft\System\Observer
         $POST['full_path'] = $this->Router->convertToStandardPath($POST['full_path']);
         $existing = $this->Router->getPage($POST['full_path'], 'full_path');
         if (empty($POST['full_path'])) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slug'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_slug'));
             return false;
         }
 
         if (!empty($existing)) {
             if ($existing['ID'] != $POST['ID']) {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_slugexists'));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_slugexists'));
                 return false;
             }
         }
@@ -171,7 +178,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $this->query("UPDATE `main_menus` SET " . implode(', ', $sql) . " WHERE ID = ? ", array_values(array_merge(array_values($POST), [$ID])));
 
-        if ($this->getPage('full_path') != $POST['full_path']) {
+        if ( $this->nRender->getPage('full_path') != $POST['full_path']) {
             $this->Router->redirect($POST['full_path'] . '?msg=fail_update');
         } else {
             $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->getGet()));
@@ -201,7 +208,7 @@ class Tables extends \Nubersoft\System\Observer
         $ID = (is_numeric($POST['ID'])) ? $POST['ID'] : false;
 
         if (empty($POST) || empty($ID)) {
-            $this->toError((!empty($err)) ? $err : $this->getHelper('ErrorMessaging')->getMessageAuto('no_action'));
+            $this->nApp->toError((!empty($err)) ? $err : (new \Nubersoft\ErrorMessaging)->getMessageAuto('no_action'));
             return false;
         }
         # Process file and the fields associated with the file
@@ -216,7 +223,7 @@ class Tables extends \Nubersoft\System\Observer
 
         $this->query("UPDATE `{$table}` SET " . implode(', ', $sql) . " WHERE ID = '{$ID}'", $bind);
 
-        $this->toSuccess($msg);
+        $this->nApp->toSuccess($msg);
         return true;
     }
 
@@ -245,16 +252,16 @@ class Tables extends \Nubersoft\System\Observer
     protected function updateUserData($POST, $token, $Token, $table, $ID)
     {
         if (empty($token) || !$Token->match('page', $token)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_request'));
             return false;
         }
-        if ($this->getPost('delete') == 'on') {
+        if ($this->nApp->getPost('delete') == 'on') {
             $this->query("DELETE FROM `" . str_replace('`', '', $table) . "` WHERE ID = ?", [$ID]);
 
-            if (empty($this->getHelper('nUser')->getUser($ID, 'ID'))) {
-                $this->Router->redirect($this->localeUrl(\Nubersoft\nReflect::instantiate('\Nubersoft\nRender')->getPage('full_path') . '?table=users&msg=success_delete'));
+            if (empty((new \Nubersoft\nUser)->getUser($ID, 'ID'))) {
+                $this->Router->redirect($this->nApp->localeUrl(\Nubersoft\nReflect::instantiate('\Nubersoft\nRender')->getPage('full_path') . '?table=users&msg=success_delete'));
             } else {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto(500));
                 return $this;
             }
         } else {
@@ -269,52 +276,52 @@ class Tables extends \Nubersoft\System\Observer
                 ]);
 
                 if (!empty($POST['password'])) {
-                    $POST['password'] = $this->getHelper('nUser')->hashPassword($this->getPost('password', false));
+                    $POST['password'] = (new \Nubersoft\nUser)->hashPassword($this->nApp->getPost('password', false));
                 } else {
                     unset($POST['password']);
                 }
 
                 if (count($required) < 6) {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('required'));
                     return $this;
                 }
 
-                $this->updateData($POST, 'users', $this->getHelper('ErrorMessaging')->getMessageAuto('account_saved'), $this->getHelper('ErrorMessaging')->getMessageAuto('account_savedfail'));
+                $this->updateData($POST, 'users', (new \Nubersoft\ErrorMessaging)->getMessageAuto('account_saved'), (new \Nubersoft\ErrorMessaging)->getMessageAuto('account_savedfail'));
             } else {
                 if (!empty($POST['ID'])) {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_request'));
                     return $this;
                 }
 
-                if ($this->getHelper('nUser')->getUser($this->getRequest('username'))) {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_userexists'));
+                if ((new \Nubersoft\nUser)->getUser($this->nApp->getRequest('username'))) {
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('fail_userexists'));
                     return $this;
                 }
 
                 $required = array_filter([
                     (isset($POST['username']) && filter_var($POST['username'], FILTER_VALIDATE_EMAIL)) ? $POST['username'] : false,
                     (isset($POST['email']) && filter_var($POST['email'], FILTER_VALIDATE_EMAIL)) ? $POST['email'] : false,
-                    $this->getPost('first_name', false),
-                    $this->getPost('last_name', false),
+                    $this->nApp->getPost('first_name', false),
+                    $this->nApp->getPost('last_name', false),
                     ($POST['usergroup']) ?? false,
                     ($POST['user_status']) ?? 'on',
-                    (isset($POST['password'])) ? trim($this->getPost('password', false)) : false
+                    (isset($POST['password'])) ? trim($this->nApp->getPost('password', false)) : false
                 ]);
 
                 if (count($required) < 7) {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('required'));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('required'));
                     return $this;
                 }
 
-                $POST['password'] = trim($this->getPost('password', false));
-                $POST['unique_id'] = $this->fetchUniqueId();
+                $POST['password'] = trim($this->nApp->getPost('password', false));
+                $POST['unique_id'] = $this->nApp->fetchUniqueId();
                 $POST['timestamp'] = date('Y-m-d H:i:s');
 
-                if ($this->getHelper('nUser')->create($POST)) {
-                    $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_usercreate'));
+                if ((new \Nubersoft\nUser)->create($POST)) {
+                    $this->nApp->toSuccess((new \Nubersoft\ErrorMessaging)->getMessageAuto('success_usercreate'));
                     return $this;
                 } else {
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto(500));
                     return $this;
                 }
             }
@@ -324,18 +331,18 @@ class Tables extends \Nubersoft\System\Observer
     protected function addNewRecord($POST)
     {
         $type = (!empty($POST['parent_type'])) ? $POST['parent_type'] : 'code';
-        $refpage = (!empty($POST['ref_page'])) ? $POST['ref_page'] : $this->getPage('unique_id');
+        $refpage = (!empty($POST['ref_page'])) ? $POST['ref_page'] :  $this->nRender->getPage('unique_id');
 
         unset($POST['parent_type']);
 
-        $this->getHelper("nQuery")
+        (new \Nubersoft\nQuery)
             ->insert('components')
             ->columns(['unique_id', 'ref_page', 'component_type', 'title', 'page_live'])
             ->values([
-                [$this->fetchUniqueId(), $refpage, 'code', 'Untitled (' . date('Y-m-d H:i:s') . ')', 'off']
+                [$this->nApp->fetchUniqueId(), $refpage, 'code', 'Untitled (' . date('Y-m-d H:i:s') . ')', 'off']
             ])
             ->write();
-        $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_componentcreate'));
+        $this->nApp->toSuccess((new \Nubersoft\ErrorMessaging)->getMessageAuto('success_componentcreate'));
 
         return $this;
     }
@@ -347,12 +354,12 @@ class Tables extends \Nubersoft\System\Observer
 
         $duplicate = $this->getHelper("Settings")->getComponent($ID);
         if (empty($duplicate)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_component'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_component'));
             return $this;
         }
 
         unset($duplicate['ID']);
-        $duplicate['unique_id'] = $this->fetchUniqueId();
+        $duplicate['unique_id'] = $this->nApp->fetchUniqueId();
 
         if (!empty($duplicate['file_path'])) {
             $from = NBR_DOMAIN_ROOT . $duplicate['file_path'] . $duplicate['file_name'];
@@ -375,14 +382,14 @@ class Tables extends \Nubersoft\System\Observer
 
         $duplicate = array_filter($duplicate);
 
-        $this->getHelper("nQuery")->insert('components')
+        (new \Nubersoft\nQuery)->insert('components')
             ->columns(array_keys($duplicate))
             ->values([
                 array_values($duplicate)
             ])
             ->write();
 
-        $this->Router->redirect($this->localeUrl($this->getPage('full_path') . '?msg=success_create'));
+        $this->Router->redirect($this->nApp->localeUrl( $this->nRender->getPage('full_path') . '?msg=success_create'));
     }
 
     protected function deleteRecord($ID)
@@ -395,9 +402,9 @@ class Tables extends \Nubersoft\System\Observer
         $this->query("DELETE FROM `components` WHERE ID = ?", [$ID]);
 
         if (empty($this->getHelper('Settings')->getComponent($ID))) {
-            $this->toSuccess($this->getHelper('ErrorMessaging')->getMessageAuto('success_delete'));
+            $this->nApp->toSuccess((new \Nubersoft\ErrorMessaging)->getMessageAuto('success_delete'));
         } else {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto(500));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto(500));
         }
     }
 
@@ -406,7 +413,7 @@ class Tables extends \Nubersoft\System\Observer
         $POST['timestamp'] = date('Y-m-d H:i:s');
         if (empty(!$POST['ID'])) {
             if (empty($token) || !$Token->match('component_' . $POST['ID'], $token)) {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_request'));
                 return false;
             }
 
@@ -434,13 +441,13 @@ class Tables extends \Nubersoft\System\Observer
                     }
                 }
             }
-            $page_match = ($this->getPage('unique_id') == $POST['ref_page']);
+            $page_match = ( $this->nRender->getPage('unique_id') == $POST['ref_page']);
             if (!$page_match) {
                 $thisObj = $this;
                 $uniques = [];
-                $Page = $this->getHelper('Settings\Page\Controller');
-                $struct = $Page->getContentStructure($this->getPage('unique_id'));
-                $test = $this->getHelper('ArrayWorks')->recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
+                $Page = new \Nubersoft\Settings\Page\Controller;
+                $struct = $Page->getContentStructure( $this->nRender->getPage('unique_id'));
+                $test = \Nubersoft\ArrayWorks::recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
 
                     if ($k == $POST['unique_id']) {
                         if (!empty($v)) {
@@ -452,12 +459,11 @@ class Tables extends \Nubersoft\System\Observer
                 if (!empty($uniques)) {
                     $c = count($uniques);
                     $uniques = array_merge([$POST['ref_page']], $uniques);
-
                     $this->query("UPDATE components SET `ref_page` = ? WHERE `unique_id` IN (" . (implode(',', array_fill(0, $c, '?'))) . ")", $uniques);
                 }
             }
             $this->updateData($POST, 'components', 'Component updated');
-            if (!$page_match && !$this->isAjaxRequest()) {
+            if (!$page_match && !$this->nApp->isAjaxRequest()) {
                 $newPage = $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
                 $this->Router->redirect($newPage['full_path']);
             }
@@ -468,35 +474,46 @@ class Tables extends \Nubersoft\System\Observer
     public function editTable($POST, $table, $token, $Token, $msg = 'Row saved')
     {
         if ($table == 'users') {
-            $this->updateUserData($POST, $token, $Token, $table, $this->getRequest('ID'));
+            $this->updateUserData($POST, $token, $Token, $table, $this->nApp->getRequest('ID'));
             return false;
         }
 
         if (empty($token) || !$Token->match('page', $token)) {
-            $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
+            $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_request'));
             return false;
         }
+        /*
+        $dto = '\\Nubersoft\\Dto\\Tables\\'.\Nubersoft\Helper\StringWorks::columnTitleToPascalCase($table);
+        if(class_exists($dto))
+            $POST = new $dto($POST);
 
+        if($POST instanceof \Nubersoft\Dto\Tables) {
+            $table = $POST->getTable();
+            $POST = $POST->toArray();
+        }
+        
+        \Nubersoft\nApp::call()->ajaxResponse($POST);
+        */
         if (!empty($POST['ID']) && is_numeric($POST['ID'])) {
             if (!empty($POST['delete'])) {
                 $this->removeCurrentFilePath($POST['ID'], $table);
                 $this->deleteFrom($table, $POST['ID']);
-                $this->redirect($this->getPage('full_path') . "?table=" . $table . "&msg=success_delete");
+                 $this->nApp->redirect( $this->nRender->getPage('full_path') . "?table=" . $table . "&msg=success_delete");
             } else
                 $this->updateData($POST, $table, $msg);
         } else {
             if (empty($POST['ID'])) {
                 $POST['timestamp'] = date('Y-m-d H:i:s');
-                $POST['unique_id'] = $this->fetchUniqueId();
+                $POST['unique_id'] = $this->nApp->fetchUniqueId();
                 $POST = $this->getRowsInTable($table, $POST);
                 $this->setFileData($POST);
                 $sql = "INSERT INTO `" . $table . "` (`" . implode('`, `', array_keys($POST)) . "`) VALUES(" . implode(',', array_fill(0, count($POST), '?')) . ")";
                 @$this->nQuery()->query($sql, array_values($POST));
 
-                if ($this->isAjaxRequest() && $table == 'media') {
-                    $this->ajaxResponse([
+                if ($this->nApp->isAjaxRequest() && $table == 'media') {
+                     $this->nApp->ajaxResponse([
                         'html' => [
-                            $this->getPlugin('admintools', 'media' . DS . 'index.php')
+                             $this->nApp->getPlugin('admintools', 'media' . DS . 'index.php')
                         ],
                         'sendto' => [
                             '#admin-content'
@@ -504,14 +521,14 @@ class Tables extends \Nubersoft\System\Observer
                     ]);
                 }
 
-                $this->redirect($this->getPage('full_path') . "?table=" . $table . "&msg=success_created");
+                 $this->nApp->redirect( $this->nRender->getPage('full_path') . "?table=" . $table . "&msg=success");
             } else {
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('invalid_request'));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_request'));
             }
         }
 
-        if ($this->isAjaxRequest()) {
-            $this->ajaxResponse($this->getSystemMessages());
+        if ($this->nApp->isAjaxRequest()) {
+             $this->nApp->ajaxResponse($this->getSystemMessages());
         }
     }
 
@@ -548,10 +565,10 @@ class Tables extends \Nubersoft\System\Observer
 
                 if (!$move) {
                     unset($POST['file_name'], $POST['file_path'], $POST['file_size'], $POST['file']);
-                    $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
+                    $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('fail_upload'));
                 }
             } else
-                $this->toError($this->getHelper('ErrorMessaging')->getMessageAuto('fail_upload'));
+                $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('fail_upload'));
         }
     }
 

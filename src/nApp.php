@@ -1,9 +1,14 @@
 <?php
 namespace Nubersoft;
+/**
+ * @description This is a "kitchen sink" class that can be called from anywhere
+ *              that includes a large array of common helpers
+ */
+use \Nubersoft\ {
+    Dto\File as FileDto
+};
 
-use \Nubersoft\Dto\File as FileDto;
-
-class nApp extends \Nubersoft\nFunctions
+class nApp extends nFunctions
 {
     use nUser\enMasse,
         Plugin\enMasse,
@@ -11,13 +16,13 @@ class nApp extends \Nubersoft\nFunctions
         DataNode\enMasse;
 
     private static $Reflect;
-    /**
-     *	@description	
-     */
+
     public function __construct()
     {
     }
-
+    /**
+     *	@description	Fetches the user session array
+     */
     public function userGet($key = false)
     {
         $SESS = (!empty($this->getSession('user'))) ? $this->getSession('user') : [];
@@ -32,7 +37,7 @@ class nApp extends \Nubersoft\nFunctions
      */
     public function requestFetch($method, $key = false, $encode = true)
     {
-        $data   =   (new Request())->{$method}($key);
+        $data = (new Request(new Dto\Server))->{$method}($key);
 
         if ($encode)
             return nGlobal::sanitize($data);
@@ -56,7 +61,7 @@ class nApp extends \Nubersoft\nFunctions
 
     public function getCookie($key = false, $encode = true)
     {
-        $data = $this->getHelper('nCookie')->pullFromNode()->get($key);
+        $data = (new \Nubersoft\nCookie)->pullFromNode()->get($key);
         return ($encode) ? nGlobal::sanitize($data) : $data;
     }
 
@@ -217,7 +222,7 @@ class nApp extends \Nubersoft\nFunctions
      */
     public function getHost($key = false)
     {
-        $data   =   $this->getDataNode('routing_info');
+        $data = $this->getDataNode('routing_info');
         if (!empty($key))
             return ($data[$key]) ?? null;
 
