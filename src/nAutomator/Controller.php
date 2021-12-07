@@ -1,5 +1,4 @@
 <?php
-
 namespace Nubersoft\nAutomator;
 
 use \Nubersoft\{
@@ -12,9 +11,9 @@ class Controller extends nAutomator
     public function createWorkflow($name, $type = 'work', $action = false)
     {
         if (empty($action))
-            $action    =    (defined('NBR_ACTION_KEY')? NBR_ACTION_KEY : 'action');
+            $action = (defined('NBR_ACTION_KEY') ? NBR_ACTION_KEY : 'action');
         # Set the name
-        $method    =    "set" . ucfirst($type) . "flow";
+        $method = "set" . ucfirst($type) . "flow";
         # Start the creation
         (new Observer)
             # Set the name of workflow file

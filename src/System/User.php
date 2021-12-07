@@ -1,20 +1,21 @@
 <?php
 namespace Nubersoft\System;
+
 /**
- *    @description    
+ * @description 
  */
 class User extends \Nubersoft\System
 {
     /**
-     *    @description    
+     * @description 
      */
     public function getUser($key = false)
     {
-        $data    =    $this->get('user');
-        
-        if(!empty($key))
-            return (!empty($data[$key]))? $data[$key] : null;
-        
+        $data = $this->get('user');
+
+        if (!empty($key))
+            return (!empty($data[$key])) ? $data[$key] : null;
+
         return $data;
     }
 }

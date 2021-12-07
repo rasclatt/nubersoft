@@ -1,9 +1,11 @@
 <?php
 namespace Nubersoft\nQuery;
 
+use \Nubersoft\nQuery;
+
 trait enMasse
 {
-    protected static $nQuery;
+    protected static $db;
     
     public function query($sql, $bind = false, $conn = false)
     {
@@ -22,9 +24,9 @@ trait enMasse
     
     public function nQuery()
     {
-        if(empty(self::$nQuery))
-            self::$nQuery    =    new \Nubersoft\nQuery();
+        if(empty(self::$db))
+            self::$db    =    new nQuery();
         
-        return self::$nQuery;
+        return self::$db;
     }
 }

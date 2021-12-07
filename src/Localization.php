@@ -1,107 +1,108 @@
 <?php
 namespace Nubersoft;
 
-use \Nubersoft\ {
-    Settings,
-    Settings\enMasse as SettingsTrait
+use \Nubersoft\{
+	Settings,
+	Settings\enMasse as SettingsTrait
 };
+
 /**
- *	@description	
+ * @description 
  */
 class Localization extends nApp
 {
-    use SettingsTrait;
+	use SettingsTrait;
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public function transKeyExists($key)
 	{
-        return $this->getTransKey($key);
+		return $this->getTransKey($key);
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public function saveTransKey($key, $value, $group = false)
 	{
-        $this->addComponent([
-            'title' => $key,
-            'content' => $value,
-            'component_type' => 'transkey'
-        ]);
-        
-        return $this;
+		$this->addComponent([
+			'title' => $key,
+			'content' => $value,
+			'component_type' => 'transkey'
+		]);
+
+		return $this;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
-	public function getTransKey($name):? array
+	public function getTransKey($name): ?array
 	{
-        $data   =   $this->getComponentBy([
-            'title' => $name,
-            'component_type' => 'transkey'
-        ]);
-        
-        return (!empty($data))? $data : null;
+		$data   =   $this->getComponentBy([
+			'title' => $name,
+			'component_type' => 'transkey'
+		]);
+
+		return (!empty($data)) ? $data : null;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public function saveTranslation(string $transkey, $value, $translation_key = 'translator', $ref_page = false)
 	{
-        $args		=	[
-            'title' => $transkey,
-            'category_id' => 'translator'
-        ];
+		$args  = [
+			'title' => $transkey,
+			'category_id' => 'translator'
+		];
 
-        if(!empty($ref_page))
-            $args['ref_page']   =  $ref_page; 
+		if (!empty($ref_page))
+			$args['ref_page']   =  $ref_page;
 
-        $component	=	$this->getComponentBy($args);
+		$component = $this->getComponentBy($args);
 
-        if(!empty($component))
-            $this->deleteComponentBy($args);
+		if (!empty($component))
+			$this->deleteComponentBy($args);
 
-        $args['content']	=	$this->enc($value);
-        $this->addComponent($args);
-        
-        return $this->getComponentBy([
-            'title' => $transkey,
-            'category_id' => 'translator'
-        ]);
+		$args['content'] = $this->enc($value);
+		$this->addComponent($args);
+
+		return $this->getComponentBy([
+			'title' => $transkey,
+			'category_id' => 'translator'
+		]);
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public function translationExists(string $transkey)
 	{
-        $d = $this->getComponentBy([
-            'title' => $transkey,
-            'category_id' => 'translator'
-        ]);
-        return (empty($d))? false : $d;
+		$d = $this->getComponentBy([
+			'title' => $transkey,
+			'category_id' => 'translator'
+		]);
+		return (empty($d)) ? false : $d;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public static function getSiteLocale($def = 'us')
 	{
-        $l = nApp::call('nCookie')->get('locale');
-        return (empty($l))? $def : $l;
+		$l = nApp::call('nCookie')->get('locale');
+		return (empty($l)) ? $def : $l;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public static function getSiteLanguage($def = 'en')
 	{
-        $l = nApp::call('nCookie')->get('language');
-        return (empty($l))? $def : $l;
+		$l = nApp::call('nCookie')->get('language');
+		return (empty($l)) ? $def : $l;
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public static function getSiteCountry($def = 'us')
 	{
-        $l = nApp::call('nCookie')->get('country');
-        return (empty($l))? $def : $l;
+		$l = nApp::call('nCookie')->get('country');
+		return (empty($l)) ? $def : $l;
 	}
 }

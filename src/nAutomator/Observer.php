@@ -1,5 +1,4 @@
 <?php
-
 namespace Nubersoft\nAutomator;
 
 class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver

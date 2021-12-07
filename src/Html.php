@@ -1,41 +1,60 @@
 <?php
 namespace Nubersoft;
+/**
+ * @description Alias to the helper version
+ */
+use \Nubersoft\Dto\Helper\Html\ {
+    CreateMetaRequest,
+    CreateScriptRequest,
+    CreateLinkRelRequest
+};
 
-class Html extends nApp
+class Html
 {
-    public function createMeta($name, $content, $trunc = false)
+    public function createMeta(
+        string $name,
+        string $content,
+        bool $trunc = false
+    ): string
     {
-        return ($trunc)? '<meta '.$name.'="'.$content.'" />'.PHP_EOL : '<meta name="'.$name.'" content="'.$content.'" />'.PHP_EOL;
+        return Helper\Html::createMeta(new CreateMetaRequest([
+            'name' => $name,
+            'content' => $content,
+            'trunc' => $trunc
+        ]));
     }
-    
-    public function createScript($src, $local = false, $type = false, $id = false, $attr = false)
+
+    public function createScript(
+        string $src,
+        bool $is_local = null,
+        string $type = null,
+        string $id = null,
+        string $attr = null
+    ): string
     {
-        if(empty($type))
-            $type    =    'text/javascript';
-        
-        if(!empty($id))
-            $id    =    ' id="'.$id.'"';
-        
-        if($local)
-            $src    .=    '?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_ROOT.DS.str_replace('/', DS, $src)));
-        
-        return '<script type="'.$type.'" src="'.$src.'"'.$id.' '.$attr.'></script>'.PHP_EOL;
+        return Helper\Html::createScript(new CreateScriptRequest([
+            'src' => $src,
+            'is_local' => $is_local,
+            'type' => $type,
+            'id' => $id,
+            'attr' => $attr
+        ]));
     }
-    
-    public function createLinkRel($src, $local = false, $type = false, $rel = false, $id = false)
+
+    public function createLinkRel(
+        string $src,
+        bool $is_local = null,
+        string $type = null,
+        string $rel = null,
+        string $id = null
+    ): string
     {
-        if(empty($type))
-            $type = 'text/css';
-        
-        if(empty($rel))
-            $rel    = 'stylesheet';
-        
-        if(!empty($id))
-            $id    =    ' id="'.$id.'"';
-        
-        if($local)
-            $src    .=    '?v='.filemtime(str_replace(DS.DS, DS, NBR_DOMAIN_ROOT.DS.str_replace('/', DS, $src)));
-        
-        return '<link type="'.$type.'" rel="'.$rel.'" href="'.$src.'" />'.PHP_EOL;
+        return Helper\Html::createLinkRel(new CreateLinkRelRequest([
+            'src' => $src,
+            'is_local' => $is_local,
+            'type' => $type,
+            'rel' => $rel,
+            'id' => $id
+        ]));
     }
 }

@@ -18,8 +18,8 @@ class nQuery extends nApp
         
             if(!defined('DB_HOST'))
                 throw new HttpException\Core('Required database credentials not set or are missing.', 9090);
-
-            $Settings = new DbSettings();
+            
+            $Settings = (empty($Settings))? new DbSettings() : $Settings;
             $Settings->host = DB_HOST;
             $Settings->dbname = DB_NAME;
             $Settings->user = DB_USER;
@@ -194,7 +194,7 @@ class nQuery extends nApp
     public function getTables()
     {
         return array_map(function($v){
-            return $v['Tables_in_'.DB_NAME];
+            return $v['Tables_in_'.base64_decode(DB_NAME)];
         },$this->query("show tables")->getResults());
     }
     

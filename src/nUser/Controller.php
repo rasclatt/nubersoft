@@ -1,20 +1,18 @@
 <?php
 namespace Nubersoft\nUser;
 
-use \Nubersoft\Dto\Session\User\GetResponse;
+use \Nubersoft\nSession\User;
 
 class Controller extends \Nubersoft\nUser
 {
     public function isLoggedIn(): bool
     {
-        $user = new GetResponse(($this->getDataNode('_SESSION')['user'])?? []);
-        return (!empty($user->username));
+        return (!empty(User::get()->username));
     }
     
     public function isAdmin(): bool
     {
-        $SESS = $this->getDataNode('_SESSION');
-        $user = new GetResponse((!empty($SESS['user']))? $SESS['user'] : null);
+        $user = User::get();
         if(empty($user->username))
             return false;
         

@@ -1,7 +1,10 @@
 <?php
 namespace Nubersoft;
 
-use \Nubersoft\nQuery;
+use \Nubersoft\ {
+    nQuery,
+    nSession\User
+};
 use \Nubersoft\Dto\Settings\Page\View\ConstructRequest as Helpers;
 use \Nubersoft\Dto\DataNode\ {
     Routing\GetRequest as Routing,
@@ -24,7 +27,7 @@ class nRender extends nQuery
         $this->templates = new Templates();
         $this->Helpers = $Helpers;
         $this->routing = new Routing();
-        $this->sUser = new \Nubersoft\Dto\Session\User\GetResponse($this->getSession('user'));
+        $this->sUser = User::get();
         return parent::__construct();
     }
     /**
@@ -121,7 +124,7 @@ class nRender extends nQuery
             }    
         }
         # Check for page permissions
-        if($page->session_status == 'on') {
+        if($this->routing->session_status == 'on') {
             if(!$this->isLoggedIn()) {
                 # Loop through templates and render login page
                 foreach($this->templates->paths as $path) {
@@ -154,7 +157,7 @@ class nRender extends nQuery
             }
         }
         # If the page requires admin access
-        if($page->is_admin == 1 && !$this->isAdmin()) {
+        if($this->routing->is_admin == 1 && !$this->isAdmin()) {
             # If not admin, redirect to home page
             $this->Helpers->Router->redirect($this->localeUrl());
         }
@@ -177,7 +180,7 @@ class nRender extends nQuery
         }
         else {
             # Check if the page is being cached
-            if($page->auto_cache == 'on' && !$this->isAdmin()) {
+            if($this->routing->auto_cache == 'on' && !$this->isAdmin()) {
                 # See if the user is logged in and set name
                 $usergroup     = (!empty($this->getSession('user')['usergroup']))? $this->getSession('user')['usergroup'] : 'loggedout';
                 # Convert a string to numeric

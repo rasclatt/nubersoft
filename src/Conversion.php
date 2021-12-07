@@ -3,23 +3,23 @@ namespace Nubersoft;
 
 class Conversion extends nApp
 {
-    public static function columnToTitle($title,$uc = false)
-    {
-        $title    = str_replace('_', ' ', $title);
-        return ($uc)? ucwords($title) : $title;
-    }
+	public static function columnToTitle($title, $uc = false)
+	{
+		$title = str_replace('_', ' ', $title);
+		return ($uc) ? ucwords($title) : $title;
+	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public static function toString($element)
 	{
-        return StringWorks::toString($element);
+		return StringWorks::toString($element);
 	}
 	/**
-	 *	@description	
+	 * @description 
 	 */
 	public static function toXml(array $array)
 	{
-        return ArrayWorks::toXml($array);
+		return ArrayWorks::toXml($array);
 	}
 }
