@@ -154,8 +154,8 @@ class Tables extends \Nubersoft\System\Observer
             return false;
         }
 
-        if (!empty($existing)) {
-            if ($existing['ID'] != $POST['ID']) {
+        if ($existing->is_valid) {
+            if ($existing->ID != $POST['ID']) {
                 $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_slugexists'));
                 return false;
             }
