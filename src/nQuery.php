@@ -194,7 +194,7 @@ class nQuery extends nApp
     public function getTables()
     {
         return array_map(function($v){
-            return $v['Tables_in_'.DB_NAME];
+            return $v['Tables_in_'.base64_decode(DB_NAME)];
         },$this->query("show tables")->getResults());
     }
     
