@@ -29,8 +29,8 @@ class View extends Controller
      */
     public function create($page, string $type = 'layout'): ?string
     {
-        $data = $this->getPageComponents($page, false);
-        $arr = $this->getContentStructure($page);
+        $data = (!empty($page))? $this->getPageComponents($page, false) : null;
+        $arr = (!empty($page))? $this->getContentStructure($page) : null;
 
         if (empty($arr))
             return null;
