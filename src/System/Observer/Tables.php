@@ -181,7 +181,7 @@ class Tables extends \Nubersoft\System\Observer
         if ( $this->nRender->getPage('full_path') != $POST['full_path']) {
             $this->Router->redirect($POST['full_path'] . '?msg=fail_update');
         } else {
-            $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->getGet()));
+            $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->nApp->getGet()));
         }
     }
 
@@ -352,7 +352,7 @@ class Tables extends \Nubersoft\System\Observer
         $ID = $POST['parent_dup'];
         unset($POST['parent_dup']);
 
-        $duplicate = $this->getHelper("Settings")->getComponent($ID);
+        $duplicate = $this->nApp->getHelper("Settings")->getComponent($ID);
         if (empty($duplicate)) {
             $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto('invalid_component'));
             return $this;
@@ -401,7 +401,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $this->query("DELETE FROM `components` WHERE ID = ?", [$ID]);
 
-        if (empty($this->getHelper('Settings')->getComponent($ID))) {
+        if (empty($this->nApp->getHelper('Settings')->getComponent($ID))) {
             $this->nApp->toSuccess((new \Nubersoft\ErrorMessaging)->getMessageAuto('success_delete'));
         } else {
             $this->nApp->toError((new \Nubersoft\ErrorMessaging)->getMessageAuto(500));
@@ -464,7 +464,7 @@ class Tables extends \Nubersoft\System\Observer
             }
             $this->updateData($POST, 'components', 'Component updated');
             if (!$page_match && !$this->nApp->isAjaxRequest()) {
-                $newPage = $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
+                $newPage = $this->nApp->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
                 $this->Router->redirect($newPage['full_path']);
             }
         }
