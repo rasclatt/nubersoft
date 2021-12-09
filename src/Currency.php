@@ -8,13 +8,26 @@ use \Nubersoft\Dto\{
     Currency\ToMoneyRequest
 };
 use Nubersoft\Dto\Currency\ToDollarRequest;
-
-class Currency extends cURL
+/**
+ * @description Access to some base currency functions with an optional stripped-down API connection to fixer.io
+ */
+class Currency
 {
-    protected $endpoint, $rates, $currency, $queryString, $baseCurrency;
+    protected string $queryString;
+    protected ?string $endpoint;
+    protected ?string $fixerApiKey;
+    protected $response, $rates, $currency, $baseCurrency;
 
-    const DEFAULT_API = 'http://api.fixer.io/latest';
+    const DEFAULT_API = 'https://data.fixer.io/api/';
     const BASE_CURRENCY = 'USD';
+    /**
+     *	@description	Sets up a default (or not) connection to fixer.io
+     */
+    public function __construct(string $endpoint = null, string $fixerApiKey = null)
+    {
+        $this->endpoint = ((empty($endpoint))? self::DEFAULT_API : $endpoint);
+        $this->fixerApiKey = $fixerApiKey;
+    }
 
     public function setBaseCurrency($currency)
     {
@@ -32,6 +45,15 @@ class Currency extends cURL
         $this->queryString = http_build_query($attr);
         return $this;
     }
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function query(string $string)
+    {
+        $this->response = file_get_contents($string);
+        return $this;
+    }
 
     public function fetch()
     {
@@ -40,10 +62,18 @@ class Currency extends cURL
             $this->setAttributes(array('base' => $this->getBaseCurrency()));
         }
 
-        $this->query($this->endpoint . ((!empty($this->queryString)) ? '?' . $this->queryString : ''));
+        $this->query($this->endpoint . '?access_key=' . $this->fixerApiKey . $this->queryString);
 
         $this->queryString = false;
         return $this;
+    }
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function getResponse(bool $json = true)
+    {
+        return ($json)? json_decode($this->response, 1) : $this->response;
     }
 
     public function getRates($get = false)
