@@ -20,7 +20,7 @@ class Controller extends Page
     /**
      * @description 
      */
-    public function getPageComponents(string $page, bool $page_live = true)
+    public function getPageComponents(string $page = null, bool $page_live = true)
     {
         if (empty(self::$page[$page])) {
             $sql = ($page_live) ? " AND `page_live` = 'on'" : false;
