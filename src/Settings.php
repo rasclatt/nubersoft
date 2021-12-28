@@ -257,8 +257,8 @@ class Settings extends \Nubersoft\nQuery
 
     public function pageHasComponents($page_ID)
     {
-        $query = $this->query("SELECT COUNT(*) as count FROM components WHERE ref_page = ?", [$page_ID])->getResults(1)['count'];
+        $count = $this->query("SELECT COUNT(*) as count FROM components WHERE ref_page = ?", [$page_ID])->getResults(1)['count'];
 
-        return ($query['count'] > 0) ? $query['count'] : false;
+        return ($count > 0) ? $count : false;
     }
 }
