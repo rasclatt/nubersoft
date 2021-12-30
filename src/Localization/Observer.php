@@ -143,10 +143,10 @@ class Observer extends nSession implements nObserver
         # Check if the countries key is available
         $csv  = (!empty($this->nApp->getFiles()[0]->countries)) ? $this->nApp->getFiles()[0] : null;
         # See if this is a CSV file
-        if ($csv->type != 'text/csv')
+        if (($csv->type)?? false != 'text/csv')
             $csv = false;
         # Set to array
-        $csv = $csv->toArray();
+        $csv = (!empty($csv))? $csv->toArray() : null;
         # Assign the post
         $POST = $this->request;
         # Fetch out the countires and such

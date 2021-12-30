@@ -440,7 +440,8 @@ class nRender extends nQuery
      */
     public function getTemplateFile(string $file = 'index.php', string $type = 'frontend', bool $path = false)
     {
-        if(!is_array($this->getDataNode('templates')['paths']))
+        $paths = $this->getDataNode('templates')['paths']?? null;
+        if(!is_array($paths))
             return false;
         
         foreach($this->getDataNode('templates')['paths'] as $dir) {
