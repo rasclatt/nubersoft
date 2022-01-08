@@ -4,7 +4,7 @@ namespace Nubersoft\Dto;
 class Tables extends \SmartDto\Dto
 {
     public ?int $ID;
-    public ?int $unique_id;
+    public $unique_id = null;
     public ?string $delete;
 
     protected string $table = '';
@@ -15,9 +15,7 @@ class Tables extends \SmartDto\Dto
     protected function beforeConstruct($array)
     {
         if(empty($array['unique_id']))
-            $array['unique_id'] = (int) \Nubersoft\nApp::call()->fetchUniqueId();
-        else 
-            $array['unique_id'] = (int) $array['unique_id'];
+            $array['unique_id'] = \Nubersoft\nApp::call()->fetchUniqueId();
 
         if(!empty($array['ID'])) {
             if(!is_numeric($array['ID']))

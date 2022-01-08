@@ -28,7 +28,7 @@ class Components extends \Nubersoft\Dto\Tables
     protected function beforeConstruct($array)
     {
         $array = parent::{__FUNCTION__}($array);
-        $array['table'] = 'component';
+        $array['table'] = 'components';
         return $array;
     }
 }

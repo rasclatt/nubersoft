@@ -44,7 +44,6 @@ class Tables extends \Nubersoft\System\Observer
      */
     public function saveTable(TablesDto $Table, nToken $Token, string $token = null)
     {
-//die(printpre(1));
         # Convert Dto to POST
         $POST = $Table->toArray();
         # Set the table
@@ -126,6 +125,8 @@ class Tables extends \Nubersoft\System\Observer
                 # Stop if table is empty
                 if(empty($table))
                     throw new \Exception('Bad request', 500);
+                # Remove all unlrealted fields from the post array
+                $this->filterUnMatched($POST, $table);
                 # If there is a Dto, apply it
                 class_exists($tableDtoPath)? $this->saveTable(new $tableDtoPath($POST), $Token, $token) : $this->editTable($POST, $table, $token, $Token);
                 return $this;
@@ -247,7 +248,7 @@ class Tables extends \Nubersoft\System\Observer
         if ( $this->nRender->getPage('full_path') != $POST['full_path']) {
             $this->Router->redirect($POST['full_path'] . '?msg=fail_update');
         } else {
-            $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->getGet()));
+            $this->Router->redirect($POST['full_path'] . '?msg=success_settingssaved&' . http_build_query($this->nApp->getGet()));
         }
     }
 
@@ -474,71 +475,71 @@ class Tables extends \Nubersoft\System\Observer
 
     protected function updateRecord($POST, $token, $Token)
     {
-        $POST['timestamp'] = date('Y-m-d H:i:s');
-        if (empty($POST['ID'])) {
-            if (empty($token) || !$Token->match('component_' . $POST['ID'], $token)) {
-                $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_request'));
-                return false;
-            }
+        if (empty($POST['ID']))
+            return $this;
 
-            if (!empty($POST['file_name'])) {
-                $fname = $this->query("SELECT `file_name` as `filename` FROM components WHERE ID = ?", [$POST['ID']])->getResults(1);
-                $fname = (!empty($fname['filename'])) ? $fname['filename'] : false;
+        if (empty($token) || !$Token->match('component_' . $POST['ID'], $token)) {
+            $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_request'));
+            return false;
+        }
 
-                if (!empty($fname)) {
-                    if ($fname !== $POST['file_name']) {
-                        $ext = pathinfo($fname, PATHINFO_EXTENSION);
-                        $newFnm = trim(preg_replace('/[^A-Z0-9\-\_]/i', '', pathinfo($POST['file_name'], PATHINFO_FILENAME)));
+        if (!empty($POST['file_name'])) {
+            $fname = $this->query("SELECT `file_name` as `filename` FROM components WHERE ID = ?", [$POST['ID']])->getResults(1);
+            $fname = (!empty($fname['filename'])) ? $fname['filename'] : false;
 
-                        if (!empty($newFnm)) {
-                            $old = NBR_DOMAIN_ROOT . $POST['file_path'] . $fname;
-                            $new = NBR_DOMAIN_ROOT . $POST['file_path'] . $newFnm . '.' . $ext;
-                            $thumb = NBR_DOMAIN_ROOT . $POST['file_path'] . 'thumbs' . DS . $fname . '.' . $ext;
+            if (!empty($fname)) {
+                if ($fname !== $POST['file_name']) {
+                    $ext = pathinfo($fname, PATHINFO_EXTENSION);
+                    $newFnm = trim(preg_replace('/[^A-Z0-9\-\_]/i', '', pathinfo($POST['file_name'], PATHINFO_FILENAME)));
 
-                            if (is_file($thumb))
-                                unlink($thumb);
+                    if (!empty($newFnm)) {
+                        $old = NBR_DOMAIN_ROOT . $POST['file_path'] . $fname;
+                        $new = NBR_DOMAIN_ROOT . $POST['file_path'] . $newFnm . '.' . $ext;
+                        $thumb = NBR_DOMAIN_ROOT . $POST['file_path'] . 'thumbs' . DS . $fname . '.' . $ext;
 
-                            rename($old, $new);
+                        if (is_file($thumb))
+                            unlink($thumb);
 
-                            $POST['file_name'] = $newFnm . '.' . $ext;
-                        }
+                        rename($old, $new);
+
+                        $POST['file_name'] = $newFnm . '.' . $ext;
                     }
                 }
             }
-            $page_match = ( $this->nRender->getPage('unique_id') == $POST['ref_page']);
-            if (!$page_match) {
-                $thisObj = $this;
-                $uniques = [];
-                $Page = new \Nubersoft\Settings\Page\Controller;
-                $struct = $Page->getContentStructure( $this->nRender->getPage('unique_id'));
-                $test = \Nubersoft\ArrayWorks::recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
+        }
+        $page_match = ( $this->nRender->getPage('unique_id') == $POST['ref_page']);
+        if (!$page_match) {
+            $thisObj = $this;
+            $uniques = [];
+            $Page = new \Nubersoft\Settings\Page\Controller;
+            $struct = $Page->getContentStructure( $this->nRender->getPage('unique_id'));
+            $test = \Nubersoft\ArrayWorks::recurseApply($struct, function ($k, $v) use ($POST, $thisObj, &$uniques) {
 
-                    if ($k == $POST['unique_id']) {
-                        if (!empty($v)) {
-                            \Nubersoft\ArrayWorks::getRecursiveKeys($v, $uniques);
-                        }
+                if ($k == $POST['unique_id']) {
+                    if (!empty($v)) {
+                        \Nubersoft\ArrayWorks::getRecursiveKeys($v, $uniques);
                     }
-                });
-
-                if (!empty($uniques)) {
-                    $c = count($uniques);
-                    $uniques = array_merge([$POST['ref_page']], $uniques);
-                    $this->query("UPDATE components SET `ref_page` = ? WHERE `unique_id` IN (" . (implode(',', array_fill(0, $c, '?'))) . ")", $uniques);
                 }
+            });
+
+            if (!empty($uniques)) {
+                $c = count($uniques);
+                $uniques = array_merge([$POST['ref_page']], $uniques);
+                $this->query("UPDATE components SET `ref_page` = ? WHERE `unique_id` IN (" . (implode(',', array_fill(0, $c, '?'))) . ")", $uniques);
             }
-            $this->updateData($POST, 'components', 'Component updated');
-            if (!$page_match && !$this->nApp->isAjaxRequest()) {
-                $newPage = $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
-                $this->Router->redirect($newPage['full_path']);
-            }
+        }
+        $this->updateData($POST, 'components', 'Component updated');
+        if (!$page_match && !$this->nApp->isAjaxRequest()) {
+            $newPage = $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
+            $this->Router->redirect($newPage['full_path']);
         }
         return $this;
     }
 
     public function editTable($POST, $table, $token, $Token, $msg = 'Row saved')
     {
-        if ($table == 'users') {die(printpre($POST));
-            $POST = $this->getRowsInTable($table, $POST);die(printpre($POST));
+        if ($table == 'users') {
+            $POST = $this->getRowsInTable($table, $POST);
             $this->updateUserData($POST, $token, $Token, $table, $this->nApp->getRequest('ID'));
             return false;
         }
@@ -547,18 +548,6 @@ class Tables extends \Nubersoft\System\Observer
             $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_request'));
             return false;
         }
-        /*
-        $dto = '\\Nubersoft\\Dto\\Tables\\'.\Nubersoft\Helper\StringWorks::columnTitleToPascalCase($table);
-        if(class_exists($dto))
-            $POST = new $dto($POST);
-
-        if($POST instanceof \Nubersoft\Dto\Tables) {
-            $table = $POST->getTable();
-            $POST = $POST->toArray();
-        }
-        
-        \Nubersoft\nApp::call()->ajaxResponse($POST);
-        */
         
         if (!empty($POST['ID']) && is_numeric($POST['ID'])) {
             if (!empty($POST['delete'])) {
