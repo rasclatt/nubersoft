@@ -1,18 +1,21 @@
 <?php
 namespace Nubersoft;
+
 /**
  * @description This is a "kitchen sink" class that can be called from anywhere
  *              that includes a large array of common helpers
  */
-use \Nubersoft\Helper\ {
+
+use \Nubersoft\Helper\{
     Router,
     FolderWorks,
     Request
 };
-use \Nubersoft\Dto\Helper\ {
+use \Nubersoft\Dto\Helper\{
     FolderWorks\IsDirRequest,
     Request\GetRequest
 };
+
 class nFunctions
 {
     private static $msg;
@@ -24,32 +27,32 @@ class nFunctions
     public function getGlobal()
     {
         $args = func_get_args();
-        
+
         return Request::get(new GetRequest([
-            'type' => ($args[0])?? 'post',
-            'key' => ($args[1])?? null
+            'type' => ($args[0]) ?? 'post',
+            'key' => ($args[1]) ?? null
         ]));
     }
     /**
      * @description Turns an object to an array by converting to json and back
      */
-    public function toArray($array = false)
+    public function toArray($array = null)
     {
-        return $this->toArrObj($array, self::TO_ARRAY);
+        return $this->toArrObj(self::TO_ARRAY, $array);
     }
     /**
      * @description Turns an array into an object by converting to json and back
      */
     public function toObject($array = false)
     {
-        return $this->toArrObj($array, self::TO_OBJECT);
+        return $this->toArrObj(self::TO_OBJECT, $array);
     }
     /**
      * @description Turns an array or object to either.
      */
-    public function toArrObj($array = false, $type)
+    public function toArrObj($type, $array = null)
     {
-        if ($array === false)
+        if ($array === null)
             return $array;
 
         return (is_object($array) || is_array($array)) ? json_decode(json_encode($array), $type) : $array;

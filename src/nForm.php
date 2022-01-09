@@ -1,5 +1,4 @@
 <?php
-
 namespace Nubersoft;
 
 class nForm extends \Nubersoft\nApp
@@ -18,7 +17,7 @@ class nForm extends \Nubersoft\nApp
         return parent::__construct();
     }
 
-    public function createForm($array, $openAttr = false)
+    public function createForm($array, $openAttr = null)
     {
 
         echo $this->open($openAttr);
@@ -74,7 +73,7 @@ class nForm extends \Nubersoft\nApp
         return ($format) ? json_encode($array) : $array;
     }
 
-    private function useWrapper($type = false, $data)
+    private function useWrapper($data, $type = false)
     {
         return (!empty($type)) ? " {$type}=\"{$data}\"" : $data;
     }
@@ -100,24 +99,24 @@ class nForm extends \Nubersoft\nApp
             }
         }, trim($settings['default'], '~')) : '';
 
-        $class = (!empty($settings['class'])) ? $this->useWrapper('class', $this->imploder($settings['class'], ' ')) : false;
+        $class = (!empty($settings['class'])) ? $this->useWrapper($this->imploder($settings['class'], ' '), 'class') : false;
         $name = (!empty($settings['name'])) ? $settings['name'] : false;
         $size = (!empty($settings['size'])) ? $settings['size'] : false;
         $label = (!empty($settings['label'])) ? $settings['label'] : false;
 
         $value = (!empty($settings['value'])) ? $settings['value'] : $default;
         $options = (!empty($settings['options'])) ? $settings['options'] : array(array('', 'Select', true));
-        $id = (!empty($settings['id'])) ? $this->useWrapper('id', $settings['id']) : false;
+        $id = (!empty($settings['id'])) ? $this->useWrapper($settings['id'], 'id') : false;
         $type = (!empty($settings['type'])) ? $settings['type'] : 'text';
-        $style = (!empty($settings['style'])) ? $this->useWrapper('style', $this->imploder($settings['style'])) : false;
-        $placeholder = (!empty($settings['placeholder'])) ? $this->useWrapper('placeholder', $settings['placeholder']) : false;
+        $style = (!empty($settings['style'])) ? $this->useWrapper($this->imploder($settings['style']), 'style') : false;
+        $placeholder = (!empty($settings['placeholder'])) ? $this->useWrapper($settings['placeholder'], 'placeholder') : false;
         $selected = (!empty($settings['selected'])) ? ' selected' : false;
         $select = (!empty($settings['select'])) ? $settings['select'] : false;
         $disabled = (!empty($settings['disabled'])) ? ' disabled' : false;
         $other = (!empty($settings['other'])) ? ' ' . $this->imploder($settings['other'], ' ') : false;
         $wrap_class = (!empty($settings['wrap_class'])) ? ' ' . $this->imploder($settings['wrap_class'], ' ') : false;
 
-        $this->nform_settings = array(
+        $this->nform_settings = [
             'name' => $name,
             'value' => $value,
             'id' => $id,
@@ -134,7 +133,7 @@ class nForm extends \Nubersoft\nApp
             'select' => $select,
             'disabled' => $disabled,
             'other' => $other
-        );
+        ];
     }
 
     protected function includeFile($file)
@@ -336,7 +335,7 @@ class nForm extends \Nubersoft\nApp
         return $this->{$type}($opts);
     }
 
-    public function open($settings = false, $quotes = false)
+    public function open(array $settings = null, $quotes = false)
     {
         $settings['action'] = (!empty($settings['action'])) ? $settings['action'] : '#';
         $settings['method'] = (!empty($settings['method'])) ? $settings['method'] : 'post';

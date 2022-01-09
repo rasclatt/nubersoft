@@ -3,7 +3,7 @@ namespace Nubersoft\Helper;
 
 use \Nubersoft\Dto\Server;
 
-use \Nubersoft\Dto\Helper\ {
+use \Nubersoft\Dto\Helper\{
     Request\GetRequest,
     Request\GetInputResponse,
     ArrayWorks\ToObjectRequest
@@ -18,7 +18,7 @@ class Request
      */
     public function __construct(Server $server)
     {
-        $fetch = self::getInput($server); 
+        $fetch = self::getInput($server);
         $this->get = $this->filter($_GET);
         $this->post = $this->filter($_POST);
         $this->request = $this->filter($_REQUEST);
@@ -45,19 +45,19 @@ class Request
      */
     public static function getInput(Server $server): GetInputResponse
     {
-        if(empty(self::$raw_request)) {
+        if (empty(self::$raw_request)) {
             $parse = null;
             $request = file_get_contents('php://input');
             $request_method = $server->REQUEST_METHOD;
 
-            if(!empty($request) && is_string($request)) {
+            if (!empty($request) && is_string($request)) {
                 $dto = new \Nubersoft\Dto\Helper\ArrayWorks\ToObjectRequest();
                 $dto->mixed = $request;
                 $parse = ArrayWorks::toObject($dto);
-                if(!is_array($parse)) {
+                if (!is_array($parse)) {
                     $arr = [];
-                    parse_str(self::$raw_request, $arr);
-                    if(!empty($arr))
+                    parse_str((string) self::$raw_request, $arr);
+                    if (!empty($arr))
                         $parse = $arr;
                 }
             }
@@ -66,7 +66,7 @@ class Request
                 'request_type' => strtolower($request_method)
             ]);
         }
-        
+
         return self::$raw_request;
     }
     /**

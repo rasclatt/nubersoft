@@ -16,13 +16,15 @@ class SystemSettings extends \Nubersoft\Dto\Tables
      */
     protected function beforeConstruct($array)
     {
-        if(!empty($array['ID'])) {
-            if(!is_numeric($array['ID']))
+        if (!empty($array['ID'])) {
+            if (!is_numeric($array['ID']))
                 throw new \Exception('Invalid request.', 403);
         }
 
         $array['timestamp'] = date('Y-m-d H:i:s');
-        
+        $array['page_order'] = (is_numeric($array['page_order'])) ? (int) $array['page_order'] : 0;
+        $array['usergroup'] = (is_numeric($array['usergroup'])) ? (int) $array['usergroup'] : 1000;
+
         $this->table = 'system_settings';
         return $array;
     }

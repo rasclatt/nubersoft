@@ -1,4 +1,5 @@
 <?php
+
 namespace Nubersoft\Conversion;
 
 class Data extends \Nubersoft\nApp
@@ -42,7 +43,7 @@ class Data extends \Nubersoft\nApp
             return false;
         }
 
-        $currVal = $val * $conv[$type];
+        $currVal = (is_numeric($val)) ? ($val * $conv[$type]) : 0;
         $returnVal = $currVal / $conv[$to];
 
         if ($round)
