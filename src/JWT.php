@@ -1,4 +1,5 @@
 <?php
+
 namespace Nubersoft;
 
 /**
@@ -76,7 +77,7 @@ class JWT extends nApp
      */
     public function valid($token)
     {
-        $issSite = (!empty($this->params['iss'])) ? $this->params['iss'] : $surl = str_replace('!^https?://!', '', $this->siteUrl());
+        $issSite = (!empty($this->params['iss'])) ? $this->params['iss'] : $surl = preg_replace('!^https?://!', '', $this->siteUrl());
         $audSite = (!empty($this->params['aud'])) ? $this->params['aud'] : $surl;
 
         try {
