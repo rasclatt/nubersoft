@@ -369,7 +369,7 @@ class Observer extends System
     public function saveJWT()
     {
         $path = \Nubersoft\JWT\Controller::getJwtPath();
-        $jwtNew = preg_replace('/[^\d\A-Z_\-]/i', '', ($this->request['token_name']) ?? false);
+        $jwtNew = preg_replace('/[^\dA-Z_\-]/i', '', ($this->request['token_name']) ?? false);
 
         if (!$jwtNew) {
             if (is_file($path)) {
