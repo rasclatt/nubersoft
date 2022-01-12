@@ -417,7 +417,7 @@ class Tables extends \Nubersoft\System\Observer
         $ID = $POST['parent_dup'];
         unset($POST['parent_dup']);
 
-        $duplicate = $this->getHelper("Settings")->getComponent($ID);
+        $duplicate = $this->Settings->getComponent($ID);
         if (empty($duplicate)) {
             $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_component'));
             return $this;
