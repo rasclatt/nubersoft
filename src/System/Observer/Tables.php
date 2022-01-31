@@ -417,7 +417,7 @@ class Tables extends \Nubersoft\System\Observer
         $ID = $POST['parent_dup'];
         unset($POST['parent_dup']);
 
-        $duplicate = $this->getHelper("Settings")->getComponent($ID);
+        $duplicate = $this->Settings->getComponent($ID);
         if (empty($duplicate)) {
             $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_component'));
             return $this;
@@ -530,7 +530,7 @@ class Tables extends \Nubersoft\System\Observer
         }
         $this->updateData($POST, 'components', 'Component updated');
         if (!$page_match && !$this->nApp->isAjaxRequest()) {
-            $newPage = $this->getHelper('nRouter')->getPage($POST['ref_page'], 'unique_id');
+            $newPage = $this->Router->getPage($POST['ref_page'], 'unique_id');
             $this->Router->redirect($newPage['full_path']);
         }
         return $this;
