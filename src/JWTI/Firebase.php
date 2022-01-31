@@ -13,6 +13,7 @@ use \Nubersoft\{
  */
 class Firebase extends nApp implements JWTI
 {
+    private $def_alg = 'HS256';
     private $settings;
     private $algo = ['HS256'];
     private $key;
@@ -27,7 +28,7 @@ class Firebase extends nApp implements JWTI
             "iat" => (!empty($this->settings['iat'])) ? $this->settings['iat'] : time()
         ];
 
-        return $this->token  = JWT::encode(array_merge($settings, $body), $this->getKey());
+        return $this->token  = JWT::encode(array_merge($settings, $body), $this->getKey(), $this->def_alg);
     }
 
     public function decode($token)

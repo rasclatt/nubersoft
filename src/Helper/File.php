@@ -1,7 +1,8 @@
 <?php
+
 namespace Nubersoft\Helper;
 
-use \Nubersoft\ {
+use \Nubersoft\{
     Dto\File as FileDto,
     nApp
 };
@@ -14,7 +15,7 @@ class File
      *	@description	Returns files from the data node
      *	@returns    [null|array<Dto\File>]	
      */
-    public static function getAll():? array
+    public static function getAll(): ?array
     {
         $files = (new nApp)->getDataNode('_FILES');
 
@@ -33,15 +34,15 @@ class File
     {
         $FILES = self::getAll();
 
-        if(empty($FILES))
+        if (empty($FILES))
             return new FileTableAttr();
 
         $file = new FileDto($FILES[0]->toArray());
 
-        if($file->error != 0)
+        if (!empty($file->error))
             throw new \Exception((new \Nubersoft\ErrorMessaging)->getMessageAuto('fail_upload'), 500);
-        
-        if(empty($file->name))
+
+        if (empty($file->name))
             return new FileTableAttr();
 
         return new FileTableAttr($file->toArray());
@@ -51,7 +52,7 @@ class File
      */
     public static function remove(string $path)
     {
-        if(!is_file($path))
+        if (!is_file($path))
             return true;
         unlink($path);
         return is_file($path);
