@@ -135,8 +135,12 @@ class System extends nSession\Controller
             }
         }
 
-        if ($update)
+        if ($update) {
+            if (empty($this->nQuery))
+                $this->nQuery = new nQuery;
+
             $this->nQuery->query("UPDATE {$table} SET file_path = '', file_name = '', file_size = '' WHERE ID = ?", [$ID]);
+        }
     }
 
     public function deleteThumbnail($filename)

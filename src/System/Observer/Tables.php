@@ -15,6 +15,8 @@ use \Nubersoft\{
 };
 
 use \Nubersoft\Dto\Settings\Page\View\ConstructRequest as Helpers;
+use \Nubersoft\Dto\Tables\Components as ComponentsDto;
+use \Nubersoft\Dto\System\Observer\Tables\DuplicateRecordRequest;
 
 class Tables extends \Nubersoft\System\Observer
 {
@@ -135,7 +137,7 @@ class Tables extends \Nubersoft\System\Observer
                 return $this;
             case ('edit_component'):
                 $action = $POST['subaction']?? null;
-                $POST = (new \Nubersoft\Dto\Tables\Components($POST))->toArray();
+                $POST = (new ComponentsDto($POST))->toArray();
                 $timestamp = date('Y-m-d H:i:s');
                 if (!empty($action)) {
                     switch ($action) {
@@ -143,7 +145,7 @@ class Tables extends \Nubersoft\System\Observer
                             $this->addNewRecord($POST);
                             break;
                         case ('duplicate'):
-                            $this->duplicateRecord($POST);
+                            $this->duplicateRecord(new DuplicateRecordRequest($POST));
                     }
                 } else {
                     if ($this->nApp->getPost('delete') == 'on') {
@@ -412,17 +414,13 @@ class Tables extends \Nubersoft\System\Observer
         return $this;
     }
 
-    protected function duplicateRecord($POST)
+    protected function duplicateRecord(DuplicateRecordRequest $request)
     {
-        $ID = $POST['parent_dup'];
-        unset($POST['parent_dup']);
-
-        $duplicate = $this->Settings->getComponent($ID);
+        $duplicate = $this->Settings->getComponent($request->parent_dup); 
         if (empty($duplicate)) {
             $this->nApp->toError($this->LocaleMsg->getMessageAuto('invalid_component'));
             return $this;
         }
-
         unset($duplicate['ID']);
         $duplicate['unique_id'] = $this->nApp->fetchUniqueId();
 
