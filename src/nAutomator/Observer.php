@@ -1,7 +1,12 @@
 <?php
 namespace Nubersoft\nAutomator;
 
-class Observer extends \Nubersoft\nAutomator implements \Nubersoft\nObserver
+use \Nubersoft\ {
+    nAutomator,
+    nObserver
+};
+
+class Observer extends nAutomator implements nObserver
 {
     use \Nubersoft\nUser\enMasse;
     use \Nubersoft\Settings\enMasse;

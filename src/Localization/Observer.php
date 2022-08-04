@@ -239,7 +239,8 @@ class Observer extends nSession implements nObserver
                     $allow  = true;
             }
             if (!$allow)
-                return $this;
+                throw new \Exception("Service not allowed to this domain ({$host})", 403);
+
         } catch (\Exception $e) {
             throw new \Nubersoft\Exception\Ajax($e->getMessage(), 500);
         }

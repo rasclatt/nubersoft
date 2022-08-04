@@ -6,7 +6,7 @@ class nReflect
     public function execute()
     {
         $args = func_get_args();
-
+        
         $class = $args[0];
         unset($args[0]);
         $Class = new \ReflectionClass($class);
@@ -23,52 +23,34 @@ class nReflect
 
             return ($hasDependencies) ? new $class(...$args) : new $class();
         }
-        # Fetch parameters
+
         $params = $constr->getParameters();
-        # Generate auto injectors
         $injects = $this->getParams($params, array_values($args));
-        # Create the object
+
         return $Class->newInstanceArgs($injects);
     }
 
-    public function getParams($params, $args)
+    public function getParams($params, $args): array
     {
         foreach ($params as $key => $param) {
-            $dependency = $param->getType();
-
-            if ($dependency == null) {
-                $injectors[] = $dependency;
-                continue;
+            $dependency = @$param->getType();
+            $dependencyParam = ($dependency instanceof \ReflectionNamedType)? $dependency->getName() : null;
+            if(!empty($dependencyParam) && in_array($dependencyParam, [ 'int', 'dir'])) {
+                $injectors[] = ($args[$key])?? $param->getDefaultValue();
             }
-            $cname = $dependency->getName();
-            if (class_exists($cname)) {
-                $injectors[] = $this->execute($cname);
+            else if (!empty($dependencyParam)) {
+                $injectors[] = $this->execute($dependencyParam);
             } else {
-                if (class_exists($cname = '\Nubersoft\\' . $cname))
-                    $injectors[] = $this->execute($cname);
+                if (class_exists('\Nubersoft\\' . $dependencyParam))
+                    $injectors[] = $this->execute('\Nubersoft\\' . $dependencyParam);
                 else {
-                    $arg = (isset($args[$key])) ? $args[$key] : false;
-                    $injectors[] = ($this->isCallable($param)) ? $this->reflectFunction($param) : $arg;
+                    $arg = (isset($args[$key])) ? $args[$key] : $param->getDefaultValue();
+                    $injectors[] = ($dependencyParam == 'callable') ? $this->reflectFunction($param) : $arg;
                 }
             }
         }
 
         return (!empty($injectors)) ? $injectors : [];
-    }
-    /**
-     *	@description	
-     *	@param	
-     */
-    protected function isCallable($param): bool
-    {
-        if (!$param)
-            return false;
-
-        $types = ($param instanceof \ReflectionUnionType) ? $param->getTypes() : [$param];
-
-        return in_array('callable', array_map(function ($t) {
-            return ($t instanceof \ReflectionNamedType) ? $t->getName() : $t;
-        }, $types));
     }
 
     public static function instantiate()
@@ -94,8 +76,11 @@ class nReflect
             $params = $hasMethod->getParameters();
             # If there are parameters requested
             if ($params) {
-                # Process parameters
-                $auto_injectors = $this->autoInjectable($params);
+                # Loop and assign as arguments
+                foreach ($params as $param) {
+                    $rDep = $param->getClass();
+                    $auto_injectors[] = (!empty($rDep->name)) ? $this->reflectClassMethod($rDep->name, false) : $param->getDefaultValue();
+                }
             }
         }
         # Send back the injected class with injected classes into methods
@@ -108,24 +93,14 @@ class nReflect
     {
         $Reflector = new \ReflectionFunction($func);
         $params = $Reflector->getParameters();
-        # Process parameters
-        $auto_injectors = $this->autoInjectable($params);
+
+        foreach ($params as $parameter) {
+            $className = @$parameter->getType()->getName();
+            //$class = $parameter->getClass();
+            $auto_injectors[] = (!empty($className)) ? $this->reflectClassMethod($className, false) : $parameter->getDefaultValue();
+        }
+
         # Send back the injected class with injected classes into methods
         return (!empty($auto_injectors)) ? $func(...$auto_injectors) : $func();
-    }
-    /**
-     *	@description	
-     *	@param	
-     */
-    private function autoInjectable(array $params)
-    {
-        $auto_injectors = [];
-        foreach ($params as $parameter) {
-            $class = $parameter->getType();
-            $isClass = class_exists($cname = $class->getName());
-            $auto_injectors[] = ($isClass) ? $this->reflectClassMethod($cname, false) : $parameter->getDefaultValue();
-        }
-        # Return the parameters
-        return $auto_injectors;
     }
 }
