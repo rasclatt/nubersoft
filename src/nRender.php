@@ -291,7 +291,7 @@ class nRender extends nQuery
             trigger_error(__FUNCTION__ . '($type, $func) requires $func to be a callable function.', E_USER_NOTICE);
             return false;
         }
-
+        
         $data = (!empty($this->getDataNode('templates')['config'][$type]['include'])) ? $this->getDataNode('templates')['config'][$type]['include'] : false;
 
         if (empty($data))
@@ -332,8 +332,8 @@ class nRender extends nQuery
                     $allow = false;
 
                 if ($is_admin) {
-                    # only editor view
-                    $allow = $this->isAdmin();
+                    # First check if already set to not allow, only editor view
+                    $allow = (!$allow)? $this->isAdmin() : $allow;
                 }
 
                 if ($get_key) {
