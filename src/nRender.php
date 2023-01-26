@@ -333,7 +333,7 @@ class nRender extends nQuery
 
                 if ($is_admin) {
                     # only editor view
-                    $allow = ($this->isFrontEnd() && $this->isAdmin());
+                    $allow = $this->isAdmin();
                 }
 
                 if ($get_key) {
@@ -348,7 +348,7 @@ class nRender extends nQuery
                     }
                 }
             }
-            
+
             if ($allow)
                 $storage[] = $func($this->Helpers->Html, $path, $is_local);
         }
