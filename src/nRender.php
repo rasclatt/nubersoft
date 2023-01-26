@@ -310,15 +310,16 @@ class nRender extends nQuery
             $get_key = (!empty($attr['get_key']) && isset($this->getDataNode('_GET')[$attr['get_key']]));
             $post_key = (!empty($attr['post_key']) && isset($this->getDataNode('_POST')[$attr['post_key']]));
             $path = str_replace(str_replace(DS, '/', NBR_DOMAIN_ROOT), '', $include['path']);
-
+            
             if (empty($attr))
                 $allow = true;
             else {
                 if ($this->isFrontEnd() && $is_frontend)
                     $allow = true;
 
-                if ($this->isBackEnd() && $is_backend)
+                if ($this->isBackEnd() && $is_backend) {
                     $allow = true;
+                }
 
                 if (empty($is_frontend) && empty($is_backend)) {
                     $allow = (!isset($attr['page_id']) && !isset($attr['page_path']) && !isset($attr['is_admin']) && !isset($attr['get_key']) && !isset($attr['post_key']));
@@ -331,8 +332,8 @@ class nRender extends nQuery
                     $allow = false;
 
                 if ($is_admin) {
-                    # ONLY MODE – No back end, no front end, only editor view
-                    $allow = ((empty($is_frontend) && empty($is_backend)) && !$this->isAdmin()) ? false : true;
+                    # only editor view
+                    $allow = ($this->isFrontEnd() && $this->isAdmin());
                 }
 
                 if ($get_key) {
@@ -347,8 +348,7 @@ class nRender extends nQuery
                     }
                 }
             }
-
-
+            
             if ($allow)
                 $storage[] = $func($this->Helpers->Html, $path, $is_local);
         }
@@ -406,9 +406,8 @@ class nRender extends nQuery
         $route     = $this->getDataNode('routing');
         if (!isset($route['is_admin']))
             return true;
-        $page_type = (!empty($this->getDataNode('routing')['is_admin'])) ? $this->getDataNode('routing')['is_admin'] : false;
 
-        return ($page_type !== 1);
+        return $route['is_admin'] != 1;
     }
     /**
      *    @description    
