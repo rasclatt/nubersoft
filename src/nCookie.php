@@ -45,10 +45,12 @@ class nCookie extends nSession
         return $this;
     }
     /**
-     * @description 
+     * @description Decodes json values from the cookie
      */
     public function decoder($value)
     {
+        if(!is_string($value))
+            return $value;
         $val = @json_decode($value, 1);
         return (!empty($val)) ? $val : $value;
     }
