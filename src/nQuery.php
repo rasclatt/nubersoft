@@ -90,11 +90,11 @@ class nQuery extends nApp
         return $this;
     }
     
-    public function write()
+    public function write(\PDO $db = null)
     {
         $this->stmt = implode(PHP_EOL, $this->sql);
         
-        $this->query($this->stmt, $this->bind);
+        $this->query($this->stmt, $this->bind, $db);
     }
     
     public function select($columns = '*')
@@ -212,6 +212,7 @@ class nQuery extends nApp
     
     public function delete($table, $ticks = '`')
     {
+        $this->bind = 
         $this->sql = [];
         $this->sql[] = "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
         
