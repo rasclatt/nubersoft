@@ -224,12 +224,12 @@ class nQuery extends nApp
         ArrayWorks::filterByComparison($this->getColumnsInTable($table, $ticks), $array);
     }
     
-    public function fetch($one = false)
+    public function fetch($one = false, \PDO $pdo = null)
     {
         $sql = implode(PHP_EOL, $this->sql);
         $bind = (!empty($this->bind))? $this->bind : null;
         try {
-            $data = $this->query(implode(PHP_EOL, $this->sql), $bind)->getResults($one);
+            $data = $this->query(implode(PHP_EOL, $this->sql), $bind, $pdo)->getResults($one);
             return $data;
         }
         catch (\PDOException $e) {
