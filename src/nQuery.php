@@ -38,6 +38,7 @@ class nQuery extends nApp
     public function query($sql, $bind = false, $conn = false)
     {
         $con = ($conn instanceof \PDO)? $conn : $this->getConnection();
+        $this->sql = $this->bind = [];
         
         if(is_array($bind)) {
             $bArr = array_values($bind);
@@ -64,7 +65,7 @@ class nQuery extends nApp
     
     public function insert($table, $ticks = '`')
     {
-        $this->sql = [];
+        $this->sql = $this->bind = [];
         $this->sql[] = "INSERT INTO {$ticks}{$this->stripTableName($table)}{$ticks}";
         return $this;
     }
@@ -90,11 +91,11 @@ class nQuery extends nApp
         return $this;
     }
     
-    public function write(\PDO $db = null)
+    public function write()
     {
         $this->stmt = implode(PHP_EOL, $this->sql);
         
-        $this->query($this->stmt, $this->bind, $db);
+        $this->query($this->stmt, $this->bind);
     }
     
     public function select($columns = '*')
@@ -172,8 +173,7 @@ class nQuery extends nApp
     
     public function update($table)
     {
-        $this->bind =
-        $this->sql = [];
+        $this->sql = $this->bind = [];
         $this->sql[] = "UPDATE {$this->stripTableName($table)}";
 
         return $this;
@@ -212,8 +212,7 @@ class nQuery extends nApp
     
     public function delete($table, $ticks = '`')
     {
-        $this->bind = 
-        $this->sql = [];
+        $this->sql = $this->bind = [];
         $this->sql[] = "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
         
         return $this;
@@ -224,12 +223,12 @@ class nQuery extends nApp
         ArrayWorks::filterByComparison($this->getColumnsInTable($table, $ticks), $array);
     }
     
-    public function fetch($one = false, \PDO $pdo = null)
+    public function fetch($one = false)
     {
         $sql = implode(PHP_EOL, $this->sql);
         $bind = (!empty($this->bind))? $this->bind : null;
         try {
-            $data = $this->query(implode(PHP_EOL, $this->sql), $bind, $pdo)->getResults($one);
+            $data = $this->query(implode(PHP_EOL, $this->sql), $bind)->getResults($one);
             return $data;
         }
         catch (\PDOException $e) {
