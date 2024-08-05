@@ -34,11 +34,95 @@ class nQuery extends nApp
             throw new HttpException($e->getMessage(), 103);
         }
     }
-    
+    /**
+     *	@description	Execute a transaction
+     *	@var	        callable $func
+     */
+    public function transaction(callable $func, callable $error = null)
+    {
+        $this->getConnection()->beginTransaction();
+        try {
+            $func($this);
+            $this->getConnection()->commit();
+        }
+        catch(\PDOException $e) {
+            $this->getConnection()->rollBack();
+            if($error)
+                $error($e);
+            else
+                throw $e;
+        }
+        return $this;
+    }
+    /**
+     *	@description	
+     *	@var	        array $select = ['u.*','other_table.ID as other_id'];
+     *	@var	        array $from = ['users as u','other_table'];
+     *	@var	        array $joins = [
+     *                               ["type" => "INNER", "table" => "orders as o", "condition" => "u.id = o.user_id"],
+     *                               ["type" => "LEFT", "table" => "payments", "condition" => "o.id = payments.order_id"]
+     *                           ];
+     * @var            array $where = ["u.status = 'active'", "o.amount > 100", ["condition" => "u.email = ?", "bind" => "someemail@example.com"]];
+     */
+    public function selectWithJoin(array $select, array $from, array $joins = [], array $where = [], array $other = []) {
+        $this->bind =
+        $this->sql =
+        $bind = [];
+        $this->stmt = "";
+        $selectPart = "SELECT " . implode(", ", $select);
+        $fromPart = "FROM " . implode(", ", $from);
+        $joinParts = [];
+        foreach ($joins as $join) {
+            $joinType = $join['type'] ?? 'INNER';
+            $joinTable = $join['table'];
+            $joinCondition = $join['condition'];
+            if(!empty($join['bind'])) {
+                $bind = array_merge($bind, (!is_array($join['bind']))? [ $join['bind'] ] : $join['bind']);
+            }
+            $joinParts[] = "{$joinType} JOIN {$joinTable} ON ";
+            if(is_array($joinCondition)) {
+                $j = [];
+                foreach ($joinCondition as $joinOn) {
+                    if(!empty($joinOn['bind'])) {
+                        $j[] = $joinOn['condition'];
+                        $bind = array_merge($bind, (!is_array($joinOn['bind']))? [ $joinOn['bind'] ] : $joinOn['bind']);
+                    } else {
+                        $j[] = $joinOn;
+                    }
+                }
+                $joinParts[] = implode(" AND ", $j);
+            } else {
+                $joinParts[] = $joinCondition;
+            }
+        }
+        $joinPart = implode(" ", $joinParts);
+        $whereParts = [];
+        foreach ($where as $condition) {
+            if(isset($condition['bind'])) {
+                $whereParts[] = $condition['condition'];
+                $bind = array_merge($bind, (!is_array($condition['bind']))? [ $condition['bind'] ] : $condition['bind']);
+            } else {
+                $whereParts[] = $condition;
+            }
+        }
+        $wherePart = empty($whereParts) ? "" : " WHERE " . implode(" AND ", $whereParts);
+        $this->sql = array_filter([$selectPart, $fromPart, $joinPart, $wherePart, (!empty($other))? implode(PHP_EOL, $other) : ""]);
+        $this->stmt = implode(PHP_EOL, $this->sql);
+        $this->bind = $bind;
+        return $this->query($this->stmt, $this->bind);
+    }
+    /**
+     *	@description	
+     *	@var	
+     */
+    public function toJson()
+    {
+        return json_encode($this->getResults());
+    }
+
     public function query($sql, $bind = false, $conn = false)
     {
         $con = ($conn instanceof \PDO)? $conn : $this->getConnection();
-        $this->sql = $this->bind = [];
         
         if(is_array($bind)) {
             $bArr = array_values($bind);
@@ -65,7 +149,7 @@ class nQuery extends nApp
     
     public function insert($table, $ticks = '`')
     {
-        $this->sql = $this->bind = [];
+        $this->sql = [];
         $this->sql[] = "INSERT INTO {$ticks}{$this->stripTableName($table)}{$ticks}";
         return $this;
     }
@@ -91,11 +175,11 @@ class nQuery extends nApp
         return $this;
     }
     
-    public function write()
+    public function write(\PDO $db = null)
     {
         $this->stmt = implode(PHP_EOL, $this->sql);
         
-        $this->query($this->stmt, $this->bind);
+        $this->query($this->stmt, $this->bind, $db);
     }
     
     public function select($columns = '*')
@@ -173,7 +257,8 @@ class nQuery extends nApp
     
     public function update($table)
     {
-        $this->sql = $this->bind = [];
+        $this->bind =
+        $this->sql = [];
         $this->sql[] = "UPDATE {$this->stripTableName($table)}";
 
         return $this;
@@ -209,13 +294,21 @@ class nQuery extends nApp
             return $v['Field'];
         }, $this->describe($this->stripTableName($table), $ticks));
     }
-    
     public function delete($table, $ticks = '`')
     {
-        $this->sql = $this->bind = [];
+        $this->bind = 
+        $this->sql = [];
         $this->sql[] = "DELETE FROM {$ticks}{$this->stripTableName($table)}{$ticks}";
         
         return $this;
+    }
+    
+    public function softDelete($table, $ticks = '`', array $where = null, array $bind = null)
+    {
+        $this->bind = 
+        $this->sql = [];
+        $this->sql[] = "UPDATE {$ticks}{$this->stripTableName($table)}{$ticks} SET deleted_at = NOW()";
+        return $this->where($where, $bind);
     }
     
     public function filterArrayByColumns($table, &$array, $ticks = '`')
@@ -223,12 +316,12 @@ class nQuery extends nApp
         ArrayWorks::filterByComparison($this->getColumnsInTable($table, $ticks), $array);
     }
     
-    public function fetch($one = false)
+    public function fetch($one = false, \PDO $pdo = null)
     {
         $sql = implode(PHP_EOL, $this->sql);
         $bind = (!empty($this->bind))? $this->bind : null;
         try {
-            $data = $this->query(implode(PHP_EOL, $this->sql), $bind)->getResults($one);
+            $data = $this->query(implode(PHP_EOL, $this->sql), $bind, $pdo)->getResults($one);
             return $data;
         }
         catch (\PDOException $e) {
@@ -246,4 +339,36 @@ class nQuery extends nApp
         
         return $table;
 	}
+    /**
+     *	@description	Returns a string with the number of ? for binding
+     *	@var	        array $array    The column names to return the binding for
+     *  @var            bool $braces    If true, will wrap the binding in parenthesis
+     */
+    public static function likeIn(array $array, bool $braces = false): string
+    {
+        return ($braces? '(' : '').implode(',', array_fill(0, count($array), '?')).($braces? ')' : '');
+    }
+    /**
+     *	@description	Builds a sql string and bind array from an array. Good for updates and deletes
+     *	@var	        array $array        The array to build the sql from
+     *  @var            string $op          The operator to use in the sql string (default is ',' but can use 'AND' or 'OR')
+     *  @var            bool $ignoreNull    If true, will ignore null values in the array
+     */
+    public static function build(array $array, string $op = ',', bool $ignoreNull = false): object
+    {
+        $sql = $bind = [];
+        foreach($array as $k => $v) {
+            if($v === null) {
+                if(!$ignoreNull)
+                    $sql[] = "`{$k}` = NULL";
+            } else {
+                $sql[] = "`{$k}` = ?";
+                $bind[] = $v;
+            }
+        }
+        return (object) [
+            'bind' => $bind,
+            'sql' => implode($op, $sql)
+        ];
+    }
 }
