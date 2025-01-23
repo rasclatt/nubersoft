@@ -44,7 +44,7 @@ class Model extends \Nubersoft\Settings
     public function getMenu($id = null, string $column = 'ID', $useDto = false)
     {
         $sql = (!empty($id)) ? " WHERE {$column} = ?" : '';
-        $menu = $this->query("SELECT * FROM main_menus{$sql}", (!empty($id) ? [$id] : null))->getResults((!empty($id) && $column == 'ID'));
+        $menu = $this->query("SELECT * FROM main_menus{$sql} ORDER BY page_order ASC", (!empty($id) ? [$id] : null))->getResults((!empty($id) && $column == 'ID'));
 
         if (!empty($menu)) {
             return ($useDto) ? array_map(function ($v) {
